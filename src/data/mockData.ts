@@ -12,6 +12,7 @@ export const mockCases: AnimalCase[] = [
       'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800',
     ],
     status: 'urgent',
+    species: 'dog',
     location: { city: 'Sofia', neighborhood: 'Center' },
     fundraising: { current: 320, goal: 500, currency: 'BGN' },
     updates: [
@@ -31,6 +32,7 @@ export const mockCases: AnimalCase[] = [
       'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=800',
     ],
     status: 'critical',
+    species: 'cat',
     location: { city: 'Plovdiv', neighborhood: 'Kapana' },
     fundraising: { current: 450, goal: 800, currency: 'BGN' },
     updates: [
@@ -49,6 +51,7 @@ export const mockCases: AnimalCase[] = [
       'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
     ],
     status: 'adopted',
+    species: 'dog',
     location: { city: 'Burgas', neighborhood: 'Sea Garden' },
     fundraising: { current: 600, goal: 600, currency: 'BGN' },
     updates: [
@@ -68,6 +71,7 @@ export const mockCases: AnimalCase[] = [
       'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
     ],
     status: 'recovering',
+    species: 'dog',
     location: { city: 'Varna', neighborhood: 'Asparuhovo' },
     fundraising: { current: 180, goal: 1000, currency: 'BGN' },
     updates: [
