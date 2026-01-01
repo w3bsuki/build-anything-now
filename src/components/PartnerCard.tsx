@@ -34,9 +34,9 @@ export function PartnerCard({ partner }: PartnerCardProps) {
   const Icon = config.icon;
 
   return (
-    <div className="bg-card rounded-2xl p-5 shadow-card card-hover animate-fade-in">
+    <div className="bg-card rounded-xl p-4 border border-border/50 card-hover">
       {/* Logo */}
-      <div className="w-20 h-20 rounded-xl overflow-hidden mx-auto mb-4 bg-muted">
+      <div className="w-14 h-14 rounded-lg overflow-hidden mx-auto mb-3 bg-muted">
         <img
           src={partner.logo}
           alt={partner.name}
@@ -46,12 +46,12 @@ export function PartnerCard({ partner }: PartnerCardProps) {
 
       {/* Info */}
       <div className="text-center">
-        <h3 className="font-bold text-foreground mb-1">{partner.name}</h3>
-        <div className={cn('flex items-center justify-center gap-1.5 text-sm mb-3', config.color)}>
-          <Icon className="w-4 h-4" />
+        <h3 className="font-semibold text-sm text-foreground mb-1">{partner.name}</h3>
+        <div className={cn('flex items-center justify-center gap-1 text-xs mb-2', config.color)}>
+          <Icon className="w-3 h-3" />
           <span>{config.label}</span>
         </div>
-        <p className="text-sm text-muted-foreground">{partner.contribution}</p>
+        <p className="text-xs text-muted-foreground line-clamp-2">{partner.contribution}</p>
       </div>
     </div>
   );

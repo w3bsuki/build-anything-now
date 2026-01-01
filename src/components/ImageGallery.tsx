@@ -21,11 +21,11 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
   return (
     <div className="relative">
       {/* Main Image */}
-      <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
+      <div className="aspect-[4/3] overflow-hidden rounded-xl bg-muted">
         <img
           src={images[currentIndex]}
           alt={`${alt} - Image ${currentIndex + 1}`}
-          className="w-full h-full object-cover transition-opacity duration-300"
+          className="w-full h-full object-cover"
         />
       </div>
 
@@ -34,32 +34,32 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-foreground hover:bg-card transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-card/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-card transition-colors"
             aria-label="Previous image"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/90 backdrop-blur-sm shadow-lg flex items-center justify-center text-foreground hover:bg-card transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-card/90 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-card transition-colors"
             aria-label="Next image"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </>
       )}
 
       {/* Dots Indicator */}
       {images.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
           {images.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={cn(
-                'w-2 h-2 rounded-full transition-all duration-300',
+                'w-1.5 h-1.5 rounded-full transition-colors',
                 index === currentIndex
-                  ? 'bg-primary w-6'
+                  ? 'bg-primary'
                   : 'bg-card/60 hover:bg-card/80'
               )}
               aria-label={`Go to image ${index + 1}`}

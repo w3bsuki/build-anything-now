@@ -39,29 +39,29 @@ export function UpdatesTimeline({ updates }: UpdatesTimelineProps) {
         const isLast = index === sortedUpdates.length - 1;
 
         return (
-          <div key={update.id} className="flex gap-4">
+          <div key={update.id} className="flex gap-3">
             {/* Timeline line and dot */}
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center shrink-0',
+                  'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
                   config.color
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
               {!isLast && (
-                <div className="w-0.5 h-full min-h-[40px] bg-border" />
+                <div className="w-px h-full min-h-[32px] bg-border" />
               )}
             </div>
 
             {/* Content */}
-            <div className="pb-6">
-              <p className="text-xs text-muted-foreground mb-1">
+            <div className="pb-4 pt-0.5">
+              <p className="text-xs text-muted-foreground mb-0.5">
                 {format(new Date(update.date), 'MMM d, yyyy')}
               </p>
-              <h4 className="font-semibold text-foreground">{update.title}</h4>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h4 className="font-medium text-sm text-foreground">{update.title}</h4>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                 {update.description}
               </p>
             </div>
