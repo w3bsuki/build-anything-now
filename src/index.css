@@ -104,11 +104,11 @@
 
 @layer components {
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-shadow duration-200 hover:shadow-card-hover;
   }
 
   .btn-donate {
-    @apply bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 hover:scale-105;
+    @apply bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-full shadow-donate hover:brightness-105 transition-all duration-200;
   }
 
   .progress-bar-track {
@@ -116,7 +116,7 @@
   }
 
   .progress-bar-fill {
-    @apply bg-gradient-to-r from-primary to-warning h-full rounded-full transition-all duration-500;
+    @apply bg-primary h-full rounded-full;
   }
 
   .badge-urgent {
@@ -136,7 +136,7 @@
   }
 
   .nav-item {
-    @apply flex flex-col items-center gap-1 text-muted-foreground transition-colors duration-200;
+    @apply flex flex-col items-center gap-0.5 text-muted-foreground transition-colors duration-150;
   }
 
   .nav-item-active {
@@ -144,16 +144,12 @@
   }
 
   .sticky-donate {
-    @apply fixed bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent md:bottom-0;
+    @apply fixed bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/95 to-transparent md:bottom-0;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-warning bg-clip-text text-transparent;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
 }

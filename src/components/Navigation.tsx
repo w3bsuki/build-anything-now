@@ -15,15 +15,15 @@ export function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-b border-border">
+      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4">
-          <nav className="flex items-center justify-between h-16">
+          <nav className="flex items-center justify-between h-14">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                <PawPrint className="w-6 h-6 text-primary-foreground" />
+              <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+                <PawPrint className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-foreground">PawsSafe</span>
+              <span className="font-bold text-lg text-foreground">PawsSafe</span>
             </NavLink>
 
             {/* Nav Links */}
@@ -37,7 +37,7 @@ export function Navigation() {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200',
+                      'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150',
                       isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -54,8 +54,8 @@ export function Navigation() {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border safe-area-bottom">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-area-bottom">
+        <div className="flex items-center justify-around h-14 px-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -65,24 +65,12 @@ export function Navigation() {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'nav-item flex-1 py-2',
+                  'nav-item flex-1 py-1.5',
                   isActive && 'nav-item-active'
                 )}
               >
-                <div
-                  className={cn(
-                    'w-10 h-10 rounded-full flex items-center justify-center mx-auto transition-all duration-200',
-                    isActive && 'bg-primary/10'
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      'w-5 h-5 transition-transform',
-                      isActive && 'scale-110'
-                    )}
-                  />
-                </div>
-                <span className="text-xs font-medium">{item.label}</span>
+                <Icon className="w-5 h-5 mx-auto" />
+                <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
               </NavLink>
             );
           })}
