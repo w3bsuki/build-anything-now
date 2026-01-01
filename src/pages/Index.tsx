@@ -5,35 +5,24 @@ import { CampaignCard } from '@/components/CampaignCard';
 import { PartnerCard } from '@/components/PartnerCard';
 import { ContentTabs } from '@/components/ContentTabs';
 import { FilterPills } from '@/components/FilterPills';
-import { PawPrint, Search, Dog, Cat, Bird, Rabbit, Handshake, Heart } from 'lucide-react';
+import { PawPrint, Search, Handshake, Heart, AlertTriangle, Clock, HeartHandshake, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const categoryFilters = [
-  { id: 'all', label: 'All' },
-  { id: 'dogs', label: 'Dogs', icon: <Dog className="w-3.5 h-3.5" /> },
-  { id: 'cats', label: 'Cats', icon: <Cat className="w-3.5 h-3.5" /> },
-  { id: 'birds', label: 'Birds', icon: <Bird className="w-3.5 h-3.5" /> },
-  { id: 'other', label: 'Other', icon: <Rabbit className="w-3.5 h-3.5" /> },
-];
-
 const statusFilters = [
-  { id: 'all', label: 'All Status' },
-  { id: 'critical', label: 'Critical' },
-  { id: 'urgent', label: 'Urgent' },
-  { id: 'recovering', label: 'Recovering' },
-  { id: 'adopted', label: 'Adopted' },
+  { id: 'all', label: 'All Cases' },
+  { id: 'critical', label: 'Critical', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+  { id: 'urgent', label: 'Urgent', icon: <Clock className="w-3.5 h-3.5" /> },
+  { id: 'recovering', label: 'Recovering', icon: <HeartHandshake className="w-3.5 h-3.5" /> },
+  { id: 'adopted', label: 'Adopted', icon: <Sparkles className="w-3.5 h-3.5" /> },
 ];
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<'cases' | 'campaigns' | 'partners'>('cases');
-  const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Filter cases based on selected filters
+  // Filter cases based on selected status
   const filteredCases = mockCases.filter((c) => {
-    const matchesCategory = categoryFilter === 'all' || c.species?.toLowerCase() === categoryFilter.slice(0, -1);
-    const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    return matchesCategory && matchesStatus;
+    return statusFilter === 'all' || c.status === statusFilter;
   });
 
   const urgentCases = filteredCases.filter(c => c.status === 'urgent' || c.status === 'critical');
@@ -81,20 +70,12 @@ const Index = () => {
                 />
               </div>
 
-              {/* Filter Pills Row */}
-              <div className="flex gap-4 overflow-x-auto">
-                <FilterPills
-                  options={categoryFilters}
-                  selected={categoryFilter}
-                  onSelect={setCategoryFilter}
-                />
-                <div className="w-px bg-border flex-shrink-0" />
-                <FilterPills
-                  options={statusFilters}
-                  selected={statusFilter}
-                  onSelect={setStatusFilter}
-                />
-              </div>
+              {/* Status Filter Pills */}
+              <FilterPills
+                options={statusFilters}
+                selected={statusFilter}
+                onSelect={setStatusFilter}
+              />
             </div>
           </div>
 
