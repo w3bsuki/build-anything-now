@@ -7,8 +7,10 @@ import { Navigation } from "./components/Navigation";
 import Index from "./pages/Index";
 import AnimalProfile from "./pages/AnimalProfile";
 import Campaigns from "./pages/Campaigns";
+import CampaignProfile from "./pages/CampaignProfile";
 import Partners from "./pages/Partners";
 import Clinics from "./pages/Clinics";
+import ClinicProfile from "./pages/ClinicProfile";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -25,8 +27,10 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/case/:id" element={<AnimalProfile />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/campaigns/:id" element={<CampaignProfile />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/clinics" element={<Clinics />} />
+          <Route path="/clinics/:id" element={<ClinicProfile />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
