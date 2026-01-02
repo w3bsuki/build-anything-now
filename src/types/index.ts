@@ -49,3 +49,15 @@ export interface Partner {
   contribution: string;
   type: 'pet-shop' | 'food-brand' | 'veterinary' | 'sponsor';
 }
+
+export interface Clinic {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  phone: string;
+  hours: string;
+  is24h: boolean;
+  specializations: string[];
+  verified: boolean;
+}

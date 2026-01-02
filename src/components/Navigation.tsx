@@ -1,11 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Megaphone, Users, User, PawPrint } from 'lucide-react';
+import { Home, Megaphone, Users, User, PawPrint, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/campaigns', label: 'Campaigns', icon: Megaphone },
   { path: '/partners', label: 'Partners', icon: Users },
+  { path: '/clinics', label: 'Clinics', icon: Stethoscope },
   { path: '/profile', label: 'Profile', icon: User },
 ];
 
