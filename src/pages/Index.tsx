@@ -79,7 +79,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Urgent Cases */}
+          {/* Urgent Cases - Horizontal Scroll */}
           {urgentCases.length > 0 && (
             <section className="py-4">
               <div className="container mx-auto px-4">
@@ -88,9 +88,13 @@ const Index = () => {
                   <h2 className="text-sm font-semibold text-foreground">Urgent Cases</h2>
                   <span className="text-xs text-muted-foreground">({urgentCases.length})</span>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              </div>
+              <div className="overflow-x-auto scrollbar-hide">
+                <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
                   {urgentCases.map((caseData) => (
-                    <CaseCard key={caseData.id} caseData={caseData} />
+                    <div key={caseData.id} className="w-[280px] flex-shrink-0">
+                      <CaseCard caseData={caseData} />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -107,7 +111,7 @@ const Index = () => {
                 <span className="text-xs text-muted-foreground">({otherCases.length})</span>
               </div>
               {otherCases.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {otherCases.map((caseData) => (
                     <CaseCard key={caseData.id} caseData={caseData} />
                   ))}

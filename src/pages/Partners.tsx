@@ -1,9 +1,25 @@
+import { useState } from 'react';
 import { mockPartners } from '@/data/mockData';
 import { PartnerCard } from '@/components/PartnerCard';
+import { FilterPills } from '@/components/FilterPills';
 import { Button } from '@/components/ui/button';
-import { Users, Handshake, Heart } from 'lucide-react';
+import { Users, Handshake, Heart, ShoppingBag, Stethoscope, Home, Pill, Bone } from 'lucide-react';
+
+const domainFilters = [
+  { id: 'all', label: 'All' },
+  { id: 'pet-shop', label: 'Pet Shops', icon: <ShoppingBag className="w-3.5 h-3.5" /> },
+  { id: 'food-brand', label: 'Pet Food', icon: <Bone className="w-3.5 h-3.5" /> },
+  { id: 'veterinary', label: 'Veterinary', icon: <Stethoscope className="w-3.5 h-3.5" /> },
+  { id: 'sponsor', label: 'Sponsors', icon: <Heart className="w-3.5 h-3.5" /> },
+];
 
 const Partners = () => {
+  const [domainFilter, setDomainFilter] = useState('all');
+
+  const filteredPartners = mockPartners.filter(
+    (partner) => domainFilter === 'all' || partner.type === domainFilter
+  );
+
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
@@ -51,15 +67,35 @@ const Partners = () => {
         </div>
       </section>
 
+      {/* Filter Pills */}
+      <section className="py-3 border-b border-border sticky top-0 md:top-16 bg-background z-40">
+        <div className="container mx-auto px-4">
+          <FilterPills
+            options={domainFilters}
+            selected={domainFilter}
+            onSelect={setDomainFilter}
+          />
+        </div>
+      </section>
+
       {/* Partners Grid */}
       <section className="py-5">
         <div className="container mx-auto px-4">
-          <h2 className="text-base font-semibold text-foreground mb-3">All Partners</h2>
-          <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {mockPartners.map((partner) => (
-              <PartnerCard key={partner.id} partner={partner} />
-            ))}
-          </div>
+          <h2 className="text-base font-semibold text-foreground mb-3">
+            {domainFilter === 'all' ? 'All Partners' : domainFilters.find(f => f.id === domainFilter)?.label}
+            <span className="text-muted-foreground font-normal ml-2">({filteredPartners.length})</span>
+          </h2>
+          {filteredPartners.length > 0 ? (
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {filteredPartners.map((partner) => (
+                <PartnerCard key={partner.id} partner={partner} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              No partners found in this category
+            </div>
+          )}
         </div>
       </section>
 
