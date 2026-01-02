@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import AnimalProfile from "./pages/AnimalProfile";
 import Campaigns from "./pages/Campaigns";
 import Partners from "./pages/Partners";
+import Clinics from "./pages/Clinics";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/case/:id" element={<AnimalProfile />} />
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/partners" element={<Partners />} />
+          <Route path="/clinics" element={<Clinics />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
