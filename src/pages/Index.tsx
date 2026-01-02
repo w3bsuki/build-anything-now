@@ -111,7 +111,7 @@ const Index = () => {
                 <span className="text-xs text-muted-foreground">({otherCases.length})</span>
               </div>
               {otherCases.length > 0 ? (
-                <div className="grid gap-3 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {otherCases.map((caseData) => (
                     <CaseCard key={caseData.id} caseData={caseData} />
                   ))}
