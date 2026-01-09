@@ -34,7 +34,7 @@ const Clinics = () => {
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="bg-gradient-to-b from-primary/5 to-transparent py-8 md:py-10">
+      <section className="py-8 md:py-10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2.5 mb-3">
             <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
@@ -64,19 +64,21 @@ const Clinics = () => {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <FilterPills
-              options={cityFilters}
-              selected={cityFilter}
-              onSelect={setCityFilter}
-            />
-            <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 overflow-x-auto scrollbar-hide">
+              <FilterPills
+                options={cityFilters}
+                selected={cityFilter}
+                onSelect={setCityFilter}
+              />
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Switch
                 id="24h-filter"
                 checked={show24hOnly}
                 onCheckedChange={setShow24hOnly}
               />
-              <Label htmlFor="24h-filter" className="text-sm font-medium cursor-pointer">
+              <Label htmlFor="24h-filter" className="text-sm font-medium cursor-pointer whitespace-nowrap">
                 24/7 Only
               </Label>
             </div>
