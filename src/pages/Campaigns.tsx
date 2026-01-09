@@ -1,38 +1,44 @@
 import { useState } from 'react';
 import { mockCampaigns } from '@/data/mockData';
 import { CampaignCard } from '@/components/CampaignCard';
-import { Megaphone, Sparkles, TrendingUp, CheckCircle } from 'lucide-react';
+import { FilterPills } from '@/components/FilterPills';
+import { Megaphone, Sparkles, Search, TrendingUp, CheckCircle } from 'lucide-react';
 
-type CampaignTab = 'active' | 'trending' | 'completed';
+type CampaignFilter = 'all' | 'trending' | 'completed';
 
 const Campaigns = () => {
-  const [activeTab, setActiveTab] = useState<CampaignTab>('active');
+  const [filter, setFilter] = useState<CampaignFilter>('all');
 
-  // Mock filter logic (in real app, campaigns would have status)
-  const activeCampaigns = mockCampaigns;
+  const filterOptions = [
+    { id: 'all', label: 'All', icon: <Megaphone className="w-3.5 h-3.5" /> },
+    { id: 'trending', label: 'Trending', icon: <TrendingUp className="w-3.5 h-3.5" /> },
+    { id: 'completed', label: 'Completed', icon: <CheckCircle className="w-3.5 h-3.5" /> },
+  ];
+
+  // Mock filter logic
   const trendingCampaigns = mockCampaigns.filter((_, i) => i === 0);
   const completedCampaigns: typeof mockCampaigns = [];
 
-  const getCurrentCampaigns = () => {
-    switch (activeTab) {
+  const getFilteredCampaigns = () => {
+    switch (filter) {
       case 'trending':
         return trendingCampaigns;
       case 'completed':
         return completedCampaigns;
       default:
-        return activeCampaigns;
+        return mockCampaigns;
     }
   };
 
-  const currentCampaigns = getCurrentCampaigns();
+  const filteredCampaigns = getFilteredCampaigns();
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="bg-gradient-to-b from-warning/5 to-transparent py-8 md:py-10">
+      <section className="py-8 md:py-10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2.5 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-warning flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-warning flex items-center justify-center">
               <Megaphone className="w-5 h-5 text-warning-foreground" />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -45,60 +51,42 @@ const Campaigns = () => {
         </div>
       </section>
 
-      {/* Tabs */}
-      <div className="sticky top-0 md:top-14 bg-background z-30 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-1 py-2">
-            <button
-              onClick={() => setActiveTab('active')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeTab === 'active'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              <Megaphone className="w-3.5 h-3.5" />
-              Active
-            </button>
-            <button
-              onClick={() => setActiveTab('trending')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeTab === 'trending'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              <TrendingUp className="w-3.5 h-3.5" />
-              Trending
-            </button>
-            <button
-              onClick={() => setActiveTab('completed')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeTab === 'completed'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              <CheckCircle className="w-3.5 h-3.5" />
-              Completed
-            </button>
+      {/* Search & Filter Pills */}
+      <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
+        <div className="container mx-auto px-4 space-y-3">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search campaigns..."
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+            />
           </div>
+
+          {/* Filter Pills */}
+          <FilterPills
+            options={filterOptions}
+            selected={filter}
+            onSelect={(id) => setFilter(id as CampaignFilter)}
+          />
         </div>
       </div>
 
-      {/* Featured Campaign - Horizontal Scroll (only on Active tab) */}
-      {activeTab === 'active' && trendingCampaigns.length > 0 && (
+      {/* Featured Campaigns - Horizontal Scroll (only when showing all) */}
+      {filter === 'all' && trendingCampaigns.length > 0 && (
         <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-warning" />
               <h2 className="text-sm font-semibold text-foreground">Featured</h2>
+              <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {trendingCampaigns.map((campaign) => (
-                <div key={campaign.id} className="w-[320px] flex-shrink-0">
+                <div key={campaign.id} className="w-[300px] flex-shrink-0">
                   <CampaignCard campaign={campaign} />
                 </div>
               ))}
@@ -112,19 +100,19 @@ const Campaigns = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-semibold text-foreground">
-              {activeTab === 'active' ? 'All Campaigns' : activeTab === 'trending' ? 'Trending' : 'Completed'}
+              {filter === 'all' ? 'All Campaigns' : filter === 'trending' ? 'Trending' : 'Completed'}
             </h2>
-            <span className="text-xs text-muted-foreground">({currentCampaigns.length})</span>
+            <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>
           </div>
-          {currentCampaigns.length > 0 ? (
+          {filteredCampaigns.length > 0 ? (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {currentCampaigns.map((campaign) => (
+              {filteredCampaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">
-              No {activeTab} campaigns at the moment
+              No {filter} campaigns at the moment
             </div>
           )}
         </div>
