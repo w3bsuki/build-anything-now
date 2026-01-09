@@ -32,65 +32,69 @@ const Clinics = () => {
   const emergencyClinics = filteredClinics.filter(c => c.is24h);
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 pt-20 md:pt-24 pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-primary/5 to-transparent py-8 md:py-10">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-primary/10 rounded-xl">
-              <Stethoscope className="w-6 h-6 text-primary" />
+          <div className="flex items-center justify-center gap-2.5 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+              <Stethoscope className="w-5 h-5 text-accent-foreground" />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
               Veterinary Clinics
             </h1>
           </div>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-center text-muted-foreground text-sm max-w-md mx-auto">
             Find trusted veterinary clinics across Bulgaria
           </p>
+        </div>
+      </section>
 
-          {/* Search & Filters */}
-          <div className="space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search clinics or specializations..."
-                className="pl-10 bg-card"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+      {/* Search & Filters */}
+      <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
+        <div className="container mx-auto px-4 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search clinics or specializations..."
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <FilterPills
-                options={cityFilters}
-                selected={cityFilter}
-                onSelect={setCityFilter}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <FilterPills
+              options={cityFilters}
+              selected={cityFilter}
+              onSelect={setCityFilter}
+            />
+            <div className="flex items-center gap-2 sm:ml-auto">
+              <Switch
+                id="24h-filter"
+                checked={show24hOnly}
+                onCheckedChange={setShow24hOnly}
               />
-              <div className="flex items-center gap-2 sm:ml-auto">
-                <Switch
-                  id="24h-filter"
-                  checked={show24hOnly}
-                  onCheckedChange={setShow24hOnly}
-                />
-                <Label htmlFor="24h-filter" className="text-sm font-medium cursor-pointer">
-                  24/7 Only
-                </Label>
-              </div>
+              <Label htmlFor="24h-filter" className="text-sm font-medium cursor-pointer">
+                24/7 Only
+              </Label>
             </div>
           </div>
         </div>
       </div>
 
       {/* Results */}
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-4">
         {/* Emergency Section */}
         {emergencyClinics.length > 0 && !show24hOnly && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              24/7 Emergency Clinics
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-success" />
+              <h2 className="text-sm font-semibold text-foreground">24/7 Emergency Clinics</h2>
+              <span className="text-xs text-muted-foreground">({emergencyClinics.length})</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {emergencyClinics.slice(0, 3).map((clinic) => (
                 <ClinicCard key={clinic.id} clinic={clinic} />
               ))}
@@ -100,19 +104,21 @@ const Clinics = () => {
 
         {/* All Clinics */}
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            {show24hOnly ? '24/7 Clinics' : 'All Clinics'} ({filteredClinics.length})
-          </h2>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-sm font-semibold text-foreground">
+              {show24hOnly ? '24/7 Clinics' : 'All Clinics'}
+            </h2>
+            <span className="text-xs text-muted-foreground">({filteredClinics.length})</span>
+          </div>
           {filteredClinics.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredClinics.map((clinic) => (
                 <ClinicCard key={clinic.id} clinic={clinic} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <Stethoscope className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No clinics found matching your criteria</p>
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              No clinics found matching your criteria
             </div>
           )}
         </div>

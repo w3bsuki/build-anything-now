@@ -3,7 +3,7 @@ import { mockPartners } from '@/data/mockData';
 import { PartnerCard } from '@/components/PartnerCard';
 import { FilterPills } from '@/components/FilterPills';
 import { Button } from '@/components/ui/button';
-import { Users, Handshake, Heart, ShoppingBag, Stethoscope, Home, Pill, Bone } from 'lucide-react';
+import { Users, Handshake, Heart, ShoppingBag, Stethoscope, Bone } from 'lucide-react';
 
 const domainFilters = [
   { id: 'all', label: 'All' },
@@ -33,34 +33,26 @@ const Partners = () => {
               Our Partners
             </h1>
           </div>
-          <p className="text-center text-muted-foreground text-sm max-w-md mx-auto mb-5">
+          <p className="text-center text-muted-foreground text-sm max-w-md mx-auto">
             Working with amazing businesses who share our mission
           </p>
-
-          {/* CTA */}
-          <div className="flex justify-center">
-            <Button className="btn-donate">
-              <Handshake className="w-4 h-4 mr-2" />
-              Become a Partner
-            </Button>
-          </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="py-5 border-b border-border">
+      <section className="py-4 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-primary">{mockPartners.length}</p>
+              <p className="text-xl font-bold text-primary">{mockPartners.length}</p>
               <p className="text-xs text-muted-foreground">Partners</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-primary">1,200+</p>
+              <p className="text-xl font-bold text-primary">1,200+</p>
               <p className="text-xs text-muted-foreground">Animals Helped</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-primary">50,000+</p>
+              <p className="text-xl font-bold text-primary">50,000+</p>
               <p className="text-xs text-muted-foreground">BGN Contributed</p>
             </div>
           </div>
@@ -68,7 +60,7 @@ const Partners = () => {
       </section>
 
       {/* Filter Pills */}
-      <section className="py-3 border-b border-border sticky top-0 md:top-16 bg-background z-40">
+      <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
         <div className="container mx-auto px-4">
           <FilterPills
             options={domainFilters}
@@ -76,17 +68,19 @@ const Partners = () => {
             onSelect={setDomainFilter}
           />
         </div>
-      </section>
+      </div>
 
       {/* Partners Grid */}
-      <section className="py-5">
+      <section className="py-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-base font-semibold text-foreground mb-3">
-            {domainFilter === 'all' ? 'All Partners' : domainFilters.find(f => f.id === domainFilter)?.label}
-            <span className="text-muted-foreground font-normal ml-2">({filteredPartners.length})</span>
-          </h2>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-sm font-semibold text-foreground">
+              {domainFilter === 'all' ? 'All Partners' : domainFilters.find(f => f.id === domainFilter)?.label}
+            </h2>
+            <span className="text-xs text-muted-foreground">({filteredPartners.length})</span>
+          </div>
           {filteredPartners.length > 0 ? (
-            <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
               {filteredPartners.map((partner) => (
                 <PartnerCard key={partner.id} partner={partner} />
               ))}
@@ -102,19 +96,19 @@ const Partners = () => {
       {/* Become a Partner Section */}
       <section className="py-6">
         <div className="container mx-auto px-4">
-          <div className="bg-muted/50 rounded-xl p-5 md:p-8 text-center">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-              <Heart className="w-6 h-6 text-primary" />
+          <div className="bg-muted/50 rounded-xl p-5 text-center">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-3">
+              <Heart className="w-5 h-5 text-primary" />
             </div>
-            <h2 className="text-lg font-bold text-foreground mb-2">
+            <h3 className="text-base font-semibold text-foreground mb-1">
               Want to make a difference?
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
-              Partner with PawsSafe and help us save more lives
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+              Join our network of partners and help save more animals
             </p>
-            <Button className="btn-donate">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Handshake className="w-4 h-4 mr-2" />
-              Contact Us
+              Become a Partner
             </Button>
           </div>
         </div>
