@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { mockCampaigns } from '@/data/mockData';
 import { CampaignCard } from '@/components/CampaignCard';
-import { ContentTabs } from '@/components/ContentTabs';
 import { Megaphone, Sparkles, TrendingUp, CheckCircle } from 'lucide-react';
 
 type CampaignTab = 'active' | 'trending' | 'completed';
@@ -47,7 +46,7 @@ const Campaigns = () => {
       </section>
 
       {/* Tabs */}
-      <div className="sticky top-0 md:top-16 bg-background z-40 border-b border-border">
+      <div className="sticky top-0 md:top-14 bg-background z-30 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex gap-1 py-2">
             <button
@@ -89,11 +88,11 @@ const Campaigns = () => {
 
       {/* Featured Campaign - Horizontal Scroll (only on Active tab) */}
       {activeTab === 'active' && trendingCampaigns.length > 0 && (
-        <section className="py-5">
+        <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-warning" />
-              <h2 className="text-base font-semibold text-foreground">Featured</h2>
+              <h2 className="text-sm font-semibold text-foreground">Featured</h2>
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
@@ -109,13 +108,16 @@ const Campaigns = () => {
       )}
 
       {/* All Campaigns */}
-      <section className="py-5">
+      <section className="py-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-base font-semibold text-foreground mb-3">
-            {activeTab === 'active' ? 'All Campaigns' : activeTab === 'trending' ? 'Trending Now' : 'Completed Campaigns'}
-          </h2>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-sm font-semibold text-foreground">
+              {activeTab === 'active' ? 'All Campaigns' : activeTab === 'trending' ? 'Trending' : 'Completed'}
+            </h2>
+            <span className="text-xs text-muted-foreground">({currentCampaigns.length})</span>
+          </div>
           {currentCampaigns.length > 0 ? (
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {currentCampaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}
