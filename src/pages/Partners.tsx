@@ -22,8 +22,8 @@ const Partners = () => {
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Hero */}
-      <section className="pt-2">
+      {/* Hero + Stats + Filters */}
+      <div className="sticky top-0 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
         <div className="container mx-auto px-4 space-y-2">
           <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
@@ -36,32 +36,24 @@ const Partners = () => {
           <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
             Working with amazing businesses who share our mission
           </p>
-        </div>
-      </section>
 
-      {/* Stats */}
-      <section className="py-4 border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4 text-center py-1">
             <div>
-              <p className="text-xl font-bold text-primary">{mockPartners.length}</p>
+              <p className="text-lg font-bold text-primary">{mockPartners.length}</p>
               <p className="text-xs text-muted-foreground">Partners</p>
             </div>
             <div>
-              <p className="text-xl font-bold text-primary">1,200+</p>
+              <p className="text-lg font-bold text-primary">1,200+</p>
               <p className="text-xs text-muted-foreground">Animals Helped</p>
             </div>
             <div>
-              <p className="text-xl font-bold text-primary">50,000+</p>
+              <p className="text-lg font-bold text-primary">50,000+</p>
               <p className="text-xs text-muted-foreground">BGN Contributed</p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Filter Pills */}
-      <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
-        <div className="container mx-auto px-4">
+          {/* Filter Pills */}
           <FilterPills
             options={domainFilters}
             selected={domainFilter}
