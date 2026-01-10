@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { mockCampaigns } from '@/data/mockData';
 import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
+import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Megaphone, Sparkles, Search, TrendingUp, CheckCircle } from 'lucide-react';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
 const Campaigns = () => {
   const [filter, setFilter] = useState<CampaignFilter>('all');
+  const isLoading = useSimulatedLoading(600);
 
   const filterOptions = [
     { id: 'all', label: 'All', icon: <Megaphone className="w-3.5 h-3.5" /> },
@@ -69,22 +72,30 @@ const Campaigns = () => {
       </div>
 
       {/* Featured Campaigns - Horizontal Scroll (only when showing all) */}
-      {filter === 'all' && trendingCampaigns.length > 0 && (
+      {filter === 'all' && (isLoading || trendingCampaigns.length > 0) && (
         <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-warning" />
               <h2 className="text-sm font-semibold text-foreground">Featured</h2>
-              <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>
+              {!isLoading && <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>}
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
-              {trendingCampaigns.map((campaign) => (
-                <div key={campaign.id} className="w-[300px] flex-shrink-0">
-                  <CampaignCard campaign={campaign} />
-                </div>
-              ))}
+              {isLoading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="w-[300px] flex-shrink-0">
+                    <CampaignCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                trendingCampaigns.map((campaign) => (
+                  <div key={campaign.id} className="w-[300px] flex-shrink-0">
+                    <CampaignCard campaign={campaign} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -97,9 +108,15 @@ const Campaigns = () => {
             <h2 className="text-sm font-semibold text-foreground">
               {filter === 'all' ? 'All Campaigns' : filter === 'trending' ? 'Trending' : 'Completed'}
             </h2>
-            <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>
+            {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
           </div>
-          {filteredCampaigns.length > 0 ? (
+          {isLoading ? (
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <CampaignCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredCampaigns.length > 0 ? (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {filteredCampaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
