@@ -45,22 +45,6 @@ const Partners = () => {
             Working with amazing businesses who share our mission
           </p>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 text-center py-1">
-            <div>
-              <p className="text-lg font-bold text-primary">{mockPartners.length}</p>
-              <p className="text-xs text-muted-foreground">Partners</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-primary">1,200+</p>
-              <p className="text-xs text-muted-foreground">Animals Helped</p>
-            </div>
-            <div>
-              <p className="text-lg font-bold text-primary">50,000+</p>
-              <p className="text-xs text-muted-foreground">BGN Contributed</p>
-            </div>
-          </div>
-
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -111,8 +95,28 @@ const Partners = () => {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
+            <div>
+              <p className="text-xl font-bold text-primary">{mockPartners.length}</p>
+              <p className="text-xs text-muted-foreground">Partners</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">1,200+</p>
+              <p className="text-xs text-muted-foreground">Animals Helped</p>
+            </div>
+            <div>
+              <p className="text-xl font-bold text-primary">50,000+</p>
+              <p className="text-xs text-muted-foreground">BGN Contributed</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Become a Partner Section */}
-      <section className="py-6">
+      <section className="py-4">
         <div className="container mx-auto px-4">
           <div className="bg-muted/50 rounded-xl p-5 text-center">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-3">
