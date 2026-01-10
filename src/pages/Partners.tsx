@@ -23,7 +23,7 @@ const Partners = () => {
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="py-2">
+      <section>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
