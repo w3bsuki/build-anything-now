@@ -23,17 +23,17 @@ const Partners = () => {
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="py-8 md:py-10">
+      <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2.5 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-              <Users className="w-5 h-5 text-accent-foreground" />
+          <div className="flex items-center justify-center gap-2.5 mb-1.5">
+            <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center">
+              <Users className="w-4.5 h-4.5 text-accent-foreground" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               Our Partners
             </h1>
           </div>
-          <p className="text-center text-muted-foreground text-sm max-w-md mx-auto">
+          <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
             Working with amazing businesses who share our mission
           </p>
         </div>
@@ -80,7 +80,7 @@ const Partners = () => {
             <span className="text-xs text-muted-foreground">({filteredPartners.length})</span>
           </div>
           {filteredPartners.length > 0 ? (
-            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredPartners.map((partner) => (
                 <PartnerCard key={partner.id} partner={partner} />
               ))}
