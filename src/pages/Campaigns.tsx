@@ -34,8 +34,8 @@ const Campaigns = () => {
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Hero */}
-      <section className="pt-2">
+      {/* Hero + Search + Filters */}
+      <div className="sticky top-0 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
         <div className="container mx-auto px-4 space-y-2">
           <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-warning flex items-center justify-center">
@@ -48,12 +48,7 @@ const Campaigns = () => {
           <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
             Join our special initiatives and make a bigger impact together
           </p>
-        </div>
-      </section>
 
-      {/* Search & Filter Pills */}
-      <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
