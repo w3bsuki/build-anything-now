@@ -26,13 +26,13 @@ const Index = () => {
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="py-4 md:py-6">
+      <section className="pt-4 pb-2 md:pt-6 md:pb-3">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2.5 mb-1.5">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <PawPrint className="w-4.5 h-4.5 text-primary-foreground" />
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <PawPrint className="w-4 h-4 text-primary-foreground" />
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-foreground">
+            <h1 className="text-lg md:text-xl font-bold text-foreground">
               Rescue Cases
             </h1>
           </div>
