@@ -15,8 +15,8 @@ const Campaigns = () => {
     { id: 'completed', label: 'Completed', icon: <CheckCircle className="w-3.5 h-3.5" /> },
   ];
 
-  // Mock filter logic
-  const trendingCampaigns = mockCampaigns.filter((_, i) => i === 0);
+  // Mock filter logic - show first 2 campaigns as trending for horizontal scroll demo
+  const trendingCampaigns = mockCampaigns.filter((_, i) => i < 2);
   const completedCampaigns: typeof mockCampaigns = [];
 
   const getFilteredCampaigns = () => {
@@ -35,17 +35,17 @@ const Campaigns = () => {
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section className="py-8 md:py-10">
+      <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2.5 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-warning flex items-center justify-center">
-              <Megaphone className="w-5 h-5 text-warning-foreground" />
+          <div className="flex items-center justify-center gap-2.5 mb-1.5">
+            <div className="w-9 h-9 rounded-lg bg-warning flex items-center justify-center">
+              <Megaphone className="w-4.5 h-4.5 text-warning-foreground" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               Campaigns
             </h1>
           </div>
-          <p className="text-center text-muted-foreground text-sm max-w-md mx-auto">
+          <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
             Join our special initiatives and make a bigger impact together
           </p>
         </div>
@@ -53,7 +53,7 @@ const Campaigns = () => {
 
       {/* Search & Filter Pills */}
       <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-3">
+        <div className="container mx-auto px-4 space-y-2.5">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

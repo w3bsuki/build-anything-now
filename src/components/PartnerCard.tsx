@@ -35,23 +35,25 @@ export function PartnerCard({ partner }: PartnerCardProps) {
 
   return (
     <div className="bg-card rounded-xl p-4 border border-border/50 card-hover">
-      {/* Logo */}
-      <div className="w-14 h-14 rounded-lg overflow-hidden mx-auto mb-3 bg-muted">
-        <img
-          src={partner.logo}
-          alt={partner.name}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Info */}
-      <div className="text-center">
-        <h3 className="font-semibold text-sm text-foreground mb-1">{partner.name}</h3>
-        <div className={cn('flex items-center justify-center gap-1 text-xs mb-2', config.color)}>
-          <Icon className="w-3 h-3" />
-          <span>{config.label}</span>
+      <div className="flex items-start gap-3">
+        {/* Logo */}
+        <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+          <img
+            src={partner.logo}
+            alt={partner.name}
+            className="w-full h-full object-cover"
+          />
         </div>
-        <p className="text-xs text-muted-foreground line-clamp-2">{partner.contribution}</p>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-sm text-foreground mb-1 line-clamp-1">{partner.name}</h3>
+          <div className={cn('flex items-center gap-1 text-xs mb-1.5', config.color)}>
+            <Icon className="w-3 h-3" />
+            <span>{config.label}</span>
+          </div>
+          <p className="text-xs text-muted-foreground line-clamp-2">{partner.contribution}</p>
+        </div>
       </div>
     </div>
   );
