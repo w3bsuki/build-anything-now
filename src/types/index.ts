@@ -47,7 +47,13 @@ export interface Partner {
   name: string;
   logo: string;
   contribution: string;
+  description: string;
   type: 'pet-shop' | 'food-brand' | 'veterinary' | 'sponsor';
+  website?: string;
+  since: string;
+  animalsHelped: number;
+  totalContributed: number;
+  featured?: boolean;
 }
 
 export interface Clinic {
