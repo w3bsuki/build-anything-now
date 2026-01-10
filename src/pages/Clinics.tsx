@@ -29,14 +29,12 @@ const Clinics = () => {
     return matchesCity && matches24h && matchesSearch;
   });
 
-  const emergencyClinics = filteredClinics.filter(c => c.is24h);
-
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
       {/* Hero */}
-      <section>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 mb-1">
+      <section className="pt-2">
+        <div className="container mx-auto px-4 space-y-2">
+          <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
               <Stethoscope className="w-4 h-4 text-accent-foreground" />
             </div>
@@ -52,7 +50,7 @@ const Clinics = () => {
 
       {/* Search & Filters */}
       <div className="sticky top-0 md:top-14 bg-background z-30 py-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2.5">
+        <div className="container mx-auto px-4 space-y-2">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -76,22 +74,6 @@ const Clinics = () => {
 
       {/* Results */}
       <div className="container mx-auto px-4 py-4">
-        {/* Emergency Section */}
-        {emergencyClinics.length > 0 && !show24hOnly && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-success" />
-              <h2 className="text-sm font-semibold text-foreground">24/7 Emergency Clinics</h2>
-              <span className="text-xs text-muted-foreground">({emergencyClinics.length})</span>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {emergencyClinics.slice(0, 3).map((clinic) => (
-                <ClinicCard key={clinic.id} clinic={clinic} />
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* All Clinics */}
         <div>
           <div className="flex items-center gap-2 mb-3">
