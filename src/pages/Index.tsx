@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { PawPrint, Search, Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
 import { CaseCard } from '@/components/CaseCard';
 import { FilterPills } from '@/components/FilterPills';
+import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { mockCases } from '@/data/mockData';
 
 const statusFilters = [
@@ -14,6 +16,7 @@ const statusFilters = [
 
 const Index = () => {
   const [statusFilter, setStatusFilter] = useState('all');
+  const isLoading = useSimulatedLoading(600);
 
   // Filter cases based on selected status
   const filteredCases = mockCases.filter((c) => {
@@ -60,22 +63,30 @@ const Index = () => {
       </div>
 
       {/* Urgent Cases - Horizontal Scroll */}
-      {urgentCases.length > 0 && (
+      {(isLoading || urgentCases.length > 0) && (
         <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-urgent" />
               <h2 className="text-sm font-semibold text-foreground">Urgent Cases</h2>
-              <span className="text-xs text-muted-foreground">({urgentCases.length})</span>
+              {!isLoading && <span className="text-xs text-muted-foreground">({urgentCases.length})</span>}
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
-              {urgentCases.map((caseData) => (
-                <div key={caseData.id} className="w-[280px] flex-shrink-0">
-                  <CaseCard caseData={caseData} />
-                </div>
-              ))}
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="w-[280px] flex-shrink-0">
+                    <CaseCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                urgentCases.map((caseData) => (
+                  <div key={caseData.id} className="w-[280px] flex-shrink-0">
+                    <CaseCard caseData={caseData} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -88,9 +99,15 @@ const Index = () => {
             <h2 className="text-sm font-semibold text-foreground">
               {urgentCases.length > 0 ? 'Other Cases' : 'All Cases'}
             </h2>
-            <span className="text-xs text-muted-foreground">({otherCases.length})</span>
+            {!isLoading && <span className="text-xs text-muted-foreground">({otherCases.length})</span>}
           </div>
-          {otherCases.length > 0 ? (
+          {isLoading ? (
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <CaseCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : otherCases.length > 0 ? (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {otherCases.map((caseData) => (
                 <CaseCard key={caseData.id} caseData={caseData} />

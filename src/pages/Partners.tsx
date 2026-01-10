@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { mockPartners } from '@/data/mockData';
 import { PartnerCard } from '@/components/PartnerCard';
 import { FilterPills } from '@/components/FilterPills';
+import { PartnerCardSkeleton } from '@/components/skeletons/CardSkeleton';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Button } from '@/components/ui/button';
-import { Users, Handshake, Heart, ShoppingBag, Stethoscope, Bone } from 'lucide-react';
+import { Users, Handshake, Heart, ShoppingBag, Stethoscope, Bone, Search } from 'lucide-react';
 
 const domainFilters = [
   { id: 'all', label: 'All' },
@@ -15,10 +17,16 @@ const domainFilters = [
 
 const Partners = () => {
   const [domainFilter, setDomainFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const isLoading = useSimulatedLoading(600);
 
-  const filteredPartners = mockPartners.filter(
-    (partner) => domainFilter === 'all' || partner.type === domainFilter
-  );
+  const filteredPartners = mockPartners.filter((partner) => {
+    const matchesDomain = domainFilter === 'all' || partner.type === domainFilter;
+    const matchesSearch = !searchQuery || 
+      partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      partner.contribution.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesDomain && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
@@ -53,6 +61,18 @@ const Partners = () => {
             </div>
           </div>
 
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search partners..."
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
           {/* Filter Pills */}
           <FilterPills
             options={domainFilters}
@@ -69,9 +89,15 @@ const Partners = () => {
             <h2 className="text-sm font-semibold text-foreground">
               {domainFilter === 'all' ? 'All Partners' : domainFilters.find(f => f.id === domainFilter)?.label}
             </h2>
-            <span className="text-xs text-muted-foreground">({filteredPartners.length})</span>
+            {!isLoading && <span className="text-xs text-muted-foreground">({filteredPartners.length})</span>}
           </div>
-          {filteredPartners.length > 0 ? (
+          {isLoading ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <PartnerCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredPartners.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredPartners.map((partner) => (
                 <PartnerCard key={partner.id} partner={partner} />
@@ -79,7 +105,7 @@ const Partners = () => {
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">
-              No partners found in this category
+              No partners found matching your criteria
             </div>
           )}
         </div>

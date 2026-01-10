@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ClinicCard } from '@/components/ClinicCard';
 import { FilterPills } from '@/components/FilterPills';
-import { Input } from '@/components/ui/input';
+import { ClinicCardSkeleton } from '@/components/skeletons/CardSkeleton';
+import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { mockClinics } from '@/data/mockData';
@@ -19,6 +20,7 @@ const Clinics = () => {
   const [cityFilter, setCityFilter] = useState('all');
   const [show24hOnly, setShow24hOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const isLoading = useSimulatedLoading(600);
 
   const filteredClinics = mockClinics.filter((clinic) => {
     const matchesCity = cityFilter === 'all' || clinic.city.toLowerCase() === cityFilter;
@@ -73,7 +75,7 @@ const Clinics = () => {
             <h2 className="text-sm font-semibold text-foreground">
               {show24hOnly ? '24/7 Clinics' : 'All Clinics'}
             </h2>
-            <span className="text-xs text-muted-foreground">({filteredClinics.length})</span>
+            {!isLoading && <span className="text-xs text-muted-foreground">({filteredClinics.length})</span>}
             <div className="flex items-center gap-2 ml-auto">
               <Switch
                 id="24h-filter"
@@ -86,7 +88,13 @@ const Clinics = () => {
               </Label>
             </div>
           </div>
-          {filteredClinics.length > 0 ? (
+          {isLoading ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ClinicCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredClinics.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filteredClinics.map((clinic) => (
                 <ClinicCard key={clinic.id} clinic={clinic} />
