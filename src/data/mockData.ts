@@ -111,6 +111,35 @@ export const mockCampaigns: Campaign[] = [
     current: 4250,
     unit: 'BGN',
   },
+  {
+    id: 'c4',
+    title: 'Feed 1000 Strays This Month',
+    description: 'Help us provide daily meals to stray dogs and cats across Bulgaria. No animal should go hungry.',
+    image: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=800',
+    goal: 1000,
+    current: 412,
+    unit: 'Meals',
+    endDate: '2024-02-15',
+  },
+  {
+    id: 'c5',
+    title: 'Rescue Vehicle Upgrade',
+    description: 'Our rescue van needs repairs. Help us stay mobile so we can reach animals in need across the country.',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
+    goal: 5000,
+    current: 2100,
+    unit: 'BGN',
+    endDate: '2024-04-01',
+  },
+  {
+    id: 'c6',
+    title: 'Puppy Vaccination Drive',
+    description: 'Protect young puppies from deadly diseases. Each vaccination gives a puppy a fighting chance.',
+    image: 'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=800',
+    goal: 200,
+    current: 89,
+    unit: 'Vaccinations',
+  },
 ];
 
 export const mockPartners: Partner[] = [

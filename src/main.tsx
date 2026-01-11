@@ -1,5 +1,26 @@
 import { createRoot } from "react-dom/client";
+import { ConvexReactClient } from "convex/react";
+import { ConvexProvider } from "convex/react";
 import App from "./App.tsx";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Initialize Convex client - only if URL is provided
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string;
+const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
+
+// Wrapper component that conditionally uses Convex
+function AppWithProviders() {
+    if (convex) {
+        return (
+            <ConvexProvider client={convex}>
+                <App />
+            </ConvexProvider>
+        );
+    }
+
+    // Fallback: Run without Convex (uses mock data)
+    console.warn("Running without Convex - using mock data. Set VITE_CONVEX_URL to enable backend.");
+    return <App />;
+}
+
+createRoot(document.getElementById("root")!).render(<AppWithProviders />);

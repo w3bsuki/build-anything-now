@@ -123,14 +123,14 @@ const AnimalProfile = () => {
 
       {/* Sticky Donate Button */}
       <div className="sticky-donate">
-        <div className="container mx-auto max-w-2xl flex gap-2.5">
+        <div className="container mx-auto max-w-2xl flex gap-2">
           <button
             onClick={handleShare}
-            className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center shrink-0"
+            className="w-11 h-11 rounded-xl bg-card border border-border flex items-center justify-center shrink-0"
           >
             <Share2 className="w-4 h-4 text-foreground" />
           </button>
-          <Button className="flex-1 h-12 btn-donate text-base">
+          <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />
             Donate Now
           </Button>

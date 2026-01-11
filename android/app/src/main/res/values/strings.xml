@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Pawsy</string>
+    <string name="title_activity_main">Pawsy</string>
+    <string name="package_name">com.pawsy.app</string>
+    <string name="custom_url_scheme">com.pawsy.app</string>
+</resources>

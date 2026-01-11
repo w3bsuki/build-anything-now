@@ -83,7 +83,7 @@ const CampaignProfile = () => {
               </div>
               <span className="text-2xl font-bold text-primary">{percentage}%</span>
             </div>
-            
+
             <div className="progress-bar-track h-3 mb-4">
               <div
                 className="progress-bar-fill transition-all duration-500"
@@ -112,12 +112,12 @@ const CampaignProfile = () => {
               {campaign.description}
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Every contribution, no matter how small, makes a real difference in the lives of animals in need. 
-              Your support helps us provide essential care, shelter, and medical treatment to stray and abandoned 
+              Every contribution, no matter how small, makes a real difference in the lives of animals in need.
+              Your support helps us provide essential care, shelter, and medical treatment to stray and abandoned
               animals across Bulgaria.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              All donations are tracked transparently, and we provide regular updates on how your contributions 
+              All donations are tracked transparently, and we provide regular updates on how your contributions
               are being used. Together, we can make a lasting impact on animal welfare in our communities.
             </p>
           </div>
@@ -164,14 +164,14 @@ const CampaignProfile = () => {
 
       {/* Sticky Donate Button */}
       <div className="sticky-donate">
-        <div className="container mx-auto max-w-2xl flex gap-2.5">
-          <ShareButton 
-            title={campaign.title} 
-            text={campaign.description} 
+        <div className="container mx-auto max-w-2xl flex gap-2">
+          <ShareButton
+            title={campaign.title}
+            text={campaign.description}
             variant="icon"
-            className="w-12 h-12 rounded-xl bg-card border border-border"
+            className="w-11 h-11 rounded-xl bg-card border border-border"
           />
-          <Button className="flex-1 h-12 btn-donate text-base">
+          <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />
             Contribute Now
           </Button>
