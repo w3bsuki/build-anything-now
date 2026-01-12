@@ -1,21 +1,26 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { mockCampaigns } from '@/data/mockData';
 import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Sparkles, Search, TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
 const Campaigns = () => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<CampaignFilter>('all');
+  const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const isLoading = useSimulatedLoading(600);
 
   const filterOptions = [
-    { id: 'all', label: 'All', icon: <Megaphone className="w-3.5 h-3.5" /> },
-    { id: 'trending', label: 'Trending', icon: <TrendingUp className="w-3.5 h-3.5" /> },
-    { id: 'completed', label: 'Completed', icon: <CheckCircle className="w-3.5 h-3.5" /> },
+    { id: 'all', label: t('campaigns.allCampaigns'), icon: <Megaphone className="w-3.5 h-3.5" /> },
+    { id: 'trending', label: t('campaigns.trending'), icon: <TrendingUp className="w-3.5 h-3.5" /> },
+    { id: 'completed', label: t('campaigns.completed'), icon: <CheckCircle className="w-3.5 h-3.5" /> },
   ];
 
   // Mock filter logic - show first 2 campaigns as trending for horizontal scroll demo
@@ -45,7 +50,7 @@ const Campaigns = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search campaigns..."
+              placeholder={t('campaigns.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             />
           </div>
@@ -65,8 +70,19 @@ const Campaigns = () => {
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-warning" />
-              <h2 className="text-sm font-semibold text-foreground">Featured</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.featured')}</h2>
               {!isLoading && <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>}
+              <div className="flex items-center gap-2 ml-auto">
+                <Switch
+                  id="nearby-campaigns-filter"
+                  checked={showNearbyOnly}
+                  onCheckedChange={setShowNearbyOnly}
+                  className="scale-90"
+                />
+                <Label htmlFor="nearby-campaigns-filter" className="text-xs font-medium cursor-pointer whitespace-nowrap">
+                  {t('campaigns.nearbyOnly')}
+                </Label>
+              </div>
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
@@ -94,7 +110,7 @@ const Campaigns = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-semibold text-foreground">
-              {filter === 'all' ? 'All Campaigns' : filter === 'trending' ? 'Trending' : 'Completed'}
+              {filter === 'all' ? t('campaigns.allCampaigns') : filter === 'trending' ? t('campaigns.trending') : t('campaigns.completed')}
             </h2>
             {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
           </div>
@@ -112,7 +128,7 @@ const Campaigns = () => {
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">
-              No {filter} campaigns at the moment
+              {t('campaigns.noResults', { filter })}
             </div>
           )}
         </div>

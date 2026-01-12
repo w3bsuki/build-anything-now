@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Heart, Calendar, PawPrint } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,18 +34,19 @@ const mockDonations = [
   },
 ];
 
-const formatDate = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
-
 const MyDonations = () => {
+  const { t } = useTranslation();
   // TODO: Replace with useQuery(api.donations.getMyDonations)
   const donations = mockDonations;
   const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
@@ -58,8 +60,8 @@ const MyDonations = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">My Donations</h1>
-            <p className="text-xs text-muted-foreground">{donations.length} donations • {totalAmount} BGN total</p>
+            <h1 className="text-lg font-semibold text-foreground">{t('myDonations.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('myDonations.summary', { count: donations.length, amount: totalAmount })}</p>
           </div>
         </div>
       </div>
@@ -74,21 +76,21 @@ const MyDonations = () => {
                   <Heart className="w-5 h-5 text-primary" />
                 </div>
                 <p className="text-2xl font-bold text-foreground">{donations.length}</p>
-                <p className="text-xs text-muted-foreground">Donations</p>
+                <p className="text-xs text-muted-foreground">{t('profile.donations')}</p>
               </div>
               <div>
                 <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-success/20 flex items-center justify-center">
                   <span className="text-success font-bold text-sm">BGN</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{totalAmount}</p>
-                <p className="text-xs text-muted-foreground">Contributed</p>
+                <p className="text-xs text-muted-foreground">{t('profile.contributed')}</p>
               </div>
               <div>
                 <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-accent/20 flex items-center justify-center">
                   <PawPrint className="w-5 h-5 text-accent-foreground" />
                 </div>
                 <p className="text-2xl font-bold text-foreground">{donations.length}</p>
-                <p className="text-xs text-muted-foreground">Animals</p>
+                <p className="text-xs text-muted-foreground">{t('myDonations.animals')}</p>
               </div>
             </div>
           </div>
@@ -98,7 +100,7 @@ const MyDonations = () => {
       {/* Donations List */}
       <section className="py-2">
         <div className="container mx-auto px-4">
-          <h2 className="text-sm font-semibold text-foreground mb-3">Recent Donations</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-3">{t('myDonations.recentDonations')}</h2>
           
           {donations.length > 0 ? (
             <div className="space-y-3">
@@ -136,8 +138,8 @@ const MyDonations = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Heart className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm">No donations yet</p>
-              <p className="text-muted-foreground text-xs mt-1">Your donations will appear here</p>
+              <p className="text-muted-foreground text-sm">{t('myDonations.noDonations')}</p>
+              <p className="text-muted-foreground text-xs mt-1">{t('myDonations.donationsWillAppear')}</p>
             </div>
           )}
         </div>

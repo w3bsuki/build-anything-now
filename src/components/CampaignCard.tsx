@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Campaign } from '@/types';
 import { ShareButton } from './ShareButton';
 import { ProgressBar } from './ProgressBar';
@@ -13,6 +14,7 @@ interface CampaignCardProps {
 }
 
 export function CampaignCard({ campaign, className }: CampaignCardProps) {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(
@@ -73,7 +75,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
         <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
           <Link to={`/campaigns/${campaign.id}`} aria-label={`Contribute to ${campaign.title}`}>
             <Heart className="w-4 h-4 mr-2" />
-            Contribute
+            {t('actions.contribute')}
           </Link>
         </Button>
       </div>

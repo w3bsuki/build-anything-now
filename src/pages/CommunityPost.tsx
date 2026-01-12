@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { mockCommunityPosts, mockPostComments } from '@/data/mockData';
 import { ShareButton } from '@/components/ShareButton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -18,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { PostComment } from '@/types';
 
 const CommunityPostPage = () => {
+  const { t } = useTranslation();
   const { postId } = useParams();
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -29,16 +31,32 @@ const CommunityPostPage = () => {
   const commentInputRef = useRef<HTMLInputElement>(null);
   const isLoading = useSimulatedLoading(400);
 
-  const post = mockCommunityPosts.find((p) => p.id === postId);
+  const rulesPostId = 'rules';
+  const rulesPost = {
+    id: rulesPostId,
+    author: {
+      id: 'system',
+      name: t('app.name'),
+      avatar: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200',
+      isVolunteer: false,
+    },
+    content: t('community.rulesBody'),
+    likes: 0,
+    comments: 0,
+    timeAgo: t('community.pinned'),
+    createdAt: new Date().toISOString(),
+  };
+
+  const post = postId === rulesPostId ? rulesPost : mockCommunityPosts.find((p) => p.id === postId);
   const comments = mockPostComments.filter((c) => c.postId === postId);
 
   if (!post) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Post not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t('communityPost.postNotFound')}</h1>
           <Link to="/community" className="text-primary hover:underline">
-            Go back to community
+            {t('communityPost.backToCommunity')}
           </Link>
         </div>
       </div>
@@ -122,14 +140,14 @@ const CommunityPostPage = () => {
                   isCommentLiked ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                Like{isCommentLiked && 'd'} {comment.likes + (isCommentLiked ? 1 : 0) > 0 && `· ${comment.likes + (isCommentLiked ? 1 : 0)}`}
+                {isCommentLiked ? t('communityPost.liked') : t('communityPost.like')} {comment.likes + (isCommentLiked ? 1 : 0) > 0 && `· ${comment.likes + (isCommentLiked ? 1 : 0)}`}
               </button>
               {!isReply && (
                 <button
                   onClick={() => handleReplyClick(comment.id, comment.author.name)}
                   className="text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Reply
+                  {t('communityPost.reply')}
                 </button>
               )}
             </div>
@@ -175,7 +193,7 @@ const CommunityPostPage = () => {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to community
+            {t('communityPost.backToCommunity')}
           </Link>
         </div>
 
@@ -211,7 +229,14 @@ const CommunityPostPage = () => {
             </div>
 
             {/* Content */}
-            <p className="text-foreground leading-relaxed text-[15px]">{post.content}</p>
+            <p
+              className={cn(
+                'text-foreground leading-relaxed text-[15px]',
+                postId === rulesPostId && 'whitespace-pre-line'
+              )}
+            >
+              {post.content}
+            </p>
           </article>
 
           {/* Post Image */}
@@ -262,7 +287,7 @@ const CommunityPostPage = () => {
         {/* Comments Section */}
         <div className="bg-card md:mx-4 md:rounded-xl md:border md:border-border">
           <div className="px-4 pt-3 pb-1">
-            <span className="text-xs font-medium text-muted-foreground">Comments ({comments.length})</span>
+            <span className="text-xs font-medium text-muted-foreground">{t('communityPost.comments')} ({comments.length})</span>
           </div>
           <div className="px-4">
           {isLoading ? (
@@ -285,7 +310,7 @@ const CommunityPostPage = () => {
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
-              <p className="text-sm">No comments yet</p>
+              <p className="text-sm">{t('communityPost.noCommentsYet')}</p>
             </div>
           )}
           </div>
@@ -298,7 +323,7 @@ const CommunityPostPage = () => {
         {replyingTo && (
           <div className="px-4 py-2 bg-muted/50 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              Replying to <span className="font-medium text-foreground">{replyingTo.name}</span>
+              {t('communityPost.replyTo')} <span className="font-medium text-foreground">{replyingTo.name}</span>
             </span>
             <button
               onClick={() => setReplyingTo(null)}
@@ -339,7 +364,7 @@ const CommunityPostPage = () => {
             <input
               ref={commentInputRef}
               type="text"
-              placeholder={replyingTo ? `Reply to ${replyingTo.name}...` : "Write a comment..."}
+              placeholder={replyingTo ? t('communityPost.replyToName', { name: replyingTo.name }) : t('communityPost.writeComment')}
               className="flex-1 px-3 py-1.5 text-sm bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}

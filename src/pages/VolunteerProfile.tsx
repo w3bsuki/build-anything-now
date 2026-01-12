@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { mockVolunteers, mockCases } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { 
@@ -20,6 +21,7 @@ import {
 import { CaseCard } from '@/components/CaseCard';
 
 const VolunteerProfile = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const volunteer = mockVolunteers.find((v) => v.id === id);
 
@@ -27,9 +29,9 @@ const VolunteerProfile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Volunteer not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.volunteerNotFound')}</h1>
           <Link to="/partners" className="text-primary hover:underline">
-            Go back to partners
+            {t('common.goBackPartners')}
           </Link>
         </div>
       </div>
@@ -67,7 +69,7 @@ const VolunteerProfile = () => {
             className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to partners
+            {t('common.backToPartners')}
           </Link>
 
           {/* Profile Header */}
@@ -97,13 +99,13 @@ const VolunteerProfile = () => {
                 <span className="font-semibold text-foreground">{volunteer.rating.toFixed(1)}</span>
               </div>
               <span className="text-muted-foreground">·</span>
-              <span className="text-sm text-muted-foreground">Member since {volunteer.memberSince}</span>
+              <span className="text-sm text-muted-foreground">{t('volunteerProfile.memberSince')} {volunteer.memberSince}</span>
             </div>
 
             {volunteer.isTopVolunteer && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warning/10 text-warning text-sm font-medium mb-4">
                 <Star className="w-3.5 h-3.5 fill-current" />
-                Top Volunteer
+                {t('partners.topVolunteer')}
               </div>
             )}
 
@@ -114,11 +116,11 @@ const VolunteerProfile = () => {
             <div className="flex items-center justify-center gap-3">
               <Button size="sm" className="gap-2">
                 <MessageCircle className="w-4 h-4" />
-                Message
+                {t('volunteerProfile.message')}
               </Button>
               <Button size="sm" variant="outline" className="gap-2">
                 <Heart className="w-4 h-4" />
-                Follow
+                {t('volunteerProfile.follow')}
               </Button>
             </div>
           </div>
@@ -130,28 +132,28 @@ const VolunteerProfile = () => {
                 <PawPrint className="w-5 h-5 text-primary" />
               </div>
               <p className="text-xl font-bold text-foreground">{volunteer.stats.animalsHelped}</p>
-              <p className="text-xs text-muted-foreground">Animals Helped</p>
+              <p className="text-xs text-muted-foreground">{t('volunteerProfile.animalsHelped')}</p>
             </div>
             <div className="bg-card rounded-xl p-4 border border-border text-center">
               <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2">
                 <Heart className="w-5 h-5 text-accent" />
               </div>
               <p className="text-xl font-bold text-foreground">{volunteer.stats.adoptions}</p>
-              <p className="text-xs text-muted-foreground">Adoptions</p>
+              <p className="text-xs text-muted-foreground">{t('volunteerProfile.adoptions')}</p>
             </div>
             <div className="bg-card rounded-xl p-4 border border-border text-center">
               <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-2">
                 <Calendar className="w-5 h-5 text-warning" />
               </div>
               <p className="text-xl font-bold text-foreground">{volunteer.stats.campaigns}</p>
-              <p className="text-xs text-muted-foreground">Campaigns</p>
+              <p className="text-xs text-muted-foreground">{t('volunteerProfile.campaigns')}</p>
             </div>
             <div className="bg-card rounded-xl p-4 border border-border text-center">
               <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-2">
                 <Clock className="w-5 h-5 text-success" />
               </div>
               <p className="text-xl font-bold text-foreground">{volunteer.stats.hoursVolunteered}</p>
-              <p className="text-xs text-muted-foreground">Hours</p>
+              <p className="text-xs text-muted-foreground">{t('volunteerProfile.hours')}</p>
             </div>
           </div>
 
@@ -160,7 +162,7 @@ const VolunteerProfile = () => {
             <div className="bg-card rounded-2xl border border-border p-6 mb-6">
               <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
                 <Award className="w-5 h-5 text-warning" />
-                Badges & Achievements
+                {t('volunteerProfile.badgesAchievements')}
               </h2>
               <div className="flex flex-wrap gap-2">
                 {volunteer.badges.map((badge) => (
@@ -180,24 +182,23 @@ const VolunteerProfile = () => {
           <div className="bg-primary/5 rounded-2xl p-6 mb-6 border border-primary/10">
             <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Volunteer Impact
+              {t('volunteerProfile.volunteerImpact')}
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-background/50 rounded-xl p-4 text-center">
                 <HandHeart className="w-6 h-6 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold text-foreground">{volunteer.stats.animalsHelped}</p>
-                <p className="text-xs text-muted-foreground">Lives Changed</p>
+                <p className="text-xs text-muted-foreground">{t('volunteerProfile.livesChanged')}</p>
               </div>
               <div className="bg-background/50 rounded-xl p-4 text-center">
                 <Coins className="w-6 h-6 text-primary mx-auto mb-2" />
                 <p className="text-2xl font-bold text-foreground">{volunteer.stats.donationsReceived.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">BGN Raised</p>
+                <p className="text-xs text-muted-foreground">{t('volunteerProfile.bgnRaised')}</p>
               </div>
             </div>
             <div className="mt-4 pt-4 border-t border-primary/10">
               <p className="text-sm text-foreground/80 text-center">
-                <span className="font-semibold text-primary">{volunteer.name}</span> has been making a difference since {volunteer.memberSince}, 
-                dedicating <span className="font-semibold">{volunteer.stats.hoursVolunteered} hours</span> to animal welfare.
+                <span className="font-semibold text-primary">{volunteer.name}</span> {t('volunteerProfile.makingDifference', { since: volunteer.memberSince, hours: volunteer.stats.hoursVolunteered })}
               </p>
             </div>
           </div>
@@ -206,7 +207,7 @@ const VolunteerProfile = () => {
           <div className="bg-card rounded-2xl border border-border p-6 mb-6">
             <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-primary" />
-              Cases Helped
+              {t('volunteerProfile.casesHelped')}
             </h2>
             <div className="space-y-3">
               {helpedCases.map((caseItem) => (
@@ -217,26 +218,26 @@ const VolunteerProfile = () => {
 
           {/* Contact Section */}
           <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-semibold text-lg text-foreground mb-4">Connect</h2>
+            <h2 className="font-semibold text-lg text-foreground mb-4">{t('volunteerProfile.connect')}</h2>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-sm text-foreground">Message</div>
-                  <div className="text-sm text-muted-foreground">Send a direct message</div>
+                  <div className="font-medium text-sm text-foreground">{t('volunteerProfile.message')}</div>
+                  <div className="text-sm text-muted-foreground">{t('volunteerProfile.sendDirectMessage')}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-medium text-sm text-foreground">Location</div>
+                  <div className="font-medium text-sm text-foreground">{t('partnerProfile.location')}</div>
                   <div className="text-sm text-muted-foreground">Sofia, Bulgaria</div>
                 </div>
               </div>
             </div>
             <Button className="w-full mt-4 gap-2">
               <MessageCircle className="w-4 h-4" />
-              Send Message
+              {t('volunteerProfile.sendMessage')}
             </Button>
           </div>
         </div>

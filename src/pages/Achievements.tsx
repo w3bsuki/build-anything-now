@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Award, Lock, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -6,80 +7,81 @@ import { cn } from '@/lib/utils';
 const allAchievements = [
   {
     type: 'first_donation',
-    title: 'First Steps',
-    description: 'Make your first donation',
+    titleKey: 'achievements.firstSteps',
+    descriptionKey: 'achievements.firstStepsDesc',
     icon: '🎉',
     unlocked: true,
     unlockedAt: Date.now() - 30 * 24 * 60 * 60 * 1000,
   },
   {
     type: 'big_heart',
-    title: 'Big Heart',
-    description: 'Make a single donation over 100 BGN',
+    titleKey: 'achievements.bigHeart',
+    descriptionKey: 'achievements.bigHeartDesc',
     icon: '💖',
     unlocked: true,
     unlockedAt: Date.now() - 14 * 24 * 60 * 60 * 1000,
   },
   {
     type: 'helped_10',
-    title: 'Helping Hand',
-    description: 'Help 10 animals',
+    titleKey: 'achievements.helpingHand',
+    descriptionKey: 'achievements.helpingHandDesc',
     icon: '🐾',
     unlocked: true,
     unlockedAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
   },
   {
     type: 'monthly_donor',
-    title: 'Monthly Hero',
-    description: 'Donate every month for 3 months',
+    titleKey: 'achievements.monthlyHero',
+    descriptionKey: 'achievements.monthlyHeroDesc',
     icon: '📅',
     unlocked: false,
     progress: { current: 2, total: 3 },
   },
   {
     type: 'helped_50',
-    title: 'Animal Guardian',
-    description: 'Help 50 animals',
+    titleKey: 'achievements.animalGuardian',
+    descriptionKey: 'achievements.animalGuardianDesc',
     icon: '🛡️',
     unlocked: false,
     progress: { current: 12, total: 50 },
   },
   {
     type: 'helped_100',
-    title: 'Legend',
-    description: 'Help 100 animals',
+    titleKey: 'achievements.legend',
+    descriptionKey: 'achievements.legendDesc',
     icon: '👑',
     unlocked: false,
     progress: { current: 12, total: 100 },
   },
   {
     type: 'early_supporter',
-    title: 'Early Supporter',
-    description: 'Join during our first year',
+    titleKey: 'achievements.earlySupporter',
+    descriptionKey: 'achievements.earlySupporterDesc',
     icon: '⭐',
     unlocked: false,
   },
   {
     type: 'community_hero',
-    title: 'Community Hero',
-    description: 'Share 10 cases with friends',
+    titleKey: 'achievements.communityHero',
+    descriptionKey: 'achievements.communityHeroDesc',
     icon: '🦸',
     unlocked: false,
     progress: { current: 3, total: 10 },
   },
 ];
 
-const formatDate = (timestamp: number) => {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
-
 const Achievements = () => {
+  const { t } = useTranslation();
   // TODO: Replace with useQuery(api.achievements.getMyAchievements)
   const unlockedCount = allAchievements.filter((a) => a.unlocked).length;
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
@@ -93,8 +95,8 @@ const Achievements = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">Achievements</h1>
-            <p className="text-xs text-muted-foreground">{unlockedCount} of {allAchievements.length} unlocked</p>
+            <h1 className="text-lg font-semibold text-foreground">{t('achievements.title')}</h1>
+            <p className="text-xs text-muted-foreground">{unlockedCount} {t('common.of')} {allAchievements.length} {t('achievements.unlocked').toLowerCase()}</p>
           </div>
         </div>
       </div>
@@ -109,7 +111,7 @@ const Achievements = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{unlockedCount}/{allAchievements.length}</p>
-                <p className="text-sm text-muted-foreground">Achievements Unlocked</p>
+                <p className="text-sm text-muted-foreground">{t('achievements.achievementsUnlocked')}</p>
                 <div className="w-32 h-2 bg-muted rounded-full mt-2 overflow-hidden">
                   <div 
                     className="h-full bg-primary rounded-full transition-all"
@@ -127,7 +129,7 @@ const Achievements = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-success" />
-            Unlocked
+            {t('achievements.unlocked')}
           </h2>
           
           <div className="grid gap-3">
@@ -140,11 +142,11 @@ const Achievements = () => {
                   {achievement.icon}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{achievement.title}</p>
-                  <p className="text-xs text-muted-foreground">{achievement.description}</p>
+                  <p className="font-medium text-foreground">{t(achievement.titleKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t(achievement.descriptionKey)}</p>
                   {achievement.unlockedAt && (
                     <p className="text-xs text-success mt-1">
-                      Unlocked on {formatDate(achievement.unlockedAt)}
+                      {t('achievements.unlockedOn', { date: formatDate(achievement.unlockedAt) })}
                     </p>
                   )}
                 </div>
@@ -160,7 +162,7 @@ const Achievements = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
             <Lock className="w-4 h-4 text-muted-foreground" />
-            Locked
+            {t('achievements.locked')}
           </h2>
           
           <div className="grid gap-3">
@@ -173,12 +175,12 @@ const Achievements = () => {
                   {achievement.icon}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{achievement.title}</p>
-                  <p className="text-xs text-muted-foreground">{achievement.description}</p>
+                  <p className="font-medium text-foreground">{t(achievement.titleKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t(achievement.descriptionKey)}</p>
                   {achievement.progress && (
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                        <span>Progress</span>
+                        <span>{t('achievements.progress')}</span>
                         <span>{achievement.progress.current}/{achievement.progress.total}</span>
                       </div>
                       <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">

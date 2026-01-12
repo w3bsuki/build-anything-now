@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { mockCampaigns } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
@@ -8,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 const CampaignProfile = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
   const campaign = mockCampaigns.find((c) => c.id === id);
@@ -16,9 +18,9 @@ const CampaignProfile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Campaign not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.campaignNotFound')}</h1>
           <Link to="/campaigns" className="text-primary hover:underline">
-            Go back to campaigns
+            {t('common.goBackCampaigns')}
           </Link>
         </div>
       </div>
@@ -53,7 +55,7 @@ const CampaignProfile = () => {
             className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to campaigns
+            {t('common.backToCampaigns')}
           </Link>
 
           {/* Hero Image */}
@@ -71,7 +73,7 @@ const CampaignProfile = () => {
               {campaign.endDate && (
                 <div className="flex items-center gap-1.5 text-white/90 text-sm">
                   <Calendar className="w-4 h-4" />
-                  <span>Ends {format(new Date(campaign.endDate), 'MMMM d, yyyy')}</span>
+                  <span>{t('campaignProfile.ends')} {format(new Date(campaign.endDate), 'MMMM d, yyyy')}</span>
                 </div>
               )}
             </div>
@@ -82,7 +84,7 @@ const CampaignProfile = () => {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-primary" />
-                <span className="font-semibold text-foreground">Campaign Progress</span>
+                <span className="font-semibold text-foreground">{t('campaignProfile.campaignProgress')}</span>
               </div>
               <span className="text-2xl font-bold text-primary">{percentage}%</span>
             </div>
@@ -103,61 +105,58 @@ const CampaignProfile = () => {
               </div>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
                 <Users className="w-4 h-4" />
-                <span>127 supporters</span>
+                <span>127 {t('campaignProfile.supporters')}</span>
               </div>
             </div>
           </div>
 
           {/* Description */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground mb-3">About this campaign</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-3">{t('campaignProfile.aboutThisCampaign')}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {campaign.description}
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Every contribution, no matter how small, makes a real difference in the lives of animals in need.
-              Your support helps us provide essential care, shelter, and medical treatment to stray and abandoned
-              animals across Bulgaria.
+              {t('campaignProfile.everyContribution')}
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              All donations are tracked transparently, and we provide regular updates on how your contributions
-              are being used. Together, we can make a lasting impact on animal welfare in our communities.
+              {t('campaignProfile.allDonationsTracked')}
             </p>
           </div>
 
           {/* Impact Section */}
           <div className="bg-muted/50 rounded-xl p-5 mb-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Your Impact</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('campaignProfile.yourImpact')}</h2>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary">50+</div>
-                <div className="text-xs text-muted-foreground">Animals helped</div>
+                <div className="text-xs text-muted-foreground">{t('campaignProfile.animalsHelped')}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-primary">127</div>
-                <div className="text-xs text-muted-foreground">Supporters</div>
+                <div className="text-xs text-muted-foreground">{t('campaignProfile.supporters')}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-primary">4</div>
-                <div className="text-xs text-muted-foreground">Cities reached</div>
+                <div className="text-xs text-muted-foreground">{t('campaignProfile.citiesReached')}</div>
               </div>
             </div>
           </div>
 
           {/* Recent Supporters placeholder */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground mb-3">Recent Supporters</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-3">{t('campaignProfile.recentSupporters')}</h2>
             <div className="space-y-3">
-              {['Ivan P.', 'Maria S.', 'Anonymous'].map((name, i) => (
+              {['Ivan P.', 'Maria S.', t('common.anonymous')].map((name, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border/50">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Heart className="w-4 h-4 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="font-medium text-sm text-foreground">{name}</div>
-                    <div className="text-xs text-muted-foreground">Contributed {10 + i * 5} {campaign.unit}</div>
+                    <div className="text-xs text-muted-foreground">{t('campaignProfile.contributed')} {10 + i * 5} {campaign.unit}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">{i + 1}h ago</div>
+                  <div className="text-xs text-muted-foreground">{i + 1}{t('time.hoursAgo')}</div>
                 </div>
               ))}
             </div>
@@ -181,7 +180,7 @@ const CampaignProfile = () => {
           </button>
           <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />
-            Contribute Now
+            {t('actions.contributeNow')}
           </Button>
         </div>
       </div>

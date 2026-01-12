@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { 
   User, 
@@ -26,16 +27,18 @@ const achievementCount = 3;
 // TODO: Replace with useQuery(api.notifications.getUnreadCount)
 const unreadNotifications = 2;
 
-const menuItems = [
-  { icon: Heart, label: 'My Donations', badge: mockStats.totalDonations.toString(), path: '/donations' },
-  { icon: History, label: 'Donation History', path: '/history' },
-  { icon: Award, label: 'Achievements', badge: achievementCount.toString(), path: '/achievements' },
-  { icon: CreditCard, label: 'Payment Methods', path: '/payment' },
-  { icon: Bell, label: 'Notifications', badge: unreadNotifications > 0 ? unreadNotifications.toString() : undefined, path: '/notifications' },
-  { icon: Settings, label: 'Settings', path: '/settings' },
-];
-
 const Profile = () => {
+  const { t } = useTranslation();
+
+  const menuItems = [
+    { icon: Heart, labelKey: 'profile.myDonations', badge: mockStats.totalDonations.toString(), path: '/donations' },
+    { icon: History, labelKey: 'profile.donationHistory', path: '/history' },
+    { icon: Award, labelKey: 'profile.achievements', badge: achievementCount.toString(), path: '/achievements' },
+    { icon: CreditCard, labelKey: 'profile.paymentMethods', path: '/payment' },
+    { icon: Bell, labelKey: 'profile.notifications', badge: unreadNotifications > 0 ? unreadNotifications.toString() : undefined, path: '/notifications' },
+    { icon: Settings, labelKey: 'profile.settings', path: '/settings' },
+  ];
+
   return (
     <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-20">
       {/* Profile Header */}
@@ -47,13 +50,13 @@ const Profile = () => {
               <User className="w-12 h-12 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-1">
-              Guest User
+              {t('profile.guestUser')}
             </h1>
             <p className="text-muted-foreground mb-4">
-              Sign in to track your donations
+              {t('profile.signInPrompt')}
             </p>
             <Button className="btn-donate">
-              Sign In
+              {t('actions.signIn')}
             </Button>
           </div>
         </div>
@@ -65,15 +68,15 @@ const Profile = () => {
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-foreground">{mockStats.totalDonations}</p>
-              <p className="text-sm text-muted-foreground">Donations</p>
+              <p className="text-sm text-muted-foreground">{t('profile.donations')}</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{mockStats.totalAmount} BGN</p>
-              <p className="text-sm text-muted-foreground">Contributed</p>
+              <p className="text-sm text-muted-foreground">{t('profile.contributed')}</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{mockStats.animalsHelped}</p>
-              <p className="text-sm text-muted-foreground">Animals Helped</p>
+              <p className="text-sm text-muted-foreground">{t('profile.animalsHelped')}</p>
             </div>
           </div>
         </div>
@@ -89,7 +92,7 @@ const Profile = () => {
 
               return (
                 <Link
-                  key={item.label}
+                  key={item.labelKey}
                   to={item.path}
                   className={cn(
                     'w-full flex items-center gap-4 p-4 text-left hover:bg-muted/50 transition-colors',
@@ -100,7 +103,7 @@ const Profile = () => {
                     <Icon className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <span className="flex-1 font-medium text-foreground">
-                    {item.label}
+                    {t(item.labelKey)}
                   </span>
                   {item.badge && (
                     <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
@@ -120,7 +123,7 @@ const Profile = () => {
         <div className="container mx-auto px-4">
           <button className="w-full flex items-center justify-center gap-2 p-4 text-destructive hover:bg-destructive/10 rounded-2xl transition-colors">
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">Sign Out</span>
+            <span className="font-medium">{t('actions.signOut')}</span>
           </button>
         </div>
       </section>

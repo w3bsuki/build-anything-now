@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { mockPartners } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Mail, Phone, MapPin, Handshake, ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 
 const PartnerProfile = () => {
+    const { t } = useTranslation();
     const { id } = useParams();
     const partner = mockPartners.find((p) => p.id === id);
 
@@ -12,9 +14,9 @@ const PartnerProfile = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-foreground mb-2">Partner not found</h1>
+                    <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.partnerNotFound')}</h1>
                     <Link to="/partners" className="text-primary hover:underline">
-                        Go back to partners
+                        {t('common.goBackPartners')}
                     </Link>
                 </div>
             </div>
@@ -45,7 +47,7 @@ const PartnerProfile = () => {
                         className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Back to partners
+                        {t('common.backToPartners')}
                     </Link>
 
                     {/* Profile Header */}
@@ -65,23 +67,23 @@ const PartnerProfile = () => {
                         </h1>
 
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                            {partner.type === 'pet-shop' ? 'Pet Shop' :
-                                partner.type === 'food-brand' ? 'Food Brand' :
-                                    partner.type === 'veterinary' ? 'Veterinary Clinic' : 'Sponsor'}
+                            {partner.type === 'pet-shop' ? t('partners.types.petShop') :
+                                partner.type === 'food-brand' ? t('partners.types.foodBrand') :
+                                    partner.type === 'veterinary' ? t('partners.types.veterinary') : t('partners.types.sponsor')}
                         </div>
 
                         <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                            Proud partner of PawsSafe since 2023, helping us save lives every day.
+                            {t('partnerProfile.proudPartner')}
                         </p>
 
                         <div className="flex items-center justify-center gap-3">
                             <Button size="sm" variant="outline" className="gap-2">
                                 <Globe className="w-4 h-4" />
-                                Website
+                                {t('clinicProfile.website')}
                             </Button>
                             <Button size="sm" variant="outline" className="gap-2">
                                 <Mail className="w-4 h-4" />
-                                Contact
+                                {t('partnerProfile.contact')}
                             </Button>
                         </div>
                     </div>
@@ -90,7 +92,7 @@ const PartnerProfile = () => {
                     <div className="bg-primary/5 rounded-2xl p-6 mb-6 border border-primary/10">
                         <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
                             <Handshake className="w-5 h-5 text-primary" />
-                            Their Contribution
+                            {t('partnerProfile.theirContribution')}
                         </h2>
                         <p className="text-foreground/80 leading-relaxed">
                             {partner.contribution}
@@ -98,37 +100,37 @@ const PartnerProfile = () => {
                         <div className="mt-4 pt-4 border-t border-primary/10 grid grid-cols-2 gap-4">
                             <div>
                                 <div className="text-2xl font-bold text-primary">12</div>
-                                <div className="text-xs text-muted-foreground">Campaigns Supported</div>
+                                <div className="text-xs text-muted-foreground">{t('partnerProfile.campaignsSupported')}</div>
                             </div>
                             <div>
                                 <div className="text-2xl font-bold text-primary">5,000+</div>
-                                <div className="text-xs text-muted-foreground">BGN Donated</div>
+                                <div className="text-xs text-muted-foreground">{t('partnerProfile.bgnDonated')}</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Contact Info (Mock) */}
                     <div className="bg-card rounded-2xl border border-border p-6">
-                        <h2 className="font-semibold text-lg text-foreground mb-4">Contact Information</h2>
+                        <h2 className="font-semibold text-lg text-foreground mb-4">{t('clinicProfile.contactInformation')}</h2>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
                                 <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                                 <div>
-                                    <div className="font-medium text-sm text-foreground">Location</div>
+                                    <div className="font-medium text-sm text-foreground">{t('partnerProfile.location')}</div>
                                     <div className="text-sm text-muted-foreground">Sofia, Bulgaria</div>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
                                 <Phone className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                                 <div>
-                                    <div className="font-medium text-sm text-foreground">Phone</div>
+                                    <div className="font-medium text-sm text-foreground">{t('clinicProfile.phone')}</div>
                                     <div className="text-sm text-muted-foreground">+359 888 123 456</div>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
                                 <ExternalLink className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                                 <div>
-                                    <div className="font-medium text-sm text-foreground">Social Media</div>
+                                    <div className="font-medium text-sm text-foreground">{t('partnerProfile.socialMedia')}</div>
                                     <div className="flex gap-2 mt-1">
                                         <a href="#" className="text-primary hover:underline text-sm">Facebook</a>
                                         <span className="text-muted-foreground">•</span>

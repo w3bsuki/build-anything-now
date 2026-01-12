@@ -1,22 +1,27 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
 import { CaseCard } from '@/components/CaseCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { mockCases } from '@/data/mockData';
 
-const statusFilters = [
-  { id: 'all', label: 'All' },
-  { id: 'critical', label: 'Critical', icon: <AlertTriangle className="w-3.5 h-3.5" /> },
-  { id: 'urgent', label: 'Urgent', icon: <Activity className="w-3.5 h-3.5" /> },
-  { id: 'recovering', label: 'Recovering', icon: <Heart className="w-3.5 h-3.5" /> },
-  { id: 'adopted', label: 'Adopted', icon: <Sparkles className="w-3.5 h-3.5" /> },
-];
-
 const Index = () => {
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const isLoading = useSimulatedLoading(600);
+
+  const statusFilters = [
+    { id: 'all', label: t('status.all') },
+    { id: 'critical', label: t('status.critical'), icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+    { id: 'urgent', label: t('status.urgent'), icon: <Activity className="w-3.5 h-3.5" /> },
+    { id: 'recovering', label: t('status.recovering'), icon: <Heart className="w-3.5 h-3.5" /> },
+    { id: 'adopted', label: t('status.adopted'), icon: <Sparkles className="w-3.5 h-3.5" /> },
+  ];
 
   // Filter cases based on selected status
   const filteredCases = mockCases.filter((c) => {
@@ -36,7 +41,7 @@ const Index = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search rescue cases..."
+              placeholder={t('home.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             />
           </div>
@@ -56,8 +61,19 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-urgent" />
-              <h2 className="text-sm font-semibold text-foreground">Urgent Cases</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t('home.urgentCases')}</h2>
               {!isLoading && <span className="text-xs text-muted-foreground">({urgentCases.length})</span>}
+              <div className="flex items-center gap-2 ml-auto">
+                <Switch
+                  id="nearby-cases-filter"
+                  checked={showNearbyOnly}
+                  onCheckedChange={setShowNearbyOnly}
+                  className="scale-90"
+                />
+                <Label htmlFor="nearby-cases-filter" className="text-xs font-medium cursor-pointer whitespace-nowrap">
+                  {t('home.nearbyOnly')}
+                </Label>
+              </div>
             </div>
           </div>
           <div className="overflow-x-auto scrollbar-hide">
@@ -85,7 +101,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-semibold text-foreground">
-              {urgentCases.length > 0 ? 'Other Cases' : 'All Cases'}
+              {urgentCases.length > 0 ? t('home.otherCases') : t('home.allCases')}
             </h2>
             {!isLoading && <span className="text-xs text-muted-foreground">({otherCases.length})</span>}
           </div>
@@ -103,7 +119,7 @@ const Index = () => {
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">
-              No cases match your filters
+              {t('home.noMatches')}
             </div>
           )}
         </div>

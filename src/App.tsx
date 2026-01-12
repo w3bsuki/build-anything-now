@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { LanguageDetectionBanner } from "./components/LanguageDetectionBanner";
 import Index from "./pages/Index";
 import AnimalProfile from "./pages/AnimalProfile";
 import Campaigns from "./pages/Campaigns";
@@ -37,6 +38,7 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <Navigation />
+        <LanguageDetectionBanner />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/case/:id" element={<AnimalProfile />} />
@@ -56,6 +58,7 @@ const App = () => (
           <Route path="/create-case" element={<CreateCase />} />
           <Route path="/create-adoption" element={<CreateAdoption />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/community/:postId" element={<CommunityPost />} />
           <Route path="/volunteers/:id" element={<VolunteerProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

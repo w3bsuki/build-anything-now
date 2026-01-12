@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Plus, Trash2, CheckCircle, Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +34,7 @@ const getCardIcon = (type: string, lastFour?: string) => {
 };
 
 const PaymentMethods = () => {
+  const { t } = useTranslation();
   // TODO: Replace with useQuery(api.paymentMethods.getMyPaymentMethods)
   const paymentMethods = mockPaymentMethods;
 
@@ -63,8 +65,8 @@ const PaymentMethods = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">Payment Methods</h1>
-            <p className="text-xs text-muted-foreground">Manage your saved cards</p>
+            <h1 className="text-lg font-semibold text-foreground">{t('paymentMethods.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('paymentMethods.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -89,12 +91,12 @@ const PaymentMethods = () => {
                     <p className="font-medium text-foreground">{method.name}</p>
                     {method.isDefault && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                        Default
+                        {t('paymentMethods.default')}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Expires {method.expiryMonth?.toString().padStart(2, '0')}/{method.expiryYear}
+                    {t('paymentMethods.expires')} {method.expiryMonth?.toString().padStart(2, '0')}/{method.expiryYear}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -103,7 +105,7 @@ const PaymentMethods = () => {
                       onClick={() => handleSetDefault(method.id)}
                       className="p-2 rounded-lg hover:bg-muted transition-colors text-xs text-muted-foreground hover:text-foreground"
                     >
-                      Set default
+                      {t('paymentMethods.setDefault')}
                     </button>
                   )}
                   <button
@@ -125,7 +127,7 @@ const PaymentMethods = () => {
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
               <Plus className="w-5 h-5 text-primary" />
             </div>
-            <span className="font-medium text-foreground">Add New Card</span>
+            <span className="font-medium text-foreground">{t('paymentMethods.addNewCard')}</span>
           </button>
         </div>
       </section>
@@ -133,7 +135,7 @@ const PaymentMethods = () => {
       {/* Other Payment Options */}
       <section className="py-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-sm font-semibold text-foreground mb-3">Other Options</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-3">{t('paymentMethods.otherOptions')}</h2>
           
           <div className="space-y-3">
             <div className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 opacity-60">
@@ -141,8 +143,8 @@ const PaymentMethods = () => {
                 <Building2 className="w-6 h-6 text-muted-foreground" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-foreground">Bank Transfer</p>
-                <p className="text-xs text-muted-foreground">Coming soon</p>
+                <p className="font-medium text-foreground">{t('paymentMethods.bankTransfer')}</p>
+                <p className="text-xs text-muted-foreground">{t('common.comingSoon')}</p>
               </div>
             </div>
           </div>
@@ -154,7 +156,7 @@ const PaymentMethods = () => {
         <div className="container mx-auto px-4">
           <div className="bg-muted/50 rounded-xl p-4 text-center">
             <p className="text-xs text-muted-foreground">
-              🔒 Your payment information is securely encrypted and stored
+              🔒 {t('paymentMethods.securityNote')}
             </p>
           </div>
         </div>

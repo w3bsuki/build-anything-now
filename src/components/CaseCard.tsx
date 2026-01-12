@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Heart, MapPin } from 'lucide-react';
 import { AnimalCase } from '@/types';
 import { StatusBadge } from './StatusBadge';
@@ -13,6 +14,7 @@ interface CaseCardProps {
 }
 
 export function CaseCard({ caseData, className }: CaseCardProps) {
+  const { t } = useTranslation();
   return (
     <div
       className={cn(
@@ -68,7 +70,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
         <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
             <Heart className="w-4 h-4 mr-2" />
-            Donate
+            {t('actions.donate')}
           </Link>
         </Button>
       </div>

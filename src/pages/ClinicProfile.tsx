@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { mockClinics } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 const ClinicProfile = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
   const clinic = mockClinics.find((c) => c.id === id);
@@ -27,9 +29,9 @@ const ClinicProfile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Clinic not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.clinicNotFound')}</h1>
           <Link to="/clinics" className="text-primary hover:underline">
-            Go back to clinics
+            {t('common.goBackClinics')}
           </Link>
         </div>
       </div>
@@ -71,7 +73,7 @@ const ClinicProfile = () => {
             className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to clinics
+            {t('common.backToClinics')}
           </Link>
 
           {/* Clinic Header */}
@@ -100,25 +102,25 @@ const ClinicProfile = () => {
             <div className="grid grid-cols-2 gap-3">
               <Button onClick={handleCall} className="btn-donate h-11">
                 <Phone className="w-4 h-4 mr-2" />
-                Call Now
+                {t('clinicProfile.callNow')}
               </Button>
               <Button onClick={handleDirections} variant="outline" className="h-11">
                 <Navigation className="w-4 h-4 mr-2" />
-                Directions
+                {t('clinicProfile.directions')}
               </Button>
             </div>
           </div>
 
           {/* Contact Info */}
           <div className="bg-card rounded-xl border border-border p-5 mb-5">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Contact Information</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('clinicProfile.contactInformation')}</h2>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Phone</div>
+                  <div className="text-sm text-muted-foreground">{t('clinicProfile.phone')}</div>
                   <a href={`tel:${clinic.phone}`} className="font-medium text-foreground hover:text-primary">
                     {clinic.phone}
                   </a>
@@ -130,7 +132,7 @@ const ClinicProfile = () => {
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Working Hours</div>
+                  <div className="text-sm text-muted-foreground">{t('clinicProfile.workingHours')}</div>
                   <div className="font-medium text-foreground">{clinic.hours}</div>
                 </div>
               </div>
@@ -140,7 +142,7 @@ const ClinicProfile = () => {
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Address</div>
+                  <div className="text-sm text-muted-foreground">{t('clinicProfile.address')}</div>
                   <div className="font-medium text-foreground">{clinic.address}, {clinic.city}</div>
                 </div>
               </div>
@@ -150,8 +152,8 @@ const ClinicProfile = () => {
                   <Globe className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Website</div>
-                  <div className="font-medium text-muted-foreground">Not available</div>
+                  <div className="text-sm text-muted-foreground">{t('clinicProfile.website')}</div>
+                  <div className="font-medium text-muted-foreground">{t('common.notAvailable')}</div>
                 </div>
               </div>
 
@@ -160,8 +162,8 @@ const ClinicProfile = () => {
                   <Mail className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground">Email</div>
-                  <div className="font-medium text-muted-foreground">Not available</div>
+                  <div className="text-sm text-muted-foreground">{t('clinicProfile.email')}</div>
+                  <div className="font-medium text-muted-foreground">{t('common.notAvailable')}</div>
                 </div>
               </div>
             </div>
@@ -171,7 +173,7 @@ const ClinicProfile = () => {
           <div className="bg-card rounded-xl border border-border p-5 mb-5">
             <div className="flex items-center gap-2 mb-4">
               <Stethoscope className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Specializations</h2>
+              <h2 className="text-lg font-semibold text-foreground">{t('clinicProfile.specializations')}</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {clinic.specializations.map((spec) => (
@@ -187,17 +189,17 @@ const ClinicProfile = () => {
             <div className="aspect-video bg-muted flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Map view coming soon</p>
+                <p className="text-sm">{t('common.mapComingSoon')}</p>
               </div>
             </div>
           </div>
 
           {/* Reviews Placeholder */}
           <div className="bg-card rounded-xl border border-border p-5">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Reviews</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('clinicProfile.reviews')}</h2>
             <div className="text-center py-8 text-muted-foreground">
-              <p className="text-sm">No reviews yet</p>
-              <p className="text-xs mt-1">Be the first to leave a review!</p>
+              <p className="text-sm">{t('clinicProfile.noReviews')}</p>
+              <p className="text-xs mt-1">{t('clinicProfile.beFirstReview')}</p>
             </div>
           </div>
         </div>
@@ -219,7 +221,7 @@ const ClinicProfile = () => {
           </button>
           <Button onClick={handleCall} className="flex-1 h-12 btn-donate text-base">
             <Phone className="w-4 h-4 mr-2" />
-            Call Clinic
+            {t('clinicProfile.callClinic')}
           </Button>
         </div>
       </div>

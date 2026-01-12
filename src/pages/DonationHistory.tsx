@@ -1,14 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, History, Calendar, TrendingUp, Filter } from 'lucide-react';
+import { ArrowLeft, History } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterPills } from '@/components/FilterPills';
 import { cn } from '@/lib/utils';
-
-const statusFilters = [
-  { id: 'all', label: 'All' },
-  { id: 'completed', label: 'Completed' },
-  { id: 'pending', label: 'Pending' },
-];
 
 // Mock data - will be replaced with Convex data
 const mockHistory = [
@@ -72,7 +67,6 @@ const groupByMonth = (donations: typeof mockHistory) => {
   donations.forEach((donation) => {
     const date = new Date(donation.createdAt);
     const key = `${date.getFullYear()}-${date.getMonth()}`;
-    const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     
     if (!groups[key]) {
       groups[key] = [];
@@ -89,7 +83,14 @@ const groupByMonth = (donations: typeof mockHistory) => {
 };
 
 const DonationHistory = () => {
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const statusFilters = [
+    { id: 'all', label: t('status.all') },
+    { id: 'completed', label: t('status.completed') },
+    { id: 'pending', label: t('donationHistory.pending') },
+  ];
   
   // TODO: Replace with useQuery(api.donations.getMyDonations)
   const allDonations = mockHistory;
@@ -110,8 +111,8 @@ const DonationHistory = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">Donation History</h1>
-            <p className="text-xs text-muted-foreground">Complete transaction history</p>
+            <h1 className="text-lg font-semibold text-foreground">{t('donationHistory.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('donationHistory.subtitle')}</p>
           </div>
         </div>
         
@@ -138,7 +139,7 @@ const DonationHistory = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    {group.items.map((donation, index) => (
+                    {group.items.map((donation) => (
                       <div
                         key={donation.id}
                         className="bg-card rounded-xl border border-border p-4"
@@ -161,7 +162,7 @@ const DonationHistory = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
-                          <span>Transaction ID:</span>
+                          <span>{t('donationHistory.transactionId')}:</span>
                           <code className="bg-muted px-1.5 py-0.5 rounded">{donation.transactionId}</code>
                         </div>
                       </div>
@@ -175,8 +176,8 @@ const DonationHistory = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <History className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm">No transactions found</p>
-              <p className="text-muted-foreground text-xs mt-1">Your donation history will appear here</p>
+              <p className="text-muted-foreground text-sm">{t('donationHistory.noTransactions')}</p>
+              <p className="text-muted-foreground text-xs mt-1">{t('donationHistory.historyWillAppear')}</p>
             </div>
           )}
         </div>

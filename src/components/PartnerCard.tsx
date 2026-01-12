@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Partner } from '@/types';
 import { cn } from '@/lib/utils';
 import { Building2, Utensils, Stethoscope, Award, ExternalLink, Calendar, Heart, Coins, Star } from 'lucide-react';
@@ -10,31 +11,32 @@ interface PartnerCardProps {
 const typeConfig = {
   'pet-shop': {
     icon: Building2,
-    label: 'Pet Shop',
+    labelKey: 'partners.petShops',
     color: 'text-primary',
     bgColor: 'bg-primary/10',
   },
   'food-brand': {
     icon: Utensils,
-    label: 'Food Brand',
+    labelKey: 'partners.petFood',
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10',
   },
   veterinary: {
     icon: Stethoscope,
-    label: 'Veterinary',
+    labelKey: 'partners.veterinary',
     color: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
   },
   sponsor: {
     icon: Award,
-    label: 'Sponsor',
+    labelKey: 'partners.sponsors',
     color: 'text-violet-500',
     bgColor: 'bg-violet-500/10',
   },
 };
 
 export function PartnerCard({ partner }: PartnerCardProps) {
+  const { t } = useTranslation();
   const config = typeConfig[partner.type];
   const Icon = config.icon;
 
@@ -82,11 +84,11 @@ export function PartnerCard({ partner }: PartnerCardProps) {
             <div className={cn('flex items-center gap-1.5 text-xs mt-1', config.color)}>
               <Badge variant="secondary" className={cn('text-[10px] px-1.5 py-0 h-5', config.bgColor, config.color)}>
                 <Icon className="w-3 h-3 mr-1" />
-                {config.label}
+                {t(config.labelKey)}
               </Badge>
               <span className="text-muted-foreground flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                Since {partner.since}
+                {t('partners.since')} {partner.since}
               </span>
             </div>
           </div>
@@ -102,7 +104,7 @@ export function PartnerCard({ partner }: PartnerCardProps) {
         <div className="flex items-center gap-1.5 text-xs">
           <Heart className="w-3.5 h-3.5 text-rose-500" />
           <span className="text-foreground font-medium">{partner.animalsHelped}</span>
-          <span className="text-muted-foreground">helped</span>
+          <span className="text-muted-foreground">{t('partners.helped')}</span>
         </div>
         <div className="flex items-center gap-1.5 text-xs">
           <Coins className="w-3.5 h-3.5 text-amber-500" />

@@ -1,34 +1,36 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ArrowRight, Camera, MapPin, Building2, AlertTriangle, Heart, DollarSign, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
-const steps = [
-    { id: 1, label: 'Type', icon: AlertTriangle },
-    { id: 2, label: 'Location', icon: MapPin },
-    { id: 3, label: 'Details', icon: Building2 },
-    { id: 4, label: 'Images', icon: Camera },
-    { id: 5, label: 'Funding', icon: DollarSign },
-];
-
-const urgencyTypes = [
-    { id: 'critical', label: 'Critical', description: 'Life-threatening, needs immediate help', color: 'bg-destructive' },
-    { id: 'urgent', label: 'Urgent', description: 'Needs help soon but stable', color: 'bg-urgent' },
-    { id: 'recovering', label: 'Recovering', description: 'Getting treatment, needs funding', color: 'bg-recovering' },
-];
-
-const categories = [
-    { id: 'surgery', label: 'Surgery' },
-    { id: 'medical', label: 'Medical Treatment' },
-    { id: 'rescue', label: 'Rescue Operation' },
-    { id: 'shelter', label: 'Shelter/Housing' },
-    { id: 'food', label: 'Food/Supplies' },
-];
-
 const CreateCase = () => {
+    const { t } = useTranslation();
+
+    const steps = [
+        { id: 1, label: t('createCase.type'), icon: AlertTriangle },
+        { id: 2, label: t('createCase.location'), icon: MapPin },
+        { id: 3, label: t('createCase.details'), icon: Building2 },
+        { id: 4, label: t('createCase.images'), icon: Camera },
+        { id: 5, label: t('createCase.funding'), icon: DollarSign },
+    ];
+
+    const urgencyTypes = [
+        { id: 'critical', label: t('createCase.critical'), description: t('createCase.criticalDescription'), color: 'bg-destructive' },
+        { id: 'urgent', label: t('createCase.urgent'), description: t('createCase.urgentDescription'), color: 'bg-urgent' },
+        { id: 'recovering', label: t('createCase.recovering'), description: t('createCase.recoveringDescription'), color: 'bg-recovering' },
+    ];
+
+    const categories = [
+        { id: 'surgery', label: t('createCase.surgery') },
+        { id: 'medical', label: t('createCase.medicalTreatment') },
+        { id: 'rescue', label: t('createCase.rescueOperation') },
+        { id: 'shelter', label: t('createCase.shelterHousing') },
+        { id: 'food', label: t('createCase.foodSupplies') },
+    ];
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -77,7 +79,7 @@ const CreateCase = () => {
                     <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
                         <ArrowLeft className="w-4 h-4" />
                     </button>
-                    <h1 className="font-semibold text-foreground">Report Animal</h1>
+                    <h1 className="font-semibold text-foreground">{t('createCase.reportAnimal')}</h1>
                 </div>
             </div>
 
@@ -116,7 +118,7 @@ const CreateCase = () => {
                     {currentStep === 1 && (
                         <div className="space-y-6">
                             <div>
-                                <Label className="text-base font-semibold mb-3 block">Urgency Level</Label>
+                                <Label className="text-base font-semibold mb-3 block">{t('createCase.urgencyLevel')}</Label>
                                 <div className="space-y-2">
                                     {urgencyTypes.map((type) => (
                                         <button
@@ -140,7 +142,7 @@ const CreateCase = () => {
                             </div>
 
                             <div>
-                                <Label className="text-base font-semibold mb-3 block">What do they need?</Label>
+                                <Label className="text-base font-semibold mb-3 block">{t('createCase.whatDoTheyNeed')}</Label>
                                 <div className="flex flex-wrap gap-2">
                                     {categories.map((cat) => (
                                         <button
@@ -165,25 +167,25 @@ const CreateCase = () => {
                     {currentStep === 2 && (
                         <div className="space-y-4">
                             <div>
-                                <Label htmlFor="city">City</Label>
+                                <Label htmlFor="city">{t('createCase.city')}</Label>
                                 <Input
                                     id="city"
-                                    placeholder="e.g., Sofia"
+                                    placeholder={t('createCase.cityPlaceholder')}
                                     value={formData.city}
                                     onChange={(e) => updateForm('city', e.target.value)}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="neighborhood">Neighborhood / Area</Label>
+                                <Label htmlFor="neighborhood">{t('createCase.neighborhood')}</Label>
                                 <Input
                                     id="neighborhood"
-                                    placeholder="e.g., Lozenets"
+                                    placeholder={t('createCase.neighborhoodPlaceholder')}
                                     value={formData.neighborhood}
                                     onChange={(e) => updateForm('neighborhood', e.target.value)}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="foundAt">When was the animal found?</Label>
+                                <Label htmlFor="foundAt">{t('createCase.whenFound')}</Label>
                                 <Input
                                     id="foundAt"
                                     type="datetime-local"
@@ -198,30 +200,30 @@ const CreateCase = () => {
                     {currentStep === 3 && (
                         <div className="space-y-4">
                             <div>
-                                <Label htmlFor="title">Title</Label>
+                                <Label htmlFor="title">{t('createCase.title')}</Label>
                                 <Input
                                     id="title"
-                                    placeholder="e.g., Injured dog needs surgery"
+                                    placeholder={t('createCase.titlePlaceholder')}
                                     value={formData.title}
                                     onChange={(e) => updateForm('title', e.target.value)}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="description">Short Description</Label>
+                                <Label htmlFor="description">{t('createCase.shortDescription')}</Label>
                                 <textarea
                                     id="description"
                                     className="w-full min-h-[80px] px-3 py-2 rounded-lg border border-input bg-background text-sm"
-                                    placeholder="Brief description of the situation..."
+                                    placeholder={t('createCase.shortDescriptionPlaceholder')}
                                     value={formData.description}
                                     onChange={(e) => updateForm('description', e.target.value)}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="story">Full Story (optional)</Label>
+                                <Label htmlFor="story">{t('createCase.fullStory')}</Label>
                                 <textarea
                                     id="story"
                                     className="w-full min-h-[120px] px-3 py-2 rounded-lg border border-input bg-background text-sm"
-                                    placeholder="Tell the full story of how the animal was found..."
+                                    placeholder={t('createCase.fullStoryPlaceholder')}
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
                                 />
@@ -232,11 +234,11 @@ const CreateCase = () => {
                     {/* Step 4: Images */}
                     {currentStep === 4 && (
                         <div className="space-y-4">
-                            <Label className="text-base font-semibold block">Add Photos</Label>
+                            <Label className="text-base font-semibold block">{t('createCase.addPhotos')}</Label>
                             <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
                                 <Camera className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                                 <p className="text-sm text-muted-foreground mb-3">
-                                    Tap to take a photo or select from gallery
+                                    {t('createCase.photoInstructions')}
                                 </p>
                                 <input
                                     type="file"
@@ -251,7 +253,7 @@ const CreateCase = () => {
                                 />
                                 <label htmlFor="image-upload">
                                     <Button variant="outline" className="cursor-pointer" asChild>
-                                        <span>Choose Images</span>
+                                        <span>{t('createCase.chooseImages')}</span>
                                     </Button>
                                 </label>
                             </div>
@@ -275,7 +277,7 @@ const CreateCase = () => {
                     {currentStep === 5 && (
                         <div className="space-y-4">
                             <div>
-                                <Label htmlFor="goal">Fundraising Goal</Label>
+                                <Label htmlFor="goal">{t('createCase.fundraisingGoal')}</Label>
                                 <div className="flex gap-2">
                                     <Input
                                         id="goal"
@@ -298,13 +300,13 @@ const CreateCase = () => {
                             </div>
 
                             <div className="bg-muted/50 rounded-lg p-4 mt-6">
-                                <h3 className="font-semibold text-sm mb-2">Summary</h3>
+                                <h3 className="font-semibold text-sm mb-2">{t('createCase.summary')}</h3>
                                 <div className="text-sm text-muted-foreground space-y-1">
-                                    <p><strong>Type:</strong> {formData.type || 'Not selected'}</p>
-                                    <p><strong>Category:</strong> {formData.category || 'Not selected'}</p>
-                                    <p><strong>Location:</strong> {formData.city}, {formData.neighborhood}</p>
-                                    <p><strong>Title:</strong> {formData.title || 'Not set'}</p>
-                                    <p><strong>Goal:</strong> {formData.fundraisingGoal || '0'} {formData.currency}</p>
+                                    <p><strong>{t('createCase.type')}:</strong> {formData.type || t('createCase.notSelected')}</p>
+                                    <p><strong>{t('createCase.category')}:</strong> {formData.category || t('createCase.notSelected')}</p>
+                                    <p><strong>{t('createCase.location')}:</strong> {formData.city}, {formData.neighborhood}</p>
+                                    <p><strong>{t('createCase.title')}:</strong> {formData.title || t('createCase.notSet')}</p>
+                                    <p><strong>{t('createCase.goal')}:</strong> {formData.fundraisingGoal || '0'} {formData.currency}</p>
                                 </div>
                             </div>
                         </div>
@@ -316,18 +318,18 @@ const CreateCase = () => {
                     {currentStep > 1 && (
                         <Button variant="outline" onClick={prevStep} className="flex-1">
                             <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back
+                            {t('createCase.back')}
                         </Button>
                     )}
                     {currentStep < steps.length ? (
                         <Button onClick={nextStep} className="flex-1 btn-donate">
-                            Next
+                            {t('createCase.next')}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     ) : (
                         <Button onClick={handleSubmit} className="flex-1 btn-donate">
                             <Heart className="w-4 h-4 mr-2" />
-                            Submit Report
+                            {t('createCase.submitReport')}
                         </Button>
                     )}
                 </div>

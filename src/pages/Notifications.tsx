@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -61,13 +62,13 @@ const getNotificationIcon = (type: string) => {
   }
 };
 
-const formatTimeAgo = (timestamp: number) => {
+const formatTimeAgo = (timestamp: number, t: (key: string, options?: any) => string) => {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   
-  if (seconds < 60) return 'Just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  if (seconds < 60) return t('time.justNow');
+  if (seconds < 3600) return t('time.minutesAgo', { count: Math.floor(seconds / 60) });
+  if (seconds < 86400) return t('time.hoursAgo', { count: Math.floor(seconds / 3600) });
+  if (seconds < 604800) return t('time.daysAgo', { count: Math.floor(seconds / 86400) });
   
   return new Date(timestamp).toLocaleDateString('en-US', {
     month: 'short',
@@ -76,6 +77,7 @@ const formatTimeAgo = (timestamp: number) => {
 };
 
 const Notifications = () => {
+  const { t } = useTranslation();
   // TODO: Replace with useQuery(api.notifications.getMyNotifications)
   const notifications = mockNotifications;
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -107,9 +109,9 @@ const Notifications = () => {
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">Notifications</h1>
+            <h1 className="text-lg font-semibold text-foreground">{t('notifications.title')}</h1>
             <p className="text-xs text-muted-foreground">
-              {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
+              {unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : t('notifications.allCaughtUp')}
             </p>
           </div>
           {unreadCount > 0 && (
@@ -118,7 +120,7 @@ const Notifications = () => {
               className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
             >
               <CheckCheck className="w-4 h-4" />
-              Mark all read
+              {t('actions.markAllRead')}
             </button>
           )}
         </div>
@@ -153,7 +155,7 @@ const Notifications = () => {
                           {notification.title}
                         </p>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {formatTimeAgo(notification.createdAt)}
+                          {formatTimeAgo(notification.createdAt, t)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
@@ -172,8 +174,8 @@ const Notifications = () => {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Bell className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm">No notifications yet</p>
-              <p className="text-muted-foreground text-xs mt-1">We'll notify you about important updates</p>
+              <p className="text-muted-foreground text-sm">{t('notifications.noNotifications')}</p>
+              <p className="text-muted-foreground text-xs mt-1">{t('notifications.willNotify')}</p>
             </div>
           )}
         </div>

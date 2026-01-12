@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { mockPartners, mockVolunteers } from '@/data/mockData';
 import { PartnerCard } from '@/components/PartnerCard';
 import { FilterPills } from '@/components/FilterPills';
@@ -23,31 +24,32 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Partner filters
-const partnerFilters = [
-  { id: 'all', label: 'All' },
-  { id: 'pet-shop', label: 'Pet Shops', icon: <ShoppingBag className="w-3.5 h-3.5" /> },
-  { id: 'food-brand', label: 'Pet Food', icon: <Bone className="w-3.5 h-3.5" /> },
-  { id: 'veterinary', label: 'Veterinary', icon: <Stethoscope className="w-3.5 h-3.5" /> },
-  { id: 'sponsor', label: 'Sponsors', icon: <Heart className="w-3.5 h-3.5" /> },
-];
-
-// Volunteer location filters
-const volunteerFilters = [
-  { id: 'all', label: 'All' },
-  { id: 'top', label: 'Top', icon: <Star className="w-3.5 h-3.5 fill-current" /> },
-  { id: 'Sofia', label: 'Sofia', icon: <MapPin className="w-3.5 h-3.5" /> },
-  { id: 'Plovdiv', label: 'Plovdiv', icon: <MapPin className="w-3.5 h-3.5" /> },
-  { id: 'Varna', label: 'Varna', icon: <MapPin className="w-3.5 h-3.5" /> },
-  { id: 'Burgas', label: 'Burgas', icon: <MapPin className="w-3.5 h-3.5" /> },
-];
-
 const Partners = () => {
+  const { t } = useTranslation();
   const [showVolunteers, setShowVolunteers] = useState(false);
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [volunteerFilter, setVolunteerFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const isLoading = useSimulatedLoading(600);
+
+  // Partner filters
+  const partnerFilters = [
+    { id: 'all', label: t('partners.all') },
+    { id: 'pet-shop', label: t('partners.petShops'), icon: <ShoppingBag className="w-3.5 h-3.5" /> },
+    { id: 'food-brand', label: t('partners.petFood'), icon: <Bone className="w-3.5 h-3.5" /> },
+    { id: 'veterinary', label: t('partners.veterinary'), icon: <Stethoscope className="w-3.5 h-3.5" /> },
+    { id: 'sponsor', label: t('partners.sponsors'), icon: <Heart className="w-3.5 h-3.5" /> },
+  ];
+
+  // Volunteer location filters
+  const volunteerFilters = [
+    { id: 'all', label: t('partners.all') },
+    { id: 'top', label: 'Top', icon: <Star className="w-3.5 h-3.5 fill-current" /> },
+    { id: 'Sofia', label: 'Sofia', icon: <MapPin className="w-3.5 h-3.5" /> },
+    { id: 'Plovdiv', label: 'Plovdiv', icon: <MapPin className="w-3.5 h-3.5" /> },
+    { id: 'Varna', label: 'Varna', icon: <MapPin className="w-3.5 h-3.5" /> },
+    { id: 'Burgas', label: 'Burgas', icon: <MapPin className="w-3.5 h-3.5" /> },
+  ];
 
   // Filter partners
   const filteredPartners = mockPartners.filter((partner) => {
@@ -84,7 +86,7 @@ const Partners = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder={showVolunteers ? "Search volunteers..." : "Search partners..."}
+              placeholder={showVolunteers ? t('partners.searchVolunteers') : t('partners.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -117,7 +119,7 @@ const Partners = () => {
               {/* Section Header with Toggle */}
               <div className="flex items-center gap-2 mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
-                  {partnerFilter === 'all' ? 'Partners' : partnerFilters.find(f => f.id === partnerFilter)?.label}
+                  {partnerFilter === 'all' ? t('partners.partners') : partnerFilters.find(f => f.id === partnerFilter)?.label}
                 </h2>
                 {!isLoading && (
                   <span className="text-xs text-muted-foreground">
@@ -133,7 +135,7 @@ const Partners = () => {
                   />
                   <Label htmlFor="view-toggle" className="text-xs font-medium cursor-pointer whitespace-nowrap flex items-center gap-1">
                     <HandHeart className="w-3.5 h-3.5" />
-                    Volunteers
+                    {t('partners.volunteers')}
                   </Label>
                 </div>
               </div>
@@ -152,7 +154,7 @@ const Partners = () => {
                 </div>
               ) : (
                 <div className="text-center py-12 text-muted-foreground text-sm">
-                  No partners found matching your criteria
+                  {t('partners.noPartnersFound')}
                 </div>
               )}
             </div>
@@ -164,15 +166,15 @@ const Partners = () => {
               <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
                 <div>
                   <p className="text-xl font-bold text-primary">{mockPartners.length}</p>
-                  <p className="text-xs text-muted-foreground">Partners</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.partners')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-primary">1,200+</p>
-                  <p className="text-xs text-muted-foreground">Animals Helped</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.animalsHelped')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-primary">50,000+</p>
-                  <p className="text-xs text-muted-foreground">BGN Contributed</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.bgnContributed')}</p>
                 </div>
               </div>
             </div>
@@ -186,14 +188,14 @@ const Partners = () => {
                   <Heart className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-base font-semibold text-foreground mb-1">
-                  Want to make a difference?
+                  {t('partners.makeADifference')}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  Join our network of partners and help save more animals
+                  {t('partners.joinPartners')}
                 </p>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   <Handshake className="w-4 h-4 mr-2" />
-                  Become a Partner
+                  {t('partners.becomePartner')}
                 </Button>
               </div>
             </div>
@@ -207,7 +209,7 @@ const Partners = () => {
               {/* Section Header with Toggle */}
               <div className="flex items-center gap-2 mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
-                  {volunteerFilter === 'all' ? 'Volunteers' : volunteerFilter === 'top' ? 'Top Volunteers' : volunteerFilter}
+                  {volunteerFilter === 'all' ? t('partners.volunteers') : volunteerFilter === 'top' ? t('partners.topVolunteers') : volunteerFilter}
                 </h2>
                 {!isLoading && (
                   <span className="text-xs text-muted-foreground">
@@ -223,7 +225,7 @@ const Partners = () => {
                   />
                   <Label htmlFor="view-toggle" className="text-xs font-medium cursor-pointer whitespace-nowrap flex items-center gap-1">
                     <Users className="w-3 h-3" />
-                    Partners
+                    {t('partners.partners')}
                   </Label>
                 </div>
               </div>
@@ -242,7 +244,7 @@ const Partners = () => {
                 </div>
               ) : (
                 <div className="text-center py-12 text-muted-foreground text-sm">
-                  No volunteers found matching your criteria
+                  {t('partners.noVolunteersFound')}
                 </div>
               )}
             </div>
@@ -254,15 +256,15 @@ const Partners = () => {
               <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
                 <div>
                   <p className="text-xl font-bold text-primary">{mockVolunteers.length}</p>
-                  <p className="text-xs text-muted-foreground">Volunteers</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.volunteers')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-primary">{totalAnimalsHelped.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Animals Helped</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.animalsHelped')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-primary">{totalHours.toLocaleString()}+</p>
-                  <p className="text-xs text-muted-foreground">Hours Given</p>
+                  <p className="text-xs text-muted-foreground">{t('partners.hoursGiven')}</p>
                 </div>
               </div>
             </div>
@@ -276,14 +278,14 @@ const Partners = () => {
                   <HandHeart className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="text-base font-semibold text-foreground mb-1">
-                  Want to make a difference?
+                  {t('partners.makeADifference')}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  Join our amazing team of volunteers and help save animal lives
+                  {t('partners.joinVolunteers')}
                 </p>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   <HandHeart className="w-4 h-4 mr-2" />
-                  Become a Volunteer
+                  {t('partners.becomeVolunteer')}
                 </Button>
               </div>
             </div>

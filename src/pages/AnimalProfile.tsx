@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { mockCases } from '@/data/mockData';
 import { ImageGallery } from '@/components/ImageGallery';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -12,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 const AnimalProfile = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
   const caseData = mockCases.find((c) => c.id === id);
@@ -20,9 +22,9 @@ const AnimalProfile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Case not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.caseNotFound')}</h1>
           <Link to="/" className="text-primary hover:underline">
-            Go back home
+            {t('common.goBackHome')}
           </Link>
         </div>
       </div>
@@ -55,7 +57,7 @@ const AnimalProfile = () => {
             className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to all cases
+            {t('common.backToAllCases')}
           </Link>
 
           {/* Image Gallery */}
@@ -94,7 +96,7 @@ const AnimalProfile = () => {
 
           {/* Story */}
           <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-2">The Story</h2>
+            <h2 className="text-base font-semibold text-foreground mb-2">{t('animalProfile.theStory')}</h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
               {caseData.story.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
@@ -104,7 +106,7 @@ const AnimalProfile = () => {
 
           {/* Updates Timeline */}
           <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-3">Updates</h2>
+            <h2 className="text-base font-semibold text-foreground mb-3">{t('animalProfile.updates')}</h2>
             <UpdatesTimeline updates={caseData.updates} />
           </div>
         </div>
@@ -126,7 +128,7 @@ const AnimalProfile = () => {
           </button>
           <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />
-            Donate Now
+            {t('actions.donateNow')}
           </Button>
         </div>
       </div>
