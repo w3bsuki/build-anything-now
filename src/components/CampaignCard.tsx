@@ -50,7 +50,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
 
         {/* Content */}
         <div className="p-3.5 pb-2">
-          <h3 className="font-semibold text-base text-foreground mb-1.5 line-clamp-2">
+          <h3 className="font-medium text-base text-foreground mb-1.5 line-clamp-2">
             {campaign.title}
           </h3>
 
@@ -70,7 +70,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
           size="sm"
         />
 
-        <Button asChild className="w-full mt-3 h-11 btn-donate">
+        <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
           <Link to={`/campaigns/${campaign.id}`} aria-label={`Contribute to ${campaign.title}`}>
             <Heart className="w-4 h-4 mr-2" />
             Contribute

@@ -44,7 +44,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
 
         {/* Content */}
         <div className="p-3.5 pb-2">
-          <h3 className="font-semibold text-base text-foreground mb-1.5 line-clamp-2">
+          <h3 className="font-medium text-base text-foreground mb-1.5 line-clamp-2">
             {caseData.title}
           </h3>
 
@@ -65,7 +65,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           size="sm"
         />
 
-        <Button asChild className="w-full mt-3 h-11 btn-donate">
+        <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
             <Heart className="w-4 h-4 mr-2" />
             Donate

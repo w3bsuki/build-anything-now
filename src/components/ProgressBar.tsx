@@ -35,7 +35,7 @@ export function ProgressBar({
     <div className={cn('w-full', className)}>
       {showLabels && layout === 'default' && (
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-sm font-medium text-foreground">
             {formattedCurrent} {currency}
           </span>
           <span className="text-sm text-muted-foreground">
@@ -46,11 +46,11 @@ export function ProgressBar({
 
       {showLabels && layout === 'compact' && (
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-sm font-medium text-foreground">
             {formattedCurrent}/{formattedGoal} {currency}
           </span>
           <span className="flex items-baseline gap-1">
-            <span className="text-sm font-semibold text-primary">{formattedPercent}</span>
+            <span className="text-sm font-medium text-primary">{formattedPercent}</span>
             <span className="text-xs text-muted-foreground">funded</span>
           </span>
         </div>
