@@ -4,7 +4,7 @@ import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-import { Megaphone, Sparkles, Search, TrendingUp, CheckCircle } from 'lucide-react';
+import { Sparkles, Search, TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
@@ -37,21 +37,9 @@ const Campaigns = () => {
 
   return (
     <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-16">
-      {/* Hero + Search + Filters */}
-      <div className="sticky top-12 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-warning flex items-center justify-center">
-              <Megaphone className="w-4 h-4 text-warning-foreground" />
-            </div>
-            <h1 className="text-lg md:text-xl font-bold text-foreground">
-              Campaigns
-            </h1>
-          </div>
-          <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
-            Join our special initiatives and make a bigger impact together
-          </p>
-
+      {/* Search + Filters */}
+      <div className="sticky top-12 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
+        <div className="container mx-auto px-4 space-y-2.5">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

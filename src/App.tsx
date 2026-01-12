@@ -22,6 +22,9 @@ import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import CreateCase from "./pages/CreateCase";
 import CreateAdoption from "./pages/CreateAdoption";
+import Community from "./pages/Community";
+import CommunityPost from "./pages/CommunityPost";
+import VolunteerProfile from "./pages/VolunteerProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +55,8 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/create-case" element={<CreateCase />} />
           <Route path="/create-adoption" element={<CreateAdoption />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/volunteers/:id" element={<VolunteerProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

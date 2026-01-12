@@ -1,0 +1,248 @@
+import { useParams, Link } from 'react-router-dom';
+import { mockVolunteers, mockCases } from '@/data/mockData';
+import { Button } from '@/components/ui/button';
+import { 
+  ArrowLeft, 
+  Star, 
+  PawPrint, 
+  Heart, 
+  Calendar,
+  Clock,
+  Award,
+  MessageCircle,
+  Mail,
+  MapPin,
+  TrendingUp,
+  HandHeart,
+  Coins,
+  Share2
+} from 'lucide-react';
+import { CaseCard } from '@/components/CaseCard';
+
+const VolunteerProfile = () => {
+  const { id } = useParams();
+  const volunteer = mockVolunteers.find((v) => v.id === id);
+
+  if (!volunteer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Volunteer not found</h1>
+          <Link to="/partners" className="text-primary hover:underline">
+            Go back to partners
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Get some cases this volunteer might have helped with (mock)
+  const helpedCases = mockCases.slice(0, 2);
+
+  return (
+    <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
+      {/* Mobile Header */}
+      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border md:hidden">
+        <div className="flex items-center gap-3 px-4 py-2.5">
+          <Link
+            to="/partners"
+            className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center"
+          >
+            <ArrowLeft className="w-4 h-4 text-foreground" />
+          </Link>
+          <h1 className="font-medium text-sm text-foreground truncate flex-1">
+            {volunteer.name}
+          </h1>
+          <button className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+            <Share2 className="w-4 h-4 text-foreground" />
+          </button>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-5">
+        <div className="max-w-2xl mx-auto">
+          {/* Desktop Back Button */}
+          <Link
+            to="/partners"
+            className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to partners
+          </Link>
+
+          {/* Profile Header */}
+          <div className="bg-card rounded-2xl border border-border p-6 md:p-8 mb-6 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-primary/5 to-transparent -z-10" />
+            
+            <div className="relative inline-block mb-4">
+              <img
+                src={volunteer.avatar}
+                alt={volunteer.name}
+                className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-background shadow-lg"
+              />
+              {volunteer.isTopVolunteer && (
+                <div className="absolute -top-1 -right-1 w-8 h-8 bg-warning rounded-full flex items-center justify-center shadow-md">
+                  <Star className="w-4 h-4 text-warning-foreground fill-current" />
+                </div>
+              )}
+            </div>
+
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-1">
+              {volunteer.name}
+            </h1>
+
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-warning fill-warning" />
+                <span className="font-semibold text-foreground">{volunteer.rating.toFixed(1)}</span>
+              </div>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-sm text-muted-foreground">Member since {volunteer.memberSince}</span>
+            </div>
+
+            {volunteer.isTopVolunteer && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warning/10 text-warning text-sm font-medium mb-4">
+                <Star className="w-3.5 h-3.5 fill-current" />
+                Top Volunteer
+              </div>
+            )}
+
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              {volunteer.bio}
+            </p>
+
+            <div className="flex items-center justify-center gap-3">
+              <Button size="sm" className="gap-2">
+                <MessageCircle className="w-4 h-4" />
+                Message
+              </Button>
+              <Button size="sm" variant="outline" className="gap-2">
+                <Heart className="w-4 h-4" />
+                Follow
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="bg-card rounded-xl p-4 border border-border text-center">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <PawPrint className="w-5 h-5 text-primary" />
+              </div>
+              <p className="text-xl font-bold text-foreground">{volunteer.stats.animalsHelped}</p>
+              <p className="text-xs text-muted-foreground">Animals Helped</p>
+            </div>
+            <div className="bg-card rounded-xl p-4 border border-border text-center">
+              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-2">
+                <Heart className="w-5 h-5 text-accent" />
+              </div>
+              <p className="text-xl font-bold text-foreground">{volunteer.stats.adoptions}</p>
+              <p className="text-xs text-muted-foreground">Adoptions</p>
+            </div>
+            <div className="bg-card rounded-xl p-4 border border-border text-center">
+              <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-2">
+                <Calendar className="w-5 h-5 text-warning" />
+              </div>
+              <p className="text-xl font-bold text-foreground">{volunteer.stats.campaigns}</p>
+              <p className="text-xs text-muted-foreground">Campaigns</p>
+            </div>
+            <div className="bg-card rounded-xl p-4 border border-border text-center">
+              <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-2">
+                <Clock className="w-5 h-5 text-success" />
+              </div>
+              <p className="text-xl font-bold text-foreground">{volunteer.stats.hoursVolunteered}</p>
+              <p className="text-xs text-muted-foreground">Hours</p>
+            </div>
+          </div>
+
+          {/* Badges Section */}
+          {volunteer.badges.length > 0 && (
+            <div className="bg-card rounded-2xl border border-border p-6 mb-6">
+              <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-warning" />
+                Badges & Achievements
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {volunteer.badges.map((badge) => (
+                  <div
+                    key={badge}
+                    className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
+                  >
+                    <Award className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{badge}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Impact Section */}
+          <div className="bg-primary/5 rounded-2xl p-6 mb-6 border border-primary/10">
+            <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Volunteer Impact
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-background/50 rounded-xl p-4 text-center">
+                <HandHeart className="w-6 h-6 text-primary mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{volunteer.stats.animalsHelped}</p>
+                <p className="text-xs text-muted-foreground">Lives Changed</p>
+              </div>
+              <div className="bg-background/50 rounded-xl p-4 text-center">
+                <Coins className="w-6 h-6 text-primary mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{volunteer.stats.donationsReceived.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">BGN Raised</p>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-primary/10">
+              <p className="text-sm text-foreground/80 text-center">
+                <span className="font-semibold text-primary">{volunteer.name}</span> has been making a difference since {volunteer.memberSince}, 
+                dedicating <span className="font-semibold">{volunteer.stats.hoursVolunteered} hours</span> to animal welfare.
+              </p>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-card rounded-2xl border border-border p-6 mb-6">
+            <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
+              <PawPrint className="w-5 h-5 text-primary" />
+              Cases Helped
+            </h2>
+            <div className="space-y-3">
+              {helpedCases.map((caseItem) => (
+                <CaseCard key={caseItem.id} caseData={caseItem} />
+              ))}
+            </div>
+          </div>
+
+          {/* Contact Section */}
+          <div className="bg-card rounded-2xl border border-border p-6">
+            <h2 className="font-semibold text-lg text-foreground mb-4">Connect</h2>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-medium text-sm text-foreground">Message</div>
+                  <div className="text-sm text-muted-foreground">Send a direct message</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-medium text-sm text-foreground">Location</div>
+                  <div className="text-sm text-muted-foreground">Sofia, Bulgaria</div>
+                </div>
+              </div>
+            </div>
+            <Button className="w-full mt-4 gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Send Message
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default VolunteerProfile;

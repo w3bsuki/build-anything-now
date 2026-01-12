@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Home, Megaphone, Users, User, PawPrint, Stethoscope, Plus, Bell, X, Heart } from 'lucide-react';
+import { Home, Megaphone, Users, User, PawPrint, Stethoscope, Plus, Bell, Heart, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -8,21 +8,22 @@ const navItems = [
   { path: '/campaigns', label: 'Campaigns', icon: Megaphone },
   { path: '/clinics', label: 'Clinics', icon: Stethoscope },
   { path: '/partners', label: 'Partners', icon: Users },
+  { path: '/community', label: 'Community', icon: MessageCircle },
 ];
 
 const desktopNavItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/campaigns', label: 'Campaigns', icon: Megaphone },
-  { path: '/partners', label: 'Partners', icon: Users },
   { path: '/clinics', label: 'Clinics', icon: Stethoscope },
-  { path: '/profile', label: 'Profile', icon: User },
+  { path: '/partners', label: 'Partners', icon: Users },
+  { path: '/community', label: 'Community', icon: MessageCircle },
 ];
 
 // TODO: Replace with real data from Convex
 const unreadNotifications = 2;
 
 // Pages that show the mobile header (root/main pages only)
-const mobileHeaderPages = ['/', '/campaigns', '/clinics', '/partners', '/profile'];
+const mobileHeaderPages = ['/', '/campaigns', '/clinics', '/partners', '/community', '/profile'];
 
 export function Navigation() {
   const location = useLocation();
@@ -54,6 +55,13 @@ export function Navigation() {
 
             {/* Actions */}
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsCreateOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create</span>
+              </button>
               <NavLink
                 to="/notifications"
                 className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
@@ -117,6 +125,40 @@ export function Navigation() {
                 );
               })}
             </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsCreateOpen(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create</span>
+              </button>
+              <NavLink
+                to="/notifications"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+              >
+                <Bell className="w-5 h-5 text-muted-foreground" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                )}
+              </NavLink>
+              <NavLink
+                to="/profile"
+                className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors",
+                  location.pathname === '/profile' && "bg-primary/10"
+                )}
+              >
+                <User className={cn(
+                  "w-5 h-5",
+                  location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                )} />
+              </NavLink>
+            </div>
           </nav>
         </div>
       </header>
@@ -125,7 +167,7 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-area-bottom">
           <div className="flex items-center justify-around h-14 px-2">
-            {navItems.slice(0, 2).map((item) => {
+            {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
 
@@ -143,34 +185,6 @@ export function Navigation() {
                 </NavLink>
               );
             })}
-
-            {/* Center Create Button */}
-            <button
-              onClick={() => setIsCreateOpen(true)}
-              className="nav-item flex-1 py-1.5"
-            >
-              <Plus className="w-5 h-5 mx-auto" />
-              <span className="text-[10px] font-medium mt-0.5">Create</span>
-            </button>
-
-            {navItems.slice(2, 4).map((item) => {
-              const isActive = location.pathname === item.path;
-              const Icon = item.icon;
-
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    'nav-item flex-1 py-1.5',
-                  isActive && 'nav-item-active'
-                )}
-              >
-                <Icon className="w-5 h-5 mx-auto" />
-                <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
-              </NavLink>
-            );
-          })}
           </div>
         </nav>
       )}

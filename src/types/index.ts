@@ -67,3 +67,54 @@ export interface Clinic {
   specializations: string[];
   verified: boolean;
 }
+
+export interface Volunteer {
+  id: string;
+  name: string;
+  avatar: string;
+  bio: string;
+  location: string;
+  rating: number;
+  memberSince: string;
+  isTopVolunteer: boolean;
+  badges: string[];
+  stats: {
+    animalsHelped: number;
+    adoptions: number;
+    campaigns: number;
+    donationsReceived: number;
+    hoursVolunteered: number;
+  };
+}
+
+export interface CommunityPost {
+  id: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+    isVolunteer: boolean;
+  };
+  content: string;
+  image?: string;
+  likes: number;
+  comments: number;
+  timeAgo: string;
+  createdAt: string;
+}
+
+export interface PostComment {
+  id: string;
+  postId: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+    isVolunteer: boolean;
+  };
+  content: string;
+  likes: number;
+  timeAgo: string;
+  createdAt: string;
+  replies?: PostComment[];
+}

@@ -6,7 +6,7 @@ import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { mockClinics } from '@/data/mockData';
-import { Search, Stethoscope, MapPin } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 
 const cityFilters = [
   { id: 'all', label: 'All Cities' },
@@ -33,21 +33,9 @@ const Clinics = () => {
 
   return (
     <div className="min-h-screen bg-background pt-12 pb-20 md:pb-8 md:pt-16">
-      {/* Hero + Search + Filters */}
-      <div className="sticky top-12 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-              <Stethoscope className="w-4 h-4 text-accent-foreground" />
-            </div>
-            <h1 className="text-lg md:text-xl font-bold text-foreground">
-              Veterinary Clinics
-            </h1>
-          </div>
-          <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
-            Find trusted veterinary clinics across Bulgaria
-          </p>
-
+      {/* Search + Filters */}
+      <div className="sticky top-12 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
+        <div className="container mx-auto px-4 space-y-2.5">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input

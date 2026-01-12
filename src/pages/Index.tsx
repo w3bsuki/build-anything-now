@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PawPrint, Search, Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
+import { Search, Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
 import { CaseCard } from '@/components/CaseCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
@@ -28,21 +28,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-16">
-      {/* Hero + Search + Filters */}
-      <div className="sticky top-12 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <PawPrint className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <h1 className="text-lg md:text-xl font-bold text-foreground">
-              Rescue Cases
-            </h1>
-          </div>
-          <p className="text-center text-muted-foreground text-xs max-w-md mx-auto">
-            Help rescue and protect stray animals across Bulgaria
-          </p>
-
+      {/* Search + Filters */}
+      <div className="sticky top-12 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
+        <div className="container mx-auto px-4 space-y-2.5">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
