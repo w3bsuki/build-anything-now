@@ -30,16 +30,3 @@ function AppWithProviders() {
 }
 
 createRoot(document.getElementById("root")!).render(<AppWithProviders />);
-
-if (import.meta.env.DEV) {
-    requestAnimationFrame(() => {
-        const rootFontVar = getComputedStyle(document.documentElement)
-            .getPropertyValue("--font-sans")
-            .trim();
-        const bodyFontFamily = getComputedStyle(document.body).fontFamily;
-        // eslint-disable-next-line no-console
-        console.log("[fonts] --font-sans =", rootFontVar);
-        // eslint-disable-next-line no-console
-        console.log("[fonts] body font-family =", bodyFontFamily);
-    });
-}
