@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockClinics } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShareButton } from '@/components/ShareButton';
+import { cn } from '@/lib/utils';
 import { 
   ArrowLeft, 
   Phone, 
@@ -12,11 +14,13 @@ import {
   Stethoscope,
   Navigation,
   Globe,
-  Mail
+  Mail,
+  Bookmark
 } from 'lucide-react';
 
 const ClinicProfile = () => {
   const { id } = useParams();
+  const [isSaved, setIsSaved] = useState(false);
   const clinic = mockClinics.find((c) => c.id === id);
 
   if (!clinic) {
@@ -199,18 +203,23 @@ const ClinicProfile = () => {
         </div>
       </div>
 
-      {/* Sticky Call Button */}
+      {/* Sticky Action Bar */}
       <div className="sticky-donate md:hidden">
         <div className="container mx-auto max-w-2xl flex gap-2.5">
-          <ShareButton 
-            title={clinic.name} 
-            text={`${clinic.name} - ${clinic.address}, ${clinic.city}`}
-            variant="icon"
-            className="w-12 h-12 rounded-xl bg-card border border-border"
-          />
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={cn(
+              "w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
+              isSaved 
+                ? "bg-primary/10 border-primary text-primary" 
+                : "bg-card border-border text-foreground"
+            )}
+          >
+            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+          </button>
           <Button onClick={handleCall} className="flex-1 h-12 btn-donate text-base">
             <Phone className="w-4 h-4 mr-2" />
-            Call {clinic.name}
+            Call Clinic
           </Button>
         </div>
       </div>

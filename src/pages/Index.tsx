@@ -27,9 +27,9 @@ const Index = () => {
   const otherCases = filteredCases.filter(c => c.status !== 'urgent' && c.status !== 'critical');
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+    <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-16">
       {/* Hero + Search + Filters */}
-      <div className="sticky top-0 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
+      <div className="sticky top-12 md:top-14 bg-background z-30 pt-2 pb-3 border-b border-border">
         <div className="container mx-auto px-4 space-y-2">
           <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">

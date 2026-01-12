@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { mockCampaigns } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
-import { ArrowLeft, Heart, Calendar, Target, Users } from 'lucide-react';
+import { ArrowLeft, Heart, Calendar, Target, Users, Bookmark } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 const CampaignProfile = () => {
   const { id } = useParams();
+  const [isSaved, setIsSaved] = useState(false);
   const campaign = mockCampaigns.find((c) => c.id === id);
 
   if (!campaign) {
@@ -162,15 +165,20 @@ const CampaignProfile = () => {
         </div>
       </div>
 
-      {/* Sticky Donate Button */}
+      {/* Sticky Action Bar */}
       <div className="sticky-donate">
         <div className="container mx-auto max-w-2xl flex gap-2">
-          <ShareButton
-            title={campaign.title}
-            text={campaign.description}
-            variant="icon"
-            className="w-11 h-11 rounded-xl bg-card border border-border"
-          />
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={cn(
+              "w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
+              isSaved 
+                ? "bg-primary/10 border-primary text-primary" 
+                : "bg-card border-border text-foreground"
+            )}
+          >
+            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+          </button>
           <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />
             Contribute Now

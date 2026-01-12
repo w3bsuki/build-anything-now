@@ -1,15 +1,19 @@
 import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import { mockCases } from '@/data/mockData';
 import { ImageGallery } from '@/components/ImageGallery';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProgressBar } from '@/components/ProgressBar';
 import { UpdatesTimeline } from '@/components/UpdatesTimeline';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Share2, Heart, Calendar } from 'lucide-react';
+import { ShareButton } from '@/components/ShareButton';
+import { ArrowLeft, MapPin, Heart, Calendar, Bookmark } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 const AnimalProfile = () => {
   const { id } = useParams();
+  const [isSaved, setIsSaved] = useState(false);
   const caseData = mockCases.find((c) => c.id === id);
 
   if (!caseData) {
@@ -25,16 +29,6 @@ const AnimalProfile = () => {
     );
   }
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: caseData.title,
-        text: caseData.description,
-        url: window.location.href,
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen pb-28 md:pb-8 md:pt-16">
       {/* Header */}
@@ -49,12 +43,7 @@ const AnimalProfile = () => {
           <h1 className="font-medium text-sm text-foreground truncate flex-1">
             {caseData.title}
           </h1>
-          <button
-            onClick={handleShare}
-            className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center"
-          >
-            <Share2 className="w-4 h-4 text-foreground" />
-          </button>
+          <ShareButton title={caseData.title} text={caseData.description} />
         </div>
       </div>
 
@@ -121,14 +110,19 @@ const AnimalProfile = () => {
         </div>
       </div>
 
-      {/* Sticky Donate Button */}
+      {/* Sticky Action Bar */}
       <div className="sticky-donate">
         <div className="container mx-auto max-w-2xl flex gap-2">
           <button
-            onClick={handleShare}
-            className="w-11 h-11 rounded-xl bg-card border border-border flex items-center justify-center shrink-0"
+            onClick={() => setIsSaved(!isSaved)}
+            className={cn(
+              "w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
+              isSaved 
+                ? "bg-primary/10 border-primary text-primary" 
+                : "bg-card border-border text-foreground"
+            )}
           >
-            <Share2 className="w-4 h-4 text-foreground" />
+            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
           </button>
           <Button className="flex-1 h-11 btn-donate text-base">
             <Heart className="w-4 h-4 mr-2" />

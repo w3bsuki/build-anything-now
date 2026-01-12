@@ -13,6 +13,85 @@ export default defineSchema({
         createdAt: v.number(),
     }).index("by_clerk_id", ["clerkId"]),
 
+    // Donations table - tracks all user donations
+    donations: defineTable({
+        userId: v.id("users"),
+        caseId: v.optional(v.id("cases")),
+        campaignId: v.optional(v.string()), // For campaign donations
+        amount: v.number(),
+        currency: v.string(),
+        status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed"), v.literal("refunded")),
+        paymentMethod: v.optional(v.string()),
+        transactionId: v.optional(v.string()),
+        message: v.optional(v.string()),
+        anonymous: v.boolean(),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_case", ["caseId"])
+        .index("by_status", ["status"]),
+
+    // User achievements/badges
+    achievements: defineTable({
+        userId: v.id("users"),
+        type: v.union(
+            v.literal("first_donation"),
+            v.literal("monthly_donor"),
+            v.literal("helped_10"),
+            v.literal("helped_50"),
+            v.literal("helped_100"),
+            v.literal("big_heart"),
+            v.literal("early_supporter"),
+            v.literal("community_hero")
+        ),
+        unlockedAt: v.number(),
+    })
+        .index("by_user", ["userId"]),
+
+    // Payment methods saved by users
+    paymentMethods: defineTable({
+        userId: v.id("users"),
+        type: v.union(v.literal("card"), v.literal("paypal"), v.literal("bank")),
+        name: v.string(), // e.g., "Visa ending in 4242"
+        lastFour: v.optional(v.string()),
+        expiryMonth: v.optional(v.number()),
+        expiryYear: v.optional(v.number()),
+        isDefault: v.boolean(),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"]),
+
+    // User notifications
+    notifications: defineTable({
+        userId: v.id("users"),
+        type: v.union(
+            v.literal("donation_received"),
+            v.literal("case_update"),
+            v.literal("achievement_unlocked"),
+            v.literal("campaign_ended"),
+            v.literal("system")
+        ),
+        title: v.string(),
+        message: v.string(),
+        caseId: v.optional(v.id("cases")),
+        read: v.boolean(),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_user_unread", ["userId", "read"]),
+
+    // User settings/preferences
+    userSettings: defineTable({
+        userId: v.id("users"),
+        emailNotifications: v.boolean(),
+        pushNotifications: v.boolean(),
+        donationReminders: v.boolean(),
+        marketingEmails: v.boolean(),
+        language: v.string(),
+        currency: v.string(),
+    })
+        .index("by_user", ["userId"]),
+
     // Cases table - main animal reports with fundraising
     cases: defineTable({
         userId: v.id("users"),

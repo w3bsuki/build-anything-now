@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   User, 
@@ -12,18 +13,31 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// TODO: Replace with real data from useQuery(api.donations.getMyStats)
+const mockStats = {
+  totalDonations: 12,
+  totalAmount: 205,
+  animalsHelped: 8,
+};
+
+// TODO: Replace with useQuery(api.achievements.getMyAchievements)
+const achievementCount = 3;
+
+// TODO: Replace with useQuery(api.notifications.getUnreadCount)
+const unreadNotifications = 2;
+
 const menuItems = [
-  { icon: Heart, label: 'My Donations', badge: '12', path: '/donations' },
+  { icon: Heart, label: 'My Donations', badge: mockStats.totalDonations.toString(), path: '/donations' },
   { icon: History, label: 'Donation History', path: '/history' },
-  { icon: Award, label: 'Achievements', badge: '3', path: '/achievements' },
+  { icon: Award, label: 'Achievements', badge: achievementCount.toString(), path: '/achievements' },
   { icon: CreditCard, label: 'Payment Methods', path: '/payment' },
-  { icon: Bell, label: 'Notifications', path: '/notifications' },
+  { icon: Bell, label: 'Notifications', badge: unreadNotifications > 0 ? unreadNotifications.toString() : undefined, path: '/notifications' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 const Profile = () => {
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-20">
+    <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-20">
       {/* Profile Header */}
       <section className="bg-gradient-to-br from-primary/10 via-background to-accent/5 py-8">
         <div className="container mx-auto px-4">
@@ -50,15 +64,15 @@ const Profile = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-foreground">0</p>
+              <p className="text-2xl font-bold text-foreground">{mockStats.totalDonations}</p>
               <p className="text-sm text-muted-foreground">Donations</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">0 BGN</p>
+              <p className="text-2xl font-bold text-foreground">{mockStats.totalAmount} BGN</p>
               <p className="text-sm text-muted-foreground">Contributed</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">0</p>
+              <p className="text-2xl font-bold text-foreground">{mockStats.animalsHelped}</p>
               <p className="text-sm text-muted-foreground">Animals Helped</p>
             </div>
           </div>
@@ -74,8 +88,9 @@ const Profile = () => {
               const isLast = index === menuItems.length - 1;
 
               return (
-                <button
+                <Link
                   key={item.label}
+                  to={item.path}
                   className={cn(
                     'w-full flex items-center gap-4 p-4 text-left hover:bg-muted/50 transition-colors',
                     !isLast && 'border-b border-border'
@@ -93,7 +108,7 @@ const Profile = () => {
                     </span>
                   )}
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </button>
+                </Link>
               );
             })}
           </div>
