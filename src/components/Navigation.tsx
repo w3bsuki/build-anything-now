@@ -166,7 +166,7 @@ export function Navigation() {
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-area-bottom">
-          <div className="flex items-center justify-around h-16 px-1">
+          <div className="flex items-center justify-around h-14 px-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -176,12 +176,12 @@ export function Navigation() {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    'nav-item flex-1 min-h-12 py-2 rounded-lg active:bg-muted/50 transition-colors',
+                    'nav-item flex-1 py-1.5 rounded-lg active:bg-muted/50 transition-colors',
                     isActive && 'nav-item-active'
                   )}
                 >
-                  <Icon className="w-6 h-6 mx-auto" />
-                  <span className="text-[11px] font-medium mt-1">{t(item.labelKey)}</span>
+                  <Icon className="w-5 h-5 mx-auto" />
+                  <span className="text-[10px] font-medium mt-0.5">{t(item.labelKey)}</span>
                 </NavLink>
               );
             })}

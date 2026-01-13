@@ -75,9 +75,9 @@ const CreateCase = () => {
         <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
             {/* Header */}
             <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border">
-                <div className="flex items-center gap-3 px-4 py-3 container mx-auto">
-                    <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                        <ArrowLeft className="w-4 h-4" />
+                <div className="flex items-center gap-3 h-14 px-3 container mx-auto">
+                    <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors">
+                        <ArrowLeft className="w-5 h-5" />
                     </button>
                     <h1 className="font-semibold text-foreground">{t('createCase.reportAnimal')}</h1>
                 </div>

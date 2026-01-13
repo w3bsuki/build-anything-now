@@ -33,12 +33,12 @@ const CampaignProfile = () => {
     <div className="min-h-screen pb-28 md:pb-8 md:pt-16">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border md:hidden">
-        <div className="flex items-center gap-3 px-4 py-2.5">
+        <div className="flex items-center gap-3 h-14 px-3">
           <Link
             to="/campaigns"
-            className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center"
+            className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-foreground" />
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <h1 className="font-medium text-sm text-foreground truncate flex-1">
             {campaign.title}

@@ -94,7 +94,7 @@ export function LanguageDetectionBanner() {
 
   return (
     <>
-      <div className="fixed top-12 md:top-14 left-0 right-0 z-40 animate-in slide-in-from-top duration-300">
+      <div className="fixed top-14 md:top-14 left-0 right-0 z-40 animate-in slide-in-from-top duration-300">
         <div className="bg-primary/95 backdrop-blur-sm text-primary-foreground px-4 py-2.5">
           <div className="container mx-auto flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-1 min-w-0">

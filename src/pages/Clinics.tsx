@@ -34,9 +34,9 @@ const Clinics = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pt-12 pb-20 md:pb-8 md:pt-16">
+    <div className="min-h-screen bg-background pt-14 pb-20 md:pb-8 md:pt-16">
       {/* Search + Filters */}
-      <div className="sticky top-12 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
+      <div className="sticky top-14 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
         <div className="container mx-auto px-4 space-y-2.5">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
