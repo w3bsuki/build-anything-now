@@ -47,15 +47,13 @@ export function Navigation() {
       {showMobileHeader && (
         <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
           <div className="flex items-center justify-between h-14 px-4">
-            {/* Logo */}
+            {/* Logo - no background, just icon + text */}
             <NavLink to="/" className="flex items-center gap-2 min-h-11">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                <HeartHandshake className="w-4 h-4 text-primary-foreground" />
-              </div>
+              <HeartHandshake className="w-6 h-6 text-primary" />
               <span className="font-bold text-base text-foreground">PawsSafe</span>
             </NavLink>
 
-            {/* Actions - all consistent ghost style */}
+            {/* Actions - all consistent style */}
             <div className="flex items-center gap-1">
               <NavLink
                 to="/notifications"
@@ -82,9 +80,9 @@ export function Navigation() {
               </NavLink>
               <button
                 onClick={() => setIsCreateOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 active:bg-primary/15 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/25 transition-colors"
               >
-                <Plus className="w-6 h-6" strokeWidth={2.5} />
+                <Plus className="w-5 h-5" strokeWidth={2.5} />
               </button>
             </div>
           </div>
