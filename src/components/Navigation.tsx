@@ -45,44 +45,43 @@ export function Navigation() {
     <>
       {/* Mobile Top Header - only on root pages */}
       {showMobileHeader && (
-        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background">
           <div className="flex items-center justify-between h-14 px-4">
-            {/* Logo - no background, just icon + text */}
-            <NavLink to="/" className="flex items-center gap-2 min-h-11">
-              <HeartHandshake className="w-6 h-6 text-primary" />
-              <span className="font-bold text-base text-foreground">PawsSafe</span>
+            {/* Logo */}
+            <NavLink to="/" className="flex items-center gap-1.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                <HeartHandshake className="w-[18px] h-[18px] text-white" />
+              </div>
+              <span className="font-semibold text-[15px] text-foreground">PawsSafe</span>
             </NavLink>
 
-            {/* Actions - all consistent style */}
-            <div className="flex items-center gap-1">
+            {/* Actions */}
+            <div className="flex items-center">
               <NavLink
                 to="/notifications"
-                className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
+                className="relative w-9 h-9 flex items-center justify-center"
               >
-                <Bell className="w-[22px] h-[22px] text-muted-foreground" />
+                <Bell className="w-[21px] h-[21px] text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-primary text-[10px] font-semibold text-white flex items-center justify-center border-2 border-background">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
               </NavLink>
               <NavLink
                 to="/profile"
-                className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors",
-                  location.pathname === '/profile' && "bg-primary/10"
-                )}
+                className="w-9 h-9 flex items-center justify-center"
               >
                 <User className={cn(
-                  "w-[22px] h-[22px]",
-                  location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
-                )} />
+                  "w-[21px] h-[21px]",
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
+                )} strokeWidth={1.75} />
               </NavLink>
               <button
                 onClick={() => setIsCreateOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/25 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white ml-1"
               >
-                <Plus className="w-5 h-5" strokeWidth={2.5} />
+                <Plus className="w-[18px] h-[18px]" strokeWidth={2.5} />
               </button>
             </div>
           </div>
@@ -90,7 +89,7 @@ export function Navigation() {
       )}
 
       {/* Desktop Navigation */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
+      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md">
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-14">
             {/* Logo */}
@@ -126,14 +125,14 @@ export function Navigation() {
             </div>
 
             {/* Right Actions - notifications, profile, then create */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <NavLink
                 to="/notifications"
-                className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted/60 transition-colors"
               >
-                <Bell className="w-5 h-5 text-muted-foreground" />
+                <Bell className="w-5 h-5 text-foreground/70" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center shadow-sm">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -141,20 +140,20 @@ export function Navigation() {
               <NavLink
                 to="/profile"
                 className={cn(
-                  "w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors",
+                  "w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted/60 transition-colors",
                   location.pathname === '/profile' && "bg-primary/10"
                 )}
               >
                 <User className={cn(
                   "w-5 h-5",
-                  location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
                 )} />
               </NavLink>
               <button
                 onClick={() => setIsCreateOpen(true)}
-                className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors ml-1"
+                className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors shadow-sm ml-1"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-[18px] h-[18px]" />
               </button>
             </div>
           </nav>

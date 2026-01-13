@@ -151,7 +151,7 @@
   }
 
   .sticky-donate {
-    @apply fixed bottom-0 left-0 right-0 p-3 pb-4 bg-card/95 backdrop-blur-md border-t border-border md:bg-gradient-to-t md:from-background md:via-background/95 md:to-transparent md:border-0;
+    @apply fixed bottom-0 left-0 right-0 px-3 py-2.5 bg-card/95 backdrop-blur-md md:bg-gradient-to-t md:from-background md:via-background/95 md:to-transparent md:border-0;
   }
 }
 

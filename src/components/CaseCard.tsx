@@ -45,20 +45,20 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-3.5 pb-2">
-          <h3 className="font-medium text-base text-foreground mb-1.5 line-clamp-2">
+        <div className="p-3 pb-1.5">
+          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2 leading-snug">
             {caseData.title}
           </h3>
 
-          <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>{caseData.location.city}, {caseData.location.neighborhood}</span>
+          <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
+            <MapPin className="w-3 h-3" />
+            <span className="truncate">{caseData.location.city}, {caseData.location.neighborhood}</span>
           </div>
         </div>
       </Link>
 
       {/* Footer actions (kept outside Link to avoid nested interactive elements) */}
-      <div className="px-3.5 pb-3.5">
+      <div className="px-3 pb-3">
         <ProgressBar
           current={caseData.fundraising.current}
           goal={caseData.fundraising.goal}
@@ -67,9 +67,9 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           size="sm"
         />
 
-        <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
+        <Button asChild className="w-full mt-2.5 h-9 btn-donate font-medium text-sm">
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
-            <Heart className="w-4 h-4 mr-2" />
+            <Heart className="w-3.5 h-3.5 mr-1.5" />
             {t('actions.donate')}
           </Link>
         </Button>

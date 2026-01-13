@@ -51,19 +51,19 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-3.5 pb-2">
-          <h3 className="font-medium text-base text-foreground mb-1.5 line-clamp-2">
+        <div className="p-3 pb-1.5">
+          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2 leading-snug">
             {campaign.title}
           </h3>
 
-          <p className="text-muted-foreground text-xs mb-3 line-clamp-1">
+          <p className="text-muted-foreground text-xs mb-2 line-clamp-1">
             {campaign.description}
           </p>
         </div>
       </Link>
 
       {/* Footer actions (kept outside Link to avoid nested interactive elements) */}
-      <div className="px-3.5 pb-3.5">
+      <div className="px-3 pb-3">
         <ProgressBar
           current={campaign.current}
           goal={campaign.goal}
@@ -72,9 +72,9 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
           size="sm"
         />
 
-        <Button asChild className="w-full mt-3 h-11 btn-donate font-medium">
+        <Button asChild className="w-full mt-2.5 h-9 btn-donate font-medium text-sm">
           <Link to={`/campaigns/${campaign.id}`} aria-label={`Contribute to ${campaign.title}`}>
-            <Heart className="w-4 h-4 mr-2" />
+            <Heart className="w-3.5 h-3.5 mr-1.5" />
             {t('actions.contribute')}
           </Link>
         </Button>

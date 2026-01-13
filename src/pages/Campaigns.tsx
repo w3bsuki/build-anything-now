@@ -43,15 +43,15 @@ const Campaigns = () => {
   return (
     <div className="min-h-screen pt-14 pb-20 md:pb-8 md:pt-16">
       {/* Search + Filters */}
-      <div className="sticky top-14 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2.5">
+      <div className="sticky top-14 md:top-14 bg-background/95 backdrop-blur-sm z-30 pt-2.5 pb-3">
+        <div className="container mx-auto px-4 space-y-2">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
             <input
               type="text"
               placeholder={t('campaigns.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted/70 border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-muted transition-all"
             />
           </div>
 
@@ -89,13 +89,13 @@ const Campaigns = () => {
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {isLoading ? (
                 Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="w-[300px] flex-shrink-0">
+                  <div key={i} className="w-[260px] flex-shrink-0">
                     <CampaignCardSkeleton />
                   </div>
                 ))
               ) : (
                 trendingCampaigns.map((campaign) => (
-                  <div key={campaign.id} className="w-[300px] flex-shrink-0">
+                  <div key={campaign.id} className="w-[260px] flex-shrink-0">
                     <CampaignCard campaign={campaign} />
                   </div>
                 ))
@@ -115,13 +115,13 @@ const Campaigns = () => {
             {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
           </div>
           {isLoading ? (
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, i) => (
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 4 }).map((_, i) => (
                 <CampaignCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredCampaigns.length > 0 ? (
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
               {filteredCampaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}

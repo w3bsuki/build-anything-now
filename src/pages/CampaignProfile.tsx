@@ -30,13 +30,13 @@ const CampaignProfile = () => {
   const percentage = Math.round((campaign.current / campaign.goal) * 100);
 
   return (
-    <div className="min-h-screen pb-28 md:pb-8 md:pt-16">
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
       {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border md:hidden">
+      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-3 h-14 px-3">
           <Link
             to="/campaigns"
-            className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors"
+            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
@@ -170,7 +170,7 @@ const CampaignProfile = () => {
           <button
             onClick={() => setIsSaved(!isSaved)}
             className={cn(
-              "w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
+              "w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
               isSaved 
                 ? "bg-primary/10 border-primary text-primary" 
                 : "bg-card border-border text-foreground"
@@ -178,7 +178,7 @@ const CampaignProfile = () => {
           >
             <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
           </button>
-          <Button className="flex-1 h-11 btn-donate text-base">
+          <Button className="flex-1 h-10 btn-donate text-sm">
             <Heart className="w-4 h-4 mr-2" />
             {t('actions.contributeNow')}
           </Button>

@@ -14,16 +14,16 @@ interface FilterPillsProps {
 
 export const FilterPills = ({ options, selected, onSelect }: FilterPillsProps) => {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
       {options.map((option) => (
         <button
           key={option.id}
           onClick={() => onSelect(option.id)}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all active:scale-[0.98]",
             selected === option.id
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
           )}
         >
           {option.icon}

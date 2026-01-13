@@ -64,12 +64,12 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
       <button
         onClick={handleNativeShare}
         className={cn(
-          'w-10 h-10 rounded-xl bg-muted/80 hover:bg-muted active:bg-muted/60 flex items-center justify-center transition-colors',
+          'w-9 h-9 rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors',
           className
         )}
         aria-label="Share"
       >
-        <Share2 className="w-5 h-5 text-muted-foreground" />
+        <Share2 className="w-[18px] h-[18px] text-foreground/70" />
       </button>
     );
   }
@@ -80,12 +80,12 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
         {variant === 'icon' ? (
           <button
             className={cn(
-              'w-10 h-10 rounded-xl bg-muted/80 hover:bg-muted active:bg-muted/60 flex items-center justify-center transition-colors',
+              'w-9 h-9 rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors',
               className
             )}
             aria-label="Share"
           >
-            <Share2 className="w-5 h-5 text-muted-foreground" />
+            <Share2 className="w-[18px] h-[18px] text-foreground/70" />
           </button>
         ) : (
           <Button variant="outline" size="sm" className={className}>

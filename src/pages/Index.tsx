@@ -34,15 +34,15 @@ const Index = () => {
   return (
     <div className="min-h-screen pt-14 pb-20 md:pb-8 md:pt-16">
       {/* Search + Filters */}
-      <div className="sticky top-14 md:top-14 bg-background z-30 pt-3 pb-3 border-b border-border">
-        <div className="container mx-auto px-4 space-y-2.5">
+      <div className="sticky top-14 md:top-14 bg-background/95 backdrop-blur-sm z-30 pt-2.5 pb-3">
+        <div className="container mx-auto px-4 space-y-2">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
             <input
               type="text"
               placeholder={t('home.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted/70 border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-muted transition-all"
             />
           </div>
 
@@ -80,13 +80,13 @@ const Index = () => {
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {isLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="w-[280px] flex-shrink-0">
+                  <div key={i} className="w-[260px] flex-shrink-0">
                     <CaseCardSkeleton />
                   </div>
                 ))
               ) : (
                 urgentCases.map((caseData) => (
-                  <div key={caseData.id} className="w-[280px] flex-shrink-0">
+                  <div key={caseData.id} className="w-[260px] flex-shrink-0">
                     <CaseCard caseData={caseData} />
                   </div>
                 ))

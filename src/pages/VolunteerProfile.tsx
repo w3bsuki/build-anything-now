@@ -44,18 +44,18 @@ const VolunteerProfile = () => {
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
       {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border md:hidden">
+      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-3 h-14 px-3">
           <Link
             to="/partners"
-            className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors"
+            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
           <h1 className="font-medium text-sm text-foreground truncate flex-1">
             {volunteer.name}
           </h1>
-          <button className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors">
+          <button className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors">
             <Share2 className="w-5 h-5 text-foreground" />
           </button>
         </div>
