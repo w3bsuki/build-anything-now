@@ -46,24 +46,24 @@ export function Navigation() {
       {/* Mobile Top Header - only on root pages */}
       {showMobileHeader && (
         <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
-          <div className="flex items-center justify-between h-14 px-3">
+          <div className="flex items-center justify-between h-14 px-4">
             {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-2.5 min-h-11">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                <HeartHandshake className="w-5 h-5 text-primary-foreground" />
+            <NavLink to="/" className="flex items-center gap-2 min-h-11">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                <HeartHandshake className="w-4 h-4 text-primary-foreground" />
               </div>
               <span className="font-bold text-base text-foreground">PawsSafe</span>
             </NavLink>
 
-            {/* Actions - notifications, profile, then create */}
-            <div className="flex items-center gap-0.5">
+            {/* Actions - all consistent ghost style */}
+            <div className="flex items-center gap-1">
               <NavLink
                 to="/notifications"
-                className="relative w-11 h-11 flex items-center justify-center rounded-xl hover:bg-muted active:bg-muted/80 transition-colors"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors"
               >
-                <Bell className="w-5 h-5 text-muted-foreground" />
+                <Bell className="w-[22px] h-[22px] text-muted-foreground" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center">
+                  <span className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -71,20 +71,20 @@ export function Navigation() {
               <NavLink
                 to="/profile"
                 className={cn(
-                  "w-11 h-11 flex items-center justify-center rounded-xl hover:bg-muted active:bg-muted/80 transition-colors",
+                  "w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted active:bg-muted/80 transition-colors",
                   location.pathname === '/profile' && "bg-primary/10"
                 )}
               >
                 <User className={cn(
-                  "w-5 h-5",
+                  "w-[22px] h-[22px]",
                   location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
                 )} />
               </NavLink>
               <button
                 onClick={() => setIsCreateOpen(true)}
-                className="w-11 h-11 flex items-center justify-center bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:bg-primary/80 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 active:bg-primary/15 transition-colors"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-6 h-6" strokeWidth={2.5} />
               </button>
             </div>
           </div>
