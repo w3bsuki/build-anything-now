@@ -46,12 +46,12 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
 
         {/* Content */}
         <div className="p-3 pb-1.5">
-          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
+          <h3 className="font-medium text-sm text-foreground mb-1 truncate">
             {caseData.title}
           </h3>
 
           <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
-            <MapPin className="w-3 h-3" />
+            <MapPin className="w-3 h-3 flex-shrink-0" />
             <span className="truncate">{caseData.location.city}, {caseData.location.neighborhood}</span>
           </div>
         </div>
