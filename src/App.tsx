@@ -26,6 +26,8 @@ import CreateAdoption from "./pages/CreateAdoption";
 import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
 import VolunteerProfile from "./pages/VolunteerProfile";
+import Presentation from "./pages/Presentation";
+import PartnerPresentation from "./pages/PartnerPresentation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +62,8 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/community/:postId" element={<CommunityPost />} />
           <Route path="/volunteers/:id" element={<VolunteerProfile />} />
+          <Route path="/presentation" element={<Presentation />} />
+          <Route path="/partner" element={<PartnerPresentation />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -10,36 +10,31 @@
 ### Color Palette
 
 ```css
-/* Primary Brand Colors */
---primary: oklch(0.65 0.18 145);      /* Green - Main brand */
---primary-foreground: white;
+/* Source of truth: src/index.css (Tailwind v4 tokens) */
 
-/* Status Colors */
---destructive: oklch(0.55 0.2 25);    /* Red - Errors, urgent */
---warning: oklch(0.75 0.15 85);       /* Orange - Warnings */
---success: oklch(0.65 0.18 145);      /* Green - Success */
---info: oklch(0.65 0.15 250);         /* Blue - Information */
+/* Base palette (OKLCH) — current primary is orange */
+--primary: oklch(0.74 0.16 34.57);
+--primary-foreground: oklch(1 0 0);
+--background: oklch(0.99 0.01 67.74);
+--foreground: oklch(0.34 0.01 7.89);
+--accent: oklch(0.83 0.11 57.89);
+--destructive: oklch(0.61 0.21 22.21);
 
-/* Case Status Colors */
---status-critical: oklch(0.55 0.2 25);
---status-urgent: oklch(0.75 0.18 50);
---status-recovering: oklch(0.65 0.18 145);
---status-adopted: oklch(0.65 0.15 250);
-
-/* Semantic Colors */
---background: oklch(0.99 0 0);
---foreground: oklch(0.15 0 0);
---card: oklch(1 0 0);
---muted: oklch(0.95 0 0);
---muted-foreground: oklch(0.45 0 0);
---border: oklch(0.9 0 0);
+/* Status tokens (currently stored as HSL channels; need dark-mode values) */
+--success: 142 71% 45%;
+--warning: 38 92% 50%;
+--urgent: 0 84% 60%;
+--recovering: 174 50% 45%;
+--adopted: 142 71% 45%;
 ```
+
+See [06-TAILWIND-SHADCN-STYLING.md](./06-TAILWIND-SHADCN-STYLING.md) for the token consolidation plan and decisions.
 
 ### Typography
 
 ```css
 /* Font Family */
---font-sans: 'Montserrat', sans-serif;
+--font-sans: 'Nunito', sans-serif;
 
 /* Font Sizes */
 --text-xs: 0.75rem;     /* 12px - captions, badges */
@@ -794,7 +789,7 @@ import { useTranslation } from 'react-i18next';
 
 // 3. Internal imports (absolute paths)
 import { cn } from '@/lib/utils';
-import { api } from '@/convex/_generated/api';
+import { api } from '../../convex/_generated/api'; // adjust relative path as needed
 
 // 4. Components
 import { Button } from '@/components/ui/button';

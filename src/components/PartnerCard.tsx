@@ -109,7 +109,7 @@ export function PartnerCard({ partner }: PartnerCardProps) {
         <div className="flex items-center gap-1.5 text-xs">
           <Coins className="w-3.5 h-3.5 text-amber-500" />
           <span className="text-foreground font-medium">{formatCurrency(partner.totalContributed)}</span>
-          <span className="text-muted-foreground">BGN</span>
+          <span className="text-muted-foreground">EUR</span>
         </div>
       </div>
     </div>

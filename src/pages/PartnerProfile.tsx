@@ -1,12 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { mockPartners } from '@/data/mockData';
+import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Mail, Phone, MapPin, Handshake, ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 
 const PartnerProfile = () => {
     const { t } = useTranslation();
+    const { mockPartners } = useTranslatedMockData();
     const { id } = useParams();
     const partner = mockPartners.find((p) => p.id === id);
 
@@ -104,7 +105,7 @@ const PartnerProfile = () => {
                             </div>
                             <div>
                                 <div className="text-2xl font-bold text-primary">5,000+</div>
-                                <div className="text-xs text-muted-foreground">{t('partnerProfile.bgnDonated')}</div>
+                                <div className="text-xs text-muted-foreground">{t('partnerProfile.eurDonated')}</div>
                             </div>
                         </div>
                     </div>

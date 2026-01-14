@@ -88,3 +88,21 @@ function handleButtonPress() {
 Use the Convex CLI to push your functions to a deployment. See everything
 the Convex CLI can do by running `npx convex -h` in your project root
 directory. To learn more, launch the docs with `npx convex docs`.
+
+## Machine translation for user-generated cases
+
+UI translations (i18next JSON files) only cover interface strings. For user-generated
+content on `cases` (title/description/story), this repo supports **server-side cached
+translations**.
+
+- Schema: `cases.language`, `cases.translations`, `cases.translationStatus`
+- Pipeline: translations are generated **on-demand** and cached on the case document.
+- On-demand: call `translate.requestCaseTranslations` to schedule translations.
+- Localized reads: `cases.listForLocale` and `cases.getForLocale` return localized fields.
+
+### Environment variables
+
+- `TRANSLATION_PROVIDER` (default: `deepl`)
+- `DEEPL_AUTH_KEY` (required when using DeepL)
+- `DEEPL_API_URL` (optional; defaults to `https://api-free.deepl.com/v2/translate`)
+- `TRANSLATION_TARGET_LOCALES` (optional; comma-separated, e.g. `bg,en,de,ru,uk`)

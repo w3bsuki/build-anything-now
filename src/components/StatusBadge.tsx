@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { AnimalStatus } from '@/types';
 import { AlertTriangle, Heart, Activity, CheckCircle } from 'lucide-react';
@@ -9,28 +10,29 @@ interface StatusBadgeProps {
 
 const statusConfig = {
   critical: {
-    label: 'Critical',
+    labelKey: 'status.critical',
     icon: AlertTriangle,
     className: 'badge-critical',
   },
   urgent: {
-    label: 'Urgent',
+    labelKey: 'status.urgent',
     icon: Activity,
     className: 'badge-urgent',
   },
   recovering: {
-    label: 'Recovering',
+    labelKey: 'status.recovering',
     icon: Heart,
     className: 'badge-recovering',
   },
   adopted: {
-    label: 'Adopted',
+    labelKey: 'status.adopted',
     icon: CheckCircle,
     className: 'badge-adopted',
   },
 };
 
 export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
+  const { t } = useTranslation();
   const config = statusConfig[status];
   const Icon = config.icon;
 
@@ -43,7 +45,7 @@ export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
       )}
     >
       <Icon className={size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'} />
-      {config.label}
+      {t(config.labelKey)}
     </span>
   );
 }

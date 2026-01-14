@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
+import { requireUser, assertOwnership } from "./lib/auth";
 
 // Get all notifications for current user
 export const getMyNotifications = query({
@@ -50,6 +51,10 @@ export const getUnreadCount = query({
 export const markAsRead = mutation({
     args: { id: v.id("notifications") },
     handler: async (ctx, args) => {
+        const user = await requireUser(ctx);
+        const notification = await ctx.db.get(args.id);
+        if (!notification) throw new Error("Notification not found");
+        assertOwnership(user, notification.userId, "notification");
         await ctx.db.patch(args.id, { read: true });
     },
 });
@@ -83,12 +88,16 @@ export const markAllAsRead = mutation({
 export const remove = mutation({
     args: { id: v.id("notifications") },
     handler: async (ctx, args) => {
+        const user = await requireUser(ctx);
+        const notification = await ctx.db.get(args.id);
+        if (!notification) throw new Error("Notification not found");
+        assertOwnership(user, notification.userId, "notification");
         await ctx.db.delete(args.id);
     },
 });
 
-// Create notification (internal use)
-export const create = mutation({
+// Create notification (internal use only - not callable from client)
+export const create = internalMutation({
     args: {
         userId: v.id("users"),
         type: v.union(

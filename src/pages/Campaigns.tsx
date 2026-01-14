@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mockCampaigns } from '@/data/mockData';
+import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
 import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
@@ -13,6 +13,7 @@ type CampaignFilter = 'all' | 'trending' | 'completed';
 
 const Campaigns = () => {
   const { t } = useTranslation();
+  const { mockCampaigns } = useTranslatedMockData();
   const [filter, setFilter] = useState<CampaignFilter>('all');
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const isLoading = useSimulatedLoading(600);
@@ -41,9 +42,9 @@ const Campaigns = () => {
   const filteredCampaigns = getFilteredCampaigns();
 
   return (
-    <div className="min-h-screen pt-14 pb-20 md:pb-8 md:pt-16">
+    <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-16">
       {/* Search + Filters */}
-      <div className="sticky top-14 md:top-14 bg-background/95 backdrop-blur-sm z-30 pt-2.5 pb-3">
+      <div className="sticky top-12 md:top-14 bg-background z-30 pb-2 border-b border-border/50">
         <div className="container mx-auto px-4 space-y-2">
           {/* Search Bar */}
           <div className="relative">
@@ -51,7 +52,7 @@ const Campaigns = () => {
             <input
               type="text"
               placeholder={t('campaigns.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted/70 border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-muted transition-all"
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-muted/80 transition-all"
             />
           </div>
 
@@ -115,13 +116,13 @@ const Campaigns = () => {
             {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
           </div>
           {isLoading ? (
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <CampaignCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredCampaigns.length > 0 ? (
-            <div className="grid gap-3 grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {filteredCampaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}

@@ -12,14 +12,14 @@ const mockSettings = {
   pushNotifications: true,
   donationReminders: true,
   marketingEmails: false,
-  currency: 'BGN',
+  currency: 'EUR',
 };
 
 const supportedLanguages = ['en', 'bg', 'uk', 'ru', 'de'] as const;
 
 const currencies = [
-  { code: 'BGN', labelKey: 'currencies.BGN' },
   { code: 'EUR', labelKey: 'currencies.EUR' },
+  { code: 'BGN', labelKey: 'currencies.BGN' },
   { code: 'USD', labelKey: 'currencies.USD' },
 ];
 
@@ -162,7 +162,7 @@ const Settings = () => {
                 <div className="text-left">
                   <p className="font-medium text-foreground">{t('settings.language')}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t(`languages.${i18n.language}` as any)}
+                    {t(`languages.${i18n.language}`)}
                   </p>
                 </div>
               </div>
@@ -178,7 +178,7 @@ const Settings = () => {
                 <div className="text-left">
                   <p className="font-medium text-foreground">{t('settings.currency')}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t(currencies.find(c => c.code === settings.currency)?.labelKey as any)}
+                    {currencies.find(c => c.code === settings.currency)?.labelKey && t(currencies.find(c => c.code === settings.currency)!.labelKey)}
                   </p>
                 </div>
               </div>
@@ -282,7 +282,7 @@ const Settings = () => {
                     "font-medium",
                     i18n.language === langCode ? "text-primary" : "text-foreground"
                   )}>
-                    {t(`languages.${langCode}` as any)}
+                    {t(`languages.${langCode}`)}
                   </span>
                   {i18n.language === langCode && (
                     <Check className="w-5 h-5 text-primary" />
@@ -326,7 +326,7 @@ const Settings = () => {
                     "font-medium",
                     settings.currency === currency.code ? "text-primary" : "text-foreground"
                   )}>
-                    {t(currency.labelKey as any)}
+                    {t(currency.labelKey)}
                   </span>
                   {settings.currency === currency.code && (
                     <Check className="w-5 h-5 text-primary" />

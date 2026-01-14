@@ -344,26 +344,23 @@ const config: CapacitorConfig = {
 ### Required Environment Variables
 
 ```env
-# Clerk Authentication
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_xxx
-CLERK_SECRET_KEY=sk_live_xxx
+# Frontend (Vite) — put these in `.env.local`
+VITE_CONVEX_URL=
+VITE_CLERK_PUBLISHABLE_KEY=
+VITE_APP_URL=
+VITE_APP_NAME=
 
-# Convex
-VITE_CONVEX_URL=https://xxx.convex.cloud
-CONVEX_DEPLOY_KEY=xxx
+# Optional (only if used in the UI)
+VITE_STRIPE_PUBLISHABLE_KEY=
+VITE_GA_MEASUREMENT_ID=
+VITE_SENTRY_DSN=
 
-# Stripe
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_xxx
-STRIPE_SECRET_KEY=sk_live_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-
-# Analytics
-VITE_GA_MEASUREMENT_ID=G-xxx
-VITE_SENTRY_DSN=https://xxx@sentry.io/xxx
-
-# App Config
-VITE_APP_URL=https://pawssafe.com
-VITE_APP_NAME=PawsSafe
+# Backend secrets — DO NOT expose these to the frontend bundle.
+# Store in Convex env (see below) and/or CI secrets where needed.
+CLERK_SECRET_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+CONVEX_DEPLOY_KEY=
 ```
 
 ### Convex Environment Variables
@@ -381,53 +378,41 @@ npx convex env set STRIPE_WEBHOOK_SECRET whsec_xxx
 ### CI/CD Setup (GitHub Actions)
 
 ```yaml
-name: Deploy to Production
+name: CI
 
 on:
+  pull_request:
   push:
     branches: [main]
 
 jobs:
-  deploy:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          
+          node-version: "20"
+
+      - name: Enable pnpm
+        run: corepack enable
+
       - name: Install dependencies
-        run: pnpm install
-        
-      - name: Run tests
-        run: pnpm test
-        
-      - name: Type check
-        run: pnpm type-check
-        
+        run: pnpm install --frozen-lockfile
+
       - name: Lint
         run: pnpm lint
-        
+
+      - name: Typecheck
+        run: pnpm exec tsc -p tsconfig.app.json --noEmit
+
       - name: Build
         run: pnpm build
         env:
-          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_KEY }}
-          VITE_CONVEX_URL: ${{ secrets.CONVEX_URL }}
-          
-      - name: Deploy Convex
-        run: npx convex deploy --prod
-        env:
-          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
-          
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 ```
 
 ---

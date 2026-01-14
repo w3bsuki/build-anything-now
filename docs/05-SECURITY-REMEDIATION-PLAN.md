@@ -8,14 +8,14 @@
 
 ## 🚨 Executive Summary
 
-The security audit identified **15 critical/high vulnerabilities** that must be fixed before production launch. This document provides step-by-step remediation instructions.
+The security audit identified **16 vulnerabilities** that must be fixed before production launch. This document provides step-by-step remediation instructions.
 
 | Severity | Count | Status |
 |----------|-------|--------|
-| 🔴 Critical | 6 | Not Fixed |
+| 🔴 Critical | 7 | Not Fixed |
 | 🟠 High | 5 | Not Fixed |
 | 🟡 Medium | 4 | Not Fixed |
-| **Total** | **15** | **0% Complete** |
+| **Total** | **16** | **0% Complete** |
 
 ---
 
@@ -463,6 +463,39 @@ export function LanguageDetectionBanner() {
   // ... rest of component
 }
 ```
+
+---
+
+### CVE-007: Public User Creation/Modification (users.upsert)
+
+**File:** `convex/users.ts`  
+**Risk:** Any caller can create/overwrite user records without authentication/identity checks  
+**Impact:** Account takeover, privilege escalation
+
+#### Remediation (preferred)
+
+```typescript
+// Make upsert server-only (webhook/internal)
+import { internalMutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const upsert = internalMutation({
+  args: {
+    clerkId: v.string(),
+    email: v.optional(v.string()),
+    name: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Verify trusted caller (webhook) in the action layer,
+    // then upsert the user record here.
+  },
+});
+```
+
+#### Remediation (if client-callable is required)
+- Require `ctx.auth.getUserIdentity()`
+- Enforce `identity.subject === args.clerkId` to block cross-user writes
 
 ---
 
@@ -962,6 +995,7 @@ validateEnv();
 | 🔴 | CVE-004: Admin function | Day 1 | Backend |
 | 🔴 | CVE-005: Notifications creation | Day 1 | Backend |
 | 🔴 | CVE-006: HTTP geolocation | Day 1 | Frontend |
+| 🔴 | CVE-007: Users upsert | Day 1 | Backend |
 | 🟠 | SEC-007: Input validation | Day 2 | Backend |
 | 🟠 | SEC-008: Rate limiting | Day 2 | Backend |
 | 🟠 | SEC-009: Payment data | Day 2 | Backend |

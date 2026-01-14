@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 
 // List all clinics with optional city filter
 export const list = query({
@@ -30,8 +30,8 @@ export const get = query({
     },
 });
 
-// Seed clinics from mock data (admin only, run once)
-export const seed = mutation({
+// Seed clinics from mock data (internal only - not callable from client)
+export const seed = internalMutation({
     args: {
         clinics: v.array(v.object({
             name: v.string(),

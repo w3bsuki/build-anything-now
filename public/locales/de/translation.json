@@ -28,6 +28,15 @@
     "setDefault": "Als Standard festlegen",
     "addNewCard": "Neue Karte hinzufügen"
   },
+  "contentTranslation": {
+    "translatePrompt": "Dieser Fall wurde in einer anderen Sprache verfasst.",
+    "translate": "Übersetzen",
+    "translating": "Übersetzen...",
+    "translatingCta": "Übersetzen...",
+    "viewOriginal": "Original ansehen",
+    "viewTranslated": "Übersetzung ansehen",
+    "machineTranslatedFrom": "Maschinell übersetzt aus {{from}}"
+  },
   "create": {
     "title": "Was möchten Sie tun?",
     "reportAnimal": "Tier melden",
@@ -82,7 +91,7 @@
     "noPartnersFound": "Keine Partner nach Ihren Kriterien gefunden",
     "noVolunteersFound": "Keine Freiwilligen nach Ihren Kriterien gefunden",
     "animalsHelped": "Gerettete Tiere",
-    "bgnContributed": "BGN gespendet",
+    "eurContributed": "EUR gespendet",
     "hoursGiven": "Gespendete Stunden",
     "makeADifference": "Möchten Sie etwas bewirken?",
     "joinPartners": "Treten Sie unserem Partnernetzwerk bei und helfen Sie, mehr Tiere zu retten",
@@ -178,6 +187,28 @@
     "EUR": "Euro (EUR)",
     "USD": "US-Dollar (USD)"
   },
+  "fundraising": {
+    "funded": "finanziert",
+    "goal": "Ziel",
+    "raised": "Gesammelt"
+  },
+  "clinicSpecializations": {
+    "emergency": "Notfall",
+    "surgery": "Chirurgie",
+    "intensivecare": "Intensivpflege",
+    "generalcare": "Allgemeine Pflege",
+    "vaccinations": "Impfungen",
+    "dental": "Zahnmedizin",
+    "orthopedics": "Orthopädie",
+    "cardiology": "Kardiologie",
+    "xray": "Röntgen",
+    "neurology": "Neurologie",
+    "oncology": "Onkologie",
+    "dermatology": "Dermatologie",
+    "labtests": "Labortests",
+    "exoticpets": "Exotische Tiere",
+    "rehabilitation": "Rehabilitation"
+  },
   "notifications": {
     "title": "Benachrichtigungen",
     "unread": "{{count}} ungelesen",
@@ -200,7 +231,7 @@
     "firstSteps": "Erste Schritte",
     "firstStepsDesc": "Machen Sie Ihre erste Spende",
     "bigHeart": "Großes Herz",
-    "bigHeartDesc": "Machen Sie eine einzelne Spende über 100 BGN",
+    "bigHeartDesc": "Machen Sie eine einzelne Spende über 100 EUR",
     "helpingHand": "Helfende Hand",
     "helpingHandDesc": "Helfen Sie 10 Tieren",
     "monthlyHero": "Monatlicher Held",
@@ -216,7 +247,7 @@
   },
   "myDonations": {
     "title": "Meine Spenden",
-    "summary": "{{count}} Spenden • {{amount}} BGN insgesamt",
+    "summary": "{{count}} Spenden • {{amount}} EUR insgesamt",
     "recentDonations": "Neueste Spenden",
     "noDonations": "Noch keine Spenden",
     "donationsWillAppear": "Ihre Spenden erscheinen hier",
@@ -271,7 +302,7 @@
     "contact": "Kontakt",
     "theirContribution": "Ihr Beitrag",
     "campaignsSupported": "Unterstützte Kampagnen",
-    "bgnDonated": "BGN gespendet",
+    "eurDonated": "EUR gespendet",
     "location": "Standort",
     "socialMedia": "Soziale Medien"
   },
@@ -286,7 +317,7 @@
     "badgesAchievements": "Abzeichen & Erfolge",
     "volunteerImpact": "Wirkung des Freiwilligen",
     "livesChanged": "Veränderte Leben",
-    "bgnRaised": "BGN gesammelt",
+    "eurRaised": "EUR gesammelt",
     "makingDifference": "macht seit {{since}} einen Unterschied und widmet {{hours}} Stunden dem Tierwohl.",
     "casesHelped": "Unterstützte Fälle",
     "connect": "Verbinden",
@@ -409,5 +440,200 @@
     "transactionId": "Transaktions-ID",
     "noTransactions": "Keine Transaktionen gefunden",
     "historyWillAppear": "Ihr Spendenverlauf wird hier angezeigt"
+  },
+  "cities": {
+    "sofia": "Sofia",
+    "plovdiv": "Plovdiv",
+    "varna": "Varna",
+    "burgas": "Burgas"
+  },
+  "neighborhoods": {
+    "center": "Zentrum",
+    "kapana": "Kapana",
+    "seaGarden": "Meeresgarten",
+    "asparuhovo": "Asparuhovo"
+  },
+  "mockData": {
+    "cases": {
+      "case1": {
+        "title": "Max braucht dringende Operation",
+        "description": "Mit gebrochenem Bein in der Nähe des Parks gefunden. Braucht sofortige medizinische Versorgung.",
+        "story": "Max wurde von einem freundlichen Passanten in der Nähe des Zentralparks gefunden, stark hinkend mit einem offensichtlich gebrochenen Hinterbein. Trotz seiner Schmerzen zeigte er unglaubliches Vertrauen in Menschen und ließ die Retter sich nähern und ihn vorsichtig in die Notfallklinik transportieren. Das Tierärzteteam hat seinen Zustand beurteilt und festgestellt, dass er so schnell wie möglich operiert werden muss, um eine vollständige Genesung zu gewährleisten.",
+        "updates": {
+          "u1": {
+            "title": "Max ist in der Klinik angekommen",
+            "description": "Nach einer sorgfältigen Rettungsaktion ist Max jetzt sicher bei VetCare Sofia, wo das Team ihn auf die Operation vorbereitet."
+          },
+          "u2": {
+            "title": "Voruntersuchung abgeschlossen",
+            "description": "Röntgenaufnahmen bestätigen einen sauberen Bruch. Die Operation ist für morgen früh geplant. Max ruht sich bequem mit Schmerzmitteln aus."
+          },
+          "u3": {
+            "title": "Operation erfolgreich!",
+            "description": "Max' Operation verlief perfekt! Der Tierarzt erwartet eine vollständige Genesung innerhalb von 6-8 Wochen. Danke an alle Spender!"
+          }
+        }
+      },
+      "case2": {
+        "title": "Whiskers braucht Notfallversorgung",
+        "description": "Ausgesetztes Kätzchen mit Atemwegsinfektion. Benötigt sofortige Behandlung.",
+        "story": "Die kleine Whiskers wurde in einer Pappschachtel hinter einem Restaurant gefunden, kaum atmend und stark dehydriert. Dieser kleine Kämpfer, geschätzt nur 4 Wochen alt, wurde in unsere Partnerklinik gebracht, wo Tierärzte eine schwere Atemwegsinfektion entdeckten. Ohne sofortige Behandlung hätte Whiskers keinen weiteren Tag überlebt.",
+        "updates": {
+          "u1": {
+            "title": "Notaufnahme",
+            "description": "Whiskers kam in kritischem Zustand an. Sofort mit IV-Flüssigkeiten und Antibiotika begonnen."
+          },
+          "u2": {
+            "title": "Leichte Verbesserung",
+            "description": "Whiskers reagiert auf die Behandlung! Das Atmen fällt leichter und sie beginnt, Interesse am Futter zu zeigen."
+          }
+        }
+      },
+      "case3": {
+        "title": "Luna hat ihr Zuhause gefunden!",
+        "description": "Nach 6 Monaten Erholung wurde Luna von einer liebevollen Familie adoptiert.",
+        "story": "Lunas Reise begann im Sommer, als sie im Meeresgarten umherirrend gefunden wurde, stark unterernährt und verängstigt. Durch Monate engagierter Pflege, richtiger Ernährung und viel Liebe verwandelte sich Luna in einen glücklichen, gesunden Hund, bereit zur Adoption. Ihre Geschichte zeigt, was möglich ist, wenn eine Gemeinschaft zusammenkommt.",
+        "updates": {
+          "u1": {
+            "title": "Rettungstag",
+            "description": "Luna wurde im Meeresgarten gefunden, verängstigt aber freundlich. Ins Tierheim zur Untersuchung gebracht."
+          },
+          "u2": {
+            "title": "Bereit zur Adoption",
+            "description": "Nach vollständiger Genesung, Impfungen und Kastration ist Luna bereit, ihre Familie für immer zu finden!"
+          },
+          "u3": {
+            "title": "Adoptiert!",
+            "description": "Luna hat ihre perfekte Familie gefunden! Die Familie Petrov hat sich auf den ersten Blick verliebt. Glückliche Schwänze voraus!"
+          }
+        }
+      },
+      "case4": {
+        "title": "Rex erholt sich von Unfall",
+        "description": "Von Auto angefahren, Rex überlebte, braucht aber langfristige Rehabilitation.",
+        "story": "Rex wurde von einem schnell fahrenden Auto auf einer belebten Straße angefahren. Eine Gruppe Teenager wurde Zeuge des Unfalls und rief sofort um Hilfe. Gegen alle Widrigkeiten überlebte Rex, erlitt aber erhebliche Verletzungen, die eine umfangreiche Rehabilitation erfordern. Er ist ein Kämpfer, der jede Chance auf ein normales Leben verdient.",
+        "updates": {
+          "u1": {
+            "title": "Notoperation abgeschlossen",
+            "description": "Rex hat die Notoperation überstanden. Die nächsten 48 Stunden sind kritisch, aber das Tierärzteteam ist optimistisch."
+          },
+          "u2": {
+            "title": "Rex ist stabil",
+            "description": "Tolle Neuigkeiten! Rex frisst selbstständig und beginnt mit dem Schwanz zu wedeln. Physiotherapie beginnt nächste Woche."
+          }
+        }
+      }
+    },
+    "campaigns": {
+      "c1": {
+        "title": "Winter-Unterkunft-Kampagne",
+        "description": "Helfen Sie uns, warme Unterkünfte für streunende Tiere während der kalten Wintermonate bereitzustellen."
+      },
+      "c2": {
+        "title": "Kastrationsprogramm",
+        "description": "Finanzieren Sie Sterilisationsoperationen, um die Streunerpopulation human zu kontrollieren."
+      },
+      "c3": {
+        "title": "Notfall-Medizin-Fonds",
+        "description": "Unterstützen Sie unseren Fonds für dringende medizinische Versorgung für Tiere in kritischem Zustand."
+      },
+      "c4": {
+        "title": "Füttere die Streuner",
+        "description": "Stellen Sie Mahlzeiten für streunende Tiere in städtischen Gebieten in ganz Bulgarien bereit."
+      },
+      "c5": {
+        "title": "Tierheim-Renovierung",
+        "description": "Helfen Sie uns, unser Haupttierheim zu renovieren, um mehr Tiere in Not unterzubringen."
+      },
+      "c6": {
+        "title": "Impfkampagne",
+        "description": "Schützen Sie streunende Tiere vor tödlichen Krankheiten mit unserem Impfprogramm."
+      },
+      "units": {
+        "homes": "Unterkünfte",
+        "surgeries": "Operationen",
+        "meals": "Mahlzeiten",
+        "vaccinations": "Impfungen"
+      }
+    },
+    "partners": {
+      "p1": {
+        "contribution": "Monatliche Futterspenden",
+        "description": "Bulgariens führende Zoohandlungskette, die Qualitätsprodukte anbietet und Adoptionsveranstaltungen unterstützt."
+      },
+      "p2": {
+        "contribution": "12 Tonnen Futter gespendet",
+        "description": "Premium-Tiernahrungsmarke, die sich der Gesundheit aller Tiere, einschließlich Streuner, verschrieben hat."
+      },
+      "p3": {
+        "contribution": "Kostenlose Notfallberatungen",
+        "description": "Moderne Tierklinik mit umfassender Versorgung und Fokus auf Rettungstiere."
+      },
+      "p4": {
+        "name": "Tierfreunde-Stiftung",
+        "contribution": "Hauptfinanzierungspartner",
+        "description": "Gemeinnützige Organisation für Tierschutz durch Bildung und direkte Hilfe."
+      },
+      "p5": {
+        "name": "Happy Paws Shop",
+        "contribution": "Gastgeber für Adoptionsveranstaltungen",
+        "description": "Lokale Tierboutique, die wöchentliche Adoptionsveranstaltungen veranstaltet und Vorräte spendet."
+      },
+      "p6": {
+        "contribution": "Spezialisierte Ernährung",
+        "description": "Bietet spezialisierte Ernährung für Tiere mit medizinischen Bedingungen."
+      },
+      "p7": {
+        "name": "Dr. Petrov Tierklinik",
+        "contribution": "Vergünstigte Operationen",
+        "description": "Familiengeführte Klinik mit vergünstigten Diensten für Rettungsorganisationen."
+      },
+      "p8": {
+        "name": "Pfoten & Krallen Club",
+        "contribution": "Freiwilligenkoordination",
+        "description": "Gemeinschaftsgruppe, die Freiwillige für Fütterungsrouten und Rettungsaktionen organisiert."
+      }
+    },
+    "volunteers": {
+      "v1": {
+        "name": "Maria Iwanowa",
+        "bio": "Engagierte Tierretterin mit 5 Jahren Erfahrung. Spezialisiert auf Notfallrettungen und Pflegekoordination."
+      },
+      "v2": {
+        "name": "Iwan Petrow",
+        "bio": "Tiermedizinstudent mit Leidenschaft für Tierschutz. Hilft bei medizinischer Versorgung und Rehabilitation nach Operationen."
+      },
+      "v3": {
+        "name": "Elena Dimitrowa",
+        "bio": "Professionelle Hundetrainerin, die kostenlose Verhaltensberatungen für gerettete Tiere anbietet, um ihre Adoptionschancen zu verbessern."
+      }
+    },
+    "badges": {
+      "monthlyHero": "Monatlicher Held",
+      "rescueChampion": "Rettungs-Champion",
+      "animals100": "100+ Tiere gerettet",
+      "fosterHero": "Pflege-Held",
+      "medicalSupport": "Medizinische Unterstützung",
+      "topDonor": "Top-Spender",
+      "trainingExpert": "Trainingsexperte",
+      "communityLeader": "Community-Leiter",
+      "animals200": "200+ Tiere gerettet"
+    },
+    "users": {
+      "u1": {
+        "name": "Stefan Georgiew"
+      }
+    },
+    "posts": {
+      "p1": {
+        "content": "Habe gerade die kleine Mila in ihr Pflegeheim gebracht! 🏠 Sie wurde verlassen am Bahnhof gefunden, aber schau sie jetzt an - macht es sich schon bequem. Suche ihre Familie für immer! #AdoptierStattKaufen"
+      },
+      "p2": {
+        "content": "Tolle Neuigkeiten! Rex hat heute sein 6-wöchiges Rehabilitationsprogramm abgeschlossen! 🎉 Von kaum laufen können bis zum Rennen und Spielen - dafür tun wir, was wir tun. Danke an alle für eure Unterstützung und Spenden!"
+      },
+      "p3": {
+        "content": "Kann jemand eine gute Tierklinik in Plovdiv für eine streunende Katze empfehlen, die ich gefunden habe? Sie scheint eine Augeninfektion zu haben und ich möchte ihr helfen. Jeden Rat schätze ich! 🙏"
+      }
+    }
   }
 }

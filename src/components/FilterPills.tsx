@@ -23,7 +23,7 @@ export const FilterPills = ({ options, selected, onSelect }: FilterPillsProps) =
             "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all active:scale-[0.98]",
             selected === option.id
               ? "bg-primary text-primary-foreground shadow-sm"
-              : "bg-muted/60 text-foreground/70 hover:bg-muted hover:text-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
           )}
         >
           {option.icon}

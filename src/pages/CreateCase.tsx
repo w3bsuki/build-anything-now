@@ -46,7 +46,7 @@ const CreateCase = () => {
         broughtToClinicAt: '',
         images: [] as File[],
         fundraisingGoal: '',
-        currency: 'BGN',
+        currency: 'EUR',
     });
 
     const updateForm = (field: string, value: string | File[]) => {
@@ -292,8 +292,8 @@ const CreateCase = () => {
                                         onChange={(e) => updateForm('currency', e.target.value)}
                                         className="px-3 py-2 rounded-lg border border-input bg-background text-sm"
                                     >
-                                        <option value="BGN">BGN</option>
                                         <option value="EUR">EUR</option>
+                                        <option value="BGN">BGN</option>
                                         <option value="USD">USD</option>
                                     </select>
                                 </div>

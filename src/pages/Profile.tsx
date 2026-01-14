@@ -71,7 +71,7 @@ const Profile = () => {
               <p className="text-sm text-muted-foreground">{t('profile.donations')}</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{mockStats.totalAmount} BGN</p>
+              <p className="text-2xl font-bold text-foreground">{mockStats.totalAmount} EUR</p>
               <p className="text-sm text-muted-foreground">{t('profile.contributed')}</p>
             </div>
             <div>

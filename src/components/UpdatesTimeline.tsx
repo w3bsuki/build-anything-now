@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { CaseUpdate } from '@/types';
 import { cn } from '@/lib/utils';
 import { Stethoscope, Flag, Bell, PartyPopper } from 'lucide-react';
-import { format } from 'date-fns';
 
 interface UpdatesTimelineProps {
   updates: CaseUpdate[];
@@ -27,9 +27,20 @@ const typeConfig = {
 };
 
 export function UpdatesTimeline({ updates }: UpdatesTimelineProps) {
+  const { i18n } = useTranslation();
+  
   const sortedUpdates = [...updates].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+
+  // Format date according to current locale
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString(i18n.language, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="space-y-0">
@@ -58,7 +69,7 @@ export function UpdatesTimeline({ updates }: UpdatesTimelineProps) {
             {/* Content */}
             <div className="pb-4 pt-0.5">
               <p className="text-xs text-muted-foreground mb-0.5">
-                {format(new Date(update.date), 'MMM d, yyyy')}
+                {formatDate(update.date)}
               </p>
               <h4 className="font-medium text-sm text-foreground">{update.title}</h4>
               <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">

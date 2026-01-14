@@ -92,6 +92,15 @@ export default defineSchema({
     })
         .index("by_user", ["userId"]),
 
+    // Rate limiting for machine translation requests (on-demand UGC translation)
+    translationRateLimits: defineTable({
+        clerkId: v.string(),
+        day: v.number(),
+        count: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_clerk_day", ["clerkId", "day"]),
+
     // Cases table - main animal reports with fundraising
     cases: defineTable({
         userId: v.id("users"),
@@ -103,9 +112,27 @@ export default defineSchema({
             v.literal("medical"),
             v.literal("rescue")
         ),
+        // Language of the original user-generated content (ISO locale like "bg", "en", "de")
+        language: v.optional(v.string()),
         title: v.string(),
         description: v.string(),
         story: v.optional(v.string()),
+        // Cached machine translations, keyed by target locale.
+        // Only translated fields are stored to keep payload small.
+        translations: v.optional(v.record(v.string(), v.object({
+            title: v.optional(v.string()),
+            description: v.optional(v.string()),
+            story: v.optional(v.string()),
+            translatedAt: v.number(),
+            provider: v.string(),
+            sourceHash: v.string(),
+        }))),
+        // Per-locale status (useful for showing "Translating..." and retrying on failures).
+        translationStatus: v.optional(v.record(v.string(), v.object({
+            status: v.union(v.literal("pending"), v.literal("done"), v.literal("error")),
+            updatedAt: v.number(),
+            error: v.optional(v.string()),
+        }))),
         images: v.array(v.id("_storage")),
         location: v.object({
             city: v.string(),

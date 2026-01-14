@@ -6,6 +6,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   { ignores: ["dist"] },
+  // Convex backend code runs server-side (node-like runtime).
+  {
+    files: ["convex/**/*.{ts,tsx}"] ,
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

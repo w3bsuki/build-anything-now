@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clinic } from '@/types';
@@ -10,6 +11,15 @@ interface ClinicCardProps {
 }
 
 export const ClinicCard = ({ clinic }: ClinicCardProps) => {
+  const { t } = useTranslation();
+  
+  // Helper to get translated specialization
+  const getSpecializationLabel = (spec: string) => {
+    const key = `clinicSpecializations.${spec.toLowerCase().replace(/[\s/]+/g, '')}`;
+    const translated = t(key, { defaultValue: '' });
+    return translated || spec;
+  };
+  
   return (
     <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
       <Link to={`/clinics/${clinic.id}`}>
@@ -58,7 +68,7 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
                 )}
                 {clinic.specializations.map((spec) => (
                   <Badge key={spec} variant="outline" className="text-xs">
-                    {spec}
+                    {getSpecializationLabel(spec)}
                   </Badge>
                 ))}
               </div>

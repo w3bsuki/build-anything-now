@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { mockCampaigns } from '@/data/mockData';
+import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import { ArrowLeft, Heart, Calendar, Target, Users, Bookmark } from 'lucide-react';
@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 
 const CampaignProfile = () => {
   const { t } = useTranslation();
+  const { mockCampaigns } = useTranslatedMockData();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
   const campaign = mockCampaigns.find((c) => c.id === id);

@@ -33,7 +33,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
 
       <Link to={`/case/${caseData.id}`} className="block">
         {/* Image */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="relative aspect-[16/9] overflow-hidden bg-muted">
           <img
             src={caseData.images[0]}
             alt={caseData.title}
@@ -46,7 +46,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
 
         {/* Content */}
         <div className="p-3 pb-1.5">
-          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2 leading-snug">
+          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
             {caseData.title}
           </h3>
 

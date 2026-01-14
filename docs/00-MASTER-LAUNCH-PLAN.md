@@ -7,6 +7,15 @@
 
 ---
 
+## 🛑 Stop-the-line decisions (do first)
+
+These are project-wide decisions that should be made up-front (track outcomes in `../DECISIONS.md`):
+
+- [ ] Canonical name/branding ("Pawsy" vs "PawsSafe")
+- [ ] Canonical package manager (recommend: pnpm) + remove extra lockfiles after verification
+- [ ] Auth strategy (Clerk → Convex identity + user sync approach)
+- [ ] Design tokens: single source of truth in `src/index.css` (OKLCH vs HSL)
+
 ## 📊 Audit Summary
 
 | Area | Issues Found | Critical | Status |
@@ -14,10 +23,10 @@
 | **UI Components** | 30 | 4 | 🔴 Needs Work |
 | **Pages & UX Flows** | 35 | 6 | 🔴 Needs Work |
 | **Backend (Convex)** | 42 | 6 | 🔴 Needs Work |
-| **Security** | 15 | 6 | 🔴 Critical |
+| **Security** | 15 | 7 | 🔴 Critical |
 | **Configuration** | 20 | 3 | 🟡 Partial |
 | **Types & Data** | 18 | 2 | 🟡 Partial |
-| **TOTAL** | **160** | **27** | **35% Ready** |
+| **TOTAL** | **160** | **28** | **35% Ready** |
 
 ---
 
@@ -30,13 +39,26 @@
 | [03-PRODUCTION-LAUNCH-CHECKLIST.md](./03-PRODUCTION-LAUNCH-CHECKLIST.md) | Deployment, testing, environment setup | ✅ Created |
 | [04-COMPONENT-STANDARDS-GUIDE.md](./04-COMPONENT-STANDARDS-GUIDE.md) | Design tokens, patterns, best practices | ✅ Created |
 | [05-SECURITY-REMEDIATION-PLAN.md](./05-SECURITY-REMEDIATION-PLAN.md) | Critical security fixes with code | ✅ Created |
+| [06-TAILWIND-SHADCN-STYLING.md](./06-TAILWIND-SHADCN-STYLING.md) | Token/font/animation coherence plan | ✅ Created |
+
+---
+
+## 🚦 Current Code Health (gates)
+
+| Check | Status | Command |
+|-------|--------|---------|
+| Build | ✅ Pass | `pnpm build` (or `npm run build`) |
+| Lint | ❌ Fail | `pnpm lint` |
+| TypeCheck | ❌ Fail | `pnpm exec tsc -p tsconfig.app.json --noEmit` |
+
+Evidence: `docs/archive/gpt/checks-run.md`.
 
 ---
 
 ## 🚨 Critical Blockers (Must Fix First)
 
 ### Week 1: Security & Auth
-1. **6 Authorization Bypass Vulnerabilities** - Any user can modify other users' data
+1. **7 Authorization Bypass Vulnerabilities (Convex)** - Includes `convex/users.ts` `upsert`
 2. **No Authentication System** - Clerk installed but not integrated
 3. **No Payment Flow** - Core feature completely missing
 4. **HTTP Geolocation** - Mixed content error on HTTPS
@@ -110,7 +132,7 @@
 ## 🎯 Definition of Done
 
 ### Before Launch
-- [ ] All 6 critical security vulnerabilities fixed
+- [ ] All 7 critical security vulnerabilities fixed
 - [ ] Authentication working (sign up, sign in, OAuth)
 - [ ] Payment flow working (donate, checkout, confirmation)
 - [ ] All pages connected to real Convex queries
@@ -147,6 +169,10 @@
 # Development
 pnpm dev              # Start Vite dev server
 npx convex dev        # Start Convex backend
+
+# Quality gates
+pnpm lint             # ESLint must pass
+pnpm exec tsc -p tsconfig.app.json --noEmit  # Typecheck must pass
 
 # Build
 pnpm build            # Production build

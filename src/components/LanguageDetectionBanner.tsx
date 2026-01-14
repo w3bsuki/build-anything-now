@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Globe, X, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,10 +27,14 @@ const supportedLanguages = ['bg', 'uk', 'ru', 'de', 'en'] as const;
 
 export function LanguageDetectionBanner() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const [detectedCountry, setDetectedCountry] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Hide on presentation and partner pages
+  const isPresentation = location.pathname === '/presentation' || location.pathname === '/partner';
 
   useEffect(() => {
     // Check if user already dismissed the prompt
@@ -53,11 +58,11 @@ export function LanguageDetectionBanner() {
 
   const detectCountry = async () => {
     try {
-      // Using ip-api.com (free, no API key needed, 45 req/min limit)
-      const response = await fetch('http://ip-api.com/json/?fields=country,countryCode');
-      const data: { countryCode: string } = await response.json();
+      // Using ipapi.co (free tier, HTTPS, 1000 req/day)
+      const response = await fetch('https://ipapi.co/json/');
+      const data: { country_code: string } = await response.json();
       
-      const countryCode = data.countryCode;
+      const countryCode = data.country_code;
       const suggestedLang = COUNTRY_LANGUAGE_MAP[countryCode];
       
       // Show banner if we detected a supported country (even if current lang matches)
@@ -83,7 +88,7 @@ export function LanguageDetectionBanner() {
     setShowDropdown(false);
   };
 
-  if (isLoading || !isVisible || !detectedCountry) {
+  if (isLoading || !isVisible || !detectedCountry || isPresentation) {
     return null;
   }
 

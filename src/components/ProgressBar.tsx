@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface ProgressBarProps {
@@ -13,12 +14,13 @@ interface ProgressBarProps {
 export function ProgressBar({
   current,
   goal,
-  currency = 'BGN',
+  currency = 'EUR',
   showLabels = true,
   layout = 'default',
   size = 'md',
   className,
 }: ProgressBarProps) {
+  const { t } = useTranslation();
   const percentage = Math.min((current / goal) * 100, 100);
 
   const heights = {
@@ -39,19 +41,21 @@ export function ProgressBar({
             {formattedCurrent} {currency}
           </span>
           <span className="text-sm text-muted-foreground">
-            of {formattedGoal} {currency}
+            {t('common.of')} {formattedGoal} {currency}
           </span>
         </div>
       )}
 
       {showLabels && layout === 'compact' && (
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-foreground">
-            {formattedCurrent}/{formattedGoal} {currency}
-          </span>
-          <span className="flex items-baseline gap-1">
-            <span className="text-sm font-medium text-primary">{formattedPercent}</span>
-            <span className="text-xs text-muted-foreground">funded</span>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0 mb-1.5">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-sm font-semibold text-foreground">
+              {formattedCurrent}/{formattedGoal}
+            </span>
+            <span className="text-xs text-muted-foreground">{currency}</span>
+          </div>
+          <span className="text-xs text-primary font-medium">
+            {formattedPercent} {t('fundraising.funded')}
           </span>
         </div>
       )}
@@ -64,7 +68,7 @@ export function ProgressBar({
       </div>
       {showLabels && layout === 'default' && (
         <p className="text-xs text-muted-foreground mt-1.5">
-          {formattedPercent} funded
+          {formattedPercent} {t('fundraising.funded')}
         </p>
       )}
     </div>

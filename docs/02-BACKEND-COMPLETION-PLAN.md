@@ -170,6 +170,34 @@ export const create = internalMutation({
 });
 ```
 
+#### 1.7 Secure users.upsert (Internal Only / Strict Identity Match)
+**File:** `convex/users.ts`
+
+**Risk:** Any caller can create/overwrite user records without an ownership/identity check  
+**Fix:** Prefer internal-only (webhook) or enforce `identity.subject === args.clerkId`
+
+```typescript
+// Recommended: internal-only upsert called from a Clerk webhook action
+import { internalMutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const upsert = internalMutation({
+  args: {
+    clerkId: v.string(),
+    email: v.optional(v.string()),
+    name: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Upsert logic here (trusted caller only)
+  },
+});
+
+// If you must expose a client-callable upsert:
+// - require identity
+// - block writing other users by enforcing identity match
+```
+
 ---
 
 ### 2. Create Reusable Auth Helper
@@ -177,8 +205,8 @@ export const create = internalMutation({
 **New File:** `convex/lib/auth.ts`
 
 ```typescript
-import { QueryCtx, MutationCtx } from "./_generated/server";
-import { Doc } from "./_generated/dataModel";
+import { type MutationCtx, type QueryCtx } from "../_generated/server";
+import { type Doc } from "../_generated/dataModel";
 
 export async function requireAuth(
   ctx: QueryCtx | MutationCtx
@@ -204,7 +232,7 @@ export async function requireAdmin(
   ctx: QueryCtx | MutationCtx
 ): Promise<Doc<"users">> {
   const user = await requireAuth(ctx);
-  if (user.role !== 'admin') {
+  if (user.role !== "admin") {
     throw new Error("Admin access required");
   }
   return user;
@@ -1246,7 +1274,7 @@ export const resolveReport = mutation({
 
 ### Week 1: Security & Schema
 - [ ] Create `convex/lib/auth.ts` helper
-- [ ] Fix all authorization vulnerabilities (6 files)
+- [ ] Fix all authorization vulnerabilities (7 confirmed issues)
 - [ ] Add input validation
 - [ ] Create new tables (7 tables)
 - [ ] Enhance existing tables (4 tables)

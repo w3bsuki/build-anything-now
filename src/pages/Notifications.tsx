@@ -9,7 +9,7 @@ const mockNotifications = [
     id: '1',
     type: 'donation_received' as const,
     title: 'Donation Successful',
-    message: 'Your donation of 50 BGN to Luna was received. Thank you for helping!',
+    message: 'Your donation of 50 EUR to Luna was received. Thank you for helping!',
     read: false,
     createdAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
   },
@@ -62,7 +62,7 @@ const getNotificationIcon = (type: string) => {
   }
 };
 
-const formatTimeAgo = (timestamp: number, t: (key: string, options?: any) => string) => {
+const formatTimeAgo = (timestamp: number, t: (key: string, options?: Record<string, unknown>) => string) => {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   
   if (seconds < 60) return t('time.justNow');

@@ -11,7 +11,7 @@ const mockHistory = [
     id: '1',
     caseName: 'Luna - Emergency Surgery',
     amount: 50,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
     transactionId: 'TXN-001234',
@@ -20,7 +20,7 @@ const mockHistory = [
     id: '2',
     caseName: 'Max - Street Rescue',
     amount: 30,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
     transactionId: 'TXN-001233',
@@ -29,7 +29,7 @@ const mockHistory = [
     id: '3',
     caseName: 'Bella - Medical Treatment',
     amount: 25,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 14 * 24 * 60 * 60 * 1000,
     transactionId: 'TXN-001232',
@@ -38,7 +38,7 @@ const mockHistory = [
     id: '4',
     caseName: 'Winter Campaign 2025',
     amount: 100,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 30 * 24 * 60 * 60 * 1000,
     transactionId: 'TXN-001231',
@@ -135,7 +135,7 @@ const DonationHistory = () => {
                 <div key={group.key}>
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-sm font-semibold text-foreground">{group.label}</h2>
-                    <span className="text-xs text-muted-foreground">{group.total} BGN</span>
+                    <span className="text-xs text-muted-foreground">{group.total} EUR</span>
                   </div>
                   
                   <div className="space-y-2">

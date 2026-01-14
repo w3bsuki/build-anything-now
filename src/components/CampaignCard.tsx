@@ -32,8 +32,8 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
       </div>
 
       <Link to={`/campaigns/${campaign.id}`} className="block">
-        {/* Image - same aspect ratio as CaseCard */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        {/* Image - shorter aspect ratio for more compact cards */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-muted">
           <img
             src={campaign.image}
             alt={campaign.title}
@@ -52,7 +52,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
 
         {/* Content */}
         <div className="p-3 pb-1.5">
-          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2 leading-snug">
+          <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2">
             {campaign.title}
           </h3>
 

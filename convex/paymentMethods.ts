@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireUser, assertOwnership } from "./lib/auth";
 
 // Get all payment methods for current user
 export const getMyPaymentMethods = query({
@@ -74,12 +75,10 @@ export const add = mutation({
 export const remove = mutation({
     args: { id: v.id("paymentMethods") },
     handler: async (ctx, args) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) throw new Error("Not authenticated");
-
+        const user = await requireUser(ctx);
         const method = await ctx.db.get(args.id);
         if (!method) throw new Error("Payment method not found");
-
+        assertOwnership(user, method.userId, "payment method");
         await ctx.db.delete(args.id);
     },
 });
@@ -88,15 +87,10 @@ export const remove = mutation({
 export const setDefault = mutation({
     args: { id: v.id("paymentMethods") },
     handler: async (ctx, args) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) throw new Error("Not authenticated");
-
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-            .unique();
-
-        if (!user) throw new Error("User not found");
+        const user = await requireUser(ctx);
+        const target = await ctx.db.get(args.id);
+        if (!target) throw new Error("Payment method not found");
+        assertOwnership(user, target.userId, "payment method");
 
         // Unset all defaults first
         const methods = await ctx.db

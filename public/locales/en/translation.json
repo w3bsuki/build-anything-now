@@ -28,6 +28,15 @@
     "setDefault": "Set default",
     "addNewCard": "Add New Card"
   },
+  "contentTranslation": {
+    "translatePrompt": "This case was posted in another language.",
+    "translate": "Translate",
+    "translating": "Translating...",
+    "translatingCta": "Translating...",
+    "viewOriginal": "View original",
+    "viewTranslated": "View translation",
+    "machineTranslatedFrom": "Machine translated from {{from}}"
+  },
   "create": {
     "title": "What would you like to do?",
     "reportAnimal": "Report Animal",
@@ -84,7 +93,7 @@
     "noPartnersFound": "No partners found matching your criteria",
     "noVolunteersFound": "No volunteers found matching your criteria",
     "animalsHelped": "Animals Helped",
-    "bgnContributed": "BGN Contributed",
+    "eurContributed": "EUR Contributed",
     "hoursGiven": "Hours Given",
     "makeADifference": "Want to make a difference?",
     "joinPartners": "Join our network of partners and help save more animals",
@@ -180,6 +189,28 @@
     "EUR": "Euro (EUR)",
     "USD": "US Dollar (USD)"
   },
+  "fundraising": {
+    "funded": "funded",
+    "goal": "Goal",
+    "raised": "Raised"
+  },
+  "clinicSpecializations": {
+    "emergency": "Emergency",
+    "surgery": "Surgery",
+    "intensivecare": "Intensive Care",
+    "generalcare": "General Care",
+    "vaccinations": "Vaccinations",
+    "dental": "Dental",
+    "orthopedics": "Orthopedics",
+    "cardiology": "Cardiology",
+    "xray": "X-Ray",
+    "neurology": "Neurology",
+    "oncology": "Oncology",
+    "dermatology": "Dermatology",
+    "labtests": "Lab Tests",
+    "exoticpets": "Exotic Pets",
+    "rehabilitation": "Rehabilitation"
+  },
   "notifications": {
     "title": "Notifications",
     "unread": "{{count}} unread",
@@ -202,7 +233,7 @@
     "firstSteps": "First Steps",
     "firstStepsDesc": "Make your first donation",
     "bigHeart": "Big Heart",
-    "bigHeartDesc": "Make a single donation over 100 BGN",
+    "bigHeartDesc": "Make a single donation over 100 EUR",
     "helpingHand": "Helping Hand",
     "helpingHandDesc": "Help 10 animals",
     "monthlyHero": "Monthly Hero",
@@ -218,7 +249,7 @@
   },
   "myDonations": {
     "title": "My Donations",
-    "summary": "{{count}} donations • {{amount}} BGN total",
+    "summary": "{{count}} donations • {{amount}} EUR total",
     "recentDonations": "Recent Donations",
     "noDonations": "No donations yet",
     "donationsWillAppear": "Your donations will appear here",
@@ -272,7 +303,7 @@
     "contact": "Contact",
     "theirContribution": "Their Contribution",
     "campaignsSupported": "Campaigns Supported",
-    "bgnDonated": "BGN Donated",
+    "eurDonated": "EUR Donated",
     "location": "Location",
     "socialMedia": "Social Media"
   },
@@ -287,7 +318,7 @@
     "badgesAchievements": "Badges & Achievements",
     "volunteerImpact": "Volunteer Impact",
     "livesChanged": "Lives Changed",
-    "bgnRaised": "BGN Raised",
+    "eurRaised": "EUR Raised",
     "makingDifference": "has been making a difference since {{since}}, dedicating {{hours}} hours to animal welfare.",
     "casesHelped": "Cases Helped",
     "connect": "Connect",
@@ -410,5 +441,200 @@
     "transactionId": "Transaction ID",
     "noTransactions": "No transactions found",
     "historyWillAppear": "Your donation history will appear here"
+  },
+  "cities": {
+    "sofia": "Sofia",
+    "plovdiv": "Plovdiv",
+    "varna": "Varna",
+    "burgas": "Burgas"
+  },
+  "neighborhoods": {
+    "center": "Center",
+    "kapana": "Kapana",
+    "seaGarden": "Sea Garden",
+    "asparuhovo": "Asparuhovo"
+  },
+  "mockData": {
+    "cases": {
+      "case1": {
+        "title": "Max needs urgent surgery",
+        "description": "Found with a broken leg near the park. Needs immediate medical attention.",
+        "story": "Max was found by a kind passerby near Central Park, limping badly with what appeared to be a broken hind leg. Despite his pain, he showed incredible trust in humans, allowing rescuers to approach and carefully transport him to the emergency clinic. The veterinary team has assessed his condition and determined that he needs surgery as soon as possible to ensure a full recovery.",
+        "updates": {
+          "u1": {
+            "title": "Max has arrived at the clinic",
+            "description": "After a careful rescue operation, Max is now safely at VetCare Sofia where the team is preparing him for surgery."
+          },
+          "u2": {
+            "title": "Pre-surgery examination complete",
+            "description": "X-rays confirm a clean break. Surgery is scheduled for tomorrow morning. Max is resting comfortably with pain medication."
+          },
+          "u3": {
+            "title": "Surgery successful!",
+            "description": "Max's surgery went perfectly! The vet expects a full recovery within 6-8 weeks. Thank you to all donors!"
+          }
+        }
+      },
+      "case2": {
+        "title": "Whiskers needs emergency care",
+        "description": "Abandoned kitten with respiratory infection. Requires immediate treatment.",
+        "story": "Little Whiskers was found in a cardboard box behind a restaurant, barely breathing and severely dehydrated. This tiny fighter, estimated to be only 4 weeks old, was brought to our partner clinic where vets discovered a severe respiratory infection. Without immediate treatment, Whiskers wouldn't have survived another day.",
+        "updates": {
+          "u1": {
+            "title": "Emergency intake",
+            "description": "Whiskers arrived in critical condition. Started IV fluids and antibiotics immediately."
+          },
+          "u2": {
+            "title": "Slight improvement",
+            "description": "Whiskers is responding to treatment! Breathing is easier and she's starting to show interest in food."
+          }
+        }
+      },
+      "case3": {
+        "title": "Luna found her forever home!",
+        "description": "After 6 months of recovery, Luna has been adopted by a loving family.",
+        "story": "Luna's journey began in the summer when she was found wandering the Sea Garden, severely malnourished and scared. Through months of dedicated care, proper nutrition, and lots of love, Luna transformed into a happy, healthy dog ready for adoption. Her story shows what's possible when a community comes together.",
+        "updates": {
+          "u1": {
+            "title": "Rescue day",
+            "description": "Luna was found in the Sea Garden, scared but friendly. Brought to the shelter for evaluation."
+          },
+          "u2": {
+            "title": "Ready for adoption",
+            "description": "After full recovery, vaccinations, and spaying, Luna is ready to find her forever family!"
+          },
+          "u3": {
+            "title": "Adopted!",
+            "description": "Luna has found her perfect family! The Petrov family fell in love at first sight. Happy tails ahead!"
+          }
+        }
+      },
+      "case4": {
+        "title": "Rex recovering from accident",
+        "description": "Hit by a car, Rex survived but needs long-term rehabilitation.",
+        "story": "Rex was hit by a speeding car on a busy road. A group of teenagers witnessed the accident and immediately called for help. Against all odds, Rex survived but sustained significant injuries requiring extensive rehabilitation. He's a fighter who deserves every chance at a normal life.",
+        "updates": {
+          "u1": {
+            "title": "Emergency surgery complete",
+            "description": "Rex made it through emergency surgery. The next 48 hours are critical but the vet team is optimistic."
+          },
+          "u2": {
+            "title": "Rex is stable",
+            "description": "Great news! Rex is eating on his own and starting to wag his tail. Physical therapy will begin next week."
+          }
+        }
+      }
+    },
+    "campaigns": {
+      "c1": {
+        "title": "Winter Shelter Campaign",
+        "description": "Help us provide warm shelter for stray animals during the cold winter months."
+      },
+      "c2": {
+        "title": "Spay & Neuter Program",
+        "description": "Fund sterilization surgeries to help control the stray population humanely."
+      },
+      "c3": {
+        "title": "Emergency Medical Fund",
+        "description": "Support our fund for urgent medical care for animals in critical condition."
+      },
+      "c4": {
+        "title": "Feed the Strays",
+        "description": "Provide meals for stray animals in urban areas across Bulgaria."
+      },
+      "c5": {
+        "title": "Shelter Renovation",
+        "description": "Help us renovate our main shelter to accommodate more animals in need."
+      },
+      "c6": {
+        "title": "Vaccination Drive",
+        "description": "Protect stray animals from deadly diseases with our vaccination program."
+      },
+      "units": {
+        "homes": "homes",
+        "surgeries": "surgeries",
+        "meals": "meals",
+        "vaccinations": "vaccinations"
+      }
+    },
+    "partners": {
+      "p1": {
+        "contribution": "Monthly food donations",
+        "description": "Bulgaria's leading pet store chain, providing quality supplies and supporting adoption events."
+      },
+      "p2": {
+        "contribution": "12 tons of food donated",
+        "description": "Premium pet nutrition brand committed to the health of all animals, including strays."
+      },
+      "p3": {
+        "contribution": "Free emergency consultations",
+        "description": "Modern veterinary clinic offering comprehensive care with a focus on rescue animals."
+      },
+      "p4": {
+        "name": "Animal Friends Foundation",
+        "contribution": "Major funding partner",
+        "description": "Non-profit organization dedicated to animal welfare through education and direct assistance."
+      },
+      "p5": {
+        "name": "Happy Paws Shop",
+        "contribution": "Adoption event hosting",
+        "description": "Local pet boutique that hosts weekly adoption events and donates supplies."
+      },
+      "p6": {
+        "contribution": "Specialized nutrition",
+        "description": "Provides specialized nutrition for animals with medical conditions."
+      },
+      "p7": {
+        "name": "Dr. Petrov Veterinary Clinic",
+        "contribution": "Discounted surgeries",
+        "description": "Family-run clinic offering discounted services for rescue organizations."
+      },
+      "p8": {
+        "name": "Paws & Claws Club",
+        "contribution": "Volunteer coordination",
+        "description": "Community group that organizes volunteers for feeding routes and rescue operations."
+      }
+    },
+    "volunteers": {
+      "v1": {
+        "name": "Maria Ivanova",
+        "bio": "Dedicated animal rescuer with 5 years of experience. Specializes in emergency rescues and foster care coordination."
+      },
+      "v2": {
+        "name": "Ivan Petrov",
+        "bio": "Veterinary student passionate about animal welfare. Helps with medical care and post-surgery rehabilitation."
+      },
+      "v3": {
+        "name": "Elena Dimitrova",
+        "bio": "Professional dog trainer offering free behavioral consultations for rescued animals to improve their adoption chances."
+      }
+    },
+    "badges": {
+      "monthlyHero": "Monthly Hero",
+      "rescueChampion": "Rescue Champion",
+      "animals100": "100+ Animals Saved",
+      "fosterHero": "Foster Hero",
+      "medicalSupport": "Medical Support",
+      "topDonor": "Top Donor",
+      "trainingExpert": "Training Expert",
+      "communityLeader": "Community Leader",
+      "animals200": "200+ Animals Saved"
+    },
+    "users": {
+      "u1": {
+        "name": "Stefan Georgiev"
+      }
+    },
+    "posts": {
+      "p1": {
+        "content": "Just brought little Mila to her foster home! 🏠 She was found abandoned near the train station, but look at her now - already making herself comfortable. Looking for her forever family! #AdoptDontShop"
+      },
+      "p2": {
+        "content": "Amazing news! Rex completed his 6-week rehabilitation program today! 🎉 From barely being able to walk to running and playing - this is why we do what we do. Thank you all for your support and donations!"
+      },
+      "p3": {
+        "content": "Can anyone recommend a good vet clinic in Plovdiv for a stray cat I found? She seems to have an eye infection and I want to help her. Any advice appreciated! 🙏"
+      }
+    }
   }
 }

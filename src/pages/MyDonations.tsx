@@ -10,7 +10,7 @@ const mockDonations = [
     caseName: 'Luna - Emergency Surgery',
     caseImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop',
     amount: 50,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
   },
@@ -19,7 +19,7 @@ const mockDonations = [
     caseName: 'Max - Street Rescue',
     caseImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&h=200&fit=crop',
     amount: 30,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
   },
@@ -28,7 +28,7 @@ const mockDonations = [
     caseName: 'Bella - Medical Treatment',
     caseImage: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop',
     amount: 25,
-    currency: 'BGN',
+    currency: 'EUR',
     status: 'completed' as const,
     createdAt: Date.now() - 14 * 24 * 60 * 60 * 1000,
   },
@@ -80,7 +80,7 @@ const MyDonations = () => {
               </div>
               <div>
                 <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-success/20 flex items-center justify-center">
-                  <span className="text-success font-bold text-sm">BGN</span>
+                  <span className="text-success font-bold text-sm">EUR</span>
                 </div>
                 <p className="text-2xl font-bold text-foreground">{totalAmount}</p>
                 <p className="text-xs text-muted-foreground">{t('profile.contributed')}</p>
