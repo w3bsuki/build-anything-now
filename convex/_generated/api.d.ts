@@ -13,6 +13,7 @@ import type * as cases from "../cases.js";
 import type * as clinics from "../clinics.js";
 import type * as devSeed from "../devSeed.js";
 import type * as donations from "../donations.js";
+import type * as lib_auth from "../lib/auth.js";
 import type * as notifications from "../notifications.js";
 import type * as paymentMethods from "../paymentMethods.js";
 import type * as settings from "../settings.js";
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   clinics: typeof clinics;
   devSeed: typeof devSeed;
   donations: typeof donations;
+  "lib/auth": typeof lib_auth;
   notifications: typeof notifications;
   paymentMethods: typeof paymentMethods;
   settings: typeof settings;

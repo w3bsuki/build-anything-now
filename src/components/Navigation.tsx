@@ -1,27 +1,28 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Megaphone, Users, User, Stethoscope, Plus, Bell, Heart, MessageCircle, HeartHandshake } from 'lucide-react';
+import { Home, Megaphone, Users, User, Stethoscope, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Bottom nav: Home, Campaigns, + (Create), Clinics, Partners
 const navItems = [
   { path: '/', labelKey: 'nav.home', icon: Home },
   { path: '/campaigns', labelKey: 'nav.campaigns', icon: Megaphone },
+  { path: 'create', labelKey: 'nav.create', icon: Plus, isCreate: true }, // Special create button
   { path: '/clinics', labelKey: 'nav.clinics', icon: Stethoscope },
-  { path: '/partners', labelKey: 'nav.partners', icon: Users },
-  { path: '/community', labelKey: 'nav.community', icon: MessageCircle },
+  { path: '/partners', labelKey: 'nav.partners', icon: Handshake },
 ];
 
 const desktopNavItems = [
   { path: '/', labelKey: 'nav.home', icon: Home },
   { path: '/campaigns', labelKey: 'nav.campaigns', icon: Megaphone },
   { path: '/clinics', labelKey: 'nav.clinics', icon: Stethoscope },
-  { path: '/partners', labelKey: 'nav.partners', icon: Users },
-  { path: '/community', labelKey: 'nav.community', icon: MessageCircle },
+  { path: '/partners', labelKey: 'nav.partners', icon: Handshake },
 ];
 
 // TODO: Replace with real data from Convex
 const unreadNotifications = 2;
+const unreadPosts = 5; // New community posts
 
 // Pages that show the mobile header (root/main pages only)
 const mobileHeaderPages = ['/', '/campaigns', '/clinics', '/partners', '/community', '/profile'];
@@ -60,34 +61,48 @@ export function Navigation() {
               <span className="font-semibold text-[15px] text-foreground">PawsSafe</span>
             </NavLink>
 
-            {/* Actions */}
+            {/* Actions - Community, Notifications, Profile */}
             <div className="flex items-center gap-1">
+              <NavLink
+                to="/community"
+                className={cn(
+                  "relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
+                  location.pathname === '/community' && "bg-primary/10"
+                )}
+              >
+                <MessageCircle className={cn(
+                  "size-5",
+                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
+                )} strokeWidth={1.75} />
+                {unreadPosts > 0 && location.pathname !== '/community' && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground flex items-center justify-center border-2 border-background">
+                    {unreadPosts > 9 ? '9+' : unreadPosts}
+                  </span>
+                )}
+              </NavLink>
               <NavLink
                 to="/notifications"
                 className="relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors"
               >
                 <Bell className="size-5 text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full bg-primary text-xs font-semibold text-primary-foreground flex items-center justify-center border-2 border-background">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground flex items-center justify-center border-2 border-background">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
               </NavLink>
               <NavLink
                 to="/profile"
-                className="size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors"
+                className={cn(
+                  "size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
+                  location.pathname === '/profile' && "bg-primary/10"
+                )}
               >
                 <User className={cn(
                   "size-5",
                   location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
                 )} strokeWidth={1.75} />
               </NavLink>
-              <button
-                onClick={() => setIsCreateOpen(true)}
-                className="size-8 flex items-center justify-center rounded-lg bg-primary text-primary-foreground active:bg-primary/90 transition-colors"
-              >
-                <Plus className="size-4.5" strokeWidth={2.5} />
-              </button>
             </div>
           </div>
         </header>
@@ -129,15 +144,39 @@ export function Navigation() {
               })}
             </div>
 
-            {/* Right Actions - notifications, profile, then create */}
+            {/* Right Actions - Create button, Community, notifications, profile */}
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsCreateOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+              >
+                <Plus className="size-4" strokeWidth={2.5} />
+                <span>{t('actions.create')}</span>
+              </button>
+              <NavLink
+                to="/community"
+                className={cn(
+                  "relative size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors",
+                  location.pathname === '/community' && "bg-primary/10"
+                )}
+              >
+                <MessageCircle className={cn(
+                  "size-5",
+                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/70"
+                )} />
+                {unreadPosts > 0 && location.pathname !== '/community' && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center shadow-sm">
+                    {unreadPosts > 9 ? '9+' : unreadPosts}
+                  </span>
+                )}
+              </NavLink>
               <NavLink
                 to="/notifications"
                 className="relative size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
               >
                 <Bell className="size-5 text-foreground/70" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1.5 rounded-full bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center shadow-sm">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center shadow-sm">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -154,12 +193,6 @@ export function Navigation() {
                   location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
                 )} />
               </NavLink>
-              <button
-                onClick={() => setIsCreateOpen(true)}
-                className="size-9 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                <Plus className="size-5" strokeWidth={2.5} />
-              </button>
             </div>
           </nav>
         </div>
@@ -172,6 +205,21 @@ export function Navigation() {
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
+
+              // Special handling for center Create button
+              if (item.isCreate) {
+                return (
+                  <button
+                    key="create"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="flex flex-col items-center justify-center flex-1 py-1.5"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/25">
+                      <Plus className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
+                    </div>
+                  </button>
+                );
+              }
 
               return (
                 <NavLink

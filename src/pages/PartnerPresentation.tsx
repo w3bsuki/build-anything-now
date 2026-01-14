@@ -22,7 +22,6 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -65,21 +64,23 @@ export default function PartnerPresentation() {
         id: 'title',
         render: () => (
           <div className="mx-auto w-full max-w-md text-center md:max-w-5xl">
-            <div className="text-5xl md:text-8xl">🐾</div>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight md:mt-6 md:text-7xl">
+            <div className="text-6xl md:text-8xl">🤝</div>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:mt-6 md:text-7xl">
               Paws<span className="text-primary">Safe</span>
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground md:mt-4 md:text-2xl">
-              Join the Partner Network for Animal Rescue
+            <p className="mt-3 text-base text-muted-foreground md:mt-4 md:text-2xl">
+              Partner with the animal rescue network
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 md:mt-8 md:gap-3">
-              <Badge variant="secondary" className="text-xs md:text-sm">Clinics</Badge>
-              <Badge variant="secondary" className="text-xs md:text-sm">Pet Stores</Badge>
-              <Badge variant="secondary" className="text-xs md:text-sm">Shelters</Badge>
-              <Badge variant="secondary" className="text-xs md:text-sm">Sponsors</Badge>
+            
+            <div className="mt-8 grid grid-cols-2 gap-3 md:flex md:flex-wrap md:items-center md:justify-center md:gap-4">
+              <PartnerTypeBadge icon={<Stethoscope className="size-4" />} label="Clinics" />
+              <PartnerTypeBadge icon={<Home className="size-4" />} label="Shelters" />
+              <PartnerTypeBadge icon={<Store className="size-4" />} label="Pet Stores" />
+              <PartnerTypeBadge icon={<Users className="size-4" />} label="Volunteers" />
             </div>
-            <p className="mt-4 text-xs text-muted-foreground md:mt-6 md:text-sm">
-              Together, we can save more animals
+            
+            <p className="mt-6 text-sm text-muted-foreground">
+              Free to join · No hidden fees · Start in 5 minutes
             </p>
           </div>
         ),
@@ -113,26 +114,21 @@ export default function PartnerPresentation() {
           return (
             <div className="mx-auto w-full max-w-md md:max-w-6xl">
               <Kicker>The problem</Kicker>
-              <h2 className="text-2xl font-extrabold tracking-tight md:text-6xl">
+              <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">
                 600M+ stray animals need help
               </h2>
+              <p className="mt-2 text-sm text-muted-foreground md:mt-3 md:text-lg">
+                The system is broken. Here's why animals suffer.
+              </p>
 
-              <div className="mt-6 md:hidden">
-                <div
-                  data-deck-swipe="ignore"
-                  className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide"
-                >
-                  {problemCards.map((card) => (
-                    <div key={card.title} className="w-[85vw] max-w-[300px] shrink-0 snap-center">
-                      <InfoCard {...card} />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-2 text-center text-[11px] text-muted-foreground">
-                  ← Swipe to see more →
-                </div>
+              {/* Mobile: Vertical stacked cards - all visible */}
+              <div className="mt-6 space-y-3 md:hidden">
+                {problemCards.map((card) => (
+                  <InfoCard key={card.title} {...card} />
+                ))}
               </div>
 
+              {/* Desktop: 3-column grid */}
               <div className="mt-10 hidden gap-6 md:grid md:grid-cols-3">
                 {problemCards.map((card) => (
                   <InfoCard key={card.title} {...card} />
@@ -183,7 +179,7 @@ export default function PartnerPresentation() {
           return (
             <div className="mx-auto w-full max-w-md md:max-w-6xl">
               <Kicker>How it works</Kicker>
-              <h2 className="text-2xl font-extrabold tracking-tight md:text-5xl">
+              <h2 className="text-3xl font-extrabold tracking-tight md:text-5xl">
                 From Street to Forever Home
               </h2>
               <p className="mt-2 text-sm text-muted-foreground md:mt-3 md:text-xl">
@@ -191,7 +187,7 @@ export default function PartnerPresentation() {
               </p>
 
               {/* Mobile: Compact vertical steps */}
-              <div className="mt-5 space-y-2 md:hidden">
+              <div className="mt-4 space-y-2 md:hidden">
                 {steps.map((step, index) => (
                   <div key={step.title} className="flex items-center gap-3">
                     <div className="flex flex-col items-center">
@@ -360,27 +356,17 @@ export default function PartnerPresentation() {
             </p>
 
             <div className="mt-8 md:mt-10">
-              {/* Mobile: Swipeable cards */}
-              <div className="md:hidden">
-                <div
-                  data-deck-swipe="ignore"
-                  className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 scrollbar-hide"
-                >
-                  {[
-                    { icon: <BadgeCheck className="size-6" />, title: 'Verified Badge', description: 'Stand out as a trusted partner. Donors fund your cases faster.' },
-                    { icon: <Stethoscope className="size-6" />, title: 'Clear Payouts', description: 'Transparent audit trail. No chasing payments. Funds released on verification.' },
-                    { icon: <Sparkles className="size-6" />, title: 'AI Case Creation', description: 'Create fundraiser cases in seconds, not hours. We handle the marketing.' },
-                    { icon: <MapPin className="size-6" />, title: 'Directory Listing', description: 'Rescuers find you when searching for nearby clinics. Free visibility.' },
-                    { icon: <Users className="size-6" />, title: 'Community Support', description: 'Help more animals without financial risk. We bring the donors.' },
-                  ].map((item) => (
-                    <div key={item.title} className="w-72 shrink-0 snap-start">
-                      <ValueCard {...item} />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-2 text-center text-xs text-muted-foreground">
-                  Swipe to see more benefits
-                </div>
+              {/* Mobile: Vertical stacked cards - all visible */}
+              <div className="space-y-3 md:hidden">
+                {[
+                  { icon: <BadgeCheck className="size-6" />, title: 'Verified Badge', description: 'Stand out as a trusted partner. Donors fund your cases faster.' },
+                  { icon: <Stethoscope className="size-6" />, title: 'Clear Payouts', description: 'Transparent audit trail. No chasing payments. Funds released on verification.' },
+                  { icon: <Sparkles className="size-6" />, title: 'AI Case Creation', description: 'Create fundraiser cases in seconds, not hours. We handle the marketing.' },
+                  { icon: <MapPin className="size-6" />, title: 'Directory Listing', description: 'Rescuers find you when searching for nearby clinics. Free visibility.' },
+                  { icon: <Users className="size-6" />, title: 'Community Support', description: 'Help more animals without financial risk. We bring the donors.' },
+                ].map((item) => (
+                  <ValueCard key={item.title} {...item} />
+                ))}
               </div>
 
               {/* Desktop: Grid */}
@@ -450,58 +436,58 @@ export default function PartnerPresentation() {
               Become a hub for animal rescue in your community
             </p>
 
-            <div className="mt-8 grid gap-6 md:mt-10 md:grid-cols-2">
+            <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-2">
               <Card>
-                <CardHeader>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <PawPrint className="size-6" />
+                <CardHeader className="p-4">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <PawPrint className="size-5" />
                   </div>
-                  <CardTitle>Adoption Day Partnerships</CardTitle>
-                  <CardDescription>
-                    Host adoption events at your store. We bring the animals and coordinate with shelters. You become the hero in your community.
+                  <CardTitle className="text-lg">Adoption Day Partnerships</CardTitle>
+                  <CardDescription className="text-sm">
+                    Host adoption events at your store. We coordinate with shelters.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Store className="size-6" />
+                <CardHeader className="p-4">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Store className="size-5" />
                   </div>
-                  <CardTitle>Supply Drop-Off Point</CardTitle>
-                  <CardDescription>
-                    Customers can donate pet supplies at your store. We handle collection and distribution to shelters. Great foot traffic driver.
+                  <CardTitle className="text-lg">Supply Drop-Off Point</CardTitle>
+                  <CardDescription className="text-sm">
+                    Customers donate pet supplies at your store. Great foot traffic.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Heart className="size-6" />
+                <CardHeader className="p-4">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Heart className="size-5" />
                   </div>
-                  <CardTitle>Sponsor Campaigns</CardTitle>
-                  <CardDescription>
-                    Your brand featured on rescue cases. CSR storytelling for your marketing. Show customers you care about animals.
+                  <CardTitle className="text-lg">Sponsor Campaigns</CardTitle>
+                  <CardDescription className="text-sm">
+                    Your brand featured on rescue cases. CSR storytelling.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <MapPin className="size-6" />
+                <CardHeader className="p-4">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <MapPin className="size-5" />
                   </div>
-                  <CardTitle>Directory Listing</CardTitle>
-                  <CardDescription>
-                    Pet owners find you when searching for pet services. Free visibility in our growing user base.
+                  <CardTitle className="text-lg">Directory Listing</CardTitle>
+                  <CardDescription className="text-sm">
+                    Pet owners find you when searching for pet services.
                   </CardDescription>
                 </CardHeader>
               </Card>
             </div>
 
-            <div className="mt-8 text-center">
-              <Badge variant="outline" className="text-base px-4 py-2">
+            <div className="mt-6 text-center">
+              <Badge variant="outline" className="text-sm px-3 py-1.5">
                 Zero cost to become a drop-off point or adoption partner
               </Badge>
             </div>
@@ -523,69 +509,69 @@ export default function PartnerPresentation() {
             </p>
 
             <div className="mt-8 md:mt-10">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-2">
                 <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="text-2xl">📢</span> Campaign Tools
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">📢</span> Campaign Tools
                     </CardTitle>
-                    <CardDescription className="text-base">
-                      Launch fundraisers with a few taps. AI helps write compelling stories. Share to social media in one click.
+                    <CardDescription className="text-sm">
+                      Launch fundraisers with a few taps. AI helps write compelling stories.
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="text-2xl">🐕</span> Adoption Listings
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">🐕</span> Adoption Listings
                     </CardTitle>
-                    <CardDescription>
-                      Global visibility for your adoptable pets. Digital applications. Smart matching filters.
+                    <CardDescription className="text-sm">
+                      Global visibility for your adoptable pets. Digital applications.
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="text-2xl">💰</span> Donor Transparency
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">💰</span> Donor Transparency
                     </CardTitle>
-                    <CardDescription>
-                      Donors see exactly where their money goes. They give more when they trust you.
+                    <CardDescription className="text-sm">
+                      Donors see exactly where their money goes.
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="text-2xl">🔒</span> Verification Badge
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">🔒</span> Verification Badge
                     </CardTitle>
-                    <CardDescription>
-                      Stand out as a verified, trusted organization. Beat the noise of fake campaigns.
+                    <CardDescription className="text-sm">
+                      Stand out as a verified, trusted organization.
                     </CardDescription>
                   </CardHeader>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="text-2xl">📊</span> Impact Reports
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <span className="text-xl">📊</span> Impact Reports
                     </CardTitle>
-                    <CardDescription>
-                      Show your community what you've achieved. Beautiful reports you can share.
+                    <CardDescription className="text-sm">
+                      Show your community what you've achieved.
                     </CardDescription>
                   </CardHeader>
                 </Card>
               </div>
 
-              <Card className="mt-6 border-primary/50 bg-primary/5">
-                <CardContent className="p-4 md:p-6">
+              <Card className="mt-4 border-primary/50 bg-primary/5">
+                <CardContent className="p-4">
                   <div className="text-center">
-                    <div className="text-lg font-semibold">Free to start. Upgrade when you're ready.</div>
+                    <div className="font-semibold">Free to start. Upgrade when you're ready.</div>
                     <div className="mt-1 text-sm text-muted-foreground">
-                      Basic features free forever. Pro features for growing organizations.
+                      Basic features free forever.
                     </div>
                   </div>
                 </CardContent>
@@ -800,51 +786,51 @@ export default function PartnerPresentation() {
               Donors give more when they trust the platform. We protect that trust.
             </p>
 
-            <div className="mt-8 grid gap-6 md:mt-10 md:grid-cols-2">
+            <div className="mt-8 grid gap-3 md:mt-10 md:grid-cols-2">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShieldCheck className="size-5 text-primary" />
+                <CardHeader className="p-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <ShieldCheck className="size-4 text-primary" />
                     Partner Verification
                   </CardTitle>
-                  <CardDescription>
-                    Every clinic and shelter is manually verified. Donors see the badge and trust you instantly.
+                  <CardDescription className="text-sm">
+                    Every clinic and shelter is manually verified.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BadgeCheck className="size-5 text-primary" />
+                <CardHeader className="p-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <BadgeCheck className="size-4 text-primary" />
                     Transparent Updates
                   </CardTitle>
-                  <CardDescription>
-                    Medical-style timeline for every case. Donors see progress, proof, and outcomes.
+                  <CardDescription className="text-sm">
+                    Medical-style timeline for every case.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Stethoscope className="size-5 text-primary" />
+                <CardHeader className="p-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Stethoscope className="size-4 text-primary" />
                     Clinic Payouts
                   </CardTitle>
-                  <CardDescription>
-                    Funds go to verified clinics, not individuals. Invoices attached for full transparency.
+                  <CardDescription className="text-sm">
+                    Funds go to verified clinics, not individuals.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="size-5 text-primary" />
-                    AI Fraud Detection (Roadmap)
+                <CardHeader className="p-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Sparkles className="size-4 text-primary" />
+                    AI Fraud Detection
                   </CardTitle>
-                  <CardDescription>
-                    Flag manipulated images, duplicates, and suspicious patterns. Human review in the loop.
+                  <CardDescription className="text-sm">
+                    Flag manipulated images and suspicious patterns.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -867,59 +853,45 @@ export default function PartnerPresentation() {
             </p>
 
             <div className="mt-8 md:mt-10">
-              {/* Mobile: Swipeable */}
-              <div className="md:hidden">
-                <div
-                  data-deck-swipe="ignore"
-                  className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 scrollbar-hide"
-                >
-                  <div className="w-80 shrink-0 snap-start">
-                    <TierCard
-                      tier="Verified Partner"
-                      price="Free"
-                      description="For clinics, shelters, and rescues"
-                      features={[
-                        'Directory listing',
-                        'Case creation tools',
-                        'Payout processing',
-                        'Basic analytics',
-                        'Verified badge',
-                      ]}
-                    />
-                  </div>
-                  <div className="w-80 shrink-0 snap-start">
-                    <TierCard
-                      tier="Featured Partner"
-                      price="Free (Earned)"
-                      description="For active, high-impact partners"
-                      features={[
-                        'Everything in Verified',
-                        'Homepage feature',
-                        'Priority placement',
-                        'Success stories',
-                        'Partner spotlight',
-                      ]}
-                      highlighted
-                    />
-                  </div>
-                  <div className="w-80 shrink-0 snap-start">
-                    <TierCard
-                      tier="Sponsor Partner"
-                      price="Custom"
-                      description="For brands and CSR programs"
-                      features={[
-                        'Co-branded campaigns',
-                        'Matching drives',
-                        'CSR impact reports',
-                        'Employee giving portal',
-                        'Press & marketing',
-                      ]}
-                    />
-                  </div>
-                </div>
-                <div className="mt-2 text-center text-xs text-muted-foreground">
-                  Swipe to see all tiers
-                </div>
+              {/* Mobile: Vertical stacked cards - all visible */}
+              <div className="space-y-3 md:hidden">
+                <TierCard
+                  tier="Verified Partner"
+                  price="Free"
+                  description="For clinics, shelters, and rescues"
+                  features={[
+                    'Directory listing',
+                    'Case creation tools',
+                    'Payout processing',
+                    'Basic analytics',
+                    'Verified badge',
+                  ]}
+                />
+                <TierCard
+                  tier="Featured Partner"
+                  price="Free (Earned)"
+                  description="For active, high-impact partners"
+                  features={[
+                    'Everything in Verified',
+                    'Homepage feature',
+                    'Priority placement',
+                    'Success stories',
+                    'Partner spotlight',
+                  ]}
+                  highlighted
+                />
+                <TierCard
+                  tier="Sponsor Partner"
+                  price="Custom"
+                  description="For brands and CSR programs"
+                  features={[
+                    'Co-branded campaigns',
+                    'Matching drives',
+                    'CSR impact reports',
+                    'Employee giving portal',
+                    'Press & marketing',
+                  ]}
+                />
               </div>
 
               {/* Desktop: Grid */}
@@ -1238,64 +1210,50 @@ export default function PartnerPresentation() {
       </div>
 
       <footer className="fixed inset-x-0 bottom-0 z-50 pb-[env(safe-area-inset-bottom)]">
-        <div className="border-t bg-background/95 px-3 py-2.5 backdrop-blur-md md:px-4 md:py-3">
+        <div className="border-t bg-background/95 px-4 py-3 backdrop-blur-md md:px-4 md:py-3">
           <div className="mx-auto w-full max-w-md md:max-w-none">
-            <div className="flex items-center justify-between gap-4 md:hidden">
+            {/* Mobile navigation - simplified with progress bar */}
+            <div className="flex items-center justify-between gap-3 md:hidden">
               <Button
                 variant="outline"
-                size="sm"
-                className="h-9 rounded-full px-3"
+                size="icon"
+                className="h-11 w-11 shrink-0 rounded-full"
                 onClick={prevSlide}
                 disabled={currentSlide === 0}
+                aria-label="Previous slide"
               >
-                <ChevronLeft className="mr-1 size-4" />
-                Prev
+                <ChevronLeft className="size-5" />
               </Button>
               
-              {/* Progress dots for mobile */}
-              <div className="flex items-center gap-1">
-                {slides.slice(
-                  Math.max(0, currentSlide - 2),
-                  Math.min(totalSlides, currentSlide + 3)
-                ).map((slide, i) => {
-                  const actualIndex = Math.max(0, currentSlide - 2) + i;
-                  return (
-                    <button
-                      key={slide.id}
-                      type="button"
-                      onClick={() => goToSlide(actualIndex)}
-                      className="p-1"
-                    >
-                      <span
-                        className={cn(
-                          'block size-2 rounded-full transition-all',
-                          actualIndex === currentSlide
-                            ? 'bg-primary scale-125'
-                            : 'bg-muted-foreground/30',
-                        )}
-                      />
-                    </button>
-                  );
-                })}
+              {/* Progress indicator - cleaner than dots */}
+              <div className="flex flex-1 flex-col items-center gap-1.5">
+                <Progress 
+                  value={(currentSlide + 1) / totalSlides * 100} 
+                  className="h-1.5 w-full max-w-32" 
+                />
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {currentSlide + 1} of {totalSlides}
+                </span>
               </div>
               
               <Button
-                size="sm"
-                className="h-9 rounded-full px-3"
+                size="icon"
+                className="h-11 w-11 shrink-0 rounded-full"
                 onClick={nextSlide}
                 disabled={currentSlide === totalSlides - 1}
+                aria-label="Next slide"
               >
-                Next
-                <ChevronRight className="ml-1 size-4" />
+                <ChevronRight className="size-5" />
               </Button>
             </div>
 
+            {/* Desktop navigation */}
             <div className="hidden flex-col items-center gap-3 md:flex">
               <div className="flex items-center gap-3 rounded-full border bg-card/90 px-4 py-2 shadow-sm">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-10 w-10"
                   onClick={prevSlide}
                   disabled={currentSlide === 0}
                   aria-label="Previous slide"
@@ -1327,7 +1285,7 @@ export default function PartnerPresentation() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9"
+                  className="h-10 w-10"
                   onClick={nextSlide}
                   disabled={currentSlide === totalSlides - 1}
                   aria-label="Next slide"
@@ -1344,8 +1302,8 @@ export default function PartnerPresentation() {
             </div>
 
             {currentSlide === 0 && (
-              <div className="mt-1.5 text-center text-[11px] text-muted-foreground md:hidden">
-                Swipe or tap to navigate
+              <div className="mt-2 text-center text-xs text-muted-foreground md:hidden">
+                Swipe or tap arrows to navigate
               </div>
             )}
           </div>
@@ -1366,7 +1324,7 @@ function Slide({ active, children }: { active: boolean; children: ReactNode }) {
         active ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
       )}
     >
-      <div className="flex min-h-full flex-col items-center justify-start px-5 pb-32 pt-24 md:justify-center md:px-10 md:pb-32 md:pt-28">
+      <div className="flex min-h-full flex-col items-center justify-start px-4 pb-28 pt-20 md:justify-center md:px-8 md:pb-32 md:pt-28 lg:px-10">
         {children}
       </div>
     </div>
@@ -1377,10 +1335,19 @@ function Kicker({ className, children }: { className?: string; children: ReactNo
   return (
     <Badge
       variant="secondary"
-      className={cn('mb-3 w-fit text-[10px] uppercase tracking-wider md:mb-4 md:text-xs', className)}
+      className={cn('mb-3 w-fit text-xs uppercase tracking-wider md:mb-4', className)}
     >
       {children}
     </Badge>
+  );
+}
+
+function PartnerTypeBadge({ icon, label }: { icon: ReactNode; label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium">
+      <span className="text-primary">{icon}</span>
+      <span>{label}</span>
+    </div>
   );
 }
 
@@ -1395,10 +1362,10 @@ function InfoCard({
 }) {
   return (
     <Card className="h-full">
-      <CardHeader className="p-3 pb-2 md:p-6 md:pb-3">
-        <div className="text-3xl md:text-4xl">{icon}</div>
+      <CardHeader className="p-4 md:p-6">
+        <div className="mb-2 text-4xl">{icon}</div>
         <CardTitle className="text-lg md:text-xl">{title}</CardTitle>
-        <CardDescription className="text-sm md:text-base">
+        <CardDescription className="text-sm leading-relaxed md:text-base">
           {description}
         </CardDescription>
       </CardHeader>

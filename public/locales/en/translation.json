@@ -116,6 +116,7 @@
     "members": "Members",
     "searchPosts": "Search posts...",
     "searchVolunteers": "Search volunteers...",
+    "searchSitters": "Search pet sitters...",
     "sort": "Sort",
     "sortNewest": "Newest",
     "sortTop": "Top",
@@ -133,7 +134,17 @@
     "topVolunteersMonth": "Top Volunteers This Month",
     "topVolunteersDesc": "These amazing people have made the biggest impact!",
     "communityMembers": "Community Members",
-    "memberSince": "Member since"
+    "memberSince": "Member since",
+    "leaderboard": "Leaderboard",
+    "thisMonth": "This Month",
+    "petSitters": "Pet Sitters",
+    "petSittersTitle": "Trusted Pet Sitters",
+    "petSittersDesc": "Find verified pet sitters in your area for dog walking, cat sitting, overnight stays, and more.",
+    "availableSitters": "Available Sitters",
+    "noSittersFound": "No pet sitters found matching your criteria",
+    "offerSitting": "Offer Pet Sitting Services",
+    "offerSittingDesc": "Love animals? Earn money by caring for pets in your neighborhood.",
+    "becomeSitter": "Become a Sitter"
   },
   "profile": {
     "title": "Profile",
