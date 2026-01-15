@@ -46,7 +46,7 @@ export function MobilePageHeader({
             className={cn(
               "relative",
               buttonVariants({ variant: "iconHeader", size: "icon" }),
-              location.pathname === '/community' && "bg-primary/10 text-primary"
+              location.pathname === '/community' && "text-primary"
             )}
           >
             <MessageCircle className={cn(
@@ -79,7 +79,7 @@ export function MobilePageHeader({
             to="/profile"
             className={cn(
               buttonVariants({ variant: "iconHeader", size: "icon" }),
-              location.pathname === '/profile' && "bg-primary/10 text-primary"
+              location.pathname === '/profile' && "text-primary"
             )}
           >
             <User className={cn(
