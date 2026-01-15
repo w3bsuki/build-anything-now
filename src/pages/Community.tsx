@@ -4,8 +4,8 @@ import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { 
-  Search, 
   ThumbsUp,
   MessageSquare,
   Share2,
@@ -56,17 +56,17 @@ const CommunityFeedPostCard = ({
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-sm text-foreground truncate">{post.author.name}</span>
                 {isRules ? (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-primary/15 text-primary rounded-full">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium bg-primary/15 text-primary rounded-full">
                     <Shield className="w-3 h-3" />
                     {t('community.rulesTitle')}
                   </span>
                 ) : post.author.isVolunteer ? (
-                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded-full">
+                  <span className="px-1.5 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full">
                     {t('community.volunteer')}
                   </span>
                 ) : null}
                 {isRules && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded-full">
+                  <span className="px-1.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full">
                     {t('community.pinned')}
                   </span>
                 )}
@@ -174,21 +174,20 @@ const Community = () => {
   });
 
   return (
-    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
-      {/* Search + Sort */}
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background z-30 pb-2 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={t('community.searchPosts')}
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border-0 text-base md:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-muted/80 transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title={t('nav.community')}
+        showLogo
+        searchPlaceholder={t('community.searchPosts')}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+
+      {/* Desktop Search */}
+      <div className="hidden md:block sticky top-14 bg-background z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4">
+          {/* Desktop can have a search here if needed */}
         </div>
       </div>
 

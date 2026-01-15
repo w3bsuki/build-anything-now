@@ -7,7 +7,8 @@ import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Sparkles, Search, TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
+import { MobilePageHeader } from '@/components/MobilePageHeader';
+import { Sparkles, TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
@@ -16,6 +17,7 @@ const Campaigns = () => {
   const { mockCampaigns } = useTranslatedMockData();
   const [filter, setFilter] = useState<CampaignFilter>('all');
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const isLoading = useSimulatedLoading(600);
 
   const filterOptions = [
@@ -42,21 +44,25 @@ const Campaigns = () => {
   const filteredCampaigns = getFilteredCampaigns();
 
   return (
-    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
-      {/* Search + Filters */}
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={t('campaigns.searchPlaceholder')}
-              className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base md:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            />
-          </div>
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title={t('nav.campaigns')}
+        showLogo
+        searchPlaceholder={t('campaigns.searchPlaceholder')}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <FilterPills
+          options={filterOptions}
+          selected={filter}
+          onSelect={(id) => setFilter(id as CampaignFilter)}
+        />
+      </MobilePageHeader>
 
-          {/* Filter Pills */}
+      {/* Desktop Search + Filters */}
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4 space-y-2">
           <FilterPills
             options={filterOptions}
             selected={filter}
@@ -90,13 +96,13 @@ const Campaigns = () => {
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {isLoading ? (
                 Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="w-[260px] flex-shrink-0">
+                  <div key={i} className="w-64 flex-shrink-0">
                     <CampaignCardSkeleton />
                   </div>
                 ))
               ) : (
                 trendingCampaigns.map((campaign) => (
-                  <div key={campaign.id} className="w-[260px] flex-shrink-0">
+                  <div key={campaign.id} className="w-64 flex-shrink-0">
                     <CampaignCard campaign={campaign} />
                   </div>
                 ))

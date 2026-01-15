@@ -40,7 +40,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-14 pb-20 md:pb-8 md:pt-20">
+    <div className="min-h-screen pb-20 md:pb-8 md:pt-20 pt-[env(safe-area-inset-top)]">
       {/* Profile Header */}
       <section className="bg-gradient-to-br from-primary/10 via-background to-accent/5 py-8">
         <div className="container mx-auto px-4">
@@ -55,7 +55,7 @@ const Profile = () => {
             <p className="text-muted-foreground mb-4">
               {t('profile.signInPrompt')}
             </p>
-            <Button className="btn-donate">
+            <Button variant="donate">
               {t('actions.signIn')}
             </Button>
           </div>

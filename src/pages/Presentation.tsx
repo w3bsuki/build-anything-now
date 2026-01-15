@@ -1687,7 +1687,7 @@ function VolunteerMiniCard({ volunteer }: { volunteer: Volunteer }) {
           {volunteer.isTopVolunteer ? (
             <Badge
               variant="secondary"
-              className="rounded-full px-3 py-1 text-[10px] uppercase tracking-wide"
+              className="rounded-full px-3 py-1 text-xs uppercase tracking-wide"
             >
               Top
             </Badge>

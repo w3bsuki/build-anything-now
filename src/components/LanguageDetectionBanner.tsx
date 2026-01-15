@@ -132,10 +132,10 @@ export function LanguageDetectionBanner() {
       {showDropdown && (
         <>
           <div
-            className="fixed inset-0 z-[45]"
+            className="fixed inset-0 z-40"
             onClick={() => setShowDropdown(false)}
           />
-          <div className="fixed top-[6.5rem] md:top-[7.5rem] right-4 z-50 bg-card rounded-xl shadow-lg border border-border overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 min-w-[180px]">
+          <div className="fixed top-28 md:top-32 right-4 z-50 bg-card rounded-xl shadow-lg border border-border overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 min-w-44">
             {supportedLanguages.map((langCode) => {
               const isSuggested = langCode === suggestedLang;
               const isActive = langCode === i18n.language;
@@ -157,7 +157,7 @@ export function LanguageDetectionBanner() {
                       {t(`languages.${langCode}`)}
                     </span>
                     {isSuggested && !isActive && (
-                      <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                         <Sparkles className="w-2.5 h-2.5" />
                         {t('languageBanner.suggested')}
                       </span>

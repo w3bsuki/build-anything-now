@@ -69,7 +69,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
         )}
         aria-label="Share"
       >
-        <Share2 className="w-[18px] h-[18px] text-foreground/70" />
+        <Share2 className="w-5 h-5 text-foreground/70" />
       </button>
     );
   }
@@ -85,7 +85,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
             )}
             aria-label="Share"
           >
-            <Share2 className="w-[18px] h-[18px] text-foreground/70" />
+            <Share2 className="w-5 h-5 text-foreground/70" />
           </button>
         ) : (
           <Button variant="outline" size="sm" className={className}>

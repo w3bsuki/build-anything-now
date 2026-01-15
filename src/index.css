@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+@plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -20,11 +20,6 @@
   }
 
   .card-hover:hover {
-    box-shadow: var(--shadow-lg);
-  }
-
-  .btn-donate {
-    @apply bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-full hover:brightness-105 transition-all duration-200;
     box-shadow: var(--shadow-lg);
   }
 
@@ -61,15 +56,19 @@
   }
 
   .sticky-donate {
-    @apply fixed bottom-0 left-0 right-0 px-3 py-2.5 bg-card/95 backdrop-blur-md md:bg-gradient-to-t md:from-background md:via-background/95 md:to-transparent md:border-0;
+    @apply fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)];
+  }
+
+  .sticky-donate > div {
+    @apply mx-auto w-full max-w-md px-4 pb-2;
+  }
+
+  .sticky-donate > div > * {
+    @apply rounded-2xl border border-border/70 bg-background/95 px-3 py-2.5 shadow-lg backdrop-blur-xl;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
-  }
-
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

@@ -6,13 +6,13 @@ import { FilterPills } from '@/components/FilterPills';
 import { PartnerCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Button } from '@/components/ui/button';
+import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { 
   Handshake, 
   Heart, 
   ShoppingBag, 
   Stethoscope, 
   Bone, 
-  Search, 
   HandHeart,
   Star,
   PawPrint,
@@ -138,23 +138,28 @@ const Partners = () => {
   };
 
   return (
-    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
-      {/* Search + Filters */}
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={getSearchPlaceholder()}
-              className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base md:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title={t('nav.partners')}
+        showLogo
+        searchPlaceholder={getSearchPlaceholder()}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <FilterPills
+          options={filterOptions}
+          selected={activeFilter}
+          onSelect={(id) => {
+            setActiveFilter(id);
+            setSearchQuery('');
+          }}
+        />
+      </MobilePageHeader>
 
-          {/* Single row of filters */}
+      {/* Desktop Search + Filters */}
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4 space-y-2">
           <FilterPills
             options={filterOptions}
             selected={activeFilter}
@@ -468,17 +473,17 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
       <div className="bg-primary/5 rounded-lg py-2">
         <PawPrint className="w-4 h-4 text-primary mx-auto mb-0.5" />
         <span className="text-xs font-semibold text-foreground">{volunteer.stats.animalsHelped}</span>
-        <p className="text-[10px] text-muted-foreground">Helped</p>
+        <p className="text-xs text-muted-foreground">Helped</p>
       </div>
       <div className="bg-accent/5 rounded-lg py-2">
         <Heart className="w-4 h-4 text-accent mx-auto mb-0.5" />
         <span className="text-xs font-semibold text-foreground">{volunteer.stats.adoptions}</span>
-        <p className="text-[10px] text-muted-foreground">Adoptions</p>
+        <p className="text-xs text-muted-foreground">Adoptions</p>
       </div>
       <div className="bg-warning/5 rounded-lg py-2">
         <Calendar className="w-4 h-4 text-warning mx-auto mb-0.5" />
         <span className="text-xs font-semibold text-foreground">{volunteer.stats.campaigns}</span>
-        <p className="text-[10px] text-muted-foreground">Campaigns</p>
+        <p className="text-xs text-muted-foreground">Campaigns</p>
       </div>
     </div>
 
@@ -488,7 +493,7 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
         {volunteer.badges.map((badge) => (
           <span
             key={badge}
-            className="px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded-full whitespace-nowrap flex-shrink-0"
+            className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full whitespace-nowrap flex-shrink-0"
           >
             {badge}
           </span>
@@ -529,7 +534,7 @@ const PetSitterCard = ({ sitter }: { sitter: typeof mockPetSitters[0] }) => (
       </div>
       <div className="text-right">
         <span className="text-lg font-bold text-primary">€{sitter.hourlyRate}</span>
-        <p className="text-[10px] text-muted-foreground">/hour</p>
+        <p className="text-xs text-muted-foreground">/hour</p>
       </div>
     </div>
 
@@ -539,7 +544,7 @@ const PetSitterCard = ({ sitter }: { sitter: typeof mockPetSitters[0] }) => (
       {sitter.services.map((service) => (
         <span
           key={service}
-          className="px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded-full"
+          className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
         >
           {service}
         </span>

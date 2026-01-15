@@ -226,7 +226,7 @@ export default function PartnerPresentation() {
                           {step.icon}
                         </div>
                         <div className="mt-3 font-semibold">{step.title}</div>
-                        <div className="mt-1 max-w-[120px] text-sm text-muted-foreground">
+                        <div className="mt-1 max-w-32 text-sm text-muted-foreground">
                           {step.description}
                         </div>
                       </div>

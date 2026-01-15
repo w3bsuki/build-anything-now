@@ -82,7 +82,7 @@ export function PartnerCard({ partner }: PartnerCardProps) {
               )}
             </div>
             <div className={cn('flex items-center gap-1.5 text-xs mt-1', config.color)}>
-              <Badge variant="secondary" className={cn('text-[10px] px-1.5 py-0 h-5', config.bgColor, config.color)}>
+              <Badge variant="secondary" className={cn('text-xs px-1.5 py-0 h-5', config.bgColor, config.color)}>
                 <Icon className="w-3 h-3 mr-1" />
                 {t(config.labelKey)}
               </Badge>

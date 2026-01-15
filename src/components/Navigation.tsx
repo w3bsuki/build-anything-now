@@ -5,6 +5,8 @@ import { Home, Megaphone, Users, User, Stethoscope, Plus, Bell, Heart, MessageCi
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
 
 // Bottom nav: Home, Campaigns, + (Create), Clinics, Partners
 const navItems = [
@@ -27,7 +29,8 @@ const unreadNotifications = 2;
 const unreadPosts = 5; // New community posts
 
 // Pages that show the mobile header (root/main pages only)
-const mobileHeaderPages = ['/', '/campaigns', '/clinics', '/partners', '/community', '/profile'];
+// Empty since all main tabs now have their own contextual headers
+const mobileHeaderPages: string[] = [];
 
 export function Navigation() {
   const { t } = useTranslation();
@@ -60,11 +63,11 @@ export function Navigation() {
               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
                 <HeartHandshake className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-base text-foreground">PawsSafe</span>
+              <span className="font-bold text-lg tracking-tight text-foreground">PawsSafe</span>
             </NavLink>
 
             {/* Actions - Community, Notifications, Profile */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <NavLink
                 to="/community"
                 className={cn(
@@ -80,7 +83,7 @@ export function Navigation() {
                 {unreadPosts > 0 && location.pathname !== '/community' && (
                   <Badge
                     variant="secondary"
-                    className="absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                    className="absolute top-0 right-0 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
                   >
                     {unreadPosts > 9 ? '9+' : unreadPosts}
                   </Badge>
@@ -93,7 +96,7 @@ export function Navigation() {
                 <Bell className="size-[22px] text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
                   <Badge
-                    className="absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                    className="absolute top-0 right-0 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
                   >
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </Badge>
@@ -173,7 +176,7 @@ export function Navigation() {
                   location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/70"
                 )} />
                 {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center shadow-sm">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center shadow-sm">
                     {unreadPosts > 9 ? '9+' : unreadPosts}
                   </span>
                 )}
@@ -184,7 +187,7 @@ export function Navigation() {
               >
                 <Bell className="size-5 text-foreground/70" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center shadow-sm">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center shadow-sm">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -210,7 +213,7 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
           <div className="mx-auto w-full max-w-md px-4 pb-2">
-            <div className="grid grid-cols-5 items-center rounded-2xl border border-border/70 bg-background/95 px-2 py-1.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+            <div className="grid grid-cols-5 items-center rounded-2xl border border-border/70 bg-background/95 px-2 py-1.5 shadow-lg backdrop-blur-xl">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const Icon = item.icon;
@@ -250,53 +253,55 @@ export function Navigation() {
         </nav>
       )}
 
-      {/* Create Action Sheet */}
-      {isCreateOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
-            onClick={() => setIsCreateOpen(false)}
-          />
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-[70] bg-card rounded-t-3xl p-6 pb-8 animate-in slide-in-from-bottom duration-200">
-            <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-6" />
-            <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('create.title')}</h3>
-            <div className="space-y-3">
-              <Link
-                to="/create-case"
-                onClick={() => setIsCreateOpen(false)}
-                className="flex items-center gap-4 p-4 bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                  <HeartHandshake className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">{t('actions.reportAnimal')}</p>
-                  <p className="text-sm text-muted-foreground">{t('create.reportAnimalDesc')}</p>
-                </div>
-              </Link>
-              <Link
-                to="/create-adoption"
-                onClick={() => setIsCreateOpen(false)}
-                className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl hover:bg-accent/20 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-accent-foreground" />
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground">{t('actions.listForAdoption')}</p>
-                  <p className="text-sm text-muted-foreground">{t('create.adoptionDesc')}</p>
-                </div>
-              </Link>
-            </div>
-            <button
+      {/* Create Action Drawer */}
+      <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DrawerContent className="pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+          <DrawerHeader>
+            <DrawerTitle className="text-center text-lg">{t('create.title')}</DrawerTitle>
+            <DrawerDescription className="text-center sr-only">
+              {t('create.title')}
+            </DrawerDescription>
+          </DrawerHeader>
+          
+          <div className="px-4 space-y-3">
+            <Link
+              to="/create-case"
               onClick={() => setIsCreateOpen(false)}
-              className="w-full mt-4 p-3 text-muted-foreground font-medium hover:bg-muted rounded-xl transition-colors"
+              className="flex items-center gap-4 p-4 bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors active:scale-[0.98]"
             >
-              {t('actions.cancel')}
-            </button>
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <HeartHandshake className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">{t('actions.reportAnimal')}</p>
+                <p className="text-sm text-muted-foreground">{t('create.reportAnimalDesc')}</p>
+              </div>
+            </Link>
+            
+            <Link
+              to="/create-adoption"
+              onClick={() => setIsCreateOpen(false)}
+              className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl hover:bg-accent/20 transition-colors active:scale-[0.98]"
+            >
+              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shrink-0">
+                <Heart className="w-6 h-6 text-accent-foreground" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">{t('actions.listForAdoption')}</p>
+                <p className="text-sm text-muted-foreground">{t('create.adoptionDesc')}</p>
+              </div>
+            </Link>
           </div>
-        </>
-      )}
+
+          <DrawerFooter className="pt-4 px-4">
+            <DrawerClose asChild>
+              <Button variant="outline" className="w-full text-base h-11 rounded-xl">
+                {t('actions.cancel')}
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

@@ -37,28 +37,33 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           <img
             src={caseData.images[0]}
             alt={caseData.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
+          {/* Scrim for better readability of badges */}
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+          
           <div className="absolute top-2.5 left-2.5">
-            <StatusBadge status={caseData.status} size="sm" />
+            <StatusBadge status={caseData.status} size="sm" className="shadow-sm" />
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-3 pb-1.5">
-          <h3 className="font-medium text-sm text-foreground mb-1 truncate">
-            {caseData.title}
-          </h3>
+        <div className="p-3 pb-2 space-y-2">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-base text-foreground line-clamp-1 leading-tight">
+              {caseData.title}
+            </h3>
 
-          <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
-            <MapPin className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate">{caseData.location.city}, {caseData.location.neighborhood}</span>
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="truncate font-medium">{caseData.location.city}, {caseData.location.neighborhood}</span>
+            </div>
           </div>
         </div>
       </Link>
 
       {/* Footer actions (kept outside Link to avoid nested interactive elements) */}
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-3 pt-0">
         <ProgressBar
           current={caseData.fundraising.current}
           goal={caseData.fundraising.goal}
@@ -67,9 +72,9 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           size="sm"
         />
 
-        <Button asChild className="w-full mt-2.5 h-9 btn-donate font-medium text-sm">
+        <Button asChild variant="donate" className="w-full mt-3 h-10 rounded-xl shadow-sm text-sm font-semibold">
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
-            <Heart className="w-3.5 h-3.5 mr-1.5" />
+            <Heart className="w-4 h-4 mr-2 fill-current" />
             {t('actions.donate')}
           </Link>
         </Button>

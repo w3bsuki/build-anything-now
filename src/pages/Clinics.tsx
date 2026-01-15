@@ -7,7 +7,8 @@ import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { mockClinics } from '@/data/mockData';
-import { Search, MapPin } from 'lucide-react';
+import { MobilePageHeader } from '@/components/MobilePageHeader';
+import { MapPin } from 'lucide-react';
 
 const Clinics = () => {
   const { t } = useTranslation();
@@ -34,21 +35,25 @@ const Clinics = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background pt-14 pb-24 md:pb-8 md:pt-16">
-      {/* Search + Filters */}
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={t('clinics.searchPlaceholder')}
-              className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base md:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+    <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title={t('nav.clinics')}
+        showLogo
+        searchPlaceholder={t('clinics.searchPlaceholder')}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <FilterPills
+          options={cityFilters}
+          selected={cityFilter}
+          onSelect={setCityFilter}
+        />
+      </MobilePageHeader>
 
+      {/* Desktop Search + Filters */}
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4 space-y-2">
           <FilterPills
             options={cityFilters}
             selected={cityFilter}

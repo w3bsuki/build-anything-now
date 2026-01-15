@@ -62,7 +62,7 @@ export function UpdatesTimeline({ updates }: UpdatesTimelineProps) {
                 <Icon className="w-4 h-4" />
               </div>
               {!isLast && (
-                <div className="w-px h-full min-h-[32px] bg-border" />
+                <div className="w-px h-full min-h-8 bg-border" />
               )}
             </div>
 

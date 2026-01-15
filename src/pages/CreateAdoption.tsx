@@ -102,7 +102,7 @@ const CreateAdoption = () => {
                             <Label htmlFor="description">{t('createAdoption.description')}</Label>
                             <textarea
                                 id="description"
-                                className="w-full min-h-[100px] px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                className="w-full min-h-28 px-3 py-2 rounded-lg border border-input bg-background text-sm"
                                 placeholder={t('createAdoption.descriptionPlaceholder')}
                                 value={formData.description}
                                 onChange={(e) => updateForm('description', e.target.value)}
@@ -188,7 +188,7 @@ const CreateAdoption = () => {
                 </div>
 
                 {/* Submit Button */}
-                <Button onClick={handleSubmit} className="w-full mt-6 btn-donate">
+                <Button onClick={handleSubmit} variant="donate" className="w-full mt-6">
                     <Heart className="w-4 h-4 mr-2" />
                     {t('createAdoption.submit')}
                 </Button>

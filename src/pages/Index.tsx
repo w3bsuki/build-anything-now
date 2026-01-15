@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
+import { Sparkles, AlertTriangle, Heart, Activity } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { CaseCard } from '@/components/CaseCard';
 import { FilterPills } from '@/components/FilterPills';
@@ -9,6 +9,7 @@ import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { MobilePageHeader } from '@/components/MobilePageHeader';
 
 import { api } from '../../convex/_generated/api';
 
@@ -17,6 +18,7 @@ function IndexMock() {
   const { mockCases } = useTranslatedMockData();
   const [statusFilter, setStatusFilter] = useState('all');
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const isLoading = useSimulatedLoading(600);
 
   const statusFilters = [
@@ -36,21 +38,25 @@ function IndexMock() {
   const otherCases = filteredCases.filter(c => c.status !== 'urgent' && c.status !== 'critical');
 
   return (
-    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
-      {/* Search + Filters */}
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background/95 backdrop-blur-md z-30 py-3 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={t('home.searchPlaceholder')}
-              className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base md:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            />
-          </div>
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title="PawsSafe"
+        showLogo
+        searchPlaceholder={t('home.searchPlaceholder')}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <FilterPills
+          options={statusFilters}
+          selected={statusFilter}
+          onSelect={setStatusFilter}
+        />
+      </MobilePageHeader>
 
-          {/* Status Filter Pills */}
+      {/* Desktop Search + Filters */}
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4 space-y-2">
           <FilterPills
             options={statusFilters}
             selected={statusFilter}
@@ -84,13 +90,13 @@ function IndexMock() {
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {isLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="w-[260px] flex-shrink-0">
+                  <div key={i} className="w-64 flex-shrink-0">
                     <CaseCardSkeleton />
                   </div>
                 ))
               ) : (
                 urgentCases.map((caseData) => (
-                  <div key={caseData.id} className="w-[260px] flex-shrink-0">
+                  <div key={caseData.id} className="w-64 flex-shrink-0">
                     <CaseCard caseData={caseData} />
                   </div>
                 ))
@@ -136,6 +142,7 @@ function IndexConvex() {
   const { t, i18n } = useTranslation();
   const [statusFilter, setStatusFilter] = useState('all');
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const cases = useQuery(api.cases.listUiForLocale, { locale: i18n.language });
   const isLoading = cases === undefined;
@@ -157,18 +164,21 @@ function IndexConvex() {
   const otherCases = filteredCases.filter(c => c.status !== 'urgent' && c.status !== 'critical');
 
   return (
-    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
-      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background/95 backdrop-blur-md z-30 py-3 border-b border-border/50">
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
-            <input
-              type="text"
-              placeholder={t('home.searchPlaceholder')}
-              className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base md:text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            />
-          </div>
+    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+      {/* Mobile Header with Search */}
+      <MobilePageHeader
+        title="PawsSafe"
+        showLogo
+        searchPlaceholder={t('home.searchPlaceholder')}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <FilterPills options={statusFilters} selected={statusFilter} onSelect={setStatusFilter} />
+      </MobilePageHeader>
 
+      {/* Desktop Search + Filters */}
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+        <div className="container mx-auto px-4 space-y-2">
           <FilterPills options={statusFilters} selected={statusFilter} onSelect={setStatusFilter} />
         </div>
       </div>
@@ -197,13 +207,13 @@ function IndexConvex() {
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
               {isLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="w-[260px] flex-shrink-0">
+                  <div key={i} className="w-64 flex-shrink-0">
                     <CaseCardSkeleton />
                   </div>
                 ))
               ) : (
                 urgentCases.map((caseData) => (
-                  <div key={caseData.id} className="w-[260px] flex-shrink-0">
+                  <div key={caseData.id} className="w-64 flex-shrink-0">
                     <CaseCard caseData={caseData} />
                   </div>
                 ))

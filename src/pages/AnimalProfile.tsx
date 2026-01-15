@@ -119,22 +119,24 @@ function AnimalProfileMock() {
 
       {/* Sticky Action Bar */}
       <div className="sticky-donate">
-        <div className="container mx-auto max-w-2xl flex gap-2">
-          <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={cn(
-              "w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-colors active:scale-95",
-              isSaved 
-                ? "bg-primary/10 border-primary text-primary" 
-                : "bg-card border-border text-foreground"
-            )}
-          >
-            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
-          </button>
-          <Button className="flex-1 h-10 btn-donate text-sm">
-            <Heart className="w-4 h-4 mr-2" />
-            {t('actions.donateNow')}
-          </Button>
+        <div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsSaved(!isSaved)}
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors active:scale-95",
+                isSaved 
+                  ? "bg-primary/10 text-primary" 
+                  : "bg-muted/50 text-foreground"
+              )}
+            >
+              <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+            </button>
+            <Button variant="donate" className="flex-1 h-10 text-sm">
+              <Heart className="w-4 h-4 mr-2" />
+              {t('actions.donateNow')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -293,22 +295,24 @@ function AnimalProfileConvex() {
       </div>
 
       <div className="sticky-donate">
-        <div className="container mx-auto max-w-2xl flex gap-2">
-          <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={cn(
-              "w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-colors active:scale-95",
-              isSaved
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-card border-border text-foreground"
-            )}
-          >
-            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
-          </button>
-          <Button className="flex-1 h-10 btn-donate text-sm">
-            <Heart className="w-4 h-4 mr-2" />
-            {t('actions.donateNow')}
-          </Button>
+        <div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsSaved(!isSaved)}
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors active:scale-95",
+                isSaved
+                  ? "bg-primary/10 text-primary"
+                  : "bg-muted/50 text-foreground"
+              )}
+            >
+              <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+            </button>
+            <Button variant="donate" className="flex-1 h-10 text-sm">
+              <Heart className="w-4 h-4 mr-2" />
+              {t('actions.donateNow')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

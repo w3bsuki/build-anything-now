@@ -260,10 +260,10 @@ const Settings = () => {
       {showLanguageSelector && (
         <>
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             onClick={() => setShowLanguageSelector(false)}
           />
-          <div className="fixed bottom-0 left-0 right-0 z-[70] bg-card rounded-t-3xl p-6 pb-8 animate-in slide-in-from-bottom duration-200 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-sm md:w-full">
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl p-6 pb-8 animate-in slide-in-from-bottom duration-200 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-sm md:w-full">
             <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-6 md:hidden" />
             <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('settings.language')}</h3>
             <div className="space-y-2">
@@ -304,10 +304,10 @@ const Settings = () => {
       {showCurrencySelector && (
         <>
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             onClick={() => setShowCurrencySelector(false)}
           />
-          <div className="fixed bottom-0 left-0 right-0 z-[70] bg-card rounded-t-3xl p-6 pb-8 animate-in slide-in-from-bottom duration-200 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-sm md:w-full">
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl p-6 pb-8 animate-in slide-in-from-bottom duration-200 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-w-sm md:w-full">
             <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-6 md:hidden" />
             <h3 className="text-lg font-semibold text-foreground mb-4 text-center">{t('settings.currency')}</h3>
             <div className="space-y-2">

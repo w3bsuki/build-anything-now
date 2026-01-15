@@ -212,7 +212,7 @@ const CreateCase = () => {
                                 <Label htmlFor="description">{t('createCase.shortDescription')}</Label>
                                 <textarea
                                     id="description"
-                                    className="w-full min-h-[80px] px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                    className="w-full min-h-20 px-3 py-2 rounded-lg border border-input bg-background text-sm"
                                     placeholder={t('createCase.shortDescriptionPlaceholder')}
                                     value={formData.description}
                                     onChange={(e) => updateForm('description', e.target.value)}
@@ -222,7 +222,7 @@ const CreateCase = () => {
                                 <Label htmlFor="story">{t('createCase.fullStory')}</Label>
                                 <textarea
                                     id="story"
-                                    className="w-full min-h-[120px] px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                    className="w-full min-h-32 px-3 py-2 rounded-lg border border-input bg-background text-sm"
                                     placeholder={t('createCase.fullStoryPlaceholder')}
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
@@ -322,12 +322,12 @@ const CreateCase = () => {
                         </Button>
                     )}
                     {currentStep < steps.length ? (
-                        <Button onClick={nextStep} className="flex-1 btn-donate">
+                        <Button onClick={nextStep} variant="donate" className="flex-1">
                             {t('createCase.next')}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit} className="flex-1 btn-donate">
+                        <Button onClick={handleSubmit} variant="donate" className="flex-1">
                             <Heart className="w-4 h-4 mr-2" />
                             {t('createCase.submitReport')}
                         </Button>

@@ -100,7 +100,7 @@ const ClinicProfile = () => {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-3">
-              <Button onClick={handleCall} className="btn-donate h-11">
+              <Button onClick={handleCall} variant="donate" className="h-11">
                 <Phone className="w-4 h-4 mr-2" />
                 {t('clinicProfile.callNow')}
               </Button>
@@ -207,22 +207,24 @@ const ClinicProfile = () => {
 
       {/* Sticky Action Bar */}
       <div className="sticky-donate md:hidden">
-        <div className="container mx-auto max-w-2xl flex gap-2">
-          <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={cn(
-              "w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-colors",
-              isSaved 
-                ? "bg-primary/10 border-primary text-primary" 
-                : "bg-card border-border text-foreground"
-            )}
-          >
-            <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
-          </button>
-          <Button onClick={handleCall} className="flex-1 h-10 btn-donate text-sm">
-            <Phone className="w-4 h-4 mr-2" />
-            {t('clinicProfile.callClinic')}
-          </Button>
+        <div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsSaved(!isSaved)}
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                isSaved 
+                  ? "bg-primary/10 text-primary" 
+                  : "bg-muted/50 text-foreground"
+              )}
+            >
+              <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+            </button>
+            <Button onClick={handleCall} variant="donate" className="flex-1 h-10 text-sm">
+              <Phone className="w-4 h-4 mr-2" />
+              {t('clinicProfile.callClinic')}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
