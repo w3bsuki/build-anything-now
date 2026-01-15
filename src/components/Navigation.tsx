@@ -212,9 +212,11 @@ export function Navigation() {
                   <button
                     key="create"
                     onClick={() => setIsCreateOpen(true)}
-                    className="flex items-center justify-center w-12 h-12 -mt-6 rounded-full bg-primary shadow-lg shadow-primary/30 active:scale-95 transition-transform"
+                    className="flex flex-col items-center justify-center flex-1 py-2 active:opacity-80 transition-opacity"
                   >
-                    <Plus className="w-6 h-6 text-primary-foreground" strokeWidth={2.5} />
+                    <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center">
+                      <Plus className="w-6 h-6 text-primary-foreground" strokeWidth={2.5} />
+                    </div>
                   </button>
                 );
               }
