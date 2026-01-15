@@ -1,15 +1,46 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Mail, Phone, MapPin, Handshake, ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const PartnerProfile = () => {
     const { t } = useTranslation();
-    const { mockPartners } = useTranslatedMockData();
     const { id } = useParams();
-    const partner = mockPartners.find((p) => p.id === id);
+    
+    // Fetch partner from Convex
+    const rawPartner = useQuery(
+        api.partners.get,
+        id ? { id: id as Id<"partners"> } : "skip"
+    );
+    
+    const isLoading = rawPartner === undefined;
+    
+    // Transform to match expected shape
+    const partner = rawPartner ? {
+        id: rawPartner._id,
+        name: rawPartner.name,
+        logo: rawPartner.logo,
+        contribution: rawPartner.contribution,
+        description: rawPartner.description,
+        type: rawPartner.type,
+        website: rawPartner.website,
+        since: rawPartner.since,
+        animalsHelped: rawPartner.animalsHelped,
+        totalContributed: rawPartner.totalContributed,
+        featured: rawPartner.featured,
+    } : null;
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
+            </div>
+        );
+    }
 
     if (!partner) {
         return (

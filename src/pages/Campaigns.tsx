@@ -1,24 +1,39 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
+import type { Campaign } from '@/types';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
 const Campaigns = () => {
   const { t } = useTranslation();
-  const { mockCampaigns } = useTranslatedMockData();
   const [filter, setFilter] = useState<CampaignFilter>('all');
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const isLoading = useSimulatedLoading(600);
+
+  // Fetch campaigns from Convex
+  const rawCampaigns = useQuery(api.campaigns.list, {});
+  const isLoading = rawCampaigns === undefined;
+
+  // Transform Convex data to match frontend Campaign type
+  const campaigns: Campaign[] = (rawCampaigns ?? []).map((c) => ({
+    id: c._id,
+    title: c.title,
+    description: c.description,
+    image: c.image ?? 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+    goal: c.goal,
+    current: c.current,
+    unit: c.unit,
+    endDate: c.endDate,
+  }));
 
   const filterOptions = [
     { id: 'all', label: t('campaigns.allCampaigns'), icon: <Megaphone className="w-3.5 h-3.5" /> },
@@ -26,9 +41,9 @@ const Campaigns = () => {
     { id: 'completed', label: t('campaigns.completed'), icon: <CheckCircle className="w-3.5 h-3.5" /> },
   ];
 
-  // Mock filter logic - show first 2 campaigns as trending for horizontal scroll demo
-  const trendingCampaigns = mockCampaigns.filter((_, i) => i < 2);
-  const completedCampaigns: typeof mockCampaigns = [];
+  // Filter campaigns based on status
+  const trendingCampaigns = campaigns.filter((c) => c.current / c.goal >= 0.5 && c.current < c.goal);
+  const completedCampaigns = campaigns.filter((c) => c.current >= c.goal);
 
   const getFilteredCampaigns = () => {
     switch (filter) {
@@ -37,7 +52,7 @@ const Campaigns = () => {
       case 'completed':
         return completedCampaigns;
       default:
-        return mockCampaigns;
+        return campaigns;
     }
   };
 

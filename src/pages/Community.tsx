@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
@@ -135,13 +135,32 @@ const CommunityFeedPostCard = ({
 
 const Community = () => {
   const { t } = useTranslation();
-  const { mockCommunityPosts } = useTranslatedMockData();
   const [searchQuery, setSearchQuery] = useState('');
   const [feedSort, setFeedSort] = useState<FeedSort>('newest');
   const [compactFeed] = useState(true);
-  const isLoading = useSimulatedLoading(600);
 
-  const filteredPosts = mockCommunityPosts.filter((post) => {
+  // Fetch from Convex
+  const rawPosts = useQuery(api.community.list, {});
+  const isLoading = rawPosts === undefined;
+
+  // Transform Convex data to match frontend type
+  const communityPosts: CommunityPost[] = (rawPosts ?? []).map((p) => ({
+    id: p._id,
+    author: {
+      id: p.author.id ?? 'unknown',
+      name: p.author.name,
+      avatar: p.author.avatar ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+      isVolunteer: p.author.isVolunteer,
+    },
+    content: p.content,
+    image: p.image,
+    likes: p.likes,
+    comments: p.commentsCount,
+    timeAgo: p.timeAgo,
+    createdAt: new Date(p.createdAt).toISOString(),
+  }));
+
+  const filteredPosts = communityPosts.filter((post) => {
     const matchesSearch = !searchQuery || 
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.name.toLowerCase().includes(searchQuery.toLowerCase());

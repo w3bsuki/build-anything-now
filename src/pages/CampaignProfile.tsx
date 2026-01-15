@@ -1,19 +1,47 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import { ArrowLeft, Heart, Calendar, Target, Users, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const CampaignProfile = () => {
   const { t } = useTranslation();
-  const { mockCampaigns } = useTranslatedMockData();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
-  const campaign = mockCampaigns.find((c) => c.id === id);
+  
+  // Fetch campaign from Convex
+  const rawCampaign = useQuery(
+    api.campaigns.get,
+    id ? { id: id as Id<"campaigns"> } : "skip"
+  );
+  
+  const isLoading = rawCampaign === undefined;
+  
+  // Transform to match expected shape
+  const campaign = rawCampaign ? {
+    id: rawCampaign._id,
+    title: rawCampaign.title,
+    description: rawCampaign.description,
+    image: rawCampaign.image ?? 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+    goal: rawCampaign.goal,
+    current: rawCampaign.current,
+    unit: rawCampaign.unit,
+    endDate: rawCampaign.endDate,
+  } : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
+      </div>
+    );
+  }
 
   if (!campaign) {
     return (

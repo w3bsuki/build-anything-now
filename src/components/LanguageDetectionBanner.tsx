@@ -33,8 +33,11 @@ export function LanguageDetectionBanner() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Hide on presentation and partner pages
-  const isPresentation = location.pathname === '/presentation' || location.pathname === '/partner';
+  // Hide on presentation, partner, and auth pages
+  const isPresentation = location.pathname === '/presentation' || 
+                        location.pathname === '/partner' ||
+                        location.pathname.startsWith('/sign-in') ||
+                        location.pathname.startsWith('/sign-up');
 
   useEffect(() => {
     // Check if user already dismissed the prompt

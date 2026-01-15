@@ -37,8 +37,11 @@ export function Navigation() {
   const location = useLocation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   
-  // Hide entire navigation on presentation and partner pages (immersive experience)
-  if (location.pathname === '/presentation' || location.pathname === '/partner') {
+  // Hide entire navigation on presentation, partner, and auth pages (immersive experience)
+  if (location.pathname === '/presentation' || 
+      location.pathname === '/partner' ||
+      location.pathname.startsWith('/sign-in') ||
+      location.pathname.startsWith('/sign-up')) {
     return null;
   }
   

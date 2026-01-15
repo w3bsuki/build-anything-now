@@ -2,6 +2,12 @@
   "app": {
     "name": "PawsSafe"
   },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInSubtitle": "Sign in to continue helping animals in need",
+    "joinUs": "Join PawsSafe",
+    "signUpSubtitle": "Create an account to start making a difference"
+  },
   "nav": {
     "home": "Home",
     "campaigns": "Campaigns",

@@ -2,6 +2,12 @@
   "app": {
     "name": "PawsSafe"
   },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "signInSubtitle": "Melden Sie sich an, um Tieren in Not weiterhin zu helfen",
+    "joinUs": "Treten Sie PawsSafe bei",
+    "signUpSubtitle": "Erstellen Sie ein Konto, um etwas zu bewirken"
+  },
   "nav": {
     "home": "Startseite",
     "campaigns": "Kampagnen",

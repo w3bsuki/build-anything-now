@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { PartnerCard } from '@/components/PartnerCard';
 import { FilterPills } from '@/components/FilterPills';
 import { PartnerCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Button } from '@/components/ui/button';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { 
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import type { Partner, Volunteer } from '@/types';
 
 // Mock Pet Sitters Data
 const mockPetSitters = [
@@ -80,10 +81,43 @@ const mockPetSitters = [
 
 const Partners = () => {
   const { t } = useTranslation();
-  const { mockPartners, mockVolunteers } = useTranslatedMockData();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const isLoading = useSimulatedLoading(600);
+
+  // Fetch from Convex
+  const rawPartners = useQuery(api.partners.list, {});
+  const rawVolunteers = useQuery(api.volunteers.list, {});
+  const partnerStats = useQuery(api.partners.getStats, {});
+  
+  const isLoading = rawPartners === undefined || rawVolunteers === undefined;
+
+  // Transform Convex data to match frontend types
+  const partners: Partner[] = (rawPartners ?? []).map((p) => ({
+    id: p._id,
+    name: p.name,
+    logo: p.logo,
+    contribution: p.contribution,
+    description: p.description,
+    type: p.type,
+    website: p.website,
+    since: p.since,
+    animalsHelped: p.animalsHelped,
+    totalContributed: p.totalContributed,
+    featured: p.featured,
+  }));
+
+  const volunteers: Volunteer[] = (rawVolunteers ?? []).map((v) => ({
+    id: v._id,
+    name: v.name ?? 'Unknown',
+    avatar: v.avatar ?? '',
+    bio: v.bio,
+    location: v.location,
+    rating: v.rating,
+    memberSince: v.memberSince,
+    isTopVolunteer: v.isTopVolunteer,
+    badges: v.badges,
+    stats: v.stats,
+  }));
 
   // Combined filter options - all in one row
   const filterOptions = [
@@ -101,7 +135,7 @@ const Partners = () => {
   const showSitters = activeFilter === 'sitters';
 
   // Filter partners
-  const filteredPartners = mockPartners.filter((partner) => {
+  const filteredPartners = partners.filter((partner) => {
     const matchesDomain = activeFilter === 'all' || partner.type === activeFilter;
     const matchesSearch = !searchQuery || 
       partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,7 +144,7 @@ const Partners = () => {
   });
 
   // Filter volunteers
-  const filteredVolunteers = mockVolunteers.filter((volunteer) => {
+  const filteredVolunteers = volunteers.filter((volunteer) => {
     const matchesSearch = !searchQuery || 
       volunteer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       volunteer.bio.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -128,8 +162,8 @@ const Partners = () => {
   });
 
   // Stats
-  const totalAnimalsHelped = mockVolunteers.reduce((sum, v) => sum + v.stats.animalsHelped, 0);
-  const totalHours = mockVolunteers.reduce((sum, v) => sum + v.stats.hoursVolunteered, 0);
+  const totalAnimalsHelped = volunteers.reduce((sum, v) => sum + v.stats.animalsHelped, 0);
+  const totalHours = volunteers.reduce((sum, v) => sum + v.stats.hoursVolunteered, 0);
 
   // Get search placeholder based on filter
   const getSearchPlaceholder = () => {
@@ -215,15 +249,15 @@ const Partners = () => {
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
                 <div>
-                  <p className="text-xl font-bold text-primary">{mockPartners.length}</p>
+                  <p className="text-xl font-bold text-primary">{partnerStats?.totalPartners ?? partners.length}</p>
                   <p className="text-xs text-muted-foreground">{t('partners.partners')}</p>
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-primary">1,200+</p>
+                  <p className="text-xl font-bold text-primary">{partnerStats?.totalAnimalsHelped?.toLocaleString() ?? '1,200'}+</p>
                   <p className="text-xs text-muted-foreground">{t('partners.animalsHelped')}</p>
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-primary">50,000+</p>
+                  <p className="text-xl font-bold text-primary">€{partnerStats?.totalContributed?.toLocaleString() ?? '50,000'}+</p>
                   <p className="text-xs text-muted-foreground">{t('partners.eurContributed')}</p>
                 </div>
               </div>
@@ -295,7 +329,7 @@ const Partners = () => {
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
                 <div>
-                  <p className="text-xl font-bold text-primary">{mockVolunteers.length}</p>
+                  <p className="text-xl font-bold text-primary">{volunteers.length}</p>
                   <p className="text-xs text-muted-foreground">{t('partners.volunteers')}</p>
                 </div>
                 <div>
@@ -429,7 +463,7 @@ const Partners = () => {
 
 // Volunteer Card Component
 interface VolunteerCardProps {
-  volunteer: typeof mockVolunteers[0];
+  volunteer: Volunteer;
 }
 
 const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (

@@ -192,4 +192,77 @@ export default defineSchema({
         specializations: v.array(v.string()),
         verified: v.boolean(),
     }).index("by_city", ["city"]),
+
+    // Campaigns table - fundraising campaigns
+    campaigns: defineTable({
+        title: v.string(),
+        description: v.string(),
+        image: v.optional(v.string()), // URL for now, could be storage ID
+        goal: v.number(),
+        current: v.number(),
+        unit: v.string(), // "EUR", "homes", "surgeries", "meals", etc.
+        endDate: v.optional(v.string()), // ISO date string
+        status: v.union(v.literal("active"), v.literal("completed"), v.literal("cancelled")),
+        createdAt: v.number(),
+    })
+        .index("by_status", ["status"]),
+
+    // Partners table - organizations that support PawsSafe
+    partners: defineTable({
+        name: v.string(),
+        logo: v.string(), // URL
+        type: v.union(
+            v.literal("pet-shop"),
+            v.literal("food-brand"),
+            v.literal("veterinary"),
+            v.literal("sponsor")
+        ),
+        contribution: v.string(), // Description of what they contribute
+        description: v.string(),
+        website: v.optional(v.string()),
+        since: v.string(), // Year started
+        animalsHelped: v.number(),
+        totalContributed: v.number(), // In EUR
+        featured: v.boolean(),
+        createdAt: v.number(),
+    })
+        .index("by_type", ["type"])
+        .index("by_featured", ["featured"]),
+
+    // Volunteers table - volunteer profiles
+    volunteers: defineTable({
+        userId: v.id("users"),
+        bio: v.string(),
+        location: v.string(),
+        rating: v.number(), // 1-5
+        memberSince: v.string(), // Year
+        isTopVolunteer: v.boolean(),
+        badges: v.array(v.string()),
+        stats: v.object({
+            animalsHelped: v.number(),
+            adoptions: v.number(),
+            campaigns: v.number(),
+            donationsReceived: v.number(),
+            hoursVolunteered: v.number(),
+        }),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_top", ["isTopVolunteer"]),
+
+    // Community posts
+    communityPosts: defineTable({
+        userId: v.id("users"),
+        content: v.string(),
+        image: v.optional(v.string()), // URL for now
+        caseId: v.optional(v.id("cases")),
+        isPinned: v.boolean(),
+        isRules: v.boolean(),
+        likes: v.number(),
+        commentsCount: v.number(),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_created", ["createdAt"])
+        .index("by_pinned", ["isPinned"]),
 });

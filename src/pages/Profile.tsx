@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SignedIn, SignedOut, SignOutButton, UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { 
   User, 
@@ -29,6 +30,7 @@ const unreadNotifications = 2;
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { user } = useUser();
 
   const menuItems = [
     { icon: Heart, labelKey: 'profile.myDonations', badge: mockStats.totalDonations.toString(), path: '/donations' },
@@ -42,22 +44,41 @@ const Profile = () => {
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-20 pt-[env(safe-area-inset-top)]">
       {/* Profile Header */}
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/5 py-8">
+      <section className="bg-linear-to-br from-primary/10 via-background to-accent/5 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center">
-            {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-4 ring-4 ring-card">
-              <User className="w-12 h-12 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">
-              {t('profile.guestUser')}
-            </h1>
-            <p className="text-muted-foreground mb-4">
-              {t('profile.signInPrompt')}
-            </p>
-            <Button variant="donate">
-              {t('actions.signIn')}
-            </Button>
+            <SignedIn>
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-primary/20 flex items-center justify-center mb-4 ring-4 ring-card">
+                {user?.imageUrl ? (
+                  <img src={user.imageUrl} alt={user.fullName || "User"} className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-12 h-12 text-primary" />
+                )}
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-1">
+                {user?.fullName || user?.firstName || t('profile.guestUser')}
+              </h1>
+              {user?.primaryEmailAddress?.emailAddress && (
+                <p className="text-muted-foreground mb-4">
+                  {user.primaryEmailAddress.emailAddress}
+                </p>
+              )}
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+            <SignedOut>
+              <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-4 ring-4 ring-card">
+                <User className="w-12 h-12 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground mb-1">
+                {t('profile.guestUser')}
+              </h1>
+              <p className="text-muted-foreground mb-4">
+                {t('profile.signInPrompt')}
+              </p>
+              <Button variant="donate" asChild>
+                <Link to="/sign-in">{t('actions.signIn')}</Link>
+              </Button>
+            </SignedOut>
           </div>
         </div>
       </section>
@@ -118,15 +139,18 @@ const Profile = () => {
         </div>
       </section>
 
-      {/* Sign Out */}
-      <section className="py-6">
-        <div className="container mx-auto px-4">
-          <button className="w-full flex items-center justify-center gap-2 p-4 text-destructive hover:bg-destructive/10 rounded-2xl transition-colors">
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">{t('actions.signOut')}</span>
-          </button>
-        </div>
-      </section>
+      <SignedIn>
+        <section className="py-6">
+          <div className="container mx-auto px-4">
+            <SignOutButton>
+              <button className="w-full flex items-center justify-center gap-2 p-4 text-destructive hover:bg-destructive/10 rounded-2xl transition-colors">
+                <LogOut className="w-5 h-5" />
+                <span className="font-medium">{t('actions.signOut')}</span>
+              </button>
+            </SignOutButton>
+          </div>
+        </section>
+      </SignedIn>
     </div>
   );
 };

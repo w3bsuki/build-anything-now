@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, 
@@ -19,12 +20,44 @@ import {
   Share2
 } from 'lucide-react';
 import { CaseCard } from '@/components/CaseCard';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const VolunteerProfile = () => {
   const { t } = useTranslation();
-  const { mockVolunteers, mockCases } = useTranslatedMockData();
   const { id } = useParams();
-  const volunteer = mockVolunteers.find((v) => v.id === id);
+  
+  // Fetch volunteer from Convex
+  const rawVolunteer = useQuery(
+    api.volunteers.get,
+    id ? { id: id as Id<"volunteers"> } : "skip"
+  );
+  
+  // Fetch cases for display
+  const rawCases = useQuery(api.cases.list, {});
+  
+  const isLoading = rawVolunteer === undefined;
+  
+  // Transform to match expected shape
+  const volunteer = rawVolunteer ? {
+    id: rawVolunteer._id,
+    name: rawVolunteer.name ?? 'Unknown',
+    avatar: rawVolunteer.avatar ?? '',
+    bio: rawVolunteer.bio,
+    location: rawVolunteer.location,
+    rating: rawVolunteer.rating,
+    memberSince: rawVolunteer.memberSince,
+    isTopVolunteer: rawVolunteer.isTopVolunteer,
+    badges: rawVolunteer.badges,
+    stats: rawVolunteer.stats,
+  } : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
+      </div>
+    );
+  }
 
   if (!volunteer) {
     return (
@@ -39,8 +72,8 @@ const VolunteerProfile = () => {
     );
   }
 
-  // Get some cases this volunteer might have helped with (mock)
-  const helpedCases = mockCases.slice(0, 2);
+  // Get some cases this volunteer might have helped with
+  const helpedCases = (rawCases ?? []).slice(0, 2);
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
@@ -167,7 +200,7 @@ const VolunteerProfile = () => {
               </h2>
               {/* Mobile: Short badges for compact display */}
               <div className="flex flex-wrap gap-2 sm:hidden">
-                {(volunteer.badgesMobile || volunteer.badges).map((badge, index) => (
+                {volunteer.badges.map((badge, index) => (
                   <div
                     key={badge}
                     className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"

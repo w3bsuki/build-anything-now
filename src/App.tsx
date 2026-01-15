@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { LanguageDetectionBanner } from "./components/LanguageDetectionBanner";
+import { AuthGuard } from "./components/auth/AuthGuard";
 import Index from "./pages/Index";
 import AnimalProfile from "./pages/AnimalProfile";
 import Campaigns from "./pages/Campaigns";
@@ -29,6 +30,8 @@ import VolunteerProfile from "./pages/VolunteerProfile";
 import Presentation from "./pages/Presentation";
 import PartnerPresentation from "./pages/PartnerPresentation";
 import NotFound from "./pages/NotFound";
+import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
 
 const queryClient = new QueryClient();
 
@@ -50,15 +53,80 @@ const App = () => (
           <Route path="/partners/:id" element={<PartnerProfile />} />
           <Route path="/clinics" element={<Clinics />} />
           <Route path="/clinics/:id" element={<ClinicProfile />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/donations" element={<MyDonations />} />
-          <Route path="/history" element={<DonationHistory />} />
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/payment" element={<PaymentMethods />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/create-case" element={<CreateCase />} />
-          <Route path="/create-adoption" element={<CreateAdoption />} />
+          <Route path="/sign-in" element={<SignInPage />} />
+          <Route path="/sign-up" element={<SignUpPage />} />
+          <Route
+            path="/profile"
+            element={
+              <AuthGuard>
+                <Profile />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/donations"
+            element={
+              <AuthGuard>
+                <MyDonations />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <AuthGuard>
+                <DonationHistory />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/achievements"
+            element={
+              <AuthGuard>
+                <Achievements />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <AuthGuard>
+                <PaymentMethods />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <AuthGuard>
+                <Notifications />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <AuthGuard>
+                <Settings />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-case"
+            element={
+              <AuthGuard>
+                <CreateCase />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/create-adoption"
+            element={
+              <AuthGuard>
+                <CreateAdoption />
+              </AuthGuard>
+            }
+          />
           <Route path="/community" element={<Community />} />
           <Route path="/community/:postId" element={<CommunityPost />} />
           <Route path="/volunteers/:id" element={<VolunteerProfile />} />
