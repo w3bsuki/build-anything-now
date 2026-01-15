@@ -53,14 +53,16 @@ export function PartnerCard({ partner }: PartnerCardProps) {
       <div className="p-4">
         <div className="flex items-start gap-3">
           {/* Logo */}
-          <div className="w-14 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0 relative">
-            <img
-              src={partner.logo}
-              alt={partner.name}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative w-14 h-14 flex-shrink-0">
+            <div className="w-14 h-14 rounded-lg overflow-hidden bg-muted">
+              <img
+                src={partner.logo}
+                alt={partner.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
             {partner.featured && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center ring-2 ring-background">
                 <Star className="w-3 h-3 text-white fill-white" />
               </div>
             )}
