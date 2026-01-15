@@ -158,7 +158,7 @@ const Partners = () => {
       </MobilePageHeader>
 
       {/* Desktop Search + Filters */}
-      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2 border-b border-border/50">
+      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2">
         <div className="container mx-auto px-4 space-y-2">
           <FilterPills
             options={filterOptions}

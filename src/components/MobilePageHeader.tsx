@@ -92,7 +92,7 @@ export function MobilePageHeader({
 
       {/* Search + Filters Area */}
       {(searchPlaceholder || children) && (
-        <div className="px-4 pb-2 space-y-2 border-b border-border/50">
+        <div className="px-4 pb-2 space-y-2">
           {searchPlaceholder && (
             <div className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />

@@ -213,7 +213,7 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
           <div className="mx-auto w-full max-w-md px-4 pb-2">
-            <div className="grid grid-cols-5 items-center rounded-xl bg-white/70 dark:bg-black/60 border border-white/30 dark:border-white/10 px-2 py-1.5 shadow-lg backdrop-blur-xl">
+            <div className="grid grid-cols-5 items-center rounded-2xl bg-white dark:bg-zinc-900 px-2 py-1.5 shadow-xl shadow-black/10 dark:shadow-black/30">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const Icon = item.icon;
