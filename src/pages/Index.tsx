@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { CaseCard } from '@/components/CaseCard';
+import { InstagramCaseCard } from '@/components/homepage/InstagramCaseCard';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -149,25 +150,25 @@ const Index = () => {
         </section>
       )}
 
-      {/* All/Other Cases Section */}
+      {/* All/Other Cases Section - Instagram Style Feed */}
       <section className="pb-4">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-semibold text-foreground">
               {urgentCases.length > 0 ? t('home.otherCases') : t('home.allCases')}
             </h2>
             {!isLoading && <span className="text-xs text-muted-foreground">({otherCases.length})</span>}
           </div>
           {isLoading ? (
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 4 }).map((_, i) => (
                 <CaseCardSkeleton key={i} />
               ))}
             </div>
           ) : otherCases.length > 0 ? (
-            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {otherCases.map((caseData) => (
-                <CaseCard key={caseData.id} caseData={caseData} />
+                <InstagramCaseCard key={caseData.id} caseData={caseData} />
               ))}
             </div>
           ) : (

@@ -9,6 +9,7 @@
  */
 
 import type * as achievements from "../achievements.js";
+import type * as activity from "../activity.js";
 import type * as campaigns from "../campaigns.js";
 import type * as cases from "../cases.js";
 import type * as clinics from "../clinics.js";
@@ -34,6 +35,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
+  activity: typeof activity;
   campaigns: typeof campaigns;
   cases: typeof cases;
   clinics: typeof clinics;

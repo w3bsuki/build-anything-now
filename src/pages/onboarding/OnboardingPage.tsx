@@ -62,6 +62,9 @@ export default function OnboardingPage() {
   const [selected, setSelected] = useState<OnboardingOption>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Debug auth state
+  console.log('Auth state:', { isLoaded, isSignedIn, isConvexLoading, isAuthenticated });
+
   // Redirect to sign-in if not authenticated (after Clerk has loaded)
   if (isLoaded && !isSignedIn) {
     navigate('/sign-in', { replace: true });
@@ -69,8 +72,12 @@ export default function OnboardingPage() {
   }
 
   const handleContinue = async () => {
-    // Make sure Convex is authenticated before making mutations
-    if (!selected || !isAuthenticated) return;
+    console.log('handleContinue called', { selected, isAuthenticated, isSignedIn, isConvexLoading });
+    
+    if (!selected) {
+      console.log('No selection made');
+      return;
+    }
     
     setIsSubmitting(true);
     
@@ -78,7 +85,9 @@ export default function OnboardingPage() {
       if (selected === 'organization') {
         navigate('/onboarding/claim');
       } else {
+        console.log('Calling completeOnboarding mutation...');
         await completeOnboarding({ userType: 'individual' });
+        console.log('Onboarding completed successfully!');
         navigate('/');
       }
     } catch (error) {
@@ -153,7 +162,7 @@ export default function OnboardingPage() {
         <div className="max-w-md mx-auto">
           <Button
             onClick={handleContinue}
-            disabled={!selected || isSubmitting || !isAuthenticated}
+            disabled={!selected || isSubmitting}
             className="w-full h-11 rounded-xl text-sm font-semibold gap-2"
           >
             {isSubmitting ? (

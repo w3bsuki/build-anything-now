@@ -9,17 +9,15 @@ interface HeroAvatarProps {
   count: number;
   size?: 'sm' | 'md';
   className?: string;
+  onClick?: () => void; // Optional click handler for story viewing
 }
 
-export function HeroAvatar({ id, name, avatar, count, size = 'md', className }: HeroAvatarProps) {
+export function HeroAvatar({ id, name, avatar, count, size = 'md', className, onClick }: HeroAvatarProps) {
   const dimensions = size === 'sm' ? 48 : 56;
   const innerSize = dimensions - 8; // Account for ring + padding
 
-  return (
-    <Link
-      to={`/profile/${id}`}
-      className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
-    >
+  const content = (
+    <>
       {/* Avatar with badge */}
       <div className="relative">
         {/* Gradient Ring */}
@@ -62,6 +60,28 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className }: 
       <span className="text-[11px] text-muted-foreground truncate max-w-[56px]">
         {name}
       </span>
+    </>
+  );
+
+  // If onClick is provided, render as button (for story viewing)
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  // Default: render as Link to profile
+  return (
+    <Link
+      to={`/profile/${id}`}
+      className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
+    >
+      {content}
     </Link>
   );
 }
