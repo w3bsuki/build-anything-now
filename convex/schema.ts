@@ -11,7 +11,20 @@ export default defineSchema({
         phone: v.optional(v.string()),
         role: v.union(v.literal("user"), v.literal("volunteer"), v.literal("clinic"), v.literal("admin")),
         createdAt: v.number(),
-    }).index("by_clerk_id", ["clerkId"]),
+        // Onboarding tracking
+        onboardingCompleted: v.optional(v.boolean()),
+        onboardingCompletedAt: v.optional(v.number()),
+        // User type from onboarding selection
+        userType: v.optional(v.union(
+            v.literal("individual"),    // "I want to help" or "Just exploring"
+            v.literal("organization"),  // "I represent a clinic/org"
+        )),
+        // Product tour tracking
+        productTourCompleted: v.optional(v.boolean()),
+        productTourCompletedAt: v.optional(v.number()),
+    })
+        .index("by_clerk_id", ["clerkId"])
+        .index("by_onboarding", ["onboardingCompleted"]),
 
     // Donations table - tracks all user donations
     donations: defineTable({
@@ -191,7 +204,37 @@ export default defineSchema({
         is24h: v.boolean(),
         specializations: v.array(v.string()),
         verified: v.boolean(),
-    }).index("by_city", ["city"]),
+        // Ownership tracking for claimed clinics
+        ownerId: v.optional(v.id("users")),
+        claimedAt: v.optional(v.number()),
+    })
+        .index("by_city", ["city"])
+        .index("by_owner", ["ownerId"])
+        .index("by_verified", ["verified"]),
+
+    // Clinic claims - pending verification requests
+    clinicClaims: defineTable({
+        clinicId: v.id("clinics"),
+        userId: v.id("users"),
+        status: v.union(
+            v.literal("pending"),
+            v.literal("approved"),
+            v.literal("rejected")
+        ),
+        // Verification info provided by claimer
+        claimerRole: v.string(),        // "Owner", "Manager", "Staff"
+        claimerEmail: v.string(),
+        claimerPhone: v.optional(v.string()),
+        additionalInfo: v.optional(v.string()),
+        // Admin review
+        reviewedBy: v.optional(v.id("users")),
+        reviewedAt: v.optional(v.number()),
+        rejectionReason: v.optional(v.string()),
+        createdAt: v.number(),
+    })
+        .index("by_clinic", ["clinicId"])
+        .index("by_user", ["userId"])
+        .index("by_status", ["status"]),
 
     // Campaigns table - fundraising campaigns
     campaigns: defineTable({

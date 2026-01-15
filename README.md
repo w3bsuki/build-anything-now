@@ -1,4 +1,4 @@
-# PawsSafe (Pawsy)
+# Pawtreon
 
 Mobile-first animal welfare platform (cases, donations, clinics, community).
 

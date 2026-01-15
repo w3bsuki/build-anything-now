@@ -2,16 +2,31 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clinic } from '@/types';
 import { ShareButton } from './ShareButton';
 import { Phone, MapPin, Clock, BadgeCheck, Stethoscope } from 'lucide-react';
 
 interface ClinicCardProps {
-  clinic: Clinic;
+  clinic: {
+    _id?: string;
+    id?: string;
+    name: string;
+    address: string;
+    city: string;
+    phone: string;
+    hours?: string;
+    is24h: boolean;
+    specializations: string[];
+    verified: boolean;
+    ownerId?: string | null; // Added for ownership tracking
+  };
 }
 
 export const ClinicCard = ({ clinic }: ClinicCardProps) => {
   const { t } = useTranslation();
+  const clinicId = clinic._id || clinic.id;
+  
+  // A clinic is truly verified if it has both verified=true AND an owner
+  const isVerifiedAndClaimed = clinic.verified && !!clinic.ownerId;
   
   // Helper to get translated specialization
   const getSpecializationLabel = (spec: string) => {
@@ -27,16 +42,19 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
     return translated || getSpecializationLabel(spec);
   };
   
+  // Derive hours from is24h if not provided
+  const displayHours = clinic.hours || (clinic.is24h ? '24/7' : t('clinics.contactForHours'));
+  
   return (
     <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
-      <Link to={`/clinics/${clinic.id}`}>
+      <Link to={`/clinics/${clinicId}`}>
         <CardContent className="p-4">
           {/* Header with name and share */}
           <div className="flex items-start gap-2 mb-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-1">
                 <h3 className="font-semibold text-foreground line-clamp-1">{clinic.name}</h3>
-                {clinic.verified && (
+                {isVerifiedAndClaimed && (
                   <BadgeCheck className="w-4 h-4 text-white fill-primary flex-shrink-0" />
                 )}
               </div>
@@ -48,7 +66,7 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
             <ShareButton 
               title={clinic.name} 
               text={`${clinic.name} - ${clinic.address}, ${clinic.city}`}
-              url={`${window.location.origin}/clinics/${clinic.id}`}
+              url={`${window.location.origin}/clinics/${clinicId}`}
               size="sm"
             />
           </div>
@@ -60,7 +78,7 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>{clinic.hours}</span>
+              <span>{displayHours}</span>
             </div>
           </div>
 

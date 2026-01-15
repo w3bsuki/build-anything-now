@@ -153,7 +153,7 @@ export default function PartnerPresentation() {
             {
               icon: '📱',
               title: 'Open App',
-              description: 'Opens PawsSafe, sees nearest partner clinic',
+              description: 'Opens Pawtreon, sees nearest partner clinic',
               color: 'bg-orange-500',
             },
             {
@@ -277,7 +277,7 @@ export default function PartnerPresentation() {
                     <div className="size-3 rounded-full bg-red-500" />
                     <div className="size-3 rounded-full bg-yellow-500" />
                     <div className="size-3 rounded-full bg-green-500" />
-                    <span className="ml-2 text-sm text-muted-foreground">PawsSafe Clinic Portal</span>
+                    <span className="ml-2 text-sm text-muted-foreground">Pawtreon Clinic Portal</span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 p-4">
@@ -1017,7 +1017,7 @@ export default function PartnerPresentation() {
               Let's Save Animals Together
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground md:max-w-3xl md:text-xl">
-              Join the PawsSafe partner network. It takes 5 minutes to apply.
+              Join the Pawtreon partner network. It takes 5 minutes to apply.
             </p>
 
             <div className="mx-auto mt-8 max-w-md md:mt-10 md:max-w-2xl">
@@ -1055,7 +1055,7 @@ export default function PartnerPresentation() {
                   <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     {contactEmail ? (
                       <Button asChild variant="link">
-                        <a href={`mailto:${contactEmail}?subject=PawsSafe%20Partnership%20Inquiry`}>
+                        <a href={`mailto:${contactEmail}?subject=Pawtreon%20Partnership%20Inquiry`}>
                           Or email us directly
                           <ExternalLink className="ml-2 size-4" />
                         </a>
@@ -1066,7 +1066,7 @@ export default function PartnerPresentation() {
                       </Button>
                     )}
                     <Button asChild variant="link">
-                      <a href="https://paws-psi.vercel.app" target="_blank" rel="noreferrer">
+                      <a href="https://pawtreon.org" target="_blank" rel="noreferrer">
                         View live app
                         <ExternalLink className="ml-2 size-4" />
                       </a>
@@ -1193,7 +1193,7 @@ export default function PartnerPresentation() {
           </Button>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold">Partner Pitch</div>
-            <div className="hidden truncate text-xs text-muted-foreground sm:block">PawsSafe Partner Network</div>
+            <div className="hidden truncate text-xs text-muted-foreground sm:block">Pawtreon Partner Network</div>
           </div>
           <Badge variant="outline" className="tabular-nums text-xs">
             {currentSlide + 1} / {totalSlides}

@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { mockCommunityPosts, mockPostComments } from '@/data/mockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import type { Id } from '../../convex/_generated/dataModel';
 import { ShareButton } from '@/components/ShareButton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import {
   ArrowLeft,
   ThumbsUp,
@@ -16,7 +17,6 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PostComment } from '@/types';
 
 const CommunityPostPage = () => {
   const { t } = useTranslation();
@@ -26,10 +26,8 @@ const CommunityPostPage = () => {
   const [newComment, setNewComment] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
-  const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
-  const isLoading = useSimulatedLoading(400);
 
   const rulesPostId = 'rules';
   const rulesPost = {
@@ -47,8 +45,25 @@ const CommunityPostPage = () => {
     createdAt: new Date().toISOString(),
   };
 
-  const post = postId === rulesPostId ? rulesPost : mockCommunityPosts.find((p) => p.id === postId);
-  const comments = mockPostComments.filter((c) => c.postId === postId);
+  // Fetch post from Convex (skip if it's the rules post)
+  const convexPost = useQuery(
+    api.community.get,
+    postId && postId !== rulesPostId ? { id: postId as Id<"communityPosts"> } : "skip"
+  );
+  
+  const post = postId === rulesPostId ? rulesPost : convexPost;
+  
+  // TODO: Comments are not yet implemented in Convex
+  const comments: never[] = [];
+  const isLoading = postId !== rulesPostId && convexPost === undefined;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -63,20 +78,9 @@ const CommunityPostPage = () => {
     );
   }
 
-  const handleLikeComment = (commentId: string) => {
-    setLikedComments((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(commentId)) {
-        newSet.delete(commentId);
-      } else {
-        newSet.add(commentId);
-      }
-      return newSet;
-    });
-  };
-
   const handleSubmitComment = () => {
     if (!newComment.trim() && !selectedImage) return;
+    // TODO: Implement comment creation with Convex
     console.log('Submitting comment:', newComment, selectedImage);
     setNewComment('');
     setSelectedImage(null);
@@ -94,77 +98,8 @@ const CommunityPostPage = () => {
     }
   };
 
-  const handleReplyClick = (commentId: string, authorName: string) => {
-    setReplyingTo({ id: commentId, name: authorName });
-    commentInputRef.current?.focus();
-  };
-
-  const renderComment = (comment: PostComment, isReply = false) => {
-    const isCommentLiked = likedComments.has(comment.id);
-
-    return (
-      <div
-        key={comment.id}
-        className={cn(
-          'group',
-          isReply ? 'ml-12 mt-3' : 'py-3'
-        )}
-      >
-        <div className="flex gap-3">
-          <Avatar className={cn(isReply ? 'w-7 h-7' : 'w-9 h-9')}>
-            <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
-            <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-
-          <div className="flex-1 min-w-0">
-            <div className="inline-block bg-muted/60 rounded-2xl px-3.5 py-2.5">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="font-semibold text-sm text-foreground">
-                  {comment.author.name}
-                </span>
-                {comment.author.isVolunteer && (
-                  <span className="px-1.5 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full">
-                    Volunteer
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-foreground leading-relaxed">{comment.content}</p>
-            </div>
-
-            <div className="flex items-center gap-3 mt-1.5 px-1">
-              <span className="text-xs text-muted-foreground">{comment.timeAgo}</span>
-              <button
-                onClick={() => handleLikeComment(comment.id)}
-                className={cn(
-                  'text-xs font-medium transition-colors',
-                  isCommentLiked ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {isCommentLiked ? t('communityPost.liked') : t('communityPost.like')} {comment.likes + (isCommentLiked ? 1 : 0) > 0 && `· ${comment.likes + (isCommentLiked ? 1 : 0)}`}
-              </button>
-              {!isReply && (
-                <button
-                  onClick={() => handleReplyClick(comment.id, comment.author.name)}
-                  className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t('communityPost.reply')}
-                </button>
-              )}
-            </div>
-
-            {comment.replies && comment.replies.length > 0 && (
-              <div className="mt-1">
-                {comment.replies.map((reply) => renderComment(reply, true))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="min-h-screen pb-20 md:pb-20 md:pt-16 bg-background">
+    <div className="min-h-screen pb-32 md:pb-20 md:pt-16 bg-background">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-3 h-14 px-3">
@@ -306,7 +241,10 @@ const CommunityPostPage = () => {
             </div>
           ) : comments.length > 0 ? (
             <div className="pb-2">
-              {comments.map((comment) => renderComment(comment))}
+              {/* TODO: Implement comments when Convex comments are ready */}
+              <div className="py-8 text-center text-muted-foreground">
+                <p className="text-sm">{t('communityPost.noCommentsYet')}</p>
+              </div>
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
@@ -318,9 +256,9 @@ const CommunityPostPage = () => {
       </div>
 
       {/* Sticky Bottom Comment Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)] md:pb-0">
-        <div className="mx-auto w-full max-w-md px-4 pb-2">
-          <div className="rounded-2xl border border-border/70 bg-background/95 shadow-lg backdrop-blur-xl overflow-hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/50">
+        <div className="mx-auto w-full max-w-2xl px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          <div className="rounded-2xl border border-border/70 bg-card shadow-sm overflow-hidden">
             {/* Reply indicator */}
             {replyingTo && (
               <div className="px-4 py-2 bg-muted/50 flex items-center justify-between border-b border-border/50">
@@ -356,18 +294,18 @@ const CommunityPostPage = () => {
             )}
 
             {/* Input area */}
-            <div className="px-3 py-2.5 flex items-center gap-2">
+            <div className="px-3 py-2 flex items-center gap-2">
               <Avatar className="w-8 h-8 shrink-0">
                 <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200" />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
               
-              <div className="flex-1 flex items-center gap-2 bg-muted/60 rounded-full px-1 py-1">
+              <div className="flex-1 flex items-center gap-1.5 bg-muted/50 rounded-full pl-4 pr-1">
                 <input
                   ref={commentInputRef}
                   type="text"
                   placeholder={replyingTo ? t('communityPost.replyToName', { name: replyingTo.name }) : t('communityPost.writeComment')}
-                  className="flex-1 px-3 py-1.5 text-base bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground md:text-sm"
+                  className="flex-1 py-2 text-[16px] leading-normal bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   onKeyDown={(e) => {

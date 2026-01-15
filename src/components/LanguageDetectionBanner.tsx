@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Globe, X, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { createPortal } from 'react-dom';
 
 const STORAGE_KEY = 'pawsy_language_prompt_dismissed';
 const COUNTRY_LANGUAGE_MAP: Record<string, string> = {
@@ -91,88 +92,93 @@ export function LanguageDetectionBanner() {
     setShowDropdown(false);
   };
 
+  const suggestedLang = detectedCountry ? COUNTRY_LANGUAGE_MAP[detectedCountry] : 'en';
+
+  // Don't render anything if not visible
   if (isLoading || !isVisible || !detectedCountry || isPresentation) {
     return null;
   }
 
-  const suggestedLang = COUNTRY_LANGUAGE_MAP[detectedCountry];
-  const countryName = COUNTRY_NAMES[detectedCountry]?.[i18n.language] || 
-                      COUNTRY_NAMES[detectedCountry]?.en || 
-                      detectedCountry;
-
-  return (
-    <>
-      <div className="fixed top-14 md:top-14 left-0 right-0 z-40 animate-in slide-in-from-top duration-300">
-        <div className="bg-primary/95 backdrop-blur-sm text-primary-foreground px-4 py-2.5">
-          <div className="container mx-auto flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <Globe className="w-4 h-4 shrink-0" />
-              <p className="text-sm truncate">
-                {t('languageBanner.selectLanguage')}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-sm font-medium transition-colors"
-              >
-                <span>{t(`languages.${suggestedLang}`)}</span>
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", showDropdown && "rotate-180")} />
-              </button>
-              <button
-                onClick={handleDismiss}
-                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-                aria-label={t('actions.cancel')}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+  // The banner - sticky, pushes content down
+  const banner = (
+    <div className="sticky top-0 z-40 animate-in slide-in-from-top duration-300">
+      <div className="bg-primary/95 backdrop-blur-sm text-primary-foreground px-4 py-2.5">
+        <div className="container mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Globe className="w-4 h-4 shrink-0" />
+            <p className="text-sm truncate">
+              {t('languageBanner.selectLanguage')}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full text-sm font-medium transition-colors"
+            >
+              <span>{t(`languages.${suggestedLang}`)}</span>
+              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", showDropdown && "rotate-180")} />
+            </button>
+            <button
+              onClick={handleDismiss}
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              aria-label={t('actions.cancel')}
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
+    </div>
+  );
 
-      {/* Language Dropdown */}
-      {showDropdown && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowDropdown(false)}
-          />
-          <div className="fixed top-28 md:top-32 right-4 z-50 bg-card rounded-xl shadow-lg border border-border overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 min-w-44">
-            {supportedLanguages.map((langCode) => {
-              const isSuggested = langCode === suggestedLang;
-              const isActive = langCode === i18n.language;
-              
-              return (
-                <button
-                  key={langCode}
-                  onClick={() => handleLanguageSelect(langCode)}
-                  className={cn(
-                    "w-full px-4 py-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors text-sm",
-                    isActive && "bg-primary/5"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "font-medium",
-                      isActive ? "text-primary" : "text-foreground"
-                    )}>
-                      {t(`languages.${langCode}`)}
-                    </span>
-                    {isSuggested && !isActive && (
-                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                        <Sparkles className="w-2.5 h-2.5" />
-                        {t('languageBanner.suggested')}
-                      </span>
-                    )}
-                  </div>
-                  {isActive && <Check className="w-4 h-4 text-primary" />}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
+  // Dropdown rendered in a portal at top of document
+  const dropdown = showDropdown ? createPortal(
+    <>
+      <div
+        className="fixed inset-0 z-[60]"
+        onClick={() => setShowDropdown(false)}
+      />
+      <div className="fixed top-12 right-4 z-[61] bg-card rounded-xl shadow-lg border border-border overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 min-w-44">
+        {supportedLanguages.map((langCode) => {
+          const isSuggested = langCode === suggestedLang;
+          const isActive = langCode === i18n.language;
+          
+          return (
+            <button
+              key={langCode}
+              onClick={() => handleLanguageSelect(langCode)}
+              className={cn(
+                "w-full px-4 py-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors text-sm",
+                isActive && "bg-primary/5"
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <span className={cn(
+                  "font-medium",
+                  isActive ? "text-primary" : "text-foreground"
+                )}>
+                  {t(`languages.${langCode}`)}
+                </span>
+                {isSuggested && !isActive && (
+                  <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                    <Sparkles className="w-2.5 h-2.5" />
+                    {t('languageBanner.suggested')}
+                  </span>
+                )}
+              </div>
+              {isActive && <Check className="w-4 h-4 text-primary" />}
+            </button>
+          );
+        })}
+      </div>
+    </>,
+    document.body
+  ) : null;
+
+  return (
+    <>
+      {banner}
+      {dropdown}
     </>
   );
 }

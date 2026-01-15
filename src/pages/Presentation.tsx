@@ -30,7 +30,13 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { mockCampaigns, mockCases, mockClinics, mockPartners, mockVolunteers } from '@/data/mockData';
+import { 
+  presentationCampaigns as mockCampaigns, 
+  presentationCases as mockCases, 
+  presentationClinics as mockClinics, 
+  presentationPartners as mockPartners, 
+  presentationVolunteers as mockVolunteers 
+} from '@/data/presentationData';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CaseCard } from '@/components/CaseCard';
 import { ClinicCard } from '@/components/ClinicCard';
@@ -85,7 +91,7 @@ export default function Presentation() {
           <div className="mx-auto w-full max-w-md text-center md:max-w-5xl">
             <div className="text-6xl md:text-8xl">🐾</div>
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight md:mt-6 md:text-7xl">
-              Paws<span className="text-primary">Safe</span>
+              Paw<span className="text-primary">treon</span>
             </h1>
             <p className="mt-3 text-base text-muted-foreground md:mt-4 md:text-2xl">
               Crowdfunded emergency care for street animals
@@ -99,11 +105,11 @@ export default function Presentation() {
                 className="h-auto p-0 text-base"
               >
                 <a
-                  href="https://paws-psi.vercel.app"
+                  href="https://pawtreon.org"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  paws-psi.vercel.app
+                  pawtreon.org
                   <ExternalLink className="ml-1.5 size-4" />
                 </a>
               </Button>
@@ -196,7 +202,7 @@ export default function Presentation() {
               <Card className="shadow-lg">
                 <CardHeader className="p-4 pb-3 md:p-6">
                   <div className="flex items-center justify-between gap-4">     
-                    <div className="font-semibold">🐾 PawsSafe</div>
+                    <div className="font-semibold">🐾 Pawtreon</div>
                     <Badge variant="secondary">Campaign feed</Badge>
                   </div>
                 </CardHeader>
@@ -810,7 +816,7 @@ export default function Presentation() {
         id: 'traction',
         render: () => {
           const shippedItems = [
-            'Live MVP deployed at paws-psi.vercel.app',
+            'Live MVP deployed at pawtreon.org',
             'Mobile-first UI across core flows',
             'Bilingual support (Bulgarian + English)',
             'iOS & Android ready via Capacitor',
@@ -1146,7 +1152,7 @@ export default function Presentation() {
                   <div className="grid gap-3 md:grid-cols-2">
                     {contactEmail ? (
                       <Button asChild size="lg" className="w-full">
-                        <a href={`mailto:${contactEmail}?subject=PawsSafe%20Investor%20Intro`}>
+                        <a href={`mailto:${contactEmail}?subject=Pawtreon%20Investor%20Intro`}>
                           Email intro
                         </a>
                       </Button>
@@ -1157,7 +1163,7 @@ export default function Presentation() {
                     )}
                     <Button asChild size="lg" variant="secondary" className="w-full">
                       <a
-                        href="https://paws-psi.vercel.app"
+                        href="https://pawtreon.org"
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -1296,7 +1302,7 @@ export default function Presentation() {
           </Button>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold">Investor deck</div>
-            <div className="truncate text-xs text-muted-foreground">PawsSafe</div>
+            <div className="truncate text-xs text-muted-foreground">Pawtreon</div>
           </div>
           <div className="text-xs text-muted-foreground tabular-nums">
             {currentSlide + 1}/{totalSlides}

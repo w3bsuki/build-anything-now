@@ -2,7 +2,6 @@ import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from 'convex/react';
-import { useTranslatedMockData } from '@/hooks/useTranslatedMockData';
 import { ImageGallery } from '@/components/ImageGallery';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -16,138 +15,11 @@ import { format } from 'date-fns';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 
-function AnimalProfileMock() {
-  const { t } = useTranslation();
-  const { mockCases } = useTranslatedMockData();
-  const { id } = useParams();
-  const [isSaved, setIsSaved] = useState(false);
-  const caseData = mockCases.find((c) => c.id === id);
-
-  if (!caseData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.caseNotFound')}</h1>
-          <Link to="/" className="text-primary hover:underline">
-            {t('common.goBackHome')}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md md:hidden">
-        <div className="flex items-center gap-3 h-14 px-3">
-          <Link
-            to="/"
-            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </Link>
-          <h1 className="font-medium text-sm text-foreground truncate flex-1">
-            {caseData.title}
-          </h1>
-          <ShareButton title={caseData.title} text={caseData.description} />
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-5">
-        <div className="max-w-2xl mx-auto">
-          {/* Desktop Back Button */}
-          <Link
-            to="/"
-            className="hidden md:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t('common.backToAllCases')}
-          </Link>
-
-          {/* Image Gallery */}
-          <div className="mb-5">
-            <ImageGallery images={caseData.images} alt={caseData.title} />
-          </div>
-
-          {/* Status and Location */}
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <StatusBadge status={caseData.status} />
-            <div className="flex items-center gap-1 text-muted-foreground text-sm">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{caseData.location.city}, {caseData.location.neighborhood}</span>
-            </div>
-            <span className="text-muted-foreground/40">•</span>
-            <div className="flex items-center gap-1 text-muted-foreground text-sm">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{format(new Date(caseData.createdAt), 'MMM d, yyyy')}</span>
-            </div>
-          </div>
-
-          {/* Title */}
-          <h1 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-            {caseData.title}
-          </h1>
-
-          {/* Progress */}
-          <div className="bg-card rounded-xl border border-border p-4 mb-5">
-            <ProgressBar
-              current={caseData.fundraising.current}
-              goal={caseData.fundraising.goal}
-              currency={caseData.fundraising.currency}
-              size="md"
-            />
-          </div>
-
-          {/* Story */}
-          <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-2">{t('animalProfile.theStory')}</h2>
-            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
-              {caseData.story.split('\n\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
-
-          {/* Updates Timeline */}
-          <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-3">{t('animalProfile.updates')}</h2>
-            <UpdatesTimeline updates={caseData.updates} />
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky Action Bar */}
-      <div className="sticky-donate">
-        <div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsSaved(!isSaved)}
-              className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors active:scale-95",
-                isSaved 
-                  ? "bg-primary/10 text-primary" 
-                  : "bg-muted/50 text-foreground"
-              )}
-            >
-              <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
-            </button>
-            <Button variant="donate" className="flex-1 h-10 text-sm">
-              <Heart className="w-4 h-4 mr-2" />
-              {t('actions.donateNow')}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function normalizeLocale(locale: string) {
   return locale.trim().toLowerCase().split('-')[0];
 }
 
-function AnimalProfileConvex() {
+const AnimalProfile = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
@@ -317,11 +189,6 @@ function AnimalProfileConvex() {
       </div>
     </div>
   );
-}
-
-const AnimalProfile = () => {
-  const convexEnabled = Boolean(import.meta.env.VITE_CONVEX_URL);
-  return convexEnabled ? <AnimalProfileConvex /> : <AnimalProfileMock />;
 };
 
 export default AnimalProfile;

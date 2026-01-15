@@ -113,43 +113,43 @@ async function seedUsersInternal(ctx: any, now: number) {
   const usersData = [
     {
       clerkId: DEMO_CLERK_IDS.admin,
-      name: "PawsSafe Admin",
-      email: "admin@pawssafe.local",
+      name: "Pawtreon Admin",
+      email: "admin@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
       role: "admin" as const,
     },
     {
       clerkId: DEMO_CLERK_IDS.volunteer1,
       name: "Maria Petrova",
-      email: "maria@pawssafe.local",
+      email: "maria@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200",
       role: "volunteer" as const,
     },
     {
       clerkId: DEMO_CLERK_IDS.volunteer2,
       name: "Georgi Ivanov",
-      email: "georgi@pawssafe.local",
+      email: "georgi@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
       role: "volunteer" as const,
     },
     {
       clerkId: DEMO_CLERK_IDS.volunteer3,
       name: "Elena Dimitrova",
-      email: "elena@pawssafe.local",
+      email: "elena@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
       role: "volunteer" as const,
     },
     {
       clerkId: DEMO_CLERK_IDS.user1,
       name: "Ivan Georgiev",
-      email: "ivan@pawssafe.local",
+      email: "ivan@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200",
       role: "user" as const,
     },
     {
       clerkId: DEMO_CLERK_IDS.user2,
       name: "Peter Todorov",
-      email: "peter@pawssafe.local",
+      email: "peter@pawtreon.local",
       avatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=200",
       role: "user" as const,
     },
@@ -529,7 +529,7 @@ async function seedNotificationsInternal(
     },
     {
       type: "system" as const,
-      title: "Welcome to PawsSafe!",
+      title: "Welcome to Pawtreon!",
       message: "Thank you for joining our community. Together we can help more animals.",
       hoursAgo: 168,
       read: true,
@@ -1066,3 +1066,168 @@ async function cleanupDemoDataInternal(ctx: any) {
 
 // Legacy function for backwards compatibility
 export const seedDemoData = seedAll;
+
+// ============================================
+// MIGRATION: Mark existing users as onboarded
+// ============================================
+export const migrateExistingUsersOnboarding = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, args) => {
+    requireDevSecret(args.secret);
+    
+    // Get all users who haven't completed onboarding
+    const users = await ctx.db.query("users").collect();
+    let migratedCount = 0;
+    
+    for (const user of users) {
+      // Skip if already has onboarding status
+      if (user.onboardingCompleted !== undefined) continue;
+      
+      // Mark as onboarded (existing users shouldn't see onboarding)
+      await ctx.db.patch(user._id, {
+        onboardingCompleted: true,
+        onboardingCompletedAt: Date.now(),
+        userType: "individual", // Default to individual
+        productTourCompleted: true, // Skip tour for existing users
+        productTourCompletedAt: Date.now(),
+      });
+      
+      migratedCount++;
+    }
+    
+    return { 
+      success: true, 
+      migratedCount,
+      message: `Migrated ${migratedCount} existing users to have onboarding status` 
+    };
+  },
+});
+
+// ============================================
+// SEED: Bulgarian veterinary clinics
+// ============================================
+export const seedBulgarianClinics = mutation({
+  args: { secret: v.string() },
+  handler: async (ctx, args) => {
+    requireDevSecret(args.secret);
+    
+    const bulgarianClinics = [
+      {
+        name: "Ветеринарна клиника Софиявет",
+        city: "София",
+        address: "ул. Витоша 45",
+        phone: "+359 2 123 4567",
+        is24h: true,
+        specializations: ["хирургия", "вътрешни болести", "дерматология"],
+        verified: false,
+      },
+      {
+        name: "Animal Hospital Plovdiv",
+        city: "Пловдив",
+        address: "бул. Марица 12",
+        phone: "+359 32 987 6543",
+        is24h: false,
+        specializations: ["хирургия", "ортопедия"],
+        verified: false,
+      },
+      {
+        name: "Варна Вет Клиник",
+        city: "Варна",
+        address: "ул. Приморска 78",
+        phone: "+359 52 456 7890",
+        is24h: true,
+        specializations: ["спешна помощ", "кардиология"],
+        verified: false,
+      },
+      {
+        name: "Зоовет Бургас",
+        city: "Бургас",
+        address: "ул. Александровска 25",
+        phone: "+359 56 123 4567",
+        is24h: false,
+        specializations: ["обща практика", "ваксинации"],
+        verified: false,
+      },
+      {
+        name: "Ветеринарен център Русе",
+        city: "Русе",
+        address: "бул. Липник 55",
+        phone: "+359 82 876 5432",
+        is24h: true,
+        specializations: ["хирургия", "неврология", "спешна помощ"],
+        verified: false,
+      },
+      {
+        name: "Dr. Петров Ветеринарна клиника",
+        city: "София",
+        address: "ул. Раковски 156",
+        phone: "+359 2 456 7890",
+        is24h: false,
+        specializations: ["хирургия", "дерматология", "кардиология"],
+        verified: false,
+      },
+      {
+        name: "Happy Paws Стара Загора",
+        city: "Стара Загора",
+        address: "ул. Христо Ботев 42",
+        phone: "+359 42 654 321",
+        is24h: false,
+        specializations: ["обща практика", "зъболечение"],
+        verified: false,
+      },
+      {
+        name: "24/7 Спешна ветеринарна помощ",
+        city: "София",
+        address: "бул. Цариградско шосе 115",
+        phone: "+359 2 999 8888",
+        is24h: true,
+        specializations: ["спешна помощ", "интензивни грижи", "хирургия"],
+        verified: false,
+      },
+      {
+        name: "Ветлайф Пловдив",
+        city: "Пловдив",
+        address: "ул. Капитан Райчо 88",
+        phone: "+359 32 111 2222",
+        is24h: true,
+        specializations: ["онкология", "УЗИ диагностика", "хирургия"],
+        verified: false,
+      },
+      {
+        name: "Домашни любимци клиника",
+        city: "Варна",
+        address: "бул. Княз Борис I 101",
+        phone: "+359 52 333 4444",
+        is24h: false,
+        specializations: ["обща практика", "офталмология"],
+        verified: false,
+      },
+    ];
+    
+    let insertedCount = 0;
+    
+    for (const clinic of bulgarianClinics) {
+      // Check if already exists
+      const existing = await ctx.db
+        .query("clinics")
+        .filter((q: any) => 
+          q.and(
+            q.eq(q.field("name"), clinic.name),
+            q.eq(q.field("city"), clinic.city)
+          )
+        )
+        .first();
+      
+      if (existing) continue;
+      
+      await ctx.db.insert("clinics", clinic);
+      insertedCount++;
+    }
+    
+    return {
+      success: true,
+      insertedCount,
+      message: `Inserted ${insertedCount} Bulgarian clinics`,
+    };
+  },
+});

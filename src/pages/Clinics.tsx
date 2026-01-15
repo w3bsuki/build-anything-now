@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from 'convex/react';
 import { ClinicCard } from '@/components/ClinicCard';
 import { FilterPills } from '@/components/FilterPills';
 import { ClinicCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { mockClinics } from '@/data/mockData';
+import { api } from '../../convex/_generated/api';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { MapPin } from 'lucide-react';
 
@@ -15,7 +15,12 @@ const Clinics = () => {
   const [cityFilter, setCityFilter] = useState('all');
   const [show24hOnly, setShow24hOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const isLoading = useSimulatedLoading(600);
+  
+  const clinics = useQuery(api.clinics.list, {
+    city: cityFilter === 'all' ? undefined : cityFilter,
+    is24h: show24hOnly ? true : undefined,
+  });
+  const isLoading = clinics === undefined;
 
   const cityFilters = [
     { id: 'all', label: t('clinics.allCities') },
@@ -25,13 +30,11 @@ const Clinics = () => {
     { id: 'burgas', label: 'Burgas', icon: <MapPin className="w-3.5 h-3.5" /> },
   ];
 
-  const filteredClinics = mockClinics.filter((clinic) => {
-    const matchesCity = cityFilter === 'all' || clinic.city.toLowerCase() === cityFilter;
-    const matches24h = !show24hOnly || clinic.is24h;
+  const filteredClinics = (clinics ?? []).filter((clinic) => {
     const matchesSearch = !searchQuery || 
       clinic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       clinic.specializations.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCity && matches24h && matchesSearch;
+    return matchesSearch;
   });
 
   return (

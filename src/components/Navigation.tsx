@@ -7,6 +7,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { CommunityBottomNav } from './CommunityBottomNav';
 
 // Bottom nav: Home, Campaigns, + (Create), Clinics, Partners
 const navItems = [
@@ -37,22 +38,28 @@ export function Navigation() {
   const location = useLocation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   
-  // Hide entire navigation on presentation, partner, and auth pages (immersive experience)
+  // Hide entire navigation on presentation, partner, auth, and onboarding pages (immersive experience)
   if (location.pathname === '/presentation' || 
       location.pathname === '/partner' ||
       location.pathname.startsWith('/sign-in') ||
-      location.pathname.startsWith('/sign-up')) {
+      location.pathname.startsWith('/sign-up') ||
+      location.pathname.startsWith('/onboarding')) {
     return null;
   }
   
   // Only show mobile header on main pages, not detail pages or sub-pages
   const showMobileHeader = mobileHeaderPages.includes(location.pathname);
   
+  // Check if we're in community section (for contextual nav)
+  const isCommunitySection = location.pathname === '/community' || location.pathname.startsWith('/community/');
+  
   // Hide bottom nav on detail pages and create pages (they have their own action bars)
+  // Also hide when in community section (community has its own nav)
   const hideBottomNav = location.pathname.includes('/case/') ||
     location.pathname.includes('/campaigns/') ||
     location.pathname.includes('/clinics/') ||
     location.pathname.includes('/partners/') ||
+    isCommunitySection ||
     ['/create-case', '/create-adoption', '/donations', '/history', '/achievements', '/payment', '/notifications', '/settings'].includes(location.pathname);
 
   return (
@@ -66,7 +73,7 @@ export function Navigation() {
               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
                 <HeartHandshake className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-lg tracking-tight text-foreground">PawsSafe</span>
+              <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
             </NavLink>
 
             {/* Actions - Community, Notifications, Profile */}
@@ -107,6 +114,7 @@ export function Navigation() {
               </NavLink>
               <NavLink
                 to="/profile"
+                data-tour="profile-menu"
                 className={cn(
                   buttonVariants({ variant: "iconHeader", size: "icon" }),
                   location.pathname === '/profile' && "bg-primary/10 text-primary"
@@ -131,7 +139,7 @@ export function Navigation() {
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <HeartHandshake className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-lg text-foreground">PawsSafe</span>
+              <span className="font-bold text-lg text-foreground">Pawtreon</span>
             </NavLink>
 
             {/* Nav Links */}
@@ -214,7 +222,10 @@ export function Navigation() {
 
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
+        <nav 
+          data-tour="navigation"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]"
+        >
           <div className="mx-auto w-full max-w-md px-4 pb-2">
             <div className="grid grid-cols-5 items-center rounded-2xl bg-card px-2 py-1.5 shadow-xl">
               {navItems.map((item) => {
@@ -305,6 +316,9 @@ export function Navigation() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+
+      {/* Community Contextual Navigation */}
+      {isCommunitySection && <CommunityBottomNav />}
     </>
   );
 }

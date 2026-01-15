@@ -1,11 +1,11 @@
 {
   "app": {
-    "name": "PawsSafe"
+    "name": "Pawtreon"
   },
   "auth": {
     "welcomeBack": "Welcome Back",
     "signInSubtitle": "Sign in to continue helping animals in need",
-    "joinUs": "Join PawsSafe",
+    "joinUs": "Join Pawtreon",
     "signUpSubtitle": "Create an account to start making a difference"
   },
   "nav": {
@@ -32,7 +32,13 @@
     "signOut": "Sign Out",
     "markAllRead": "Mark all read",
     "setDefault": "Set default",
-    "addNewCard": "Add New Card"
+    "addNewCard": "Add New Card",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "back": "Back",
+    "submitting": "Submitting...",
+    "reportAnimal": "Report Animal",
+    "listForAdoption": "List for Adoption"
   },
   "contentTranslation": {
     "translatePrompt": "This case was posted in another language.",
@@ -120,8 +126,11 @@
     "feed": "Feed",
     "volunteers": "Volunteers",
     "members": "Members",
+    "activity": "Activity",
+    "newPost": "Post",
     "searchPosts": "Search posts...",
     "searchVolunteers": "Search volunteers...",
+    "searchMembers": "Search members...",
     "searchSitters": "Search pet sitters...",
     "sort": "Sort",
     "sortNewest": "Newest",
@@ -131,17 +140,32 @@
     "rulesTitle": "Rules",
     "rulesHeader": "Community rules",
     "rulesSummary": "Please keep the community safe and helpful. Be kind, protect privacy, and share accurate info—especially for urgent cases.",
-    "rulesBody": "Welcome to PawsSafe Community.\n\n• Be kind and respectful.\n• No personal data (addresses, phone numbers) in public posts.\n• For emergencies, include city + neighborhood and what help is needed.\n• No scams: donation links must be verifiable.\n• Report spam or harmful content.",
+    "rulesBody": "Welcome to Pawtreon Community.\n\n• Be kind and respectful.\n• No personal data (addresses, phone numbers) in public posts.\n• For emergencies, include city + neighborhood and what help is needed.\n• No scams: donation links must be verifiable.\n• Report spam or harmful content.",
     "openPost": "Open post by {{name}}",
     "more": "More",
     "volunteer": "Volunteer",
     "noPosts": "No posts found",
     "noVolunteers": "No volunteers found",
+    "noMembersFound": "No members found",
+    "noActivity": "No recent activity",
     "topVolunteersMonth": "Top Volunteers This Month",
     "topVolunteersDesc": "These amazing people have made the biggest impact!",
     "communityMembers": "Community Members",
     "memberSince": "Member since",
+    "totalMembers": "Total Members",
+    "animalsHelped": "Helped",
+    "topVolunteers": "Top Volunteers",
     "leaderboard": "Leaderboard",
+    "allMembers": "All Members",
+    "today": "Today",
+    "earlier": "Earlier",
+    "activityLiked": "liked \"{{target}}\"",
+    "activityCommented": "commented on \"{{target}}\"",
+    "activityShared": "shared \"{{target}}\"",
+    "activityFollowed": "followed {{target}}",
+    "activityAchievement": "earned a new achievement",
+    "activityAdopted": "adopted {{target}}",
+    "activityRescued": "reported \"{{target}}\"",
     "thisMonth": "This Month",
     "petSitters": "Pet Sitters",
     "petSittersTitle": "Trusted Pet Sitters",
@@ -333,7 +357,7 @@
     "callClinic": "Call Clinic"
   },
   "partnerProfile": {
-    "proudPartner": "Proud partner of PawsSafe since 2023, helping us save lives every day.",
+    "proudPartner": "Proud partner of Pawtreon since 2023, helping us save lives every day.",
     "contact": "Contact",
     "theirContribution": "Their Contribution",
     "campaignsSupported": "Campaigns Supported",
@@ -681,5 +705,67 @@
         "content": "Can anyone recommend a good vet clinic in Plovdiv for a stray cat I found? She seems to have an eye infection and I want to help her. Any advice appreciated! 🙏"
       }
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to PawsSafe!",
+      "subtitle": "What brings you here today?"
+    },
+    "options": {
+      "help": {
+        "title": "I want to help animals",
+        "description": "Donate, volunteer, or find a pet to adopt"
+      },
+      "organization": {
+        "title": "I represent a clinic or organization",
+        "description": "Claim your profile or register your business"
+      },
+      "exploring": {
+        "title": "Just exploring",
+        "description": "Browse around and see what PawsSafe is about"
+      }
+    },
+    "claim": {
+      "title": "Find Your Organization",
+      "subtitle": "Is your clinic or organization already on PawsSafe?",
+      "searchPlaceholder": "Search by name or city...",
+      "searchHint": "Enter at least 2 characters to search",
+      "noResults": "No clinics found matching your search",
+      "resultsCount": "{{count}} results found",
+      "claimed": "Claimed",
+      "claimButton": "Claim",
+      "registerNew": "Register a new organization",
+      "skipButton": "Skip for now",
+      "or": "or",
+      "claimTitle": "Claim",
+      "claimDescription": "Please provide your details to verify ownership.",
+      "yourRole": "Your Role",
+      "selectRole": "Select your role",
+      "contactEmail": "Contact Email",
+      "phone": "Phone",
+      "additionalInfo": "Additional Information",
+      "additionalInfoPlaceholder": "Any additional details that can help verify your claim...",
+      "submitClaim": "Submit Claim",
+      "successTitle": "Claim Submitted!",
+      "successMessage": "We'll review your claim and get back to you soon.",
+      "redirecting": "Redirecting...",
+      "roles": {
+        "owner": "Owner",
+        "manager": "Manager",
+        "staff": "Staff Member",
+        "representative": "Official Representative"
+      }
+    }
+  },
+  "tour": {
+    "welcome": "Welcome to PawsSafe! 🐾 Let me show you how to help animals in need.",
+    "urgentCases": "Here you'll find animals that need immediate help. Each case shows their story and how much funding they need.",
+    "caseCard": "Click on any case to see details and make a donation. Every amount helps!",
+    "navigation": "Explore campaigns, partner clinics, and shelters working with us.",
+    "profile": "Access your profile, donation history, and achievements here.",
+    "complete": "You're all set! Start exploring and helping animals today. 🐾💝"
+  },
+  "common": {
+    "optional": "Optional"
   }
 }

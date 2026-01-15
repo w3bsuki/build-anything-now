@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { mockClinics } from '@/data/mockData';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import type { Id } from '../../convex/_generated/dataModel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShareButton } from '@/components/ShareButton';
@@ -23,7 +25,12 @@ const ClinicProfile = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
-  const clinic = mockClinics.find((c) => c.id === id);
+  
+  // Try to use the id as a Convex ID
+  const clinic = useQuery(
+    api.clinics.get,
+    id ? { id: id as Id<"clinics"> } : "skip"
+  );
 
   // Helper to get translated specialization
   const getSpecializationLabel = (spec: string) => {
@@ -38,6 +45,15 @@ const ClinicProfile = () => {
     const translated = t(key, { defaultValue: '' });
     return translated || getSpecializationLabel(spec);
   };
+
+  if (clinic === undefined) {
+    // Loading
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
+      </div>
+    );
+  }
 
   if (!clinic) {
     return (
@@ -60,6 +76,9 @@ const ClinicProfile = () => {
     const address = encodeURIComponent(`${clinic.address}, ${clinic.city}, Bulgaria`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
   };
+  
+  // Derive hours from is24h if not stored
+  const displayHours = clinic.is24h ? '24/7' : t('clinics.contactForHours');
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
@@ -147,7 +166,7 @@ const ClinicProfile = () => {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">{t('clinicProfile.workingHours')}</div>
-                  <div className="font-medium text-foreground">{clinic.hours}</div>
+                  <div className="font-medium text-foreground">{displayHours}</div>
                 </div>
               </div>
 

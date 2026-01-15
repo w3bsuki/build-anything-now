@@ -1,11 +1,11 @@
 {
   "app": {
-    "name": "PawsSafe"
+    "name": "Pawtreon"
   },
   "auth": {
     "welcomeBack": "Willkommen zurück",
-    "signInSubtitle": "Melden Sie sich an, um Tieren in Not weiterhin zu helfen",
-    "joinUs": "Treten Sie PawsSafe bei",
+    "signInSubtitle": "Melden Sie sich an, um Tieren in Not weiter zu helfen",
+    "joinUs": "Treten Sie Pawtreon bei",
     "signUpSubtitle": "Erstellen Sie ein Konto, um etwas zu bewirken"
   },
   "nav": {
@@ -128,7 +128,7 @@
     "rulesTitle": "Regeln",
     "rulesHeader": "Community-Regeln",
     "rulesSummary": "Halten wir die Community sicher und hilfreich. Seid freundlich, schützt die Privatsphäre und teilt korrekte Infos – besonders bei Notfällen.",
-    "rulesBody": "Willkommen in der PawsSafe-Community.\n\n• Seid freundlich und respektvoll.\n• Keine persönlichen Daten (Adressen, Telefonnummern) in öffentlichen Beiträgen.\n• Bei Notfällen: Stadt + Viertel und welche Hilfe benötigt wird.\n• Kein Betrug: Spendenlinks müssen überprüfbar sein.\n• Meldet Spam oder schädliche Inhalte.",
+    "rulesBody": "Willkommen in der Pawtreon-Community.\n\n• Seid freundlich und respektvoll.\n• Keine persönlichen Daten (Adressen, Telefonnummern) in öffentlichen Beiträgen.\n• Bei Notfällen: Stadt + Viertel und welche Hilfe benötigt wird.\n• Kein Betrug: Spendenlinks müssen überprüfbar sein.\n• Meldet Spam oder schädliche Inhalte.",
     "openPost": "Beitrag von {{name}} öffnen",
     "more": "Mehr",
     "volunteer": "Freiwilliger",
@@ -321,7 +321,7 @@
     "callClinic": "Klinik anrufen"
   },
   "partnerProfile": {
-    "proudPartner": "Stolzer Partner von PawsSafe seit 2023, der uns jeden Tag hilft, Leben zu retten.",
+    "proudPartner": "Stolzer Partner von Pawtreon seit 2023, der uns jeden Tag hilft, Leben zu retten.",
     "contact": "Kontakt",
     "theirContribution": "Ihr Beitrag",
     "campaignsSupported": "Unterstützte Kampagnen",

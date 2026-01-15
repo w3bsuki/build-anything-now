@@ -59,3 +59,120 @@ export const me = query({
             .unique();
     },
 });
+
+// Complete onboarding - sets user type and marks onboarding as complete
+export const completeOnboarding = mutation({
+    args: {
+        userType: v.union(v.literal("individual"), v.literal("organization")),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        await ctx.db.patch(user._id, {
+            userType: args.userType,
+            onboardingCompleted: true,
+            onboardingCompletedAt: Date.now(),
+        });
+
+        return { success: true };
+    },
+});
+
+// Complete product tour
+export const completeProductTour = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        await ctx.db.patch(user._id, {
+            productTourCompleted: true,
+            productTourCompletedAt: Date.now(),
+        });
+
+        return { success: true };
+    },
+});
+
+// Skip product tour (same as complete but allows distinction in analytics)
+export const skipProductTour = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        await ctx.db.patch(user._id, {
+            productTourCompleted: true,
+            productTourCompletedAt: Date.now(),
+        });
+
+        return { success: true };
+    },
+});
+
+// Get top heroes (users who helped most animals) for homepage
+export const getTopHeroes = query({
+    args: {
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const limit = args.limit ?? 10;
+
+        // Get all cases and count by userId
+        const cases = await ctx.db.query("cases").collect();
+
+        // Count cases per user
+        const userCounts = new Map<string, number>();
+        for (const c of cases) {
+            const count = userCounts.get(c.userId.toString()) ?? 0;
+            userCounts.set(c.userId.toString(), count + 1);
+        }
+
+        // Get user details for top helpers
+        const topUserIds = Array.from(userCounts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, limit);
+
+        const heroes = await Promise.all(
+            topUserIds.map(async ([userIdStr, count]) => {
+                // Find user by iterating (since we have string ID)
+                const users = await ctx.db.query("users").collect();
+                const user = users.find(u => u._id.toString() === userIdStr);
+                
+                if (!user) return null;
+
+                return {
+                    id: user._id,
+                    name: user.name,
+                    avatar: user.avatar,
+                    animalsHelped: count,
+                };
+            })
+        );
+
+        return heroes.filter(Boolean);
+    },
+});
+
