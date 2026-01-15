@@ -99,7 +99,7 @@ export function MobilePageHeader({
               <input
                 type="text"
                 placeholder={searchPlaceholder}
-                className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-sm font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
               />
