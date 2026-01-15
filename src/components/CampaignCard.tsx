@@ -18,7 +18,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
   return (
     <div
       className={cn(
-        'relative bg-card rounded-xl overflow-hidden border border-border',
+        'relative bg-card rounded-xl overflow-hidden shadow-sm',
         className
       )}
     >
