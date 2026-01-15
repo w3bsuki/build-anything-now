@@ -174,9 +174,9 @@ const Community = () => {
   });
 
   return (
-    <div className="min-h-screen pt-12 pb-20 md:pb-8 md:pt-16">
+    <div className="min-h-screen pt-14 pb-24 md:pb-8 md:pt-16">
       {/* Search + Sort */}
-      <div className="sticky top-12 md:top-14 bg-background z-30 pb-2 border-b border-border/50">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+3.5rem)] md:top-14 bg-background z-30 pb-2 border-b border-border/50">
         <div className="container mx-auto px-4 space-y-2">
           {/* Search Bar */}
           <div className="relative">

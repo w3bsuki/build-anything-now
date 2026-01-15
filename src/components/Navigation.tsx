@@ -3,6 +3,8 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Megaphone, Users, User, Stethoscope, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 // Bottom nav: Home, Campaigns, + (Create), Clinics, Partners
 const navItems = [
@@ -51,55 +53,61 @@ export function Navigation() {
     <>
       {/* Mobile Top Header - only on root pages */}
       {showMobileHeader && (
-        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background">
-          <div className="flex items-center justify-between h-12 px-4">
+        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-lg border-b border-border/40 pt-[env(safe-area-inset-top)]">
+          <div className="flex items-center justify-between h-14 px-4">
             {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-1.5">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <HeartHandshake className="w-[18px] h-[18px] text-primary" />
+            <NavLink to="/" className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
+                <HeartHandshake className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-semibold text-[15px] text-foreground">PawsSafe</span>
+              <span className="font-bold text-base text-foreground">PawsSafe</span>
             </NavLink>
 
             {/* Actions - Community, Notifications, Profile */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <NavLink
                 to="/community"
                 className={cn(
-                  "relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
-                  location.pathname === '/community' && "bg-primary/10"
+                  "relative",
+                  buttonVariants({ variant: "iconHeader", size: "icon" }),
+                  location.pathname === '/community' && "bg-primary/10 text-primary"
                 )}
               >
                 <MessageCircle className={cn(
-                  "size-5",
+                  "size-[22px]",
                   location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
                 )} strokeWidth={1.75} />
                 {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground flex items-center justify-center border-2 border-background">
+                  <Badge
+                    variant="secondary"
+                    className="absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                  >
                     {unreadPosts > 9 ? '9+' : unreadPosts}
-                  </span>
+                  </Badge>
                 )}
               </NavLink>
               <NavLink
                 to="/notifications"
-                className="relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors"
+                className={cn("relative", buttonVariants({ variant: "iconHeader", size: "icon" }))}
               >
-                <Bell className="size-5 text-foreground/80" strokeWidth={1.75} />
+                <Bell className="size-[22px] text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground flex items-center justify-center border-2 border-background">
+                  <Badge
+                    className="absolute -top-1 -right-1 h-5 min-w-5 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                  >
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                  </span>
+                  </Badge>
                 )}
               </NavLink>
               <NavLink
                 to="/profile"
                 className={cn(
-                  "size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
-                  location.pathname === '/profile' && "bg-primary/10"
+                  buttonVariants({ variant: "iconHeader", size: "icon" }),
+                  location.pathname === '/profile' && "bg-primary/10 text-primary"
                 )}
               >
                 <User className={cn(
-                  "size-5",
+                  "size-[22px]",
                   location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
                 )} strokeWidth={1.75} />
               </NavLink>
@@ -201,8 +209,8 @@ export function Navigation() {
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto w-full max-w-md px-4 pb-3">
-            <div className="grid grid-cols-5 items-end rounded-2xl border border-border/70 bg-background/95 px-2 py-2 shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+          <div className="mx-auto w-full max-w-md px-4 pb-2">
+            <div className="grid grid-cols-5 items-center rounded-2xl border border-border/70 bg-background/95 px-2 py-1.5 shadow-[0_-6px_18px_rgba(0,0,0,0.08)] backdrop-blur-xl">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const Icon = item.icon;
@@ -213,15 +221,12 @@ export function Navigation() {
                     <button
                       key="create"
                       onClick={() => setIsCreateOpen(true)}
-                      className="flex flex-col items-center justify-end gap-1"
+                      className="flex flex-col items-center justify-center"
                       aria-label={t(item.labelKey)}
                     >
-                      <div className="-mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30 ring-4 ring-background">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
                         <Plus className="h-5 w-5" strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-semibold text-primary">
-                        {t(item.labelKey)}
-                      </span>
                     </button>
                   );
                 }
