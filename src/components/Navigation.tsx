@@ -62,31 +62,31 @@ export function Navigation() {
             </NavLink>
 
             {/* Actions - Community, Notifications, Profile */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-1">
               <NavLink
                 to="/community"
                 className={cn(
-                  "relative size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors",
+                  "relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
                   location.pathname === '/community' && "bg-primary/10"
                 )}
               >
                 <MessageCircle className={cn(
-                  "size-[22px]",
-                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/70"
+                  "size-5",
+                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
                 )} strokeWidth={1.75} />
                 {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-accent text-[9px] font-bold text-accent-foreground flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground flex items-center justify-center border-2 border-background">
                     {unreadPosts > 9 ? '9+' : unreadPosts}
                   </span>
                 )}
               </NavLink>
               <NavLink
                 to="/notifications"
-                className="relative size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors"
+                className="relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors"
               >
-                <Bell className="size-[22px] text-foreground/70" strokeWidth={1.75} />
+                <Bell className="size-5 text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground flex items-center justify-center border-2 border-background">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -94,13 +94,13 @@ export function Navigation() {
               <NavLink
                 to="/profile"
                 className={cn(
-                  "size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors",
+                  "size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
                   location.pathname === '/profile' && "bg-primary/10"
                 )}
               >
                 <User className={cn(
-                  "size-[22px]",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
+                  "size-5",
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
                 )} strokeWidth={1.75} />
               </NavLink>
             </div>
@@ -200,41 +200,47 @@ export function Navigation() {
 
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-area-bottom">
-          <div className="flex items-center justify-around h-16 px-2">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              const Icon = item.icon;
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
+          <div className="mx-auto w-full max-w-md px-4 pb-3">
+            <div className="grid grid-cols-5 items-end rounded-2xl border border-border/70 bg-background/95 px-2 py-2 shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                const Icon = item.icon;
 
-              // Special handling for center Create button
-              if (item.isCreate) {
+                // Special handling for center Create button
+                if (item.isCreate) {
+                  return (
+                    <button
+                      key="create"
+                      onClick={() => setIsCreateOpen(true)}
+                      className="flex flex-col items-center justify-end gap-1"
+                      aria-label={t(item.labelKey)}
+                    >
+                      <div className="-mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30 ring-4 ring-background">
+                        <Plus className="h-5 w-5" strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-semibold text-primary">
+                        {t(item.labelKey)}
+                      </span>
+                    </button>
+                  );
+                }
+
                 return (
-                  <button
-                    key="create"
-                    onClick={() => setIsCreateOpen(true)}
-                    className="flex flex-col items-center justify-center flex-1 py-2 active:opacity-80 transition-opacity"
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={cn(
+                      'flex flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-medium text-muted-foreground transition-colors active:bg-muted/60',
+                      isActive && 'bg-primary/10 text-primary'
+                    )}
                   >
-                    <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center">
-                      <Plus className="w-6 h-6 text-primary-foreground" strokeWidth={2.5} />
-                    </div>
-                  </button>
+                    <Icon className={cn('h-5 w-5', isActive && 'text-primary')} strokeWidth={1.9} />
+                    <span className="leading-none">{t(item.labelKey)}</span>
+                  </NavLink>
                 );
-              }
-
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    'nav-item flex-1 py-2 rounded-lg active:bg-muted/50 transition-colors',
-                    isActive && 'nav-item-active'
-                  )}
-                >
-                  <Icon className="w-5 h-5 mx-auto" />
-                  <span className="text-[10px] font-medium mt-0.5">{t(item.labelKey)}</span>
-                </NavLink>
-              );
-            })}
+              })}
+            </div>
           </div>
         </nav>
       )}
