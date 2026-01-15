@@ -62,31 +62,31 @@ export function Navigation() {
             </NavLink>
 
             {/* Actions - Community, Notifications, Profile */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <NavLink
                 to="/community"
                 className={cn(
-                  "relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
+                  "relative size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors",
                   location.pathname === '/community' && "bg-primary/10"
                 )}
               >
                 <MessageCircle className={cn(
-                  "size-5",
-                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
+                  "size-[22px]",
+                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/70"
                 )} strokeWidth={1.75} />
                 {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-[10px] font-semibold text-accent-foreground flex items-center justify-center border-2 border-background">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-accent text-[9px] font-bold text-accent-foreground flex items-center justify-center">
                     {unreadPosts > 9 ? '9+' : unreadPosts}
                   </span>
                 )}
               </NavLink>
               <NavLink
                 to="/notifications"
-                className="relative size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors"
+                className="relative size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors"
               >
-                <Bell className="size-5 text-foreground/80" strokeWidth={1.75} />
+                <Bell className="size-[22px] text-foreground/70" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-semibold text-primary-foreground flex items-center justify-center border-2 border-background">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </span>
                 )}
@@ -94,13 +94,13 @@ export function Navigation() {
               <NavLink
                 to="/profile"
                 className={cn(
-                  "size-8 flex items-center justify-center rounded-lg active:bg-muted transition-colors",
+                  "size-9 flex items-center justify-center rounded-full active:bg-muted transition-colors",
                   location.pathname === '/profile' && "bg-primary/10"
                 )}
               >
                 <User className={cn(
-                  "size-5",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
+                  "size-[22px]",
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
                 )} strokeWidth={1.75} />
               </NavLink>
             </div>
@@ -201,7 +201,7 @@ export function Navigation() {
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border safe-area-bottom">
-          <div className="flex items-center justify-around h-14 px-2">
+          <div className="flex items-center justify-around h-16 px-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -212,11 +212,9 @@ export function Navigation() {
                   <button
                     key="create"
                     onClick={() => setIsCreateOpen(true)}
-                    className="flex flex-col items-center justify-center flex-1 py-1.5"
+                    className="flex items-center justify-center w-12 h-12 -mt-6 rounded-full bg-primary shadow-lg shadow-primary/30 active:scale-95 transition-transform"
                   >
-                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/25">
-                      <Plus className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
-                    </div>
+                    <Plus className="w-6 h-6 text-primary-foreground" strokeWidth={2.5} />
                   </button>
                 );
               }
@@ -226,7 +224,7 @@ export function Navigation() {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    'nav-item flex-1 py-1.5 rounded-lg active:bg-muted/50 transition-colors',
+                    'nav-item flex-1 py-2 rounded-lg active:bg-muted/50 transition-colors',
                     isActive && 'nav-item-active'
                   )}
                 >
