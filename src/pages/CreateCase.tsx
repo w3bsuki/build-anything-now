@@ -212,7 +212,7 @@ const CreateCase = () => {
                                 <Label htmlFor="description">{t('createCase.shortDescription')}</Label>
                                 <textarea
                                     id="description"
-                                    className="w-full min-h-20 px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                    className="w-full min-h-20 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
                                     placeholder={t('createCase.shortDescriptionPlaceholder')}
                                     value={formData.description}
                                     onChange={(e) => updateForm('description', e.target.value)}
@@ -222,7 +222,7 @@ const CreateCase = () => {
                                 <Label htmlFor="story">{t('createCase.fullStory')}</Label>
                                 <textarea
                                     id="story"
-                                    className="w-full min-h-32 px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                    className="w-full min-h-32 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
                                     placeholder={t('createCase.fullStoryPlaceholder')}
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
@@ -290,7 +290,7 @@ const CreateCase = () => {
                                     <select
                                         value={formData.currency}
                                         onChange={(e) => updateForm('currency', e.target.value)}
-                                        className="px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                        className="px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
                                     >
                                         <option value="EUR">EUR</option>
                                         <option value="BGN">BGN</option>

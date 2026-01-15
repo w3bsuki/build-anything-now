@@ -367,7 +367,7 @@ const CommunityPostPage = () => {
                   ref={commentInputRef}
                   type="text"
                   placeholder={replyingTo ? t('communityPost.replyToName', { name: replyingTo.name }) : t('communityPost.writeComment')}
-                  className="flex-1 px-3 py-1.5 text-sm bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground"
+                  className="flex-1 px-3 py-1.5 text-base bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground md:text-sm"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   onKeyDown={(e) => {

@@ -102,7 +102,7 @@ const CreateAdoption = () => {
                             <Label htmlFor="description">{t('createAdoption.description')}</Label>
                             <textarea
                                 id="description"
-                                className="w-full min-h-28 px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                                className="w-full min-h-28 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
                                 placeholder={t('createAdoption.descriptionPlaceholder')}
                                 value={formData.description}
                                 onChange={(e) => updateForm('description', e.target.value)}
