@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clinic } from '@/types';
 import { ShareButton } from './ShareButton';
-import { Phone, MapPin, Clock, CheckCircle, Stethoscope } from 'lucide-react';
+import { Phone, MapPin, Clock, BadgeCheck, Stethoscope } from 'lucide-react';
 
 interface ClinicCardProps {
   clinic: Clinic;
@@ -19,6 +19,13 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
     const translated = t(key, { defaultValue: '' });
     return translated || spec;
   };
+
+  // Helper to get mobile-short translated specialization
+  const getSpecializationLabelMobile = (spec: string) => {
+    const key = `clinicSpecializationsMobile.${spec.toLowerCase().replace(/[\s/]+/g, '')}`;
+    const translated = t(key, { defaultValue: '' });
+    return translated || getSpecializationLabel(spec);
+  };
   
   return (
     <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
@@ -30,7 +37,7 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
               <div className="flex items-center gap-1.5 mb-1">
                 <h3 className="font-semibold text-foreground line-clamp-1">{clinic.name}</h3>
                 {clinic.verified && (
-                  <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                  <BadgeCheck className="w-4 h-4 text-white fill-primary flex-shrink-0" />
                 )}
               </div>
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -42,6 +49,7 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
               title={clinic.name} 
               text={`${clinic.name} - ${clinic.address}, ${clinic.city}`}
               url={`${window.location.origin}/clinics/${clinic.id}`}
+              size="sm"
             />
           </div>
 
@@ -56,16 +64,25 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
             </div>
           </div>
 
-          {/* Specializations with 24/7 badge */}
-          {(clinic.specializations.length > 0 || clinic.is24h) && (
+          {/* Specializations only - 24/7 shown via hours text and toggle filter */}
+          {clinic.specializations.length > 0 && (
             <div className="flex items-start gap-2">
-              <Stethoscope className="w-3.5 h-3.5 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div className="flex flex-wrap gap-1.5">
-                {clinic.is24h && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs">
-                    24/7
+              <Stethoscope className="w-3.5 h-3.5 text-muted-foreground mt-1 flex-shrink-0" />
+              {/* Mobile: Limited to 2 badges + count */}
+              <div className="flex gap-1.5 sm:hidden">
+                {clinic.specializations.slice(0, 2).map((spec) => (
+                  <Badge key={spec} variant="outline" className="text-xs whitespace-nowrap">
+                    {getSpecializationLabelMobile(spec)}
+                  </Badge>
+                ))}
+                {clinic.specializations.length > 2 && (
+                  <Badge variant="secondary" className="text-xs whitespace-nowrap">
+                    +{clinic.specializations.length - 2}
                   </Badge>
                 )}
+              </div>
+              {/* Desktop: Full specializations with wrap */}
+              <div className="hidden sm:flex flex-wrap gap-1.5">
                 {clinic.specializations.map((spec) => (
                   <Badge key={spec} variant="outline" className="text-xs">
                     {getSpecializationLabel(spec)}

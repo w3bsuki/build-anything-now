@@ -78,6 +78,7 @@ export interface Volunteer {
   memberSince: string;
   isTopVolunteer: boolean;
   badges: string[];
+  badgesMobile?: string[];
   stats: {
     animalsHelped: number;
     adoptions: number;

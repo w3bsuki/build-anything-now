@@ -28,6 +28,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           title={caseData.title}
           text={caseData.description}
           url={`${window.location.origin}/case/${caseData.id}`}
+          size="sm"
         />
       </div>
 

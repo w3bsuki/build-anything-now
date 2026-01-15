@@ -25,6 +25,20 @@ const ClinicProfile = () => {
   const [isSaved, setIsSaved] = useState(false);
   const clinic = mockClinics.find((c) => c.id === id);
 
+  // Helper to get translated specialization
+  const getSpecializationLabel = (spec: string) => {
+    const key = `clinicSpecializations.${spec.toLowerCase().replace(/[\s/]+/g, '')}`;
+    const translated = t(key, { defaultValue: '' });
+    return translated || spec;
+  };
+
+  // Helper to get mobile-short translated specialization
+  const getSpecializationLabelMobile = (spec: string) => {
+    const key = `clinicSpecializationsMobile.${spec.toLowerCase().replace(/[\s/]+/g, '')}`;
+    const translated = t(key, { defaultValue: '' });
+    return translated || getSpecializationLabel(spec);
+  };
+
   if (!clinic) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -175,10 +189,19 @@ const ClinicProfile = () => {
               <Stethoscope className="w-5 h-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">{t('clinicProfile.specializations')}</h2>
             </div>
-            <div className="flex flex-wrap gap-2">
+            {/* Mobile: Short specializations */}
+            <div className="flex flex-wrap gap-2 sm:hidden">
               {clinic.specializations.map((spec) => (
                 <Badge key={spec} variant="secondary" className="text-sm py-1.5 px-3">
-                  {spec}
+                  {getSpecializationLabelMobile(spec)}
+                </Badge>
+              ))}
+            </div>
+            {/* Desktop: Full specializations */}
+            <div className="hidden sm:flex flex-wrap gap-2">
+              {clinic.specializations.map((spec) => (
+                <Badge key={spec} variant="secondary" className="text-sm py-1.5 px-3">
+                  {getSpecializationLabel(spec)}
                 </Badge>
               ))}
             </div>

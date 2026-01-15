@@ -345,6 +345,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2019',
     isTopVolunteer: true,
     badges: ['Monthly Hero', 'Rescue Champion', '100+ Animals'],
+    badgesMobile: ['🏆 Hero', '🦸 Rescue', '💯 100+'],
     stats: {
       animalsHelped: 127,
       adoptions: 45,
@@ -363,6 +364,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2020',
     isTopVolunteer: true,
     badges: ['Foster Hero', 'Medical Support', 'Top Donor'],
+    badgesMobile: ['🏠 Foster', '💊 Medical', '💰 Donor'],
     stats: {
       animalsHelped: 89,
       adoptions: 32,
@@ -381,6 +383,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2018',
     isTopVolunteer: true,
     badges: ['Training Expert', 'Community Leader', '200+ Animals'],
+    badgesMobile: ['🎓 Trainer', '👑 Leader', '🌟 200+'],
     stats: {
       animalsHelped: 234,
       adoptions: 89,
@@ -399,6 +402,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2021',
     isTopVolunteer: false,
     badges: ['Transport Hero', 'Weekend Warrior'],
+    badgesMobile: ['🚗 Transport', '💪 Weekend'],
     stats: {
       animalsHelped: 56,
       adoptions: 18,
@@ -417,6 +421,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2022',
     isTopVolunteer: false,
     badges: ['Photo Pro', 'Creative Support'],
+    badgesMobile: ['📸 Photo', '🎨 Creative'],
     stats: {
       animalsHelped: 78,
       adoptions: 42,
@@ -435,6 +440,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2017',
     isTopVolunteer: true,
     badges: ['Medical Expert', 'Founding Member', 'Legend'],
+    badgesMobile: ['💊 Medical', '⭐ Founder', '👑 Legend'],
     stats: {
       animalsHelped: 312,
       adoptions: 124,
@@ -453,6 +459,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2023',
     isTopVolunteer: false,
     badges: ['Social Star', 'Rising Hero'],
+    badgesMobile: ['📱 Social', '🌟 Rising'],
     stats: {
       animalsHelped: 34,
       adoptions: 15,
@@ -471,6 +478,7 @@ export const mockVolunteers: Volunteer[] = [
     memberSince: '2020',
     isTopVolunteer: false,
     badges: ['Builder Hero', 'Handy Helper'],
+    badgesMobile: ['🔨 Builder', '🛠️ Handy'],
     stats: {
       animalsHelped: 67,
       adoptions: 8,

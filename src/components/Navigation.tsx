@@ -57,7 +57,7 @@ export function Navigation() {
       {/* Mobile Top Header - only on root pages */}
       {showMobileHeader && (
         <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-lg border-b border-border/40 pt-[env(safe-area-inset-top)]">
-          <div className="flex items-center justify-between h-14 px-4">
+          <div className="flex items-center justify-between h-14 px-4 pt-1.5">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
@@ -83,7 +83,7 @@ export function Navigation() {
                 {unreadPosts > 0 && location.pathname !== '/community' && (
                   <Badge
                     variant="secondary"
-                    className="absolute top-0 right-0 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                    className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
                   >
                     {unreadPosts > 9 ? '9+' : unreadPosts}
                   </Badge>
@@ -96,7 +96,7 @@ export function Navigation() {
                 <Bell className="size-[22px] text-foreground/80" strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
                   <Badge
-                    className="absolute top-0 right-0 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
+                    className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
                   >
                     {unreadNotifications > 9 ? '9+' : unreadNotifications}
                   </Badge>

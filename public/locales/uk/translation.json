@@ -209,6 +209,23 @@
     "exoticpets": "Екзотичні тварини",
     "rehabilitation": "Реабілітація"
   },
+  "clinicSpecializationsMobile": {
+    "emergency": "🚨 Невідкладна",
+    "surgery": "🔪 Хірургія",
+    "intensivecare": "🏥 Інтенсивна",
+    "generalcare": "🩺 Загальний",
+    "vaccinations": "💉 Вакцини",
+    "dental": "🦷 Стомат.",
+    "orthopedics": "🦴 Ортопедія",
+    "cardiology": "❤️ Кардіо",
+    "xray": "📷 Рентген",
+    "neurology": "🧠 Невро",
+    "oncology": "🔬 Онко",
+    "dermatology": "✨ Дерма",
+    "labtests": "🧪 Лаб",
+    "exoticpets": "🦜 Екзотичні",
+    "rehabilitation": "💪 Реабіл."
+  },
   "notifications": {
     "title": "Сповіщення",
     "unread": "{{count}} непрочитаних",
@@ -618,6 +635,17 @@
       "trainingExpert": "Експерт з дресирування",
       "communityLeader": "Лідер громади",
       "animals200": "200+ врятованих тварин"
+    },
+    "badgesMobile": {
+      "monthlyHero": "🏆 Герой",
+      "rescueChampion": "🦸 Чемпіон",
+      "animals100": "💯 100+",
+      "fosterHero": "🏠 Опіка",
+      "medicalSupport": "💊 Мед.",
+      "topDonor": "💰 Донор",
+      "trainingExpert": "🎓 Експерт",
+      "communityLeader": "👑 Лідер",
+      "animals200": "🌟 200+"
     },
     "users": {
       "u1": {

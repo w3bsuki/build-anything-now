@@ -222,6 +222,23 @@
     "exoticpets": "Exotic Pets",
     "rehabilitation": "Rehabilitation"
   },
+  "clinicSpecializationsMobile": {
+    "emergency": "🚨 Emergency",
+    "surgery": "🔪 Surgery",
+    "intensivecare": "🏥 ICU",
+    "generalcare": "🩺 General",
+    "vaccinations": "💉 Vaccines",
+    "dental": "🦷 Dental",
+    "orthopedics": "🦴 Ortho",
+    "cardiology": "❤️ Cardio",
+    "xray": "📷 X-Ray",
+    "neurology": "🧠 Neuro",
+    "oncology": "🔬 Onco",
+    "dermatology": "✨ Derma",
+    "labtests": "🧪 Lab",
+    "exoticpets": "🦜 Exotic",
+    "rehabilitation": "💪 Rehab"
+  },
   "notifications": {
     "title": "Notifications",
     "unread": "{{count}} unread",
@@ -630,6 +647,17 @@
       "trainingExpert": "Training Expert",
       "communityLeader": "Community Leader",
       "animals200": "200+ Animals Saved"
+    },
+    "badgesMobile": {
+      "monthlyHero": "🏆 Hero",
+      "rescueChampion": "🦸 Rescue",
+      "animals100": "💯 100+",
+      "fosterHero": "🏠 Foster",
+      "medicalSupport": "💊 Medical",
+      "topDonor": "💰 Donor",
+      "trainingExpert": "🎓 Trainer",
+      "communityLeader": "👑 Leader",
+      "animals200": "🌟 200+"
     },
     "users": {
       "u1": {

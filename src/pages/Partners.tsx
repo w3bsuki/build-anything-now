@@ -20,7 +20,8 @@ import {
   MapPin,
   Home,
   Shield,
-  MessageCircle
+  MessageCircle,
+  Share2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -270,13 +271,13 @@ const Partners = () => {
               </div>
               
               {isLoading ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, i) => (
                     <VolunteerCardSkeleton key={i} />
                   ))}
                 </div>
               ) : filteredVolunteers.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredVolunteers.map((volunteer) => (
                     <VolunteerCard key={volunteer.id} volunteer={volunteer} />
                   ))}
@@ -445,13 +446,33 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
           className="w-12 h-12 rounded-full object-cover"
         />
         {volunteer.isTopVolunteer && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center">
+          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center">
             <Star className="w-3 h-3 text-warning-foreground fill-current" />
           </div>
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm text-foreground truncate">{volunteer.name}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-semibold text-sm text-foreground truncate">{volunteer.name}</h3>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (navigator.share) {
+                navigator.share({
+                  title: volunteer.name,
+                  text: volunteer.bio,
+                  url: `${window.location.origin}/volunteers/${volunteer.id}`,
+                });
+              } else {
+                navigator.clipboard.writeText(`${window.location.origin}/volunteers/${volunteer.id}`);
+              }
+            }}
+            className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Star className="w-3 h-3 text-warning fill-warning" />
           <span>{volunteer.rating.toFixed(1)}</span>
@@ -468,37 +489,56 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
     {/* Bio */}
     <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{volunteer.bio}</p>
 
-    {/* Stats */}
-    <div className="grid grid-cols-3 gap-2 text-center">
-      <div className="bg-primary/5 rounded-lg py-2">
-        <PawPrint className="w-4 h-4 text-primary mx-auto mb-0.5" />
-        <span className="text-xs font-semibold text-foreground">{volunteer.stats.animalsHelped}</span>
-        <p className="text-xs text-muted-foreground">Helped</p>
+    {/* Inline Stats Row */}
+    <div className="flex items-center gap-3 mb-3 text-xs">
+      <div className="flex items-center gap-1">
+        <PawPrint className="w-3.5 h-3.5 text-primary" />
+        <span className="font-semibold text-foreground">{volunteer.stats.animalsHelped}</span>
+        <span className="text-muted-foreground">Helped</span>
       </div>
-      <div className="bg-accent/5 rounded-lg py-2">
-        <Heart className="w-4 h-4 text-accent mx-auto mb-0.5" />
-        <span className="text-xs font-semibold text-foreground">{volunteer.stats.adoptions}</span>
-        <p className="text-xs text-muted-foreground">Adoptions</p>
-      </div>
-      <div className="bg-warning/5 rounded-lg py-2">
-        <Calendar className="w-4 h-4 text-warning mx-auto mb-0.5" />
-        <span className="text-xs font-semibold text-foreground">{volunteer.stats.campaigns}</span>
-        <p className="text-xs text-muted-foreground">Campaigns</p>
+      <div className="flex items-center gap-1">
+        <Heart className="w-3.5 h-3.5 text-accent" />
+        <span className="font-semibold text-foreground">{volunteer.stats.adoptions}</span>
+        <span className="text-muted-foreground">Adoptions</span>
       </div>
     </div>
 
-    {/* Badges */}
+    {/* Badges - Mobile: single row with short labels, Desktop: full labels */}
     {volunteer.badges.length > 0 && (
-      <div className="flex gap-1.5 mt-3 overflow-x-auto scrollbar-hide">
-        {volunteer.badges.map((badge) => (
-          <span
-            key={badge}
-            className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full whitespace-nowrap flex-shrink-0"
-          >
-            {badge}
-          </span>
-        ))}
-      </div>
+      <>
+        {/* Mobile: Short badges in single row */}
+        <div className="flex gap-1 overflow-hidden sm:hidden">
+          {(volunteer.badgesMobile || volunteer.badges).slice(0, 3).map((badge, index) => (
+            <span
+              key={badge}
+              className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full whitespace-nowrap flex-shrink-0"
+            >
+              {badge}
+            </span>
+          ))}
+          {volunteer.badges.length > 3 && (
+            <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full whitespace-nowrap flex-shrink-0">
+              +{volunteer.badges.length - 3}
+            </span>
+          )}
+        </div>
+        {/* Desktop: Full badges with wrap */}
+        <div className="hidden sm:flex flex-wrap gap-1">
+          {volunteer.badges.slice(0, 3).map((badge) => (
+            <span
+              key={badge}
+              className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
+            >
+              {badge}
+            </span>
+          ))}
+          {volunteer.badges.length > 3 && (
+            <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full">
+              +{volunteer.badges.length - 3}
+            </span>
+          )}
+        </div>
+      </>
     )}
   </Link>
 );

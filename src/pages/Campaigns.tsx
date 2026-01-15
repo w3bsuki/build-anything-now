@@ -8,7 +8,7 @@ import { useSimulatedLoading } from '@/hooks/useSimulatedLoading';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
-import { Sparkles, TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
+import { TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 
 type CampaignFilter = 'all' | 'trending' | 'completed';
 
@@ -76,7 +76,6 @@ const Campaigns = () => {
         <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-warning" />
               <h2 className="text-sm font-semibold text-foreground">{t('campaigns.featured')}</h2>
               {!isLoading && <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>}
               <div className="flex items-center gap-2 ml-auto">

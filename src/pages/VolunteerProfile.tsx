@@ -165,7 +165,20 @@ const VolunteerProfile = () => {
                 <Award className="w-5 h-5 text-warning" />
                 {t('volunteerProfile.badgesAchievements')}
               </h2>
-              <div className="flex flex-wrap gap-2">
+              {/* Mobile: Short badges for compact display */}
+              <div className="flex flex-wrap gap-2 sm:hidden">
+                {(volunteer.badgesMobile || volunteer.badges).map((badge, index) => (
+                  <div
+                    key={badge}
+                    className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg"
+                  >
+                    <Award className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">{badge}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Desktop: Full badges */}
+              <div className="hidden sm:flex flex-wrap gap-2">
                 {volunteer.badges.map((badge) => (
                   <div
                     key={badge}

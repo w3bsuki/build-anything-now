@@ -259,6 +259,7 @@ export function useTranslatedMockData() {
       memberSince: '2019',
       isTopVolunteer: true,
       badges: [t('mockData.badges.monthlyHero'), t('mockData.badges.rescueChampion'), t('mockData.badges.animals100')],
+      badgesMobile: [t('mockData.badgesMobile.monthlyHero'), t('mockData.badgesMobile.rescueChampion'), t('mockData.badgesMobile.animals100')],
       stats: {
         animalsHelped: 127,
         adoptions: 45,
@@ -277,6 +278,7 @@ export function useTranslatedMockData() {
       memberSince: '2020',
       isTopVolunteer: true,
       badges: [t('mockData.badges.fosterHero'), t('mockData.badges.medicalSupport'), t('mockData.badges.topDonor')],
+      badgesMobile: [t('mockData.badgesMobile.fosterHero'), t('mockData.badgesMobile.medicalSupport'), t('mockData.badgesMobile.topDonor')],
       stats: {
         animalsHelped: 89,
         adoptions: 32,
@@ -295,6 +297,7 @@ export function useTranslatedMockData() {
       memberSince: '2018',
       isTopVolunteer: true,
       badges: [t('mockData.badges.trainingExpert'), t('mockData.badges.communityLeader'), t('mockData.badges.animals200')],
+      badgesMobile: [t('mockData.badgesMobile.trainingExpert'), t('mockData.badgesMobile.communityLeader'), t('mockData.badgesMobile.animals200')],
       stats: {
         animalsHelped: 234,
         adoptions: 89,

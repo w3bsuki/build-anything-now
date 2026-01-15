@@ -1713,13 +1713,24 @@ function VolunteerMiniCard({ volunteer }: { volunteer: Volunteer }) {
           </div>
         </div>
         {volunteer.badges.length ? (
-          <div className="flex flex-wrap gap-2">
-            {volunteer.badges.slice(0, 2).map((badge) => (
-              <Badge key={badge} variant="secondary" className="rounded-full">
-                {badge}
-              </Badge>
-            ))}
-          </div>
+          <>
+            {/* Mobile: Short badges */}
+            <div className="flex gap-2 overflow-hidden sm:hidden">
+              {(volunteer.badgesMobile || volunteer.badges).slice(0, 2).map((badge) => (
+                <Badge key={badge} variant="secondary" className="rounded-full whitespace-nowrap flex-shrink-0">
+                  {badge}
+                </Badge>
+              ))}
+            </div>
+            {/* Desktop: Full badges */}
+            <div className="hidden sm:flex flex-wrap gap-2">
+              {volunteer.badges.slice(0, 2).map((badge) => (
+                <Badge key={badge} variant="secondary" className="rounded-full">
+                  {badge}
+                </Badge>
+              ))}
+            </div>
+          </>
         ) : null}
       </CardContent>
     </Card>

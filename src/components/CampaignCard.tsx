@@ -28,6 +28,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
           title={campaign.title}
           text={campaign.description}
           url={`${window.location.origin}/campaigns/${campaign.id}`}
+          size="sm"
         />
       </div>
 

@@ -15,11 +15,15 @@ interface ShareButtonProps {
   url?: string;
   className?: string;
   variant?: 'icon' | 'button';
+  size?: 'default' | 'sm';
 }
 
-export function ShareButton({ title, text, url, className, variant = 'icon' }: ShareButtonProps) {
+export function ShareButton({ title, text, url, className, variant = 'icon', size = 'default' }: ShareButtonProps) {
   const shareUrl = url || window.location.href;
   const shareText = text || title;
+
+  const buttonSize = size === 'sm' ? 'w-7 h-7' : 'w-9 h-9';
+  const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -64,12 +68,12 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
       <button
         onClick={handleNativeShare}
         className={cn(
-          'w-9 h-9 rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors',
+          `${buttonSize} rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors`,
           className
         )}
         aria-label="Share"
       >
-        <Share2 className="w-5 h-5 text-foreground/70" />
+        <Share2 className={cn(iconSize, 'text-foreground/70')} />
       </button>
     );
   }
@@ -80,12 +84,12 @@ export function ShareButton({ title, text, url, className, variant = 'icon' }: S
         {variant === 'icon' ? (
           <button
             className={cn(
-              'w-9 h-9 rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors',
+              `${buttonSize} rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors`,
               className
             )}
             aria-label="Share"
           >
-            <Share2 className="w-5 h-5 text-foreground/70" />
+            <Share2 className={cn(iconSize, 'text-foreground/70')} />
           </button>
         ) : (
           <Button variant="outline" size="sm" className={className}>
