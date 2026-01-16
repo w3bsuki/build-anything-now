@@ -30,7 +30,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
   // Appearance-based styles
   const appearanceStyles = appearance === 'overlay'
     ? 'bg-black/40 backdrop-blur-md text-white hover:bg-black/60 active:bg-black/70 shadow-lg ring-1 ring-white/20'
-    : 'bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 ring-1 ring-primary/20';
+    : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/70';
 
   const handleNativeShare = async () => {
     if (navigator.share) {

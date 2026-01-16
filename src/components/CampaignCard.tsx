@@ -46,7 +46,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
       )}
     >
       {/* Share Button */}
-      <div className="absolute top-3 right-3 z-20">
+      <div className="absolute top-3 right-3 z-20" onClick={e => e.preventDefault()}>
         <ShareButton
           title={campaign.title}
           text={campaign.description}

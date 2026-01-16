@@ -106,14 +106,15 @@ export function UrgentCaseCard({ caseData, className }: UrgentCaseCardProps) {
             </div>
           </div>
           
-          {/* Location + Time badge - top right */}
-          <div className="absolute top-3 right-3">
-            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 text-white text-[10px] font-medium shadow-lg backdrop-blur-md">
-              <MapPin className="w-3 h-3" />
-              <span>{caseData.location.city}</span>
-              <span className="text-white/60">•</span>
-              <span>{timeAgo}</span>
-            </div>
+          {/* Share button - top right */}
+          <div className="absolute top-3 right-3 z-20" onClick={e => e.preventDefault()}>
+            <ShareButton
+              title={caseData.title}
+              text={caseData.description}
+              url={`${window.location.origin}/case/${caseData.id}`}
+              size="sm"
+              appearance="overlay"
+            />
           </div>
           
           {/* Momentum badge - if almost funded */}
@@ -169,19 +170,17 @@ export function UrgentCaseCard({ caseData, className }: UrgentCaseCardProps) {
 
         {/* Content */}
         <div className="p-3.5 pb-2">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-bold text-base text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors flex-1">
-              {caseData.title}
-            </h3>
-            <div onClick={e => e.preventDefault()}>
-              <ShareButton
-                title={caseData.title}
-                text={caseData.description}
-                url={`${window.location.origin}/case/${caseData.id}`}
-                size="sm"
-              />
-            </div>
+          {/* Location + Time meta */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
+            <MapPin className="w-3 h-3" />
+            <span>{caseData.location.city}</span>
+            <span>•</span>
+            <span>{timeAgo}</span>
           </div>
+          
+          <h3 className="font-bold text-base text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+            {caseData.title}
+          </h3>
 
           <p className="text-muted-foreground text-sm line-clamp-2 mt-1.5 leading-relaxed">
             {caseData.description}

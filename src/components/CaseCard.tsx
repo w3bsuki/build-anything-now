@@ -72,12 +72,12 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
   return (
     <article
       className={cn(
-        'group bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
+        'group relative bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
         className
       )}
     >
       {/* Share Button */}
-      <div className="absolute top-3 right-3 z-20">
+      <div className="absolute top-3 right-3 z-20" onClick={e => e.preventDefault()}>
         <ShareButton
           title={caseData.title}
           text={caseData.description}
