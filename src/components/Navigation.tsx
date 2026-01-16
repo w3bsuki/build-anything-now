@@ -62,49 +62,42 @@ export function Navigation() {
           <div className="flex items-center justify-between h-14 px-4">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-primary/10">
-                <HeartHandshake className="w-[18px] h-[18px] text-primary" />
+              <div className="size-8 rounded-lg flex items-center justify-center bg-primary/10">
+                <HeartHandshake className="size-4 text-primary" />
               </div>
-              <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
+              <span className="font-semibold text-lg text-foreground">Pawtreon</span>
             </NavLink>
 
             {/* Actions - Notifications + Profile */}
-            <div className="flex items-center gap-1">
-              <NavLink
-                to="/notifications"
-                className={cn(
-                  "relative size-11 flex items-center justify-center rounded-xl transition-all duration-200",
-                  location.pathname === '/notifications' 
-                    ? "bg-primary/10" 
-                    : "hover:bg-muted/50 active:bg-muted/70"
-                )}
+            <div className="flex items-center -mr-1.5">
+              <Button
+                variant="iconHeader"
+                size="iconTouch"
+                className="relative"
+                asChild
               >
-                <Bell className={cn(
-                  "size-[22px] transition-colors duration-200",
-                  location.pathname === '/notifications' ? "text-primary" : "text-foreground/80"
-                )} strokeWidth={1.75} />
-                {unreadNotifications > 0 && (
-                  <Badge
-                    className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
-                  >
-                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                  </Badge>
-                )}
-              </NavLink>
-              <NavLink
-                to="/profile"
-                className={cn(
-                  "size-11 flex items-center justify-center rounded-xl transition-all duration-200",
-                  location.pathname === '/profile' 
-                    ? "bg-primary/10" 
-                    : "hover:bg-muted/50 active:bg-muted/70"
-                )}
+                <NavLink to="/notifications">
+                  <Bell className={cn(
+                    location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
+                  )} />
+                  {unreadNotifications > 0 && (
+                    <Badge className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </Badge>
+                  )}
+                </NavLink>
+              </Button>
+              <Button
+                variant="iconHeader"
+                size="iconTouch"
+                asChild
               >
-                <User className={cn(
-                  "size-[22px] transition-colors duration-200",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
-                )} strokeWidth={1.75} />
-              </NavLink>
+                <NavLink to="/profile">
+                  <User className={cn(
+                    location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                  )} />
+                </NavLink>
+              </Button>
             </div>
           </div>
         </header>
@@ -155,29 +148,35 @@ export function Navigation() {
                 <Plus className="size-4" strokeWidth={2.5} />
                 <span>{t('actions.create')}</span>
               </button>
-              <NavLink
-                to="/notifications"
-                className="relative size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+              <Button
+                variant="iconHeader"
+                size="icon"
+                className="relative"
+                asChild
               >
-                <Bell className="size-5 text-foreground/70" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center shadow-sm">
-                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                  </span>
-                )}
-              </NavLink>
-              <NavLink
-                to="/profile"
-                className={cn(
-                  "size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors",
-                  location.pathname === '/profile' && "bg-primary/10"
-                )}
+                <NavLink to="/notifications">
+                  <Bell className={cn(
+                    location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
+                  )} />
+                  {unreadNotifications > 0 && (
+                    <Badge className="absolute top-0.5 right-0.5 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background">
+                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                    </Badge>
+                  )}
+                </NavLink>
+              </Button>
+              <Button
+                variant="iconHeader"
+                size="icon"
+                className={cn(location.pathname === '/profile' && "bg-primary/10")}
+                asChild
               >
-                <User className={cn(
-                  "size-5",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
-                )} />
-              </NavLink>
+                <NavLink to="/profile">
+                  <User className={cn(
+                    location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                  )} />
+                </NavLink>
+              </Button>
             </div>
           </nav>
         </div>

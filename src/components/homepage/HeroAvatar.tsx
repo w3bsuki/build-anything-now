@@ -20,9 +20,9 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
     <>
       {/* Avatar with badge */}
       <div className="relative">
-        {/* Gradient Ring - warm sunset gradient */}
+        {/* Gradient Ring - Twitter blue gradient */}
         <div
-          className="rounded-full p-[2px] bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
+          className="rounded-full p-[2px] bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
           style={{ width: dimensions, height: dimensions }}
         >
           <div className="rounded-full bg-background p-[2px] w-full h-full">

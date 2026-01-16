@@ -47,7 +47,7 @@ function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCirclePr
         className={cn(
           "rounded-full p-[2px]",
           isNew
-            ? "bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
+            ? "bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
             : "bg-muted"
         )}
         style={{ width: size + 4, height: size + 4 }}
@@ -122,7 +122,7 @@ function ActivityCircle({
       className="flex flex-col items-center gap-1 flex-shrink-0"
     >
       <div
-        className="rounded-full p-[2px] bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
+        className="rounded-full p-[2px] bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
         style={{ width: size + 4, height: size + 4 }}
       >
         <div className="rounded-full bg-background p-[2px] w-full h-full">

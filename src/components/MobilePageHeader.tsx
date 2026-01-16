@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Bell, User, MessageCircle, Search, HeartHandshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 // TODO: Replace with real data from Convex
@@ -30,63 +30,70 @@ export function MobilePageHeader({
   return (
     <header className="md:hidden sticky top-0 z-50 bg-background/98 backdrop-blur-lg pt-[env(safe-area-inset-top)]">
       {/* Title Row */}
-      <div className="flex items-center justify-between h-12 px-4 pt-1.5">
+      <div className="flex items-center justify-between h-14 px-4">
         {/* Page Title with optional Logo */}
-        <div className="flex items-center gap-2 -ml-1">
+        <div className="flex items-center gap-2">
           {showLogo && (
-            <HeartHandshake className="w-5 h-5 text-primary" strokeWidth={2} />
+            <HeartHandshake className="size-5 text-primary" strokeWidth={2} />
           )}
           <h1 className="font-bold text-lg tracking-tight text-foreground">{title}</h1>
         </div>
 
-        {/* Action Icons */}
-        <div className="flex items-center gap-1 -mr-2">
-          <NavLink
-            to="/community"
+        {/* Action Icons - min 44px touch targets */}
+        <div className="flex items-center -mr-1.5">
+          <Button
+            variant="iconHeader"
+            size="iconTouch"
             className={cn(
               "relative",
-              buttonVariants({ variant: "iconHeader", size: "icon" }),
               location.pathname === '/community' && "text-primary"
             )}
+            asChild
           >
-            <MessageCircle className={cn(
-              "size-[22px]",
-              location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
-            )} strokeWidth={1.75} />
-            {unreadPosts > 0 && location.pathname !== '/community' && (
-              <Badge
-                variant="secondary"
-                className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
-              >
-                {unreadPosts > 9 ? '9+' : unreadPosts}
-              </Badge>
-            )}
-          </NavLink>
-          <NavLink
-            to="/notifications"
-            className={cn("relative", buttonVariants({ variant: "iconHeader", size: "icon" }))}
+            <NavLink to="/community">
+              <MessageCircle className={cn(
+                location.pathname === '/community' ? "text-primary fill-primary/20" : "text-muted-foreground"
+              )} />
+              {unreadPosts > 0 && location.pathname !== '/community' && (
+                <Badge
+                  variant="secondary"
+                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
+                >
+                  {unreadPosts > 9 ? '9+' : unreadPosts}
+                </Badge>
+              )}
+            </NavLink>
+          </Button>
+          <Button
+            variant="iconHeader"
+            size="iconTouch"
+            className="relative"
+            asChild
           >
-            <Bell className="size-[22px] text-foreground/80" strokeWidth={1.75} />
-            {unreadNotifications > 0 && (
-              <Badge
-                className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
-              >
-                {unreadNotifications > 9 ? '9+' : unreadNotifications}
-              </Badge>
-            )}
-          </NavLink>
-          <NavLink
-            to="/profile"
-            className={cn(
-              buttonVariants({ variant: "iconHeader", size: "icon" }),
-              location.pathname === '/profile' && "text-primary"
-            )}
+            <NavLink to="/notifications">
+              <Bell className={cn(
+                location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
+              )} />
+              {unreadNotifications > 0 && (
+                <Badge
+                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
+                >
+                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                </Badge>
+              )}
+            </NavLink>
+          </Button>
+          <Button
+            variant="iconHeader"
+            size="iconTouch"
+            asChild
           >
-            <User className={cn(
-              "size-[22px]",
-              location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
-            )} strokeWidth={1.75} />
-          </NavLink>
+            <NavLink to="/profile">
+              <User className={cn(
+                location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+              )} />
+            </NavLink>
+          </Button>
         </div>
       </div>
 
