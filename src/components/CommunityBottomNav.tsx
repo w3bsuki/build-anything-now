@@ -55,14 +55,14 @@ export function CommunityBottomNav() {
             >
               <Icon 
                 className={cn(
-                  'h-[22px] w-[22px]',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
+                  'h-[22px] w-[22px] transition-colors',
+                  isActive ? 'text-foreground' : 'text-muted-foreground'
                 )} 
-                strokeWidth={1.75} 
+                strokeWidth={isActive ? 2 : 1.75} 
               />
               <span className={cn(
-                'text-[10px] font-medium',
-                isActive ? 'text-primary' : 'text-muted-foreground'
+                'text-[10px] transition-colors',
+                isActive ? 'text-foreground font-semibold' : 'text-muted-foreground font-medium'
               )}>
                 {t(item.labelKey)}
               </span>

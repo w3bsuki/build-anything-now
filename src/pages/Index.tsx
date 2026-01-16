@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { Loader2, RefreshCw } from 'lucide-react';
-import { InstagramCaseCard } from '@/components/homepage/InstagramCaseCard';
+import { TwitterCaseCard } from '@/components/homepage/TwitterCaseCard';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { HomeHeader } from '@/components/homepage/HomeHeader';
 import { HeroCircles } from '@/components/homepage/HeroCircles';
@@ -265,10 +265,9 @@ const Index = () => {
           ) : filteredCases.length > 0 ? (
             <div className="flex flex-col gap-4 max-w-lg mx-auto">
               {filteredCases.map((caseData, index) => (
-                <InstagramCaseCard 
+                <TwitterCaseCard 
                   key={caseData.id} 
                   caseData={caseData}
-                  socialStats={socialStats?.[caseData.id as Id<"cases">]}
                   {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
                 />
               ))}

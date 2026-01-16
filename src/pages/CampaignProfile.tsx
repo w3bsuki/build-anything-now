@@ -14,15 +14,15 @@ const CampaignProfile = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
-  
+
   // Fetch campaign from Convex
   const rawCampaign = useQuery(
     api.campaigns.get,
     id ? { id: id as Id<"campaigns"> } : "skip"
   );
-  
+
   const isLoading = rawCampaign === undefined;
-  
+
   // Transform to match expected shape
   const campaign = rawCampaign ? {
     id: rawCampaign._id,
@@ -201,8 +201,8 @@ const CampaignProfile = () => {
               onClick={() => setIsSaved(!isSaved)}
               className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                isSaved 
-                  ? "bg-primary/10 text-primary" 
+                isSaved
+                  ? "bg-primary/10 text-primary"
                   : "bg-muted/50 text-foreground"
               )}
             >

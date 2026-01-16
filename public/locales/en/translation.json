@@ -60,9 +60,13 @@
   "status": {
     "all": "All",
     "critical": "Critical",
+    "criticalShort": "Critical",
     "urgent": "Urgent",
+    "urgentShort": "Urgent",
     "recovering": "Recovering",
+    "recoveringShort": "Recov.",
     "adopted": "Adopted",
+    "adoptedShort": "Adopted",
     "completed": "Completed",
     "urgentOnly": "Urgent only",
     "nearMe": "Near me"
@@ -86,8 +90,18 @@
     "noResults": "No {{filter}} campaigns at the moment",
     "nearbyOnly": "Nearby",
     "active": "Active",
-    "raised": "raised",
-    "viewAllCampaigns": "View All Campaigns"
+    "raised": "Raised",
+    "viewAllCampaigns": "View All Campaigns",
+    "daysLeft": "{{count}}d left",
+    "daysLeft_one": "{{count}}d left",
+    "daysLeft_other": "{{count}}d left",
+    "almostThere": "Almost there!",
+    "goal": "Goal",
+    "supporters": "{{count}} supporters",
+    "supporters_one": "{{count}} supporter",
+    "supporters_other": "{{count}} supporters",
+    "contributeTo": "Contribute to {{title}}",
+    "donateNowEndingSoon": "Donate Now - Ending Soon!"
   },
   "clinics": {
     "searchPlaceholder": "Search clinics or specializations...",

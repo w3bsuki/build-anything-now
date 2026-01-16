@@ -54,9 +54,13 @@
   "status": {
     "all": "Всі",
     "critical": "Критичний",
+    "criticalShort": "Крит.",
     "urgent": "Терміновий",
+    "urgentShort": "Термін.",
     "recovering": "Одужує",
+    "recoveringShort": "Одуж.",
     "adopted": "Усиновлений",
+    "adoptedShort": "Усинов.",
     "completed": "Завершено"
   },
   "home": {

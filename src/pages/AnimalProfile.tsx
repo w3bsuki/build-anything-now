@@ -75,6 +75,17 @@ const AnimalProfile = () => {
           <h1 className="font-medium text-sm text-foreground truncate flex-1">
             {displayTitle}
           </h1>
+          <button
+            onClick={() => setIsSaved(!isSaved)}
+            className={cn(
+              "w-9 h-9 rounded-xl flex items-center justify-center transition-colors active:opacity-90",
+              isSaved
+                ? "bg-primary/10 text-primary"
+                : "bg-muted/80 text-foreground"
+            )}
+          >
+            <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
+          </button>
           <ShareButton title={displayTitle} text={displayDescription} />
         </div>
       </div>
@@ -94,7 +105,7 @@ const AnimalProfile = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <StatusBadge status={caseData.status} />
+            <StatusBadge status={caseData.status} size="sm" />
             <div className="flex items-center gap-1 text-muted-foreground text-sm">
               <MapPin className="w-3.5 h-3.5" />
               <span>{caseData.location.city}, {caseData.location.neighborhood}</span>
@@ -168,33 +179,20 @@ const AnimalProfile = () => {
         </div>
       </div>
 
-      {/* Triple Action Bar - Bookmark + Chat + Donate */}
+      {/* Action Bar - Chat + Donate */}
       <div className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto w-full max-w-md px-4 pb-2">
           <div className="flex items-center gap-2 rounded-2xl border border-border/70 bg-background/95 px-3 py-2.5 shadow-lg backdrop-blur-xl">
-            {/* Bookmark */}
-            <button
-              onClick={() => setIsSaved(!isSaved)}
-              className={cn(
-                "size-10 flex items-center justify-center rounded-xl transition-colors active:opacity-90",
-                isSaved
-                  ? "bg-primary/10 text-primary"
-                  : "hover:bg-muted/60 text-foreground"
-              )}
-            >
-              <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
-            </button>
-            
             {/* Chat - opens CommentsSheet */}
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               className="h-10 px-4 rounded-xl"
               onClick={() => setCommentsOpen(true)}
             >
               <MessageCircle className="w-4 h-4 mr-1.5" />
               Chat
             </Button>
-            
+
             {/* Donate - primary, takes remaining space */}
             <Button className="flex-1 h-10 rounded-xl font-semibold">
               <Heart className="w-4 h-4 mr-1.5 fill-current" />

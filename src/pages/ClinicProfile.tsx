@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShareButton } from '@/components/ShareButton';
 import { cn } from '@/lib/utils';
-import { 
-  ArrowLeft, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  CheckCircle, 
+import {
+  ArrowLeft,
+  Phone,
+  MapPin,
+  Clock,
+  CheckCircle,
   Stethoscope,
   Navigation,
   Globe,
@@ -25,7 +25,7 @@ const ClinicProfile = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [isSaved, setIsSaved] = useState(false);
-  
+
   // Try to use the id as a Convex ID
   const clinic = useQuery(
     api.clinics.get,
@@ -76,7 +76,7 @@ const ClinicProfile = () => {
     const address = encodeURIComponent(`${clinic.address}, ${clinic.city}, Bulgaria`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, '_blank');
   };
-  
+
   // Derive hours from is24h if not stored
   const displayHours = clinic.is24h ? '24/7' : t('clinics.contactForHours');
 
@@ -159,7 +159,7 @@ const ClinicProfile = () => {
                   </a>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Clock className="w-5 h-5 text-primary" />
@@ -255,8 +255,8 @@ const ClinicProfile = () => {
               onClick={() => setIsSaved(!isSaved)}
               className={cn(
                 "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                isSaved 
-                  ? "bg-primary/10 text-primary" 
+                isSaved
+                  ? "bg-primary/10 text-primary"
                   : "bg-muted/50 text-foreground"
               )}
             >

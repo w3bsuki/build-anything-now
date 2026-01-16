@@ -1,9 +1,24 @@
 # 🌅 Pawtreon Styling Guide
-> **Theme:** Sunset Horizon | **Last Updated:** January 16, 2026
+> **⚠️ DEPRECATED:** This document contains outdated Sunset Horizon theme references.
+> **👉 See [FINAL-STYLING-SPEC.md](./FINAL-STYLING-SPEC.md) for the current Twitter theme.**
+> **Last Updated:** January 16, 2026
 
 ---
 
-## 🎨 Color Palette
+## ⚠️ THIS DOCUMENT IS OUTDATED
+
+Pawtreon now uses the **Twitter theme from tweakcn**, not Sunset Horizon.
+
+Key differences:
+- Primary color is now **Twitter Blue (#1e9df1)**, not warm coral
+- Navigation uses **black/foreground** for active states, not blue
+- Blue is reserved for **CTAs only** (buttons, links)
+
+**Please refer to [FINAL-STYLING-SPEC.md](./FINAL-STYLING-SPEC.md) for all styling decisions.**
+
+---
+
+## 🎨 Color Palette (LEGACY - DO NOT USE)
 
 ### Primary Brand Color
 ```

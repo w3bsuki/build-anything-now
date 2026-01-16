@@ -46,7 +46,7 @@ function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCirclePr
         className={cn(
           "rounded-full p-0.5 size-16",
           isNew
-            ? "bg-linear-to-tr from-sky-400 via-primary to-blue-500"
+            ? "bg-gradient-to-tr from-primary via-primary/80 to-primary/60"
             : "bg-muted"
         )}
       >
@@ -64,7 +64,7 @@ function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCirclePr
           )}
         </div>
       </div>
-      <span className="text-[11px] text-muted-foreground truncate max-w-16">
+      <span className="text-[11px] text-muted-foreground text-center line-clamp-1 w-16">
         {name}
       </span>
     </button>
@@ -113,7 +113,7 @@ function ActivityCircle({
       onClick={onClick}
       className="flex flex-col items-center gap-1 shrink-0"
     >
-      <div className="rounded-full p-0.5 bg-linear-to-tr from-sky-400 via-primary to-blue-500 size-16">
+      <div className="rounded-full p-0.5 bg-gradient-to-tr from-primary via-primary/80 to-primary/60 size-16">
         <div className="rounded-full bg-background p-0.5 size-full">
           {image ? (
             <img
@@ -130,7 +130,7 @@ function ActivityCircle({
           )}
         </div>
       </div>
-      <span className="text-[11px] text-muted-foreground truncate max-w-16">
+      <span className="text-[11px] text-muted-foreground text-center line-clamp-1 w-16">
         {displayName}
       </span>
     </button>

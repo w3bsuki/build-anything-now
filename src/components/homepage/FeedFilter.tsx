@@ -36,7 +36,7 @@ export function FeedFilter({ selected, onSelect, className }: FeedFilterProps) {
     <div className={cn('px-4 py-2', className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground/80 transition-colors">
+          <button className="flex items-center gap-2 text-sm font-medium text-foreground hover:bg-muted/50 rounded-lg px-2 py-1.5 -ml-2 transition-colors">
             {selectedOption.icon}
             <span>{selectedOption.label}</span>
             <ChevronDown className="w-4 h-4 text-muted-foreground" />

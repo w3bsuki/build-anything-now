@@ -6,7 +6,7 @@ interface ProgressBarProps {
   goal: number;
   currency?: string;
   showLabels?: boolean;
-  layout?: 'default' | 'compact';
+  layout?: 'default' | 'compact' | 'minimal';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -24,14 +24,38 @@ export function ProgressBar({
   const percentage = Math.min((current / goal) * 100, 100);
 
   const heights = {
-    sm: 'h-1.5',
-    md: 'h-2.5',
-    lg: 'h-4',
+    sm: 'h-1',
+    md: 'h-1.5',
+    lg: 'h-2',
   };
 
   const formattedCurrent = current.toLocaleString();
   const formattedGoal = goal.toLocaleString();
   const formattedPercent = `${Math.round(percentage)}%`;
+
+  // Minimal Twitter-style layout
+  if (layout === 'minimal') {
+    return (
+      <div className={cn('w-full', className)}>
+        <div className={cn('bg-muted rounded-full overflow-hidden', heights[size])}>
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-300"
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+        {showLabels && (
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-xs font-medium text-foreground">
+              {formattedCurrent} {currency} raised
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {formattedPercent}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={cn('w-full', className)}>

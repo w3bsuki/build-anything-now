@@ -54,9 +54,13 @@
   "status": {
     "all": "Все",
     "critical": "Критический",
+    "criticalShort": "Крит.",
     "urgent": "Срочный",
+    "urgentShort": "Срочный",
     "recovering": "Выздоравливает",
+    "recoveringShort": "Выздор.",
     "adopted": "Усыновлён",
+    "adoptedShort": "Усынов.",
     "completed": "Завершено"
   },
   "home": {

@@ -10,15 +10,15 @@ import type { Id } from '../../convex/_generated/dataModel';
 const PartnerProfile = () => {
     const { t } = useTranslation();
     const { id } = useParams();
-    
+
     // Fetch partner from Convex
     const rawPartner = useQuery(
         api.partners.get,
         id ? { id: id as Id<"partners"> } : "skip"
     );
-    
+
     const isLoading = rawPartner === undefined;
-    
+
     // Transform to match expected shape
     const partner = rawPartner ? {
         id: rawPartner._id,

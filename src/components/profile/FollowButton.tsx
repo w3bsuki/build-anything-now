@@ -6,14 +6,16 @@ import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { Id } from '../../../convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
 
 interface FollowButtonProps {
   userId: Id<"users">;
   isFollowing: boolean;
   variant?: 'default' | 'compact';
+  className?: string;
 }
 
-export function FollowButton({ userId, isFollowing, variant = 'default' }: FollowButtonProps) {
+export function FollowButton({ userId, isFollowing, variant = 'default', className }: FollowButtonProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const toggleFollow = useMutation(api.social.toggleFollow);
@@ -66,18 +68,18 @@ export function FollowButton({ userId, isFollowing, variant = 'default' }: Follo
       variant={optimisticFollowing ? 'outline' : 'default'}
       onClick={handleClick}
       disabled={isLoading}
-      className="gap-2"
+      className={cn("gap-2 font-semibold rounded-xl", className)}
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin" />
+        <Loader2 className="w-5 h-5 animate-spin" />
       ) : optimisticFollowing ? (
         <>
-          <UserCheck className="w-4 h-4" />
+          <UserCheck className="w-5 h-5" />
           {t('profile.following')}
         </>
       ) : (
         <>
-          <UserPlus className="w-4 h-4" />
+          <UserPlus className="w-5 h-5" />
           {t('profile.follow')}
         </>
       )}

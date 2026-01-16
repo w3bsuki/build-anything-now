@@ -60,9 +60,13 @@
   "status": {
     "all": "Всички",
     "critical": "Критичен",
+    "criticalShort": "Критичен",
     "urgent": "Спешен",
+    "urgentShort": "Спешен",
     "recovering": "Възстановяващ се",
+    "recoveringShort": "Възст.",
     "adopted": "Осиновен",
+    "adoptedShort": "Осиновен",
     "completed": "Завършен",
     "urgentOnly": "Само спешни",
     "nearMe": "Близо до мен"
@@ -86,8 +90,18 @@
     "noResults": "Няма {{filter}} кампании в момента",
     "nearbyOnly": "Наблизо",
     "active": "Активни",
-    "raised": "събрани",
-    "viewAllCampaigns": "Виж всички кампании"
+    "raised": "Събрани",
+    "viewAllCampaigns": "Виж всички кампании",
+    "daysLeft": "{{count}}д остават",
+    "daysLeft_one": "{{count}}д остава",
+    "daysLeft_other": "{{count}}д остават",
+    "almostThere": "Почти готово!",
+    "goal": "Цел",
+    "supporters": "{{count}} подкрепящи",
+    "supporters_one": "{{count}} подкрепящ",
+    "supporters_other": "{{count}} подкрепящи",
+    "contributeTo": "Подкрепи {{title}}",
+    "donateNowEndingSoon": "Дарете сега - Скоро приключва!"
   },
   "clinics": {
     "searchPlaceholder": "Търсене на клиники или специализации...",

@@ -20,10 +20,10 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
     <>
       {/* Avatar with badge */}
       <div className="relative">
-        {/* Gradient Ring - Twitter blue gradient */}
+        {/* Gradient Ring - Twitter Blue */}
         <div
           className={cn(
-            "rounded-full p-0.5 bg-linear-to-tr from-sky-400 via-primary to-blue-500",
+            "rounded-full p-0.5 bg-gradient-to-tr from-primary via-primary/80 to-primary/60",
             sizeClasses
           )}
         >

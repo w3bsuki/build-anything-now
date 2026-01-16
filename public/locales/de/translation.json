@@ -54,9 +54,13 @@
   "status": {
     "all": "Alle",
     "critical": "Kritisch",
+    "criticalShort": "Kritisch",
     "urgent": "Dringend",
+    "urgentShort": "Dringend",
     "recovering": "Erholend",
+    "recoveringShort": "Erhol.",
     "adopted": "Adoptiert",
+    "adoptedShort": "Adopt.",
     "completed": "Abgeschlossen"
   },
   "home": {

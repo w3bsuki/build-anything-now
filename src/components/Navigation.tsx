@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Megaphone, Users, User, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake, Stethoscope } from 'lucide-react';
+import { Home, Megaphone, Plus, MessageCircle, HeartHandshake, Handshake, Stethoscope, Bell, User, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
@@ -27,9 +26,6 @@ const desktopNavItems = [
 // TODO: Replace with real data from Convex
 const unreadNotifications = 5;
 
-// Pages that show the mobile header
-const mobileHeaderPages = ['/', '/campaigns', '/community', '/partners', '/profile'];
-
 export function Navigation() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -44,9 +40,6 @@ export function Navigation() {
     return null;
   }
 
-  // Show mobile header on main pages
-  const showMobileHeader = mobileHeaderPages.includes(location.pathname);
-
   // Hide bottom nav on detail pages and create pages (they have their own action bars)
   const hideBottomNav = location.pathname.includes('/case/') ||
     location.pathname.includes('/campaigns/') ||
@@ -56,53 +49,6 @@ export function Navigation() {
 
   return (
     <>
-      {/* Mobile Top Header */}
-      {showMobileHeader && (
-        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md pt-[env(safe-area-inset-top)]">
-          <div className="flex items-center justify-between h-14 px-4">
-            {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-2">
-              <HeartHandshake className="size-6 text-primary" />
-              <span className="font-semibold text-lg text-foreground">Pawtreon</span>
-            </NavLink>
-
-            {/* Actions - Notifications + Profile */}
-            <div className="flex items-center -mr-1.5">
-              <Button
-                variant="iconHeader"
-                size="iconTouch"
-                className="relative"
-                asChild
-              >
-                <NavLink to="/notifications">
-                  <Bell className={cn(
-                    "size-6",
-                    location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
-                  )} />
-                  {unreadNotifications > 0 && (
-                    <Badge className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background">
-                      {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                    </Badge>
-                  )}
-                </NavLink>
-              </Button>
-              <Button
-                variant="iconHeader"
-                size="iconTouch"
-                asChild
-              >
-                <NavLink to="/account">
-                  <User className={cn(
-                    "size-6",
-                    location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
-                  )} />
-                </NavLink>
-              </Button>
-            </div>
-          </div>
-        </header>
-      )}
-
       {/* Desktop Navigation */}
       <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md">
         <div className="container mx-auto px-4">
@@ -126,13 +72,13 @@ export function Navigation() {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150',
+                      'flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors duration-150',
                       isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        ? 'text-foreground font-bold bg-accent'
+                        : 'text-muted-foreground font-medium hover:bg-accent/50 hover:text-foreground'
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                     <span>{t(item.labelKey)}</span>
                   </NavLink>
                 );
@@ -186,7 +132,7 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav
           data-tour="navigation"
-          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 pb-[env(safe-area-inset-bottom)]"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-nav-surface backdrop-blur-md border-t border-nav-border pb-[env(safe-area-inset-bottom)]"
         >
           <div className="flex items-center justify-around h-14 px-2">
             {navItems.map((item) => {
@@ -217,14 +163,14 @@ export function Navigation() {
                 >
                   <Icon
                     className={cn(
-                      'h-[22px] w-[22px]',
-                      isActive ? 'text-primary' : 'text-muted-foreground'
+                      'h-[22px] w-[22px] transition-colors',
+                      isActive ? 'text-foreground' : 'text-muted-foreground'
                     )}
-                    strokeWidth={1.75}
+                    strokeWidth={isActive ? 2 : 1.75}
                   />
                   <span className={cn(
-                    'text-[10px] font-medium',
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                    'text-[10px] transition-colors',
+                    isActive ? 'text-foreground font-semibold' : 'text-muted-foreground font-medium'
                   )}>
                     {t(item.labelKey)}
                   </span>

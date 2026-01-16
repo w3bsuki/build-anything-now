@@ -42,62 +42,72 @@ export function ProfileCases({ cases, emptyMessage }: ProfileCasesProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {cases.map((caseItem) => (
-        <Link
-          key={caseItem._id}
-          to={`/case/${caseItem._id}`}
-          className="block bg-card rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-colors"
-        >
-          <div className="flex gap-4 p-4">
-            {/* Image */}
-            {caseItem.imageUrl && (
-              <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted shrink-0">
-                <img
-                  src={caseItem.imageUrl}
-                  alt={caseItem.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2 mb-1">
-                <h3 className="font-semibold text-foreground truncate">{caseItem.title}</h3>
-                <StatusBadge 
-                  status={caseItem.type} 
-                  size="sm" 
-                  className="shrink-0"
-                />
+    <div className="space-y-3">
+      {cases.map((caseItem) => {
+        const percentage = Math.min((caseItem.fundraising.current / caseItem.fundraising.goal) * 100, 100);
+        
+        return (
+          <Link
+            key={caseItem._id}
+            to={`/case/${caseItem._id}`}
+            className="block bg-card rounded-xl border border-border overflow-hidden hover:border-primary/30 hover:shadow-sm transition-all active:scale-[0.99]"
+          >
+            <div className="flex gap-3 p-3">
+              {/* Image - Always show, with placeholder if missing */}
+              <div className="w-[72px] h-[72px] rounded-lg overflow-hidden bg-muted shrink-0">
+                {caseItem.imageUrl ? (
+                  <img
+                    src={caseItem.imageUrl}
+                    alt={caseItem.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <PawPrint className="w-6 h-6 text-muted-foreground/50" />
+                  </div>
+                )}
               </div>
 
-              {/* Location */}
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                <MapPin className="w-3 h-3" />
-                <span>{caseItem.location.city}</span>
-              </div>
+              {/* Content */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                {/* Title row with badge */}
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-sm text-foreground line-clamp-1 flex-1">{caseItem.title}</h3>
+                  <StatusBadge 
+                    status={caseItem.type} 
+                    size="sm" 
+                    className="shrink-0"
+                  />
+                </div>
 
-              {/* Progress */}
-              <div className="space-y-1">
-                <ProgressBar
-                  current={caseItem.fundraising.current}
-                  goal={caseItem.fundraising.goal}
-                  size="sm"
-                />
-                <div className="flex justify-between text-xs">
-                  <span className="font-medium text-foreground">
-                    {caseItem.fundraising.current} {caseItem.fundraising.currency}
-                  </span>
-                  <span className="text-muted-foreground">
-                    / {caseItem.fundraising.goal} {caseItem.fundraising.currency}
-                  </span>
+                {/* Location */}
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{caseItem.location.city}</span>
+                </div>
+
+                {/* Progress - Simplified, no duplicate text */}
+                <div className="space-y-1">
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary rounded-full transition-all" 
+                      style={{ width: `${percentage}%` }} 
+                    />
+                  </div>
+                  <div className="flex items-baseline justify-between text-xs">
+                    <span className="font-semibold text-foreground">
+                      {caseItem.fundraising.current.toLocaleString()} {caseItem.fundraising.currency}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {t('common.of')} {caseItem.fundraising.goal.toLocaleString()} {caseItem.fundraising.currency}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </div>
   );
 }

@@ -6,7 +6,6 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { useMutation, useQuery } from 'convex/react';
 import { AnimalCase } from '@/types';
 import { StatusBadge } from '@/components/StatusBadge';
-import { ProgressBar } from '@/components/ProgressBar';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -74,14 +73,18 @@ function getTimeAgo(dateString: string): string {
 
 // Extract first name from case title for personalized CTA
 function getAnimalName(title: string): string {
-  // Try to extract a name (usually first word or word after "Meet")
-  const words = title.split(' ');
-  if (words[0].toLowerCase() === 'meet' && words[1]) {
-    return words[1].replace(/[^a-zA-Z]/g, '');
-  }
-  // Return first word if it looks like a name (capitalized, not too long)
-  if (words[0].length <= 12 && /^[A-Z]/.test(words[0])) {
-    return words[0].replace(/[^a-zA-Z]/g, '');
+  // Common words to skip when looking for a pet name
+  const skipWords = ['a', 'an', 'the', 'meet', 'help', 'found', 'rescue', 'save', 'this'];
+  const words = title.split(/[\s\-–—]+/).filter(w => w.length > 0);
+
+  // Find the first word that looks like a name (capitalized, not in skip list)
+  for (const word of words) {
+    const cleanWord = word.replace(/[^a-zA-Z]/g, '');
+    if (cleanWord.length < 2) continue;
+    if (skipWords.includes(cleanWord.toLowerCase())) continue;
+    if (/^[A-Z]/.test(cleanWord)) {
+      return cleanWord.length > 12 ? cleanWord.slice(0, 12) : cleanWord;
+    }
   }
   return 'them';
 }
@@ -93,7 +96,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [commentsOpen, setCommentsOpen] = useState(false);
-  
+
   // Image loading states
   const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
@@ -197,47 +200,57 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   return (
     <article
       className={cn(
-        'bg-card rounded-xl overflow-hidden border border-border/50',
+        'group bg-card rounded-2xl overflow-hidden border border-border/50 transition-all duration-300 hover:border-border hover:shadow-lg',
         className
       )}
     >
-      {/* User Header - Instagram style */}
-      <div className="flex items-center justify-between px-4 py-3">
+      {/* User Header - Instagram style with improved visuals */}
+      <div className="flex items-center justify-between px-3.5 py-2.5">
         <div className="flex items-center gap-3">
-          {/* Avatar placeholder - would be real user avatar */}
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-sm font-semibold text-primary">🐾</span>
+          {/* Animated avatar with gradient ring */}
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-tr from-primary via-pink-500 to-orange-400 rounded-full opacity-75 animate-pulse" />
+            <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center ring-2 ring-background">
+              <span className="text-base">🐾</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground leading-tight">
-              Pawtreon
-            </span>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <span>{timeAgo}</span>
-              <span>•</span>
-              <MapPin className="w-3 h-3" />
-              <span className="truncate max-w-[160px]">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-foreground leading-tight">
+                Pawtreon
+              </span>
+              {/* Verified badge */}
+              <svg className="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="font-medium">{timeAgo}</span>
+              <span className="text-muted-foreground/50">•</span>
+              <MapPin className="w-3 h-3 shrink-0" />
+              <span className="truncate max-w-[140px] font-medium">
                 {caseData.location.city}
               </span>
             </div>
           </div>
         </div>
 
-        {/* More menu */}
+        {/* More menu with improved touch target */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-1.5 -mr-1.5 rounded-full hover:bg-muted transition-colors">
+            <button className="p-2 -mr-2 rounded-full hover:bg-muted/80 active:bg-muted transition-colors">
               <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleShare}>
-              <Share2 className="w-4 h-4 mr-2" />
-              Share
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleShare} className="gap-2">
+              <Share2 className="w-4 h-4" />
+              Share this story
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="gap-2">
               <Link to={`/case/${caseData.id}`}>
-                View Details
+                <PawPrint className="w-4 h-4" />
+                View full story
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -246,7 +259,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
 
       {/* Image Carousel with Status Badge - 3:2 aspect for compact layout */}
       <Link to={`/case/${caseData.id}`} className="block relative">
-        <div className="relative aspect-[3/2] overflow-hidden bg-muted">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           {hasMultipleImages ? (
             <div className="overflow-hidden h-full" ref={emblaRef}>
               <div className="flex h-full">
@@ -254,7 +267,9 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
                   <div key={index} className="flex-[0_0_100%] min-w-0 h-full relative">
                     {/* Loading skeleton */}
                     {!imageLoaded[index] && !imageError[index] && (
-                      <div className="absolute inset-0 animate-pulse bg-muted" />
+                      <div className="absolute inset-0 bg-muted flex items-center justify-center">
+                        <PawPrint className="w-10 h-10 text-muted-foreground/20 animate-pulse" />
+                      </div>
                     )}
                     {/* Error fallback */}
                     {imageError[index] ? (
@@ -282,7 +297,9 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
             <>
               {/* Loading skeleton */}
               {!imageLoaded[0] && !imageError[0] && (
-                <div className="absolute inset-0 animate-pulse bg-muted" />
+                <div className="absolute inset-0 bg-muted flex items-center justify-center">
+                  <PawPrint className="w-10 h-10 text-muted-foreground/20 animate-pulse" />
+                </div>
               )}
               {/* Error fallback */}
               {imageError[0] ? (
@@ -345,32 +362,35 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
         </div>
       </Link>
 
-      {/* Action Bar - Instagram style */}
-      <div className="flex items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-4">
-          {/* Like */}
+      {/* Action Bar - Enhanced social engagement */}
+      <div className="flex items-center justify-between px-2 py-1.5 border-t border-border/30">
+        <div className="flex items-center">
+          {/* Like - with animation */}
           <button
             onClick={handleLike}
-            className="flex items-center gap-1.5 group"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full group hover:bg-destructive/10 active:bg-destructive/20 transition-all min-h-[44px]"
           >
             <Heart
               className={cn(
-                'w-6 h-6 transition-all',
+                'size-[22px] transition-all duration-200',
                 optimisticLiked
                   ? 'fill-destructive text-destructive scale-110'
-                  : 'text-foreground group-hover:text-destructive'
+                  : 'text-muted-foreground group-hover:text-destructive group-hover:scale-110'
               )}
             />
-            <span className="text-sm font-medium">{optimisticLikeCount}</span>
+            <span className={cn(
+              "text-sm font-semibold transition-colors",
+              optimisticLiked ? "text-destructive" : "text-muted-foreground group-hover:text-destructive"
+            )}>{optimisticLikeCount}</span>
           </button>
 
           {/* Comment */}
           <button
             onClick={handleComment}
-            className="flex items-center gap-1.5 group"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full group hover:bg-primary/10 active:bg-primary/20 transition-all min-h-[44px]"
           >
-            <MessageCircle className="w-6 h-6 text-foreground group-hover:text-primary transition-colors" />
-            <span className="text-sm font-medium">
+            <MessageCircle className="size-[22px] text-muted-foreground group-hover:text-primary group-hover:scale-110 transition-all duration-200" />
+            <span className="text-sm font-semibold text-muted-foreground group-hover:text-primary transition-colors">
               {commentCount}
             </span>
           </button>
@@ -378,49 +398,76 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
           {/* Share */}
           <button
             onClick={handleShare}
-            className="group"
+            className="flex items-center px-3 py-2 rounded-full group hover:bg-primary/10 active:bg-primary/20 transition-all min-h-[44px]"
           >
-            <Share2 className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+            <Share2 className="size-[22px] text-muted-foreground group-hover:text-primary group-hover:scale-110 transition-all duration-200" />
           </button>
+        </div>
+        
+        {/* Helpers count */}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pr-2">
+          <div className="flex -space-x-1.5">
+            <div className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-[8px]">🙏</div>
+            <div className="w-5 h-5 rounded-full bg-pink-500/20 border-2 border-background flex items-center justify-center text-[8px]">❤️</div>
+            <div className="w-5 h-5 rounded-full bg-orange-500/20 border-2 border-background flex items-center justify-center text-[8px]">✨</div>
+          </div>
+          <span className="font-medium">{helpersCount} helping</span>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-4 pb-2 space-y-1.5">
-        {/* Title */}
+      <div className="px-3.5 pb-2 space-y-1.5">
+        {/* Title with hover effect */}
         <Link to={`/case/${caseData.id}`}>
-          <h3 className="font-semibold text-base text-foreground line-clamp-2 hover:underline">
+          <h3 className="font-bold text-base text-foreground line-clamp-2 hover:text-primary transition-colors leading-snug">
             {caseData.title}
           </h3>
         </Link>
 
         {/* Description - truncated */}
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
           {caseData.description}
         </p>
       </div>
 
-      {/* Funding Progress */}
-      <div className="px-4 pb-2">
-        <ProgressBar
-          current={caseData.fundraising.current}
-          goal={caseData.fundraising.goal}
-          currency={caseData.fundraising.currency}
-          layout="compact"
-          size="md"
-        />
+      {/* Funding Progress - Enhanced visual */}
+      <div className="px-3.5 pb-2.5">
+        <div className="bg-muted/50 rounded-xl p-3">
+          <div className="flex items-end justify-between mb-2">
+            <div>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Raised</span>
+              <div className="text-lg font-bold text-foreground leading-none mt-0.5">
+                {caseData.fundraising.current.toLocaleString()} <span className="text-sm font-medium text-muted-foreground">{caseData.fundraising.currency}</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="text-2xl font-black text-primary">
+                {Math.round((caseData.fundraising.current / caseData.fundraising.goal) * 100)}%
+              </span>
+            </div>
+          </div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
+              style={{ width: `${Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100)}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
+            <span>Goal: {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
+          </div>
+        </div>
       </div>
 
       {/* Single, focused CTA - drives donations */}
-      <div className="px-4 pb-4">
+      <div className="px-3.5 pb-3.5">
         <Button
           asChild
           variant="default"
-          className="w-full h-10 rounded-xl font-semibold text-sm bg-primary hover:bg-primary/90"
+          className="w-full h-12 rounded-xl font-bold text-sm shadow-sm hover:shadow-md transition-all"
         >
-          <Link to={`/case/${caseData.id}`}>
-            <Heart className="w-4 h-4 mr-1.5 fill-current" />
-            Help {animalName}
+          <Link to={`/case/${caseData.id}`} className="flex items-center justify-center gap-2">
+            <Heart className="size-5 fill-current shrink-0" />
+            <span>Help {animalName}</span>
           </Link>
         </Button>
       </div>
