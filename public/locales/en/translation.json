@@ -63,7 +63,9 @@
     "urgent": "Urgent",
     "recovering": "Recovering",
     "adopted": "Adopted",
-    "completed": "Completed"
+    "completed": "Completed",
+    "urgentOnly": "Urgent only",
+    "nearMe": "Near me"
   },
   "home": {
     "searchPlaceholder": "Search rescue cases...",

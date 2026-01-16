@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PawPrint } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ImageGalleryProps {
@@ -9,6 +9,8 @@ interface ImageGalleryProps {
 
 export function ImageGallery({ images, alt }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
+  const [imageError, setImageError] = useState<Record<number, boolean>>({});
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -22,11 +24,27 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
     <div className="relative">
       {/* Main Image */}
       <div className="aspect-[4/3] overflow-hidden rounded-xl bg-muted">
-        <img
-          src={images[currentIndex]}
-          alt={`${alt} - Image ${currentIndex + 1}`}
-          className="w-full h-full object-cover"
-        />
+        {/* Loading skeleton */}
+        {!imageLoaded[currentIndex] && !imageError[currentIndex] && (
+          <div className="absolute inset-0 animate-pulse bg-muted rounded-xl" />
+        )}
+        {/* Error fallback */}
+        {imageError[currentIndex] ? (
+          <div className="w-full h-full flex items-center justify-center bg-muted">
+            <PawPrint className="w-16 h-16 text-muted-foreground/30" />
+          </div>
+        ) : (
+          <img
+            src={images[currentIndex]}
+            alt={`${alt} - Image ${currentIndex + 1}`}
+            className={cn(
+              "w-full h-full object-cover transition-opacity duration-300",
+              !imageLoaded[currentIndex] && "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(prev => ({ ...prev, [currentIndex]: true }))}
+            onError={() => setImageError(prev => ({ ...prev, [currentIndex]: true }))}
+          />
+        )}
       </div>
 
       {/* Navigation Arrows */}

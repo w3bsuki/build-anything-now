@@ -63,7 +63,9 @@
     "urgent": "Спешен",
     "recovering": "Възстановяващ се",
     "adopted": "Осиновен",
-    "completed": "Завършен"
+    "completed": "Завършен",
+    "urgentOnly": "Само спешни",
+    "nearMe": "Близо до мен"
   },
   "home": {
     "searchPlaceholder": "Търсене на спасителни случаи...",

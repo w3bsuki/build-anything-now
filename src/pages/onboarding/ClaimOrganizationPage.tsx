@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { useQuery, useMutation, useConvexAuth } from 'convex/react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Search, 
-  Building2, 
-  MapPin, 
-  ArrowLeft, 
-  ArrowRight, 
+import {
+  Search,
+  Building2,
+  MapPin,
+  ArrowLeft,
+  ArrowRight,
   Check,
   BadgeCheck,
   Clock,
@@ -35,7 +35,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -110,12 +110,12 @@ export default function ClaimOrganizationPage() {
   const navigate = useNavigate();
   const { isSignedIn, isLoaded } = useAuth();
   const { isLoading: isConvexLoading } = useConvexAuth();
-  
+
   const completeOnboarding = useMutation(api.users.completeOnboarding);
   const submitClinicClaim = useMutation(api.clinics.submitClaim);
   const submitPetServiceClaim = useMutation(api.petServices.submitClaim);
   const registerPetService = useMutation(api.petServices.register);
-  
+
   // Flow state
   const [step, setStep] = useState<FlowStep>('select-type');
   const [selectedType, setSelectedType] = useState<BusinessType | null>(null);
@@ -124,7 +124,7 @@ export default function ClaimOrganizationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [claimSuccess, setClaimSuccess] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
-  
+
   // Claim form data
   const [claimFormData, setClaimFormData] = useState<ClaimFormData>({
     serviceId: null,
@@ -149,14 +149,14 @@ export default function ClaimOrganizationPage() {
 
   // Search results - use clinics for clinic type, petServices for others
   const clinicSearchResults = useQuery(
-    api.clinics.searchForClaim, 
+    api.clinics.searchForClaim,
     selectedType === 'clinic' && searchQuery.length >= 2 ? { searchText: searchQuery } : "skip"
   );
-  
+
   const petServiceSearchResults = useQuery(
-    api.petServices.searchForClaim, 
-    selectedType && selectedType !== 'clinic' && searchQuery.length >= 2 
-      ? { searchText: searchQuery, type: selectedType } 
+    api.petServices.searchForClaim,
+    selectedType && selectedType !== 'clinic' && searchQuery.length >= 2
+      ? { searchText: searchQuery, type: selectedType }
       : "skip"
   );
 
@@ -200,9 +200,9 @@ export default function ClaimOrganizationPage() {
 
   const handleSubmitClaim = async () => {
     if (!claimFormData.serviceId || !claimFormData.claimerRole || !claimFormData.claimerEmail) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       if (selectedType === 'clinic') {
         await submitClinicClaim({
@@ -221,10 +221,10 @@ export default function ClaimOrganizationPage() {
           additionalInfo: claimFormData.additionalInfo || undefined,
         });
       }
-      
+
       await completeOnboarding({ enhancedUserType: 'business' });
       setClaimSuccess(true);
-      
+
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       console.error('Failed to submit claim:', error);
@@ -234,9 +234,9 @@ export default function ClaimOrganizationPage() {
 
   const handleRegisterNew = async () => {
     if (!selectedType || !registerFormData.name || !registerFormData.city || !registerFormData.phone) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       await registerPetService({
         name: registerFormData.name,
@@ -249,10 +249,10 @@ export default function ClaimOrganizationPage() {
         description: registerFormData.description || undefined,
         services: registerFormData.services.length > 0 ? registerFormData.services : [selectedType],
       });
-      
+
       await completeOnboarding({ enhancedUserType: 'business' });
       setRegisterSuccess(true);
-      
+
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       console.error('Failed to register business:', error);
@@ -292,7 +292,7 @@ export default function ClaimOrganizationPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          
+
           <div className="text-center pt-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/30 mb-3">
               <Building2 className="w-7 h-7 text-blue-500" />
@@ -317,7 +317,7 @@ export default function ClaimOrganizationPage() {
                   onClick={() => handleTypeSelect(type.value)}
                   className={cn(
                     "flex flex-col items-center p-4 rounded-xl border transition-all",
-                    "bg-card hover:border-primary/50 hover:bg-muted/30 active:scale-[0.98]",
+                    "bg-card hover:border-primary/50 hover:bg-muted/30 active:opacity-90",
                     "border-border/50"
                   )}
                 >
@@ -367,7 +367,7 @@ export default function ClaimOrganizationPage() {
 
   if (step === 'search-claim') {
     const typeInfo = getTypeInfo(selectedType!);
-    
+
     return (
       <div className="min-h-screen bg-background flex flex-col">
         {/* Header */}
@@ -380,7 +380,7 @@ export default function ClaimOrganizationPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          
+
           <div className="text-center pt-10">
             <div className={cn(
               "inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3",
@@ -475,7 +475,7 @@ export default function ClaimOrganizationPage() {
                   </div>
                 </div>
               ))}
-              
+
               {/* Register new */}
               <div className="pt-4">
                 <div className="relative flex items-center justify-center py-3">
@@ -656,7 +656,7 @@ export default function ClaimOrganizationPage() {
 
   if (step === 'register-new') {
     const typeInfo = getTypeInfo(selectedType!);
-    
+
     return (
       <div className="min-h-screen bg-background flex flex-col">
         {/* Header */}
@@ -669,7 +669,7 @@ export default function ClaimOrganizationPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          
+
           <div className="text-center pt-10">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-muted mb-3">
               {typeInfo && <typeInfo.icon className={cn("w-6 h-6", typeInfo.color)} />}

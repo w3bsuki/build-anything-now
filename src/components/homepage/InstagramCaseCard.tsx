@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MessageCircle, Share2, MoreHorizontal, MapPin, Users } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, MapPin, PawPrint } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { useMutation, useQuery } from 'convex/react';
 import { AnimalCase } from '@/types';
@@ -88,36 +88,40 @@ function getAnimalName(title: string): string {
 
 export function InstagramCaseCard({ caseData, className, socialStats }: InstagramCaseCardProps) {
   const { t } = useTranslation();
-  
+
   // Embla carousel for swipeable images
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [commentsOpen, setCommentsOpen] = useState(false);
   
+  // Image loading states
+  const [imageLoaded, setImageLoaded] = useState<Record<number, boolean>>({});
+  const [imageError, setImageError] = useState<Record<number, boolean>>({});
+
   // Convex ID for social features
   const caseId = caseData.id as Id<"cases">;
-  
+
   // Fallback to deterministic counts if no social stats provided
   const fallbackLikeCount = useMemo(() => getLikeCount(caseData.id), [caseData.id]);
   const fallbackCommentCount = useMemo(() => getCommentCount(caseData.id), [caseData.id]);
   const helpersCount = useMemo(() => getHelpersCount(caseData.id), [caseData.id]);
-  
+
   // Use real stats if available, otherwise fallback
   const [optimisticLiked, setOptimisticLiked] = useState(socialStats?.liked ?? false);
   const [optimisticLikeCount, setOptimisticLikeCount] = useState(
     socialStats?.likeCount ?? fallbackLikeCount
   );
   const commentCount = socialStats?.commentCount ?? fallbackCommentCount;
-  
+
   // Convex mutations
   const toggleLike = useMutation(api.social.toggleLike);
-  
+
   // Track carousel slide changes
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setCurrentSlide(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
-  
+
   // Subscribe to carousel events
   useMemo(() => {
     if (!emblaApi) return;
@@ -126,7 +130,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
       emblaApi.off('select', onSelect);
     };
   }, [emblaApi, onSelect]);
-  
+
   const timeAgo = getTimeAgo(caseData.createdAt);
   const animalName = getAnimalName(caseData.title);
   const hasMultipleImages = caseData.images.length > 1;
@@ -134,17 +138,17 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Optimistic update
     const wasLiked = optimisticLiked;
     setOptimisticLiked(!wasLiked);
     setOptimisticLikeCount(prev => wasLiked ? prev - 1 : prev + 1);
-    
+
     // Haptic feedback if available
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
-    
+
     try {
       await toggleLike({ caseId });
     } catch (error) {
@@ -162,9 +166,9 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const shareUrl = `${window.location.origin}/case/${caseData.id}`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -201,7 +205,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           {/* Avatar placeholder - would be real user avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-semibold text-primary">🐾</span>
           </div>
           <div className="flex flex-col">
@@ -218,7 +222,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
             </div>
           </div>
         </div>
-        
+
         {/* More menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -240,40 +244,74 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
         </DropdownMenu>
       </div>
 
-      {/* Image Carousel with Status Badge - 4:3 aspect for emotional impact */}
+      {/* Image Carousel with Status Badge - 3:2 aspect for compact layout */}
       <Link to={`/case/${caseData.id}`} className="block relative">
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="relative aspect-[3/2] overflow-hidden bg-muted">
           {hasMultipleImages ? (
             <div className="overflow-hidden h-full" ref={emblaRef}>
               <div className="flex h-full">
                 {caseData.images.map((image, index) => (
-                  <div key={index} className="flex-[0_0_100%] min-w-0 h-full">
-                    <img
-                      src={image}
-                      alt={`${caseData.title} - Image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      loading={index === 0 ? "eager" : "lazy"}
-                    />
+                  <div key={index} className="flex-[0_0_100%] min-w-0 h-full relative">
+                    {/* Loading skeleton */}
+                    {!imageLoaded[index] && !imageError[index] && (
+                      <div className="absolute inset-0 animate-pulse bg-muted" />
+                    )}
+                    {/* Error fallback */}
+                    {imageError[index] ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                        <PawPrint className="w-12 h-12 text-muted-foreground/30" />
+                      </div>
+                    ) : (
+                      <img
+                        src={image}
+                        alt={`${caseData.title} - Image ${index + 1}`}
+                        className={cn(
+                          "w-full h-full object-cover transition-opacity duration-300",
+                          !imageLoaded[index] && "opacity-0"
+                        )}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        onLoad={() => setImageLoaded(prev => ({ ...prev, [index]: true }))}
+                        onError={() => setImageError(prev => ({ ...prev, [index]: true }))}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <img
-              src={caseData.images[0]}
-              alt={caseData.title}
-              className="w-full h-full object-cover"
-            />
+            <>
+              {/* Loading skeleton */}
+              {!imageLoaded[0] && !imageError[0] && (
+                <div className="absolute inset-0 animate-pulse bg-muted" />
+              )}
+              {/* Error fallback */}
+              {imageError[0] ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                  <PawPrint className="w-12 h-12 text-muted-foreground/30" />
+                </div>
+              ) : (
+                <img
+                  src={caseData.images[0]}
+                  alt={caseData.title}
+                  className={cn(
+                    "w-full h-full object-cover transition-opacity duration-300",
+                    !imageLoaded[0] && "opacity-0"
+                  )}
+                  onLoad={() => setImageLoaded(prev => ({ ...prev, [0]: true }))}
+                  onError={() => setImageError(prev => ({ ...prev, [0]: true }))}
+                />
+              )}
+            </>
           )}
-          
+
           {/* Gradient scrim for badge visibility */}
           <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
-          
+
           {/* Status badge */}
           <div className="absolute top-3 left-3">
             <StatusBadge status={caseData.status} size="sm" />
           </div>
-          
+
           {/* Image count indicator / dot indicators */}
           {hasMultipleImages && (
             <>
@@ -281,7 +319,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
               <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
                 {currentSlide + 1}/{caseData.images.length}
               </div>
-              
+
               {/* Dot indicators - bottom center */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                 {caseData.images.map((_, index) => (
@@ -294,8 +332,8 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
                     }}
                     className={cn(
                       "w-1.5 h-1.5 rounded-full transition-all",
-                      index === currentSlide 
-                        ? "bg-white w-3" 
+                      index === currentSlide
+                        ? "bg-white w-3"
                         : "bg-white/50 hover:bg-white/70"
                     )}
                     aria-label={`Go to slide ${index + 1}`}
@@ -360,14 +398,6 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
         <p className="text-sm text-muted-foreground line-clamp-2">
           {caseData.description}
         </p>
-
-        {/* Social Proof - Helpers count */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Users className="w-4 h-4" />
-          <span>
-            <span className="font-medium text-foreground">{helpersCount}</span> helping
-          </span>
-        </div>
       </div>
 
       {/* Funding Progress */}
@@ -381,20 +411,20 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
         />
       </div>
 
-      {/* CTA Button - Social proof style */}
+      {/* Single, focused CTA - drives donations */}
       <div className="px-4 pb-4">
         <Button
           asChild
           variant="default"
-          className="w-full h-11 rounded-xl font-semibold text-sm bg-primary hover:bg-primary/90"
+          className="w-full h-10 rounded-xl font-semibold text-sm bg-primary hover:bg-primary/90"
         >
           <Link to={`/case/${caseData.id}`}>
-            <Users className="w-3.5 h-3.5 mr-1.5" />
-            Join {helpersCount} • Help {animalName}
+            <Heart className="w-4 h-4 mr-1.5 fill-current" />
+            Help {animalName}
           </Link>
         </Button>
       </div>
-      
+
       {/* Comments Bottom Sheet */}
       <CommentsSheet
         isOpen={commentsOpen}

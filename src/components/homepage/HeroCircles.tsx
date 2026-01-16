@@ -39,7 +39,7 @@ function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCirclePr
   const size = 52;
 
   return (
-    <button 
+    <button
       onClick={onClick}
       className="flex flex-col items-center gap-1 flex-shrink-0"
     >
@@ -47,7 +47,7 @@ function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCirclePr
         className={cn(
           "rounded-full p-[2px]",
           isNew
-            ? "bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500"
+            ? "bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
             : "bg-muted"
         )}
         style={{ width: size + 4, height: size + 4 }}
@@ -102,11 +102,11 @@ function HeroAvatarSkeleton() {
 }
 
 // Activity circle - shows recent activity from the feed
-function ActivityCircle({ 
-  activity, 
-  onClick 
-}: { 
-  activity: ActivityItem; 
+function ActivityCircle({
+  activity,
+  onClick
+}: {
+  activity: ActivityItem;
   onClick: () => void;
 }) {
   const size = 52;
@@ -117,12 +117,12 @@ function ActivityCircle({
   const displayName = name.length > 8 ? name.slice(0, 7) + '…' : name;
 
   return (
-    <button 
+    <button
       onClick={onClick}
       className="flex flex-col items-center gap-1 flex-shrink-0"
     >
       <div
-        className="rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500"
+        className="rounded-full p-[2px] bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
         style={{ width: size + 4, height: size + 4 }}
       >
         <div className="rounded-full bg-background p-[2px] w-full h-full">

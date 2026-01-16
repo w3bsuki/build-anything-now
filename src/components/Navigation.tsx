@@ -34,19 +34,19 @@ export function Navigation() {
   const { t } = useTranslation();
   const location = useLocation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  
+
   // Hide entire navigation on presentation, partner, auth, and onboarding pages (immersive experience)
-  if (location.pathname === '/presentation' || 
-      location.pathname === '/partner' ||
-      location.pathname.startsWith('/sign-in') ||
-      location.pathname.startsWith('/sign-up') ||
-      location.pathname.startsWith('/onboarding')) {
+  if (location.pathname === '/presentation' ||
+    location.pathname === '/partner' ||
+    location.pathname.startsWith('/sign-in') ||
+    location.pathname.startsWith('/sign-up') ||
+    location.pathname.startsWith('/onboarding')) {
     return null;
   }
-  
+
   // Show mobile header on main pages
   const showMobileHeader = mobileHeaderPages.includes(location.pathname);
-  
+
   // Hide bottom nav on detail pages and create pages (they have their own action bars)
   const hideBottomNav = location.pathname.includes('/case/') ||
     location.pathname.includes('/campaigns/') ||
@@ -73,13 +73,15 @@ export function Navigation() {
               <NavLink
                 to="/notifications"
                 className={cn(
-                  "relative size-10 flex items-center justify-center rounded-xl",
-                  location.pathname === '/notifications' && "bg-primary/10"
+                  "relative size-11 flex items-center justify-center rounded-xl transition-all duration-200",
+                  location.pathname === '/notifications' 
+                    ? "bg-primary/10" 
+                    : "hover:bg-muted/50 active:bg-muted/70"
                 )}
               >
                 <Bell className={cn(
-                  "size-[22px]",
-                  location.pathname === '/notifications' ? "text-primary" : "text-foreground/70"
+                  "size-[22px] transition-colors duration-200",
+                  location.pathname === '/notifications' ? "text-primary" : "text-foreground/80"
                 )} strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
                   <Badge
@@ -92,13 +94,15 @@ export function Navigation() {
               <NavLink
                 to="/profile"
                 className={cn(
-                  "size-10 flex items-center justify-center rounded-xl",
-                  location.pathname === '/profile' && "bg-primary/10"
+                  "size-11 flex items-center justify-center rounded-xl transition-all duration-200",
+                  location.pathname === '/profile' 
+                    ? "bg-primary/10" 
+                    : "hover:bg-muted/50 active:bg-muted/70"
                 )}
               >
                 <User className={cn(
-                  "size-[22px]",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
+                  "size-[22px] transition-colors duration-200",
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
                 )} strokeWidth={1.75} />
               </NavLink>
             </div>
@@ -123,7 +127,7 @@ export function Navigation() {
               {desktopNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const Icon = item.icon;
-                
+
                 return (
                   <NavLink
                     key={item.path}
@@ -181,7 +185,7 @@ export function Navigation() {
 
       {/* Mobile Bottom Navigation */}
       {!hideBottomNav && (
-        <nav 
+        <nav
           data-tour="navigation"
           className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 pb-[env(safe-area-inset-bottom)]"
         >
@@ -212,12 +216,12 @@ export function Navigation() {
                   to={item.path}
                   className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
                 >
-                  <Icon 
+                  <Icon
                     className={cn(
                       'h-[22px] w-[22px]',
                       isActive ? 'text-primary' : 'text-muted-foreground'
-                    )} 
-                    strokeWidth={1.75} 
+                    )}
+                    strokeWidth={1.75}
                   />
                   <span className={cn(
                     'text-[10px] font-medium',
@@ -241,12 +245,12 @@ export function Navigation() {
               {t('create.title')}
             </DrawerDescription>
           </DrawerHeader>
-          
+
           <div className="px-4 space-y-3">
             <Link
               to="/create-case"
               onClick={() => setIsCreateOpen(false)}
-              className="flex items-center gap-4 p-4 bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors active:scale-[0.98]"
+              className="flex items-center gap-4 p-4 bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors active:opacity-90"
             >
               <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0">
                 <HeartHandshake className="w-6 h-6 text-primary-foreground" />
@@ -256,11 +260,11 @@ export function Navigation() {
                 <p className="text-sm text-muted-foreground">{t('create.reportAnimalDesc')}</p>
               </div>
             </Link>
-            
+
             <Link
               to="/create-adoption"
               onClick={() => setIsCreateOpen(false)}
-              className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl hover:bg-accent/20 transition-colors active:scale-[0.98]"
+              className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl hover:bg-accent/20 transition-colors active:opacity-90"
             >
               <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shrink-0">
                 <Heart className="w-6 h-6 text-accent-foreground" />

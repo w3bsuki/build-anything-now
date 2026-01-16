@@ -20,9 +20,9 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
     <>
       {/* Avatar with badge */}
       <div className="relative">
-        {/* Gradient Ring */}
+        {/* Gradient Ring - warm sunset gradient */}
         <div
-          className="rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500"
+          className="rounded-full p-[2px] bg-gradient-to-tr from-orange-400 via-primary to-rose-400"
           style={{ width: dimensions, height: dimensions }}
         >
           <div className="rounded-full bg-background p-[2px] w-full h-full">
@@ -49,7 +49,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
         {/* Trophy Badge - positioned at bottom right */}
         {count > 0 && (
           <div className="absolute -bottom-0.5 -right-0.5 bg-background rounded-full p-[2px]">
-            <div className="bg-amber-500 text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+            <div className="bg-primary text-primary-foreground text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
               {count}
             </div>
           </div>
