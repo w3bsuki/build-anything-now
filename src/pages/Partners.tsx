@@ -21,7 +21,8 @@ import {
   Home,
   Shield,
   MessageCircle,
-  Share2
+  Share2,
+  Coins
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -247,18 +248,41 @@ const Partners = () => {
           {/* Partner Stats */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
-                <div>
-                  <p className="text-xl font-bold text-primary">{partnerStats?.totalPartners ?? partners.length}</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.partners')}</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">{partnerStats?.totalAnimalsHelped?.toLocaleString() ?? '1,200'}+</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.animalsHelped')}</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">€{partnerStats?.totalContributed?.toLocaleString() ?? '50,000'}+</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.eurContributed')}</p>
+              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
+                <div className="grid grid-cols-3 divide-x divide-border/50">
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
+                      <Handshake className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {partnerStats?.totalPartners ?? partners.length}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.partners')}
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-rose-500/10 mb-2">
+                      <Heart className="w-5 h-5 text-rose-600 dark:text-rose-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {partnerStats?.totalAnimalsHelped?.toLocaleString() ?? '1,200'}+
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.animalsHelped')}
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10 mb-2">
+                      <Coins className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      €{partnerStats?.totalContributed?.toLocaleString() ?? '50,000'}+
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.eurContributed')}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -267,20 +291,23 @@ const Partners = () => {
           {/* Become a Partner */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="bg-muted/50 rounded-xl p-5 text-center">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <Heart className="w-5 h-5 text-primary" />
+              <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-6 text-center">
+                <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+                <div className="relative">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
+                    <Heart className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {t('partners.makeADifference')}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                    {t('partners.joinPartners')}
+                  </p>
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20">
+                    <Handshake className="w-4 h-4 mr-2" />
+                    {t('partners.becomePartner')}
+                  </Button>
                 </div>
-                <h3 className="text-base font-semibold text-foreground mb-1">
-                  {t('partners.makeADifference')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  {t('partners.joinPartners')}
-                </p>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Handshake className="w-4 h-4 mr-2" />
-                  {t('partners.becomePartner')}
-                </Button>
               </div>
             </div>
           </section>
@@ -327,18 +354,41 @@ const Partners = () => {
           {/* Volunteer Stats */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
-                <div>
-                  <p className="text-xl font-bold text-primary">{volunteers.length}</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.volunteers')}</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">{totalAnimalsHelped.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.animalsHelped')}</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">{totalHours.toLocaleString()}+</p>
-                  <p className="text-xs text-muted-foreground">{t('partners.hoursGiven')}</p>
+              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
+                <div className="grid grid-cols-3 divide-x divide-border/50">
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
+                      <HandHeart className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {volunteers.length}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.volunteers')}
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-rose-500/10 mb-2">
+                      <Heart className="w-5 h-5 text-rose-600 dark:text-rose-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {totalAnimalsHelped.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.animalsHelped')}
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {totalHours.toLocaleString()}+
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('partners.hoursGiven')}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -347,20 +397,23 @@ const Partners = () => {
           {/* Become a Volunteer */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="bg-muted/50 rounded-xl p-5 text-center">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <HandHeart className="w-5 h-5 text-primary" />
+              <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-6 text-center">
+                <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+                <div className="relative">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
+                    <HandHeart className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {t('partners.makeADifference')}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                    {t('partners.joinVolunteers')}
+                  </p>
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20">
+                    <HandHeart className="w-4 h-4 mr-2" />
+                    {t('partners.becomeVolunteer')}
+                  </Button>
                 </div>
-                <h3 className="text-base font-semibold text-foreground mb-1">
-                  {t('partners.makeADifference')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  {t('partners.joinVolunteers')}
-                </p>
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <HandHeart className="w-4 h-4 mr-2" />
-                  {t('partners.becomeVolunteer')}
-                </Button>
               </div>
             </div>
           </section>
@@ -373,7 +426,7 @@ const Partners = () => {
           <section className="py-4">
             <div className="container mx-auto px-4">
               {/* Info Banner */}
-              <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-xl p-4 border border-accent/20 mb-4">
+              <div className="bg-linear-to-r from-accent/10 to-primary/10 rounded-xl p-4 border border-accent/20 mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Home className="w-5 h-5 text-accent" />
                   <h3 className="font-semibold text-foreground">{t('community.petSittersTitle')}</h3>
@@ -418,18 +471,41 @@ const Partners = () => {
           {/* Sitter Stats */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="grid grid-cols-3 gap-4 text-center bg-muted/50 rounded-xl py-4">
-                <div>
-                  <p className="text-xl font-bold text-primary">{mockPetSitters.length}</p>
-                  <p className="text-xs text-muted-foreground">{t('community.petSitters')}</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">{mockPetSitters.filter(s => s.verified).length}</p>
-                  <p className="text-xs text-muted-foreground">Verified</p>
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-primary">4.9</p>
-                  <p className="text-xs text-muted-foreground">Avg Rating</p>
+              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
+                <div className="grid grid-cols-3 divide-x divide-border/50">
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
+                      <Home className="w-5 h-5 text-primary" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {mockPetSitters.length}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t('community.petSitters')}
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-success/10 mb-2">
+                      <Shield className="w-5 h-5 text-success" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      {mockPetSitters.filter(s => s.verified).length}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Verified
+                    </p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-warning/10 mb-2">
+                      <Star className="w-5 h-5 text-warning" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground leading-none">
+                      4.9
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Avg Rating
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -438,20 +514,23 @@ const Partners = () => {
           {/* Become a Sitter */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="bg-muted/50 rounded-xl p-5 text-center">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-3">
-                  <Home className="w-5 h-5 text-accent" />
+              <div className="relative overflow-hidden bg-linear-to-br from-accent/10 via-accent/5 to-transparent border border-accent/20 rounded-xl p-6 text-center">
+                <div className="absolute inset-0 bg-grid-white/5 mask-[linear-gradient(0deg,transparent,black)]" />
+                <div className="relative">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 ring-4 ring-accent/5 mx-auto mb-4">
+                    <Home className="w-7 h-7 text-accent" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {t('community.offerSitting')}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                    {t('community.offerSittingDesc')}
+                  </p>
+                  <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
+                    <Home className="w-4 h-4 mr-2" />
+                    {t('community.becomeSitter')}
+                  </Button>
                 </div>
-                <h3 className="text-base font-semibold text-foreground mb-1">
-                  {t('community.offerSitting')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  {t('community.offerSittingDesc')}
-                </p>
-                <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Home className="w-4 h-4 mr-2" />
-                  {t('community.becomeSitter')}
-                </Button>
               </div>
             </div>
           </section>
@@ -467,208 +546,259 @@ interface VolunteerCardProps {
 }
 
 const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
-  <Link
-    to={`/volunteers/${volunteer.id}`}
-    className="bg-card rounded-xl p-4 border border-border hover:border-primary/30 hover:shadow-md transition-all block"
-  >
-    {/* Header */}
-    <div className="flex items-start gap-3 mb-3">
-      <div className="relative">
-        <img
-          src={volunteer.avatar}
-          alt={volunteer.name}
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        {volunteer.isTopVolunteer && (
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center">
-            <Star className="w-3 h-3 text-warning-foreground fill-current" />
+  <Link to={`/volunteers/${volunteer.id}`} className="block group">
+    <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden h-full">
+      {/* Header */}
+      <div className="p-4 pb-3">
+        <div className="flex items-start gap-3">
+          <div className="relative shrink-0">
+            <img
+              src={volunteer.avatar}
+              alt={volunteer.name}
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-border/50"
+            />
+            {volunteer.isTopVolunteer && (
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center ring-2 ring-background">
+                <Star className="w-3 h-3 text-warning-foreground fill-current" />
+              </div>
+            )}
           </div>
-        )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-base text-foreground leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                {volunteer.name}
+              </h3>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: volunteer.name,
+                      text: volunteer.bio,
+                      url: `${window.location.origin}/volunteers/${volunteer.id}`,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(`${window.location.origin}/volunteers/${volunteer.id}`);
+                  }
+                }}
+                className="text-muted-foreground hover:text-primary transition-colors shrink-0 p-1"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+              <Star className="w-3.5 h-3.5 text-warning fill-warning" />
+              <span className="font-medium">{volunteer.rating.toFixed(1)}</span>
+              <span className="mx-0.5">·</span>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{volunteer.memberSince}</span>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+              <MapPin className="w-3.5 h-3.5" />
+              <span>{volunteer.location}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bio */}
+        <p className="text-xs text-muted-foreground mt-3 leading-relaxed line-clamp-2">
+          {volunteer.bio}
+        </p>
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-sm text-foreground truncate">{volunteer.name}</h3>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (navigator.share) {
-                navigator.share({
-                  title: volunteer.name,
-                  text: volunteer.bio,
-                  url: `${window.location.origin}/volunteers/${volunteer.id}`,
-                });
-              } else {
-                navigator.clipboard.writeText(`${window.location.origin}/volunteers/${volunteer.id}`);
-              }
-            }}
-            className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Star className="w-3 h-3 text-warning fill-warning" />
-          <span>{volunteer.rating.toFixed(1)}</span>
-          <span className="mx-1">·</span>
-          <span>Since {volunteer.memberSince}</span>
-        </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-          <MapPin className="w-3 h-3" />
-          <span>{volunteer.location}</span>
+
+      {/* Stats Section */}
+      <div className="px-4 pb-3">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 bg-primary/5 rounded-lg px-3 py-2">
+            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+              <PawPrint className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-foreground leading-none">
+                {volunteer.stats.animalsHelped}
+              </p>
+              <p className="text-xs text-muted-foreground leading-none mt-0.5">
+                Helped
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-rose-500/5 rounded-lg px-3 py-2">
+            <div className="w-7 h-7 rounded-md bg-rose-500/10 flex items-center justify-center shrink-0">
+              <Heart className="w-3.5 h-3.5 text-rose-600 dark:text-rose-500" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-foreground leading-none">
+                {volunteer.stats.adoptions}
+              </p>
+              <p className="text-xs text-muted-foreground leading-none mt-0.5">
+                Adoptions
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Badges Footer */}
+      {volunteer.badges.length > 0 && (
+        <div className="px-4 pb-4 pt-2 border-t border-border/50 bg-muted/20">
+          <div className="flex gap-1.5 flex-wrap">
+            {volunteer.badges.slice(0, 3).map((badge) => (
+              <span
+                key={badge}
+                className="px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full border border-primary/20"
+              >
+                {badge}
+              </span>
+            ))}
+            {volunteer.badges.length > 3 && (
+              <span className="px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-full border border-border">
+                +{volunteer.badges.length - 3}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
-
-    {/* Bio */}
-    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{volunteer.bio}</p>
-
-    {/* Inline Stats Row */}
-    <div className="flex items-center gap-3 mb-3 text-xs">
-      <div className="flex items-center gap-1">
-        <PawPrint className="w-3.5 h-3.5 text-primary" />
-        <span className="font-semibold text-foreground">{volunteer.stats.animalsHelped}</span>
-        <span className="text-muted-foreground">Helped</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <Heart className="w-3.5 h-3.5 text-accent" />
-        <span className="font-semibold text-foreground">{volunteer.stats.adoptions}</span>
-        <span className="text-muted-foreground">Adoptions</span>
-      </div>
-    </div>
-
-    {/* Badges - Mobile: single row with short labels, Desktop: full labels */}
-    {volunteer.badges.length > 0 && (
-      <>
-        {/* Mobile: Short badges in single row */}
-        <div className="flex gap-1 overflow-hidden sm:hidden">
-          {(volunteer.badgesMobile || volunteer.badges).slice(0, 3).map((badge, index) => (
-            <span
-              key={badge}
-              className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full whitespace-nowrap flex-shrink-0"
-            >
-              {badge}
-            </span>
-          ))}
-          {volunteer.badges.length > 3 && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full whitespace-nowrap flex-shrink-0">
-              +{volunteer.badges.length - 3}
-            </span>
-          )}
-        </div>
-        {/* Desktop: Full badges with wrap */}
-        <div className="hidden sm:flex flex-wrap gap-1">
-          {volunteer.badges.slice(0, 3).map((badge) => (
-            <span
-              key={badge}
-              className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
-            >
-              {badge}
-            </span>
-          ))}
-          {volunteer.badges.length > 3 && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full">
-              +{volunteer.badges.length - 3}
-            </span>
-          )}
-        </div>
-      </>
-    )}
   </Link>
 );
 
 // Pet Sitter Card Component
 const PetSitterCard = ({ sitter }: { sitter: typeof mockPetSitters[0] }) => (
-  <div className="bg-card rounded-xl p-4 border border-border hover:border-primary/30 hover:shadow-md transition-all">
-    <div className="flex items-start gap-3 mb-3">
-      <div className="relative">
-        <img
-          src={sitter.avatar}
-          alt={sitter.name}
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        {sitter.verified && (
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-            <Shield className="w-3 h-3 text-primary-foreground" />
+  <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col">
+    {/* Header */}
+    <div className="p-4 pb-3">
+      <div className="flex items-start gap-3">
+        <div className="relative shrink-0">
+          <img
+            src={sitter.avatar}
+            alt={sitter.name}
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-border/50"
+          />
+          {sitter.verified && (
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center ring-2 ring-background">
+              <Shield className="w-3 h-3 text-success-foreground" />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base text-foreground leading-tight line-clamp-1">
+            {sitter.name}
+          </h3>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+            <Star className="w-3.5 h-3.5 text-warning fill-warning" />
+            <span className="font-medium">{sitter.rating.toFixed(1)}</span>
+            <span className="mx-0.5">·</span>
+            <span>{sitter.reviewCount} reviews</span>
           </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm text-foreground truncate">{sitter.name}</h3>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Star className="w-3 h-3 text-warning fill-warning" />
-          <span>{sitter.rating.toFixed(1)}</span>
-          <span className="mx-1">·</span>
-          <span>{sitter.reviewCount} reviews</span>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+            <MapPin className="w-3.5 h-3.5" />
+            <span>{sitter.location}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-          <MapPin className="w-3 h-3" />
-          <span>{sitter.location}</span>
+        <div className="text-right shrink-0">
+          <div className="bg-primary/10 rounded-lg px-2.5 py-1.5">
+            <span className="text-base font-bold text-primary leading-none block">
+              €{sitter.hourlyRate}
+            </span>
+            <p className="text-xs text-muted-foreground leading-none mt-0.5">
+              /hour
+            </p>
+          </div>
         </div>
       </div>
-      <div className="text-right">
-        <span className="text-lg font-bold text-primary">€{sitter.hourlyRate}</span>
-        <p className="text-xs text-muted-foreground">/hour</p>
+
+      {/* Bio */}
+      <p className="text-xs text-muted-foreground mt-3 leading-relaxed line-clamp-2">
+        {sitter.bio}
+      </p>
+    </div>
+
+    {/* Services */}
+    <div className="px-4 pb-3 flex-1">
+      <div className="flex flex-wrap gap-1.5">
+        {sitter.services.map((service) => (
+          <span
+            key={service}
+            className="px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full border border-primary/20"
+          >
+            {service}
+          </span>
+        ))}
       </div>
     </div>
 
-    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{sitter.bio}</p>
-
-    <div className="flex flex-wrap gap-1 mb-3">
-      {sitter.services.map((service) => (
-        <span
-          key={service}
-          className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
-        >
-          {service}
-        </span>
-      ))}
+    {/* Footer */}
+    <div className="p-4 pt-3 border-t border-border/50 bg-muted/20">
+      <Button className="w-full" size="sm">
+        <MessageCircle className="w-4 h-4 mr-2" />
+        Contact
+      </Button>
     </div>
-
-    <Button className="w-full" size="sm">
-      <MessageCircle className="w-4 h-4 mr-2" />
-      Contact
-    </Button>
   </div>
 );
 
 // Skeleton Components
 const VolunteerCardSkeleton = () => (
-  <div className="bg-card rounded-xl p-4 animate-pulse border border-border">
-    <div className="flex items-center gap-3 mb-3">
-      <div className="w-12 h-12 rounded-full bg-muted" />
-      <div className="space-y-1.5 flex-1">
-        <div className="h-4 w-24 bg-muted rounded" />
-        <div className="h-3 w-20 bg-muted rounded" />
-        <div className="h-3 w-16 bg-muted rounded" />
+  <div className="bg-card rounded-xl border border-border/50 overflow-hidden h-full animate-pulse">
+    <div className="p-4 pb-3">
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-full bg-muted shrink-0" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-32 bg-muted rounded" />
+          <div className="h-3 w-24 bg-muted rounded" />
+          <div className="h-3 w-20 bg-muted rounded" />
+        </div>
+        <div className="w-8 h-8 bg-muted rounded" />
+      </div>
+      <div className="mt-3 space-y-1.5">
+        <div className="h-3 w-full bg-muted rounded" />
+        <div className="h-3 w-4/5 bg-muted rounded" />
       </div>
     </div>
-    <div className="h-8 bg-muted rounded mb-3" />
-    <div className="grid grid-cols-3 gap-2">
-      <div className="h-14 bg-muted rounded" />
-      <div className="h-14 bg-muted rounded" />
-      <div className="h-14 bg-muted rounded" />
+    <div className="px-4 pb-3">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="h-16 bg-muted rounded-lg" />
+        <div className="h-16 bg-muted rounded-lg" />
+      </div>
+    </div>
+    <div className="px-4 pb-4 pt-2 border-t border-border/50 bg-muted/20">
+      <div className="flex gap-1.5">
+        <div className="h-7 w-20 bg-muted rounded-full" />
+        <div className="h-7 w-24 bg-muted rounded-full" />
+        <div className="h-7 w-16 bg-muted rounded-full" />
+      </div>
     </div>
   </div>
 );
 
 const PetSitterCardSkeleton = () => (
-  <div className="bg-card rounded-xl p-4 animate-pulse border border-border">
-    <div className="flex items-center gap-3 mb-3">
-      <div className="w-12 h-12 rounded-full bg-muted" />
-      <div className="space-y-1.5 flex-1">
-        <div className="h-4 w-24 bg-muted rounded" />
-        <div className="h-3 w-20 bg-muted rounded" />
-        <div className="h-3 w-16 bg-muted rounded" />
+  <div className="bg-card rounded-xl border border-border/50 overflow-hidden h-full animate-pulse">
+    <div className="p-4 pb-3">
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-full bg-muted shrink-0" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-28 bg-muted rounded" />
+          <div className="h-3 w-24 bg-muted rounded" />
+          <div className="h-3 w-20 bg-muted rounded" />
+        </div>
+        <div className="w-16 h-12 bg-muted rounded-lg" />
       </div>
-      <div className="h-6 w-12 bg-muted rounded" />
+      <div className="mt-3 space-y-1.5">
+        <div className="h-3 w-full bg-muted rounded" />
+        <div className="h-3 w-3/4 bg-muted rounded" />
+      </div>
     </div>
-    <div className="h-10 bg-muted rounded mb-3" />
-    <div className="flex gap-1 mb-3">
-      <div className="h-5 w-16 bg-muted rounded-full" />
-      <div className="h-5 w-20 bg-muted rounded-full" />
+    <div className="px-4 pb-3">
+      <div className="flex gap-1.5">
+        <div className="h-7 w-20 bg-muted rounded-full" />
+        <div className="h-7 w-24 bg-muted rounded-full" />
+        <div className="h-7 w-16 bg-muted rounded-full" />
+      </div>
     </div>
-    <div className="h-8 bg-muted rounded" />
+    <div className="p-4 pt-3 border-t border-border/50 bg-muted/20">
+      <div className="h-8 w-full bg-muted rounded" />
+    </div>
   </div>
 );
 

@@ -24,10 +24,11 @@ interface ClinicCardProps {
 export const ClinicCard = ({ clinic }: ClinicCardProps) => {
   const { t } = useTranslation();
   const clinicId = clinic._id || clinic.id;
-  
+
   // A clinic is truly verified if it has both verified=true AND an owner
   const isVerifiedAndClaimed = clinic.verified && !!clinic.ownerId;
-  
+  const showVerified = clinic.verified || isVerifiedAndClaimed;
+
   // Helper to get translated specialization
   const getSpecializationLabel = (spec: string) => {
     const key = `clinicSpecializations.${spec.toLowerCase().replace(/[\s/]+/g, '')}`;
@@ -41,37 +42,37 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
     const translated = t(key, { defaultValue: '' });
     return translated || getSpecializationLabel(spec);
   };
-  
+
   // Derive hours from is24h if not provided
   const displayHours = clinic.hours || (clinic.is24h ? '24/7' : t('clinics.contactForHours'));
-  
+  const addressLine = `${clinic.address}, ${clinic.city}`;
+
   return (
-    <Card className="relative overflow-hidden hover:shadow-lg transition-shadow">
-      <Link to={`/clinics/${clinicId}`}>
-        <CardContent className="p-4">
-          {/* Header with name and share */}
-          <div className="flex items-start gap-2 mb-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 mb-1">
-                <h3 className="font-semibold text-foreground line-clamp-1">{clinic.name}</h3>
-                {isVerifiedAndClaimed && (
-                  <BadgeCheck className="w-4 h-4 text-white fill-primary flex-shrink-0" />
-                )}
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="line-clamp-1">{clinic.address}, {clinic.city}</span>
-              </div>
+    <Card className="rounded-2xl border-border/60 bg-card shadow-sm transition-shadow hover:shadow-md">
+      <Link to={`/clinics/${clinicId}`} className="block">
+        <CardContent className="p-3">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-1.5">
+              {showVerified && (
+                <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />
+              )}
+              <h3 className="font-semibold text-foreground line-clamp-1">{clinic.name}</h3>
             </div>
-            <ShareButton 
-              title={clinic.name} 
-              text={`${clinic.name} - ${clinic.address}, ${clinic.city}`}
+            <ShareButton
+              title={clinic.name}
+              text={`${clinic.name} - ${addressLine}`}
               url={`${window.location.origin}/clinics/${clinicId}`}
               size="sm"
             />
           </div>
 
-          <div className="space-y-2 mb-3">
+          <div className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="line-clamp-1">{addressLine}</span>
+          </div>
+
+          <div className="mt-2 space-y-1.5">
             <div className="flex items-center gap-2 text-sm">
               <Phone className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
               <span className="text-primary font-medium">{clinic.phone}</span>
@@ -84,12 +85,12 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
 
           {/* Specializations only - 24/7 shown via hours text and toggle filter */}
           {clinic.specializations.length > 0 && (
-            <div className="flex items-start gap-2">
+            <div className="mt-2 flex items-start gap-2">
               <Stethoscope className="w-3.5 h-3.5 text-muted-foreground mt-1 flex-shrink-0" />
               {/* Mobile: Limited to 2 badges + count */}
-              <div className="flex gap-1.5 sm:hidden">
+              <div className="flex gap-1 sm:hidden">
                 {clinic.specializations.slice(0, 2).map((spec) => (
-                  <Badge key={spec} variant="outline" className="text-xs whitespace-nowrap">
+                  <Badge key={spec} variant="outline" className="text-xs whitespace-nowrap border-border/70 bg-background">
                     {getSpecializationLabelMobile(spec)}
                   </Badge>
                 ))}
@@ -100,9 +101,9 @@ export const ClinicCard = ({ clinic }: ClinicCardProps) => {
                 )}
               </div>
               {/* Desktop: Full specializations with wrap */}
-              <div className="hidden sm:flex flex-wrap gap-1.5">
+              <div className="hidden sm:flex flex-wrap gap-1">
                 {clinic.specializations.map((spec) => (
-                  <Badge key={spec} variant="outline" className="text-xs">
+                  <Badge key={spec} variant="outline" className="text-xs border-border/70 bg-background">
                     {getSpecializationLabel(spec)}
                   </Badge>
                 ))}

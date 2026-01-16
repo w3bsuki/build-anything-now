@@ -7,6 +7,7 @@ import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { HomeHeader } from '@/components/homepage/HomeHeader';
 import { HeroCircles } from '@/components/homepage/HeroCircles';
 import { FeedFilter } from '@/components/homepage/FeedFilter';
+import { UrgentCasesStrip } from '@/components/homepage/UrgentCasesStrip';
 import { SearchOverlay } from '@/components/search/SearchOverlay';
 import { cn } from '@/lib/utils';
 
@@ -253,17 +254,23 @@ const Index = () => {
         onSearch={handleSearch}
       />
 
+      {/* Urgent Cases Strip - Campaign-style cards */}
+      <UrgentCasesStrip 
+        cases={caseList as any} 
+        isLoading={isLoading}
+      />
+
       {/* Cases Grid */}
       <section className="py-4">
         <div className="container mx-auto px-4">
           {isLoading ? (
-            <div className="flex flex-col gap-4 max-w-lg mx-auto">
-              {Array.from({ length: 3 }).map((_, i) => (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <CaseCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredCases.length > 0 ? (
-            <div className="flex flex-col gap-4 max-w-lg mx-auto">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
               {filteredCases.map((caseData, index) => (
                 <TwitterCaseCard 
                   key={caseData.id} 

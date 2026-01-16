@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { TwitterCaseCard } from '@/components/homepage/TwitterCaseCard';
+import { CompactCaseCard, CompactCaseCardSkeleton } from '@/components/homepage/CompactCaseCard';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { HomeHeaderV2 } from '@/components/homepage/HomeHeaderV2';
 import { IntentFilterPills, type FilterTab } from '@/components/homepage/IntentFilterPills';
 import { UrgentCasesStrip } from '@/components/homepage/UrgentCasesStrip';
 import { cn } from '@/lib/utils';
+import type { AnimalCase } from '@/types';
+import { Switch } from '@/components/ui/switch';
 
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
@@ -16,9 +19,10 @@ const IndexV2 = () => {
   const { t, i18n } = useTranslation();
   const [intentFilter, setIntentFilter] = useState<FilterTab>('urgent');
   const [searchQuery, setSearchQuery] = useState('');
+  const [layoutMode, setLayoutMode] = useState<'focus' | 'browse'>('focus');
   
   // Pagination state
-  const [allCases, setAllCases] = useState<any[]>([]);
+  const [allCases, setAllCases] = useState<AnimalCase[]>([]);
   const [cursor, setCursor] = useState<number | undefined>(undefined);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -51,18 +55,26 @@ const IndexV2 = () => {
   // Initialize cases from first query
   useEffect(() => {
     if (initialCases && allCases.length === 0) {
-      setAllCases(initialCases.items);
-      setHasMore(initialCases.hasMore);
+      const id = setTimeout(() => {
+        setAllCases(initialCases.items as AnimalCase[]);
+        setHasMore(initialCases.hasMore);
+      }, 0);
+      return () => clearTimeout(id);
     }
+    return undefined;
   }, [initialCases, allCases.length]);
   
   // Append more cases when loaded
   useEffect(() => {
     if (moreCases && isLoadingMore) {
-      setAllCases(prev => [...prev, ...moreCases.items]);
-      setHasMore(moreCases.hasMore);
-      setIsLoadingMore(false);
+      const id = setTimeout(() => {
+        setAllCases(prev => [...prev, ...(moreCases.items as AnimalCase[])]);
+        setHasMore(moreCases.hasMore);
+        setIsLoadingMore(false);
+      }, 0);
+      return () => clearTimeout(id);
     }
+    return undefined;
   }, [moreCases, isLoadingMore]);
   
   const isLoading = initialCases === undefined;
@@ -306,36 +318,89 @@ const IndexV2 = () => {
       <section className="py-4">
         <div className="container mx-auto px-4">
           {/* Section Header */}
-          <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-sm font-semibold text-foreground">
-              {getSectionTitle()}
-            </h2>
-            {!isLoading && intentFilter !== 'following' && (
-              <span className="text-xs text-muted-foreground">
-                ({filteredCases.length})
-              </span>
-            )}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground">
+                {getSectionTitle()}
+              </h2>
+              {!isLoading && intentFilter !== 'following' && (
+                <span className="text-xs text-muted-foreground">
+                  ({filteredCases.length})
+                </span>
+              )}
+            </div>
+            {/* Mobile view toggle */}
+            <div className="flex items-center sm:hidden">
+              <Switch
+                id="cases-grid-toggle"
+                checked={layoutMode === 'browse'}
+                onCheckedChange={(checked) => setLayoutMode(checked ? 'browse' : 'focus')}
+                className="scale-90"
+              />
+            </div>
           </div>
 
           {/* Content */}
           {isLoading ? (
-            <div className="flex flex-col gap-4 max-w-lg mx-auto">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <CaseCardSkeleton key={i} />
-              ))}
-            </div>
+            <>
+              {/* Mobile */}
+              {layoutMode === 'browse' ? (
+                <div className="grid grid-cols-2 gap-3 sm:hidden">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <CompactCaseCardSkeleton key={`compact-skel-${i}`} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4 sm:hidden">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <CaseCardSkeleton key={`full-skel-${i}`} />
+                  ))}
+                </div>
+              )}
+              {/* Desktop list */}
+              <div className="hidden sm:flex sm:flex-col sm:gap-4 sm:max-w-lg sm:mx-auto">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <CaseCardSkeleton key={`full-skel-${i}`} />
+                ))}
+              </div>
+            </>
           ) : intentFilter === 'following' && filteredCases.length === 0 ? (
             renderFollowingEmptyState()
           ) : filteredCases.length > 0 ? (
-            <div className="flex flex-col gap-4 max-w-lg mx-auto">
-              {filteredCases.map((caseData, index) => (
-                <TwitterCaseCard 
-                  key={caseData.id} 
-                  caseData={caseData}
-                  {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
-                />
-              ))}
-            </div>
+            <>
+              {/* Mobile */}
+              {layoutMode === 'browse' ? (
+                <div className="grid grid-cols-2 gap-3 sm:hidden">
+                  {filteredCases.map((caseData, index) => (
+                    <CompactCaseCard 
+                      key={caseData.id}
+                      caseData={caseData}
+                      {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4 sm:hidden">
+                  {filteredCases.map((caseData, index) => (
+                    <TwitterCaseCard 
+                      key={caseData.id} 
+                      caseData={caseData}
+                      {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
+                    />
+                  ))}
+                </div>
+              )}
+              {/* Desktop list */}
+              <div className="hidden sm:flex sm:flex-col sm:gap-4 sm:max-w-lg sm:mx-auto">
+                {filteredCases.map((caseData, index) => (
+                  <TwitterCaseCard 
+                    key={caseData.id} 
+                    caseData={caseData}
+                    {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
+                  />
+                ))}
+              </div>
+            </>
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-sm">
