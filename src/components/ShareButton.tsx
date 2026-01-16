@@ -16,14 +16,21 @@ interface ShareButtonProps {
   className?: string;
   variant?: 'icon' | 'button';
   size?: 'default' | 'sm';
+  /** Visual style: 'default' for standard, 'overlay' for use on images with dark backgrounds */
+  appearance?: 'default' | 'overlay';
 }
 
-export function ShareButton({ title, text, url, className, variant = 'icon', size = 'default' }: ShareButtonProps) {
+export function ShareButton({ title, text, url, className, variant = 'icon', size = 'default', appearance = 'default' }: ShareButtonProps) {
   const shareUrl = url || window.location.href;
   const shareText = text || title;
 
-  const buttonSize = size === 'sm' ? 'w-7 h-7' : 'w-9 h-9';
+  const buttonSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
   const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
+
+  // Appearance-based styles
+  const appearanceStyles = appearance === 'overlay'
+    ? 'bg-black/40 backdrop-blur-md text-white hover:bg-black/60 active:bg-black/70 shadow-lg ring-1 ring-white/20'
+    : 'bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 ring-1 ring-primary/20';
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -68,12 +75,13 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
       <button
         onClick={handleNativeShare}
         className={cn(
-          `${buttonSize} rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors`,
+          `${buttonSize} rounded-full flex items-center justify-center transition-all duration-200`,
+          appearanceStyles,
           className
         )}
         aria-label="Share"
       >
-        <Share2 className={cn(iconSize, 'text-foreground/70')} />
+        <Share2 className={iconSize} />
       </button>
     );
   }
@@ -84,16 +92,17 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
         {variant === 'icon' ? (
           <button
             className={cn(
-              `${buttonSize} rounded-full hover:bg-muted/60 active:bg-muted flex items-center justify-center transition-colors`,
+              `${buttonSize} rounded-full flex items-center justify-center transition-all duration-200`,
+              appearanceStyles,
               className
             )}
             aria-label="Share"
           >
-            <Share2 className={cn(iconSize, 'text-foreground/70')} />
+            <Share2 className={iconSize} />
           </button>
         ) : (
-          <Button variant="outline" size="sm" className={className}>
-            <Share2 className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" className={cn("gap-2", className)}>
+            <Share2 className="w-4 h-4" />
             Share
           </Button>
         )}

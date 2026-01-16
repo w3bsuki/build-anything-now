@@ -23,6 +23,21 @@ function getSupporterCount(id: string): number {
   return Math.abs(hash % 35) + 8; // 8-42 supporters
 }
 
+function formatTimeAgo(dateString: string): string {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  return `${Math.floor(diffDays / 30)}mo ago`;
+}
+
 // Status config using design tokens
 const statusConfig = {
   critical: { 
@@ -51,7 +66,8 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
   const supporterCount = useMemo(() => getSupporterCount(caseData.id), [caseData.id]);
   const status = statusConfig[caseData.status];
-  const isUrgent = caseData.status === 'critical' || caseData.status === 'urgent';
+  const isCritical = caseData.status === 'critical';
+  const timeAgo = formatTimeAgo(caseData.createdAt);
   
   return (
     <article
@@ -67,6 +83,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           text={caseData.description}
           url={`${window.location.origin}/case/${caseData.id}`}
           size="sm"
+          appearance="overlay"
         />
       </div>
 
@@ -110,7 +127,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
               size="sm" 
               className={cn(
                 "shadow-sm backdrop-blur-md",
-                isUrgent && "animate-pulse"
+                isCritical && "relative after:content-[''] after:absolute after:-right-1 after:top-1/2 after:-translate-y-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-destructive-foreground/90 after:animate-pulse"
               )} 
             />
           </div>
@@ -159,6 +176,8 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-1.5">
             <MapPin className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate font-medium">{caseData.location.city}, {caseData.location.neighborhood}</span>
+            <span className="text-muted-foreground/60">•</span>
+            <span className="shrink-0">{timeAgo}</span>
           </div>
         </div>
       </Link>
@@ -174,7 +193,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
         >
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
             <Heart className="w-4 h-4 mr-1.5 fill-current" />
-            {isUrgent ? t('actions.donateNow') || 'Donate Now' : t('actions.donate')}
+            {(isCritical || caseData.status === 'urgent') ? t('actions.donateNow') || 'Donate Now' : t('actions.donate')}
           </Link>
         </Button>
       </div>

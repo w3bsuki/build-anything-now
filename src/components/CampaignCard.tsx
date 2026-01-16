@@ -52,6 +52,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
           text={campaign.description}
           url={`${window.location.origin}/campaigns/${campaign.id}`}
           size="sm"
+          appearance="overlay"
         />
       </div>
 
