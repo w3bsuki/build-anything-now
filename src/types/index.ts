@@ -21,6 +21,11 @@ export interface AnimalCase {
   };
   updates: CaseUpdate[];
   createdAt: string;
+  author?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  } | null;
 }
 
 export interface CaseUpdate {

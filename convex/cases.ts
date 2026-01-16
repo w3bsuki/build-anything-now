@@ -163,6 +163,14 @@ export const listUiForLocalePaginated = query({
                 const targetLocale = normalizeLocale(locale);
                 const translationStatus = c.translationStatus?.[targetLocale]?.status ?? null;
 
+                // Fetch author info
+                const author = await ctx.db.get(c.userId);
+                const authorInfo = author ? {
+                    id: author._id,
+                    name: author.displayName || author.name,
+                    avatar: author.avatar,
+                } : null;
+
                 return {
                     id: c._id,
                     title: localized.title,
@@ -185,6 +193,7 @@ export const listUiForLocalePaginated = query({
                     translatedFrom: localized.translatedFrom ?? null,
                     originalLanguage: normalizeLocale(c.language ?? "") || null,
                     translationStatus,
+                    author: authorInfo,
                 };
             })
         );

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MapPin, PawPrint, Clock, ChevronRight } from 'lucide-react';
+import { Heart, MapPin, PawPrint, ChevronRight } from 'lucide-react';
 import { AnimalCase } from '@/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -93,6 +93,11 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
   const status = statusConfig[caseData.status];
   const isUrgent = caseData.status === 'critical' || caseData.status === 'urgent';
 
+  // Get author initials for avatar fallback
+  const authorInitials = caseData.author?.name
+    ? caseData.author.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : 'U';
+
   return (
     <article
       className={cn(
@@ -100,6 +105,40 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
         className
       )}
     >
+      {/* Poster Header - Instagram style */}
+      <div className="flex items-center gap-3 p-3 border-b border-border/30">
+        <Avatar className="h-9 w-9 ring-2 ring-primary/20">
+          <AvatarImage 
+            src={caseData.author?.avatar} 
+            alt={caseData.author?.name || 'User'} 
+          />
+          <AvatarFallback className="text-xs font-semibold bg-muted">
+            {authorInitials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-sm text-foreground truncate">
+              {caseData.author?.name || 'Anonymous'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3 shrink-0" />
+            <span className="truncate">{caseData.location.city}</span>
+            <span className="text-muted-foreground/60">•</span>
+            <span>{timeAgo}</span>
+          </div>
+        </div>
+        <div onClick={e => e.preventDefault()}>
+          <ShareButton
+            title={caseData.title}
+            text={caseData.description}
+            url={`${window.location.origin}/case/${caseData.id}`}
+            size="sm"
+          />
+        </div>
+      </div>
+
       <Link to={`/case/${caseData.id}`} className="block">
         {/* Compact Image - 16:9 ratio for cleaner look */}
         <div className="relative aspect-video overflow-hidden bg-muted">
@@ -141,33 +180,10 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
               {status.label}
             </span>
           </div>
-
-          {/* Share button - top right */}
-          <div className="absolute top-2.5 right-2.5" onClick={e => e.preventDefault()}>
-            <ShareButton
-              title={caseData.title}
-              text={caseData.description}
-              url={`${window.location.origin}/case/${caseData.id}`}
-              size="sm"
-            />
-          </div>
         </div>
 
         {/* Content Area */}
         <div className="p-3.5">
-          {/* Meta row: time + location */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {timeAgo}
-            </span>
-            <span className="text-muted-foreground/40">•</span>
-            <span className="flex items-center gap-1 truncate">
-              <MapPin className="w-3 h-3 shrink-0" />
-              <span className="truncate">{caseData.location.city}</span>
-            </span>
-          </div>
-
           {/* Title */}
           <h3 className="font-semibold text-[15px] text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors mb-1.5">
             {caseData.title}
@@ -240,12 +256,16 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
 export function TwitterCaseCardSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn('bg-card rounded-xl overflow-hidden border border-border/50', className)}>
+      {/* Poster Header Skeleton */}
+      <div className="flex items-center gap-3 p-3 border-b border-border/30">
+        <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />
+        <div className="flex-1">
+          <div className="h-4 w-24 bg-muted rounded animate-pulse mb-1" />
+          <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+        </div>
+      </div>
       <div className="aspect-video bg-muted animate-pulse" />
       <div className="p-3.5">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="h-3 w-12 bg-muted rounded animate-pulse" />
-          <div className="h-3 w-20 bg-muted rounded animate-pulse" />
-        </div>
         <div className="h-5 w-3/4 bg-muted rounded animate-pulse mb-1.5" />
         <div className="h-4 w-full bg-muted rounded animate-pulse mb-1" />
         <div className="h-4 w-2/3 bg-muted rounded animate-pulse mb-3" />
