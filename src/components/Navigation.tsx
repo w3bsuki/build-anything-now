@@ -1,37 +1,34 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Megaphone, Users, User, Stethoscope, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake } from 'lucide-react';
+import { Home, Megaphone, Users, User, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { CommunityBottomNav } from './CommunityBottomNav';
 
-// Bottom nav: Home, Campaigns, + (Create), Clinics, Partners
+// Bottom nav: Home, Campaigns, Create (center), Community, Partners
 const navItems = [
   { path: '/', labelKey: 'nav.home', icon: Home },
   { path: '/campaigns', labelKey: 'nav.campaigns', icon: Megaphone },
-  { path: 'create', labelKey: 'nav.create', icon: Plus, isCreate: true }, // Special create button
-  { path: '/clinics', labelKey: 'nav.clinics', icon: Stethoscope },
+  { path: 'create', labelKey: 'actions.create', icon: Plus, isCreate: true },
+  { path: '/community', labelKey: 'nav.community', icon: MessageCircle },
   { path: '/partners', labelKey: 'nav.partners', icon: Handshake },
 ];
 
 const desktopNavItems = [
   { path: '/', labelKey: 'nav.home', icon: Home },
   { path: '/campaigns', labelKey: 'nav.campaigns', icon: Megaphone },
-  { path: '/clinics', labelKey: 'nav.clinics', icon: Stethoscope },
+  { path: '/community', labelKey: 'nav.community', icon: MessageCircle },
   { path: '/partners', labelKey: 'nav.partners', icon: Handshake },
 ];
 
 // TODO: Replace with real data from Convex
 const unreadNotifications = 2;
-const unreadPosts = 5; // New community posts
 
-// Pages that show the mobile header (root/main pages only)
-// Empty since all main tabs now have their own contextual headers
-const mobileHeaderPages: string[] = [];
+// Pages that show the mobile header
+const mobileHeaderPages = ['/', '/campaigns', '/community', '/partners', '/profile'];
 
 export function Navigation() {
   const { t } = useTranslation();
@@ -47,63 +44,43 @@ export function Navigation() {
     return null;
   }
   
-  // Only show mobile header on main pages, not detail pages or sub-pages
+  // Show mobile header on main pages
   const showMobileHeader = mobileHeaderPages.includes(location.pathname);
   
-  // Check if we're in community section (for contextual nav)
-  const isCommunitySection = location.pathname === '/community' || location.pathname.startsWith('/community/');
-  
   // Hide bottom nav on detail pages and create pages (they have their own action bars)
-  // Also hide when in community section (community has its own nav)
   const hideBottomNav = location.pathname.includes('/case/') ||
     location.pathname.includes('/campaigns/') ||
     location.pathname.includes('/clinics/') ||
     location.pathname.includes('/partners/') ||
-    isCommunitySection ||
     ['/create-case', '/create-adoption', '/donations', '/history', '/achievements', '/payment', '/notifications', '/settings'].includes(location.pathname);
 
   return (
     <>
-      {/* Mobile Top Header - only on root pages */}
+      {/* Mobile Top Header */}
       {showMobileHeader && (
-        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-lg border-b border-border/40 pt-[env(safe-area-inset-top)]">
-          <div className="flex items-center justify-between h-14 px-4 pt-1.5">
+        <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md pt-[env(safe-area-inset-top)]">
+          <div className="flex items-center justify-between h-14 px-4">
             {/* Logo */}
-            <NavLink to="/" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/10">
-                <HeartHandshake className="w-5 h-5 text-primary" />
+            <NavLink to="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-primary/10">
+                <HeartHandshake className="w-[18px] h-[18px] text-primary" />
               </div>
               <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
             </NavLink>
 
-            {/* Actions - Community, Notifications, Profile */}
+            {/* Actions - Notifications + Profile */}
             <div className="flex items-center gap-1">
               <NavLink
-                to="/community"
-                className={cn(
-                  "relative",
-                  buttonVariants({ variant: "iconHeader", size: "icon" }),
-                  location.pathname === '/community' && "bg-primary/10 text-primary"
-                )}
-              >
-                <MessageCircle className={cn(
-                  "size-[22px]",
-                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/80"
-                )} strokeWidth={1.75} />
-                {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <Badge
-                    variant="secondary"
-                    className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
-                  >
-                    {unreadPosts > 9 ? '9+' : unreadPosts}
-                  </Badge>
-                )}
-              </NavLink>
-              <NavLink
                 to="/notifications"
-                className={cn("relative", buttonVariants({ variant: "iconHeader", size: "icon" }))}
+                className={cn(
+                  "relative size-10 flex items-center justify-center rounded-xl",
+                  location.pathname === '/notifications' && "bg-primary/10"
+                )}
               >
-                <Bell className="size-[22px] text-foreground/80" strokeWidth={1.75} />
+                <Bell className={cn(
+                  "size-[22px]",
+                  location.pathname === '/notifications' ? "text-primary" : "text-foreground/70"
+                )} strokeWidth={1.75} />
                 {unreadNotifications > 0 && (
                   <Badge
                     className="absolute -top-0.5 -right-0.5 h-4 min-w-4 justify-center rounded-full px-1 text-[10px] font-semibold shadow-sm ring-2 ring-background"
@@ -114,15 +91,14 @@ export function Navigation() {
               </NavLink>
               <NavLink
                 to="/profile"
-                data-tour="profile-menu"
                 className={cn(
-                  buttonVariants({ variant: "iconHeader", size: "icon" }),
-                  location.pathname === '/profile' && "bg-primary/10 text-primary"
+                  "size-10 flex items-center justify-center rounded-xl",
+                  location.pathname === '/profile' && "bg-primary/10"
                 )}
               >
                 <User className={cn(
                   "size-[22px]",
-                  location.pathname === '/profile' ? "text-primary" : "text-foreground/80"
+                  location.pathname === '/profile' ? "text-primary" : "text-foreground/70"
                 )} strokeWidth={1.75} />
               </NavLink>
             </div>
@@ -166,7 +142,7 @@ export function Navigation() {
               })}
             </div>
 
-            {/* Right Actions - Create button, Community, notifications, profile */}
+            {/* Right Actions - Create button, notifications, profile */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setIsCreateOpen(true)}
@@ -175,23 +151,6 @@ export function Navigation() {
                 <Plus className="size-4" strokeWidth={2.5} />
                 <span>{t('actions.create')}</span>
               </button>
-              <NavLink
-                to="/community"
-                className={cn(
-                  "relative size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors",
-                  location.pathname === '/community' && "bg-primary/10"
-                )}
-              >
-                <MessageCircle className={cn(
-                  "size-5",
-                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-foreground/70"
-                )} />
-                {unreadPosts > 0 && location.pathname !== '/community' && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center shadow-sm">
-                    {unreadPosts > 9 ? '9+' : unreadPosts}
-                  </span>
-                )}
-              </NavLink>
               <NavLink
                 to="/notifications"
                 className="relative size-9 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
@@ -224,45 +183,51 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav 
           data-tour="navigation"
-          className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 pb-[env(safe-area-inset-bottom)]"
         >
-          <div className="mx-auto w-full max-w-md px-4 pb-2">
-            <div className="grid grid-cols-5 items-center rounded-2xl bg-card px-2 py-1.5 shadow-xl">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                const Icon = item.icon;
+          <div className="flex items-center justify-around h-14 px-2">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+              const isCreateButton = 'isCreate' in item && item.isCreate;
 
-                // Special handling for center Create button
-                if (item.isCreate) {
-                  return (
-                    <button
-                      key="create"
-                      onClick={() => setIsCreateOpen(true)}
-                      className="flex flex-col items-center justify-center"
-                      aria-label={t(item.labelKey)}
-                    >
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
-                        <Plus className="h-5 w-5" strokeWidth={2.5} />
-                      </div>
-                    </button>
-                  );
-                }
-
+              // Special handling for center create button
+              if (isCreateButton) {
                 return (
-                  <NavLink
+                  <button
                     key={item.path}
-                    to={item.path}
-                    className={cn(
-                      'flex flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-medium text-muted-foreground transition-colors active:bg-muted/60',
-                      isActive && 'bg-primary/10 text-primary'
-                    )}
+                    onClick={() => setIsCreateOpen(true)}
+                    className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
                   >
-                    <Icon className={cn('h-5 w-5', isActive && 'text-primary')} strokeWidth={1.9} />
-                    <span className="leading-none">{t(item.labelKey)}</span>
-                  </NavLink>
+                    <div className="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground -mt-3 shadow-lg">
+                      <Icon className="size-5" strokeWidth={2.5} />
+                    </div>
+                  </button>
                 );
-              })}
-            </div>
+              }
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
+                >
+                  <Icon 
+                    className={cn(
+                      'h-[22px] w-[22px]',
+                      isActive ? 'text-primary' : 'text-muted-foreground'
+                    )} 
+                    strokeWidth={1.75} 
+                  />
+                  <span className={cn(
+                    'text-[10px] font-medium',
+                    isActive ? 'text-primary' : 'text-muted-foreground'
+                  )}>
+                    {t(item.labelKey)}
+                  </span>
+                </NavLink>
+              );
+            })}
           </div>
         </nav>
       )}
@@ -316,9 +281,6 @@ export function Navigation() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-
-      {/* Community Contextual Navigation */}
-      {isCommunitySection && <CommunityBottomNav />}
     </>
   );
 }

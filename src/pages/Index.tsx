@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
-import { CaseCard } from '@/components/CaseCard';
+import { Loader2, RefreshCw } from 'lucide-react';
 import { InstagramCaseCard } from '@/components/homepage/InstagramCaseCard';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { HomeHeader } from '@/components/homepage/HomeHeader';
 import { HeroCircles } from '@/components/homepage/HeroCircles';
-import { SegmentedFilter } from '@/components/homepage/SegmentedFilter';
+import { FeedFilter } from '@/components/homepage/FeedFilter';
 import { SearchOverlay } from '@/components/search/SearchOverlay';
+import { cn } from '@/lib/utils';
 
 import { api } from '../../convex/_generated/api';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const Index = () => {
   const { t, i18n } = useTranslation();
@@ -19,12 +19,59 @@ const Index = () => {
   const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination state
+  const [allCases, setAllCases] = useState<any[]>([]);
+  const [cursor, setCursor] = useState<number | undefined>(undefined);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  // Pull to refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pullStartY = useRef<number | null>(null);
 
-  const cases = useQuery(api.cases.listUiForLocale, { locale: i18n.language });
+  // Initial page of cases
+  const initialCases = useQuery(api.cases.listUiForLocalePaginated, { 
+    locale: i18n.language,
+    limit: 10,
+  });
+  
+  // Load more cases (only when cursor is set)
+  const moreCases = useQuery(
+    api.cases.listUiForLocalePaginated,
+    cursor ? { locale: i18n.language, limit: 10, cursor } : "skip"
+  );
+  
+  // Social stats for all visible cases
+  const caseIds = allCases.map(c => c.id as Id<"cases">);
+  const socialStats = useQuery(
+    api.social.getSocialStats,
+    caseIds.length > 0 ? { caseIds } : "skip"
+  );
+  
   const topHeroesRaw = useQuery(api.users.getTopHeroes, { limit: 10 });
   
-  const isLoading = cases === undefined;
-  const caseList = cases ?? [];
+  // Initialize cases from first query
+  useEffect(() => {
+    if (initialCases && allCases.length === 0) {
+      setAllCases(initialCases.items);
+      setHasMore(initialCases.hasMore);
+    }
+  }, [initialCases, allCases.length]);
+  
+  // Append more cases when loaded
+  useEffect(() => {
+    if (moreCases && isLoadingMore) {
+      setAllCases(prev => [...prev, ...moreCases.items]);
+      setHasMore(moreCases.hasMore);
+      setIsLoadingMore(false);
+    }
+  }, [moreCases, isLoadingMore]);
+  
+  const isLoading = initialCases === undefined;
+  const caseList = allCases;
   
   // Transform heroes to match expected shape
   const topHeroes = (topHeroesRaw ?? []).map((h: any) => ({
@@ -34,46 +81,140 @@ const Index = () => {
     animalsHelped: h?.animalsHelped ?? 0,
   }));
 
-  // Filter options - mobile-first: 4 tabs that fit
-  const filterOptions = [
-    { id: 'all', label: t('status.all') },
-    { id: 'urgent', label: t('status.urgent'), icon: '🆘' },
-    { id: 'adopted', label: t('status.adopted'), icon: '🏠' },
-    { id: 'nearby', label: '', icon: '📍' }, // Icon-only for space
-  ];
+  // Priority order for smart sorting (critical/urgent first)
+  const priorityOrder: Record<string, number> = {
+    'critical': 0,
+    'urgent': 1,
+    'recovering': 2,
+    'adopted': 3,
+  };
 
-  const filteredCases = caseList.filter((c) => {
-    // Filter by status - "urgent" shows both urgent AND critical
-    if (statusFilter === 'urgent' && c.status !== 'urgent' && c.status !== 'critical') return false;
-    if (statusFilter === 'adopted' && c.status !== 'adopted') return false;
-    // Filter by nearby - would need geolocation (placeholder for now)
-    if (statusFilter === 'nearby') {
-      // TODO: implement actual geolocation filtering
-      return true; // Show all for now
-    }
-    // Filter by search query (basic)
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        c.title.toLowerCase().includes(query) ||
-        c.description.toLowerCase().includes(query) ||
-        c.location?.city?.toLowerCase().includes(query)
-      );
-    }
-    return true;
-  });
-
-  const urgentCases = filteredCases.filter(c => c.status === 'urgent' || c.status === 'critical');
-  const otherCases = filteredCases.filter(c => c.status !== 'urgent' && c.status !== 'critical');
+  // Filter cases based on selected filter
+  const filteredCases = caseList
+    .filter((c) => {
+      // Filter by status - "urgent" shows both urgent AND critical
+      if (statusFilter === 'urgent' && c.status !== 'urgent' && c.status !== 'critical') return false;
+      if (statusFilter === 'adopted' && c.status !== 'adopted') return false;
+      // Filter by nearby - would need geolocation (placeholder for now)
+      if (statusFilter === 'nearby') {
+        // TODO: implement actual geolocation filtering
+        return true; // Show all for now
+      }
+      // Filter by search query (basic)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          c.title.toLowerCase().includes(query) ||
+          c.description.toLowerCase().includes(query) ||
+          c.location?.city?.toLowerCase().includes(query)
+        );
+      }
+      return true;
+    })
+    // Smart sort: critical/urgent first, then by date
+    .sort((a, b) => {
+      const priorityA = priorityOrder[a.status] ?? 99;
+      const priorityB = priorityOrder[b.status] ?? 99;
+      if (priorityA !== priorityB) return priorityA - priorityB;
+      // Same priority - sort by date (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
+  
+  // Load more handler for infinite scroll
+  const loadMore = useCallback(() => {
+    if (hasMore && !isLoadingMore && allCases.length > 0) {
+      const lastCase = allCases[allCases.length - 1];
+      if (lastCase) {
+        setIsLoadingMore(true);
+        setCursor(new Date(lastCase.createdAt).getTime());
+      }
+    }
+  }, [hasMore, isLoadingMore, allCases]);
+  
+  // Intersection observer for infinite scroll
+  const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, isLoadingMore]);
+  
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (containerRef.current?.scrollTop === 0) {
+      pullStartY.current = e.touches[0].clientY;
+    }
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (pullStartY.current === null) return;
+    
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - pullStartY.current;
+    
+    if (distance > 0 && containerRef.current?.scrollTop === 0) {
+      setPullDistance(Math.min(distance * 0.5, 80));
+    }
+  };
+  
+  const handleTouchEnd = async () => {
+    if (pullDistance > 60 && !isRefreshing) {
+      setIsRefreshing(true);
+      
+      // Reset and refetch
+      setAllCases([]);
+      setCursor(undefined);
+      setHasMore(true);
+      
+      // Wait for initial query to refresh
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsRefreshing(false);
+    }
+    
+    pullStartY.current = null;
+    setPullDistance(0);
+  };
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Mobile Header with Search Icon */}
-      <HomeHeader onSearchClick={() => setSearchOpen(true)} />
+    <div 
+      ref={containerRef}
+      className="min-h-screen pb-24 md:pb-8 md:pt-16"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to Refresh Indicator */}
+      <div 
+        className={cn(
+          "fixed top-0 left-0 right-0 flex items-center justify-center z-50 bg-background transition-all duration-200 md:hidden",
+          pullDistance > 0 ? "opacity-100" : "opacity-0"
+        )}
+        style={{ height: pullDistance, paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <RefreshCw 
+          className={cn(
+            "w-5 h-5 text-primary transition-transform",
+            isRefreshing && "animate-spin",
+            pullDistance > 60 && "text-primary scale-110"
+          )} 
+        />
+      </div>
+      
+      {/* Mobile Header */}
+      <HomeHeader />
 
       {/* Story Circles - Social element */}
       <div className="md:hidden">
@@ -83,28 +224,24 @@ const Index = () => {
         />
       </div>
 
-      {/* Segmented Filter - Mobile - Sticky under header */}
-      <div className="md:hidden sticky top-[calc(3rem+env(safe-area-inset-top))] z-40 bg-background">
-        <SegmentedFilter 
-          options={filterOptions} 
+      {/* Feed Filter Dropdown - Mobile */}
+      <div className="md:hidden">
+        <FeedFilter 
           selected={statusFilter} 
           onSelect={setStatusFilter}
-          className="px-3"
         />
       </div>
 
-      {/* Desktop Header with Circles + Filters */}
+      {/* Desktop Header with Circles + Filter */}
       <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 border-b border-border/50">
         <div className="container mx-auto px-4">
           <HeroCircles 
             heroes={topHeroes} 
             isLoading={topHeroesRaw === undefined} 
           />
-          <SegmentedFilter 
-            options={filterOptions} 
+          <FeedFilter 
             selected={statusFilter} 
             onSelect={setStatusFilter}
-            className="px-0"
           />
         </div>
       </div>
@@ -116,64 +253,51 @@ const Index = () => {
         onSearch={handleSearch}
       />
 
-      {/* Urgent Cases Section */}
-      {(isLoading || urgentCases.length > 0) && (
-        <section className="pb-2" data-tour="urgent-cases">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-urgent" />
-              <h2 className="text-sm font-semibold text-foreground">{t('home.urgentCases')}</h2>
-              {!isLoading && <span className="text-xs text-muted-foreground">({urgentCases.length})</span>}
-            </div>
-          </div>
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
-              {isLoading ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="w-64 flex-shrink-0">
-                    <CaseCardSkeleton />
-                  </div>
-                ))
-              ) : (
-                urgentCases.map((caseData, index) => (
-                  <div 
-                    key={caseData.id} 
-                    className="w-64 flex-shrink-0"
-                    {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
-                  >
-                    <CaseCard caseData={caseData} />
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All/Other Cases Section - Instagram Style Feed */}
-      <section className="pb-4">
+      {/* Cases Grid */}
+      <section className="py-4">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              {urgentCases.length > 0 ? t('home.otherCases') : t('home.allCases')}
-            </h2>
-            {!isLoading && <span className="text-xs text-muted-foreground">({otherCases.length})</span>}
-          </div>
           {isLoading ? (
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 4 }).map((_, i) => (
+            <div className="flex flex-col gap-4 max-w-lg mx-auto">
+              {Array.from({ length: 3 }).map((_, i) => (
                 <CaseCardSkeleton key={i} />
               ))}
             </div>
-          ) : otherCases.length > 0 ? (
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {otherCases.map((caseData) => (
-                <InstagramCaseCard key={caseData.id} caseData={caseData} />
+          ) : filteredCases.length > 0 ? (
+            <div className="flex flex-col gap-4 max-w-lg mx-auto">
+              {filteredCases.map((caseData, index) => (
+                <InstagramCaseCard 
+                  key={caseData.id} 
+                  caseData={caseData}
+                  socialStats={socialStats?.[caseData.id as Id<"cases">]}
+                  {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
+                />
               ))}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">
               {t('home.noMatches')}
+            </div>
+          )}
+          
+          {/* Infinite Scroll Trigger */}
+          {hasMore && !isLoading && filteredCases.length > 0 && (
+            <div 
+              ref={loadMoreRef}
+              className="flex justify-center py-8"
+            >
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Loading more...</span>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* End of list indicator */}
+          {!hasMore && filteredCases.length > 0 && (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              You've seen all cases 🎉
             </div>
           )}
         </div>

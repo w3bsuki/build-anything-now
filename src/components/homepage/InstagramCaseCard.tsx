@@ -1,7 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, MessageCircle, Share2, MoreHorizontal, MapPin, Users } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { useMutation, useQuery } from 'convex/react';
 import { AnimalCase } from '@/types';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -14,10 +16,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
+import { api } from '../../../convex/_generated/api';
+import { Id } from '../../../convex/_generated/dataModel';
+import { CommentsSheet } from './CommentsSheet';
 
 interface InstagramCaseCardProps {
   caseData: AnimalCase;
   className?: string;
+  socialStats?: {
+    likeCount: number;
+    commentCount: number;
+    liked: boolean;
+  };
 }
 
 // Generate deterministic counts based on case ID
@@ -76,29 +86,76 @@ function getAnimalName(title: string): string {
   return 'them';
 }
 
-export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProps) {
+export function InstagramCaseCard({ caseData, className, socialStats }: InstagramCaseCardProps) {
   const { t } = useTranslation();
   
-  // Memoize counts based on case ID for consistency
-  const initialLikeCount = useMemo(() => getLikeCount(caseData.id), [caseData.id]);
-  const helpersCount = useMemo(() => getHelpersCount(caseData.id), [caseData.id]);
-  const commentCount = useMemo(() => getCommentCount(caseData.id), [caseData.id]);
+  // Embla carousel for swipeable images
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
+  // Convex ID for social features
+  const caseId = caseData.id as Id<"cases">;
+  
+  // Fallback to deterministic counts if no social stats provided
+  const fallbackLikeCount = useMemo(() => getLikeCount(caseData.id), [caseData.id]);
+  const fallbackCommentCount = useMemo(() => getCommentCount(caseData.id), [caseData.id]);
+  const helpersCount = useMemo(() => getHelpersCount(caseData.id), [caseData.id]);
+  
+  // Use real stats if available, otherwise fallback
+  const [optimisticLiked, setOptimisticLiked] = useState(socialStats?.liked ?? false);
+  const [optimisticLikeCount, setOptimisticLikeCount] = useState(
+    socialStats?.likeCount ?? fallbackLikeCount
+  );
+  const commentCount = socialStats?.commentCount ?? fallbackCommentCount;
+  
+  // Convex mutations
+  const toggleLike = useMutation(api.social.toggleLike);
+  
+  // Track carousel slide changes
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCurrentSlide(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+  
+  // Subscribe to carousel events
+  useMemo(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', onSelect);
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi, onSelect]);
   
   const timeAgo = getTimeAgo(caseData.createdAt);
   const animalName = getAnimalName(caseData.title);
+  const hasMultipleImages = caseData.images.length > 1;
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    
+    // Optimistic update
+    const wasLiked = optimisticLiked;
+    setOptimisticLiked(!wasLiked);
+    setOptimisticLikeCount(prev => wasLiked ? prev - 1 : prev + 1);
     
     // Haptic feedback if available
     if (navigator.vibrate) {
       navigator.vibrate(10);
+    }
+    
+    try {
+      await toggleLike({ caseId });
+    } catch (error) {
+      // Revert on error
+      setOptimisticLiked(wasLiked);
+      setOptimisticLikeCount(prev => wasLiked ? prev + 1 : prev - 1);
+      toast({
+        title: 'Error',
+        description: 'Please sign in to like cases',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -130,8 +187,7 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
   const handleComment = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Navigate to case detail with comments section focused
-    window.location.href = `/case/${caseData.id}#comments`;
+    setCommentsOpen(true);
   };
 
   return (
@@ -142,11 +198,11 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
       )}
     >
       {/* User Header - Instagram style */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
           {/* Avatar placeholder - would be real user avatar */}
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-            <span className="text-xs font-semibold text-primary">🐾</span>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+            <span className="text-sm font-semibold text-primary">🐾</span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-foreground leading-tight">
@@ -156,7 +212,7 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
               <span>{timeAgo}</span>
               <span>•</span>
               <MapPin className="w-3 h-3" />
-              <span className="truncate max-w-[120px]">
+              <span className="truncate max-w-[160px]">
                 {caseData.location.city}
               </span>
             </div>
@@ -184,14 +240,32 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
         </DropdownMenu>
       </div>
 
-      {/* Image with Status Badge - 16:9 on mobile, square on tablet+ */}
+      {/* Image Carousel with Status Badge - 4:3 aspect for emotional impact */}
       <Link to={`/case/${caseData.id}`} className="block relative">
-        <div className="relative aspect-video sm:aspect-square overflow-hidden bg-muted">
-          <img
-            src={caseData.images[0]}
-            alt={caseData.title}
-            className="w-full h-full object-cover"
-          />
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+          {hasMultipleImages ? (
+            <div className="overflow-hidden h-full" ref={emblaRef}>
+              <div className="flex h-full">
+                {caseData.images.map((image, index) => (
+                  <div key={index} className="flex-[0_0_100%] min-w-0 h-full">
+                    <img
+                      src={image}
+                      alt={`${caseData.title} - Image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <img
+              src={caseData.images[0]}
+              alt={caseData.title}
+              className="w-full h-full object-cover"
+            />
+          )}
+          
           {/* Gradient scrim for badge visibility */}
           <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
           
@@ -200,40 +274,64 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
             <StatusBadge status={caseData.status} size="sm" />
           </div>
           
-          {/* Image count indicator if multiple images */}
-          {caseData.images.length > 1 && (
-            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
-              1/{caseData.images.length}
-            </div>
+          {/* Image count indicator / dot indicators */}
+          {hasMultipleImages && (
+            <>
+              {/* Slide counter - top right */}
+              <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                {currentSlide + 1}/{caseData.images.length}
+              </div>
+              
+              {/* Dot indicators - bottom center */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {caseData.images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      emblaApi?.scrollTo(index);
+                    }}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all",
+                      index === currentSlide 
+                        ? "bg-white w-3" 
+                        : "bg-white/50 hover:bg-white/70"
+                    )}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </Link>
 
       {/* Action Bar - Instagram style */}
-      <div className="flex items-center justify-between px-2.5 py-1.5">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center gap-4">
           {/* Like */}
           <button
             onClick={handleLike}
-            className="flex items-center gap-1 group"
+            className="flex items-center gap-1.5 group"
           >
             <Heart
               className={cn(
-                'w-5 h-5 transition-all',
-                isLiked
+                'w-6 h-6 transition-all',
+                optimisticLiked
                   ? 'fill-red-500 text-red-500 scale-110'
                   : 'text-foreground group-hover:text-red-500'
               )}
             />
-            <span className="text-sm font-medium">{likeCount}</span>
+            <span className="text-sm font-medium">{optimisticLikeCount}</span>
           </button>
 
           {/* Comment */}
           <button
             onClick={handleComment}
-            className="flex items-center gap-1 group"
+            className="flex items-center gap-1.5 group"
           >
-            <MessageCircle className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+            <MessageCircle className="w-6 h-6 text-foreground group-hover:text-primary transition-colors" />
             <span className="text-sm font-medium">
               {commentCount}
             </span>
@@ -244,28 +342,28 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
             onClick={handleShare}
             className="group"
           >
-            <Share2 className="w-4.5 h-4.5 text-foreground group-hover:text-primary transition-colors" />
+            <Share2 className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-2.5 pb-1.5 space-y-1">
+      <div className="px-4 pb-2 space-y-1.5">
         {/* Title */}
         <Link to={`/case/${caseData.id}`}>
-          <h3 className="font-semibold text-sm text-foreground line-clamp-1 hover:underline">
+          <h3 className="font-semibold text-base text-foreground line-clamp-2 hover:underline">
             {caseData.title}
           </h3>
         </Link>
 
         {/* Description - truncated */}
-        <p className="text-xs text-muted-foreground line-clamp-1">
+        <p className="text-sm text-muted-foreground line-clamp-2">
           {caseData.description}
         </p>
 
         {/* Social Proof - Helpers count */}
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Users className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Users className="w-4 h-4" />
           <span>
             <span className="font-medium text-foreground">{helpersCount}</span> helping
           </span>
@@ -273,22 +371,22 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
       </div>
 
       {/* Funding Progress */}
-      <div className="px-2.5 pb-1.5">
+      <div className="px-4 pb-2">
         <ProgressBar
           current={caseData.fundraising.current}
           goal={caseData.fundraising.goal}
           currency={caseData.fundraising.currency}
           layout="compact"
-          size="sm"
+          size="md"
         />
       </div>
 
       {/* CTA Button - Social proof style */}
-      <div className="px-2.5 pb-2.5">
+      <div className="px-4 pb-4">
         <Button
           asChild
           variant="default"
-          className="w-full h-9 rounded-lg font-semibold text-xs bg-primary hover:bg-primary/90"
+          className="w-full h-11 rounded-xl font-semibold text-sm bg-primary hover:bg-primary/90"
         >
           <Link to={`/case/${caseData.id}`}>
             <Users className="w-3.5 h-3.5 mr-1.5" />
@@ -296,6 +394,14 @@ export function InstagramCaseCard({ caseData, className }: InstagramCaseCardProp
           </Link>
         </Button>
       </div>
+      
+      {/* Comments Bottom Sheet */}
+      <CommentsSheet
+        isOpen={commentsOpen}
+        onClose={() => setCommentsOpen(false)}
+        caseId={caseId}
+        caseTitle={caseData.title}
+      />
     </article>
   );
 }

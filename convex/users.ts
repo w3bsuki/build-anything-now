@@ -1,6 +1,26 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
 
+// Volunteer capability options for frontend
+export const VOLUNTEER_CAPABILITIES = [
+    { value: "transport", label: "Transport / Driving", icon: "🚗", description: "Drive animals to vets, shelters, or foster homes" },
+    { value: "fostering", label: "Fostering", icon: "🏠", description: "Temporarily care for animals in your home" },
+    { value: "rescue", label: "Rescue Operations", icon: "🦸", description: "Help with on-ground rescue missions" },
+    { value: "events", label: "Event Organization", icon: "🎪", description: "Organize adoption events and fundraisers" },
+    { value: "social_media", label: "Social Media / Awareness", icon: "📱", description: "Help spread the word online" },
+    { value: "medical", label: "Medical Support", icon: "💊", description: "Assist with medical care (vet students, etc.)" },
+    { value: "general", label: "General Help", icon: "🤝", description: "Available for various tasks" },
+] as const;
+
+// Professional type options for frontend
+export const PROFESSIONAL_TYPES = [
+    { value: "veterinarian", label: "Veterinarian", icon: "🩺", badge: "verified_veterinarian" },
+    { value: "groomer", label: "Pet Groomer", icon: "✂️", badge: "verified_groomer" },
+    { value: "trainer", label: "Dog Trainer", icon: "🎓", badge: "verified_trainer" },
+    { value: "pet_sitter", label: "Pet Sitter", icon: "🏨", badge: "verified_business" },
+    { value: "other", label: "Other Professional", icon: "🐾", badge: "verified_business" },
+] as const;
+
 // List all users (dev only)
 export const listAll = query({
     args: {},
@@ -68,12 +88,36 @@ export const me = query({
     },
 });
 
-// Complete onboarding - sets user type and marks onboarding as complete
-// Temporary: accepts email as fallback when auth isn't working
+// Complete onboarding - enhanced version with multiple user types
 export const completeOnboarding = mutation({
     args: {
-        userType: v.union(v.literal("individual"), v.literal("organization")),
-        email: v.optional(v.string()), // Fallback for auth issues
+        // Legacy support
+        userType: v.optional(v.union(v.literal("individual"), v.literal("organization"))),
+        // Enhanced user types
+        enhancedUserType: v.optional(v.union(
+            v.literal("pet_lover"),
+            v.literal("volunteer"),
+            v.literal("professional"),
+            v.literal("business"),
+            v.literal("exploring"),
+        )),
+        // Volunteer-specific
+        volunteerCapabilities: v.optional(v.array(v.string())),
+        volunteerCity: v.optional(v.string()),
+        // Professional-specific
+        professionalType: v.optional(v.union(
+            v.literal("veterinarian"),
+            v.literal("groomer"),
+            v.literal("trainer"),
+            v.literal("pet_sitter"),
+            v.literal("other"),
+        )),
+        // Pet owner info
+        hasPets: v.optional(v.boolean()),
+        petTypes: v.optional(v.array(v.string())),
+        city: v.optional(v.string()),
+        // Fallback
+        email: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
@@ -81,13 +125,12 @@ export const completeOnboarding = mutation({
         let user;
         
         if (identity) {
-            // Normal flow - auth is working
             user = await ctx.db
                 .query("users")
                 .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
                 .unique();
 
-            // Auto-create user if they don't exist (webhook may have failed)
+            // Auto-create user if they don't exist
             if (!user) {
                 const userId = await ctx.db.insert("users", {
                     clerkId: identity.subject,
@@ -96,14 +139,10 @@ export const completeOnboarding = mutation({
                     avatar: identity.pictureUrl,
                     role: "user",
                     createdAt: Date.now(),
-                    userType: args.userType,
-                    onboardingCompleted: true,
-                    onboardingCompletedAt: Date.now(),
                 });
-                return { success: true, userId };
+                user = await ctx.db.get(userId);
             }
         } else if (args.email) {
-            // Fallback - use email to find user (temporary workaround)
             user = await ctx.db
                 .query("users")
                 .filter((q) => q.eq(q.field("email"), args.email))
@@ -116,13 +155,73 @@ export const completeOnboarding = mutation({
             throw new Error("Not authenticated and no email provided");
         }
 
-        await ctx.db.patch(user._id, {
-            userType: args.userType,
+        if (!user) throw new Error("User not found");
+
+        // Determine the final user type
+        const finalUserType = args.enhancedUserType || args.userType || "exploring";
+        
+        // Determine role based on user type
+        let role: "user" | "volunteer" | "clinic" | "admin" = "user";
+        if (finalUserType === "volunteer") {
+            role = "volunteer";
+        } else if (finalUserType === "business" || finalUserType === "professional" || finalUserType === "organization") {
+            role = "clinic"; // Using clinic role for all business types
+        }
+
+        // Build update object
+        const updateData: Record<string, unknown> = {
+            userType: finalUserType,
             onboardingCompleted: true,
             onboardingCompletedAt: Date.now(),
-        });
+            role,
+        };
 
-        return { success: true };
+        // Add volunteer-specific data
+        if (finalUserType === "volunteer" && args.volunteerCapabilities) {
+            updateData.volunteerCapabilities = args.volunteerCapabilities;
+            updateData.volunteerAvailability = "available";
+            if (args.volunteerCity) {
+                updateData.volunteerCity = args.volunteerCity;
+                updateData.city = args.volunteerCity;
+            }
+        }
+
+        // Add professional-specific data
+        if (finalUserType === "professional" && args.professionalType) {
+            updateData.professionalType = args.professionalType;
+        }
+
+        // Add pet owner data
+        if (args.hasPets !== undefined) {
+            updateData.hasPets = args.hasPets;
+        }
+        if (args.petTypes) {
+            updateData.petTypes = args.petTypes;
+        }
+        if (args.city) {
+            updateData.city = args.city;
+        }
+
+        await ctx.db.patch(user._id, updateData);
+
+        // Award volunteer badge if they registered as volunteer
+        if (finalUserType === "volunteer") {
+            const existingBadge = await ctx.db
+                .query("achievements")
+                .withIndex("by_user", (q) => q.eq("userId", user._id))
+                .filter((q) => q.eq(q.field("type"), "verified_volunteer"))
+                .first();
+            
+            if (!existingBadge) {
+                await ctx.db.insert("achievements", {
+                    userId: user._id,
+                    type: "verified_volunteer",
+                    unlockedAt: Date.now(),
+                });
+            }
+        }
+
+        return { success: true, userId: user._id };
     },
 });
 
@@ -233,9 +332,111 @@ export const resetOnboarding = mutation({
             userType: undefined,
             productTourCompleted: false,
             productTourCompletedAt: undefined,
+            volunteerCapabilities: undefined,
+            volunteerAvailability: undefined,
+            volunteerCity: undefined,
+            professionalType: undefined,
+            professionalSpecialties: undefined,
+            linkedPetServiceId: undefined,
+            hasPets: undefined,
+            petTypes: undefined,
+            city: undefined,
         });
         
         return { success: true, user: user.email };
     },
 });
 
+// Get available volunteers (for emergency help feature)
+export const getAvailableVolunteers = query({
+    args: {
+        city: v.optional(v.string()),
+        capability: v.optional(v.string()),
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        let volunteers = await ctx.db
+            .query("users")
+            .filter((q) => q.and(
+                q.eq(q.field("userType"), "volunteer"),
+                q.eq(q.field("volunteerAvailability"), "available")
+            ))
+            .collect();
+
+        if (args.city) {
+            volunteers = volunteers.filter(v => 
+                v.volunteerCity?.toLowerCase().includes(args.city!.toLowerCase()) ||
+                v.city?.toLowerCase().includes(args.city!.toLowerCase())
+            );
+        }
+
+        if (args.capability) {
+            volunteers = volunteers.filter(v => 
+                v.volunteerCapabilities?.includes(args.capability!)
+            );
+        }
+
+        const limit = args.limit ?? 20;
+        return volunteers.slice(0, limit).map(v => ({
+            id: v._id,
+            name: v.name,
+            avatar: v.avatar,
+            city: v.volunteerCity || v.city,
+            capabilities: v.volunteerCapabilities || [],
+        }));
+    },
+});
+
+// Update volunteer availability
+export const updateVolunteerAvailability = mutation({
+    args: {
+        availability: v.union(
+            v.literal("available"),
+            v.literal("busy"),
+            v.literal("offline"),
+        ),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+        if (user.userType !== "volunteer") throw new Error("User is not a volunteer");
+
+        await ctx.db.patch(user._id, {
+            volunteerAvailability: args.availability,
+        });
+
+        return { success: true };
+    },
+});
+
+// Get volunteers for community display
+export const getVolunteers = query({
+    args: {
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const volunteers = await ctx.db
+            .query("users")
+            .filter((q) => q.eq(q.field("userType"), "volunteer"))
+            .collect();
+
+        const limit = args.limit ?? 50;
+        
+        return volunteers.slice(0, limit).map(v => ({
+            id: v._id,
+            name: v.name,
+            avatar: v.avatar,
+            city: v.volunteerCity || v.city,
+            capabilities: v.volunteerCapabilities || [],
+            availability: v.volunteerAvailability || "offline",
+            createdAt: v.createdAt,
+        }));
+    },
+});

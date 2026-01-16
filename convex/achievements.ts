@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 // Achievement definitions
-export const ACHIEVEMENT_DETAILS = {
+export const ACHIEVEMENT_DETAILS: Record<string, { title: string; description: string; icon: string }> = {
     first_donation: {
         title: "First Steps",
         description: "Made your first donation",
@@ -42,6 +42,69 @@ export const ACHIEVEMENT_DETAILS = {
         title: "Community Hero",
         description: "Shared 10 cases with friends",
         icon: "🦸",
+    },
+    // Role/verification badges
+    verified_volunteer: {
+        title: "Verified Volunteer",
+        description: "Verified volunteer status",
+        icon: "✅",
+    },
+    verified_veterinarian: {
+        title: "Verified Veterinarian",
+        description: "Licensed veterinarian",
+        icon: "🏥",
+    },
+    verified_groomer: {
+        title: "Verified Groomer",
+        description: "Professional pet groomer",
+        icon: "✂️",
+    },
+    verified_trainer: {
+        title: "Verified Trainer",
+        description: "Certified pet trainer",
+        icon: "🎓",
+    },
+    verified_business: {
+        title: "Verified Business",
+        description: "Verified pet business",
+        icon: "🏪",
+    },
+    verified_shelter: {
+        title: "Verified Shelter",
+        description: "Verified animal shelter",
+        icon: "🏠",
+    },
+    // Volunteer activity badges
+    top_transporter: {
+        title: "Top Transporter",
+        description: "Transported 10+ animals",
+        icon: "🚗",
+    },
+    foster_hero: {
+        title: "Foster Hero",
+        description: "Fostered 5+ animals",
+        icon: "🏡",
+    },
+    rescue_champion: {
+        title: "Rescue Champion",
+        description: "Participated in 10+ rescues",
+        icon: "🦸‍♂️",
+    },
+    event_organizer: {
+        title: "Event Organizer",
+        description: "Organized community events",
+        icon: "📋",
+    },
+    // Special badges
+    founding_member: {
+        title: "Founding Member",
+        description: "Early platform supporter",
+        icon: "🌟",
+    },
+    ambassador: {
+        title: "Ambassador",
+        description: "Community ambassador",
+        icon: "🎖️",
     },
 };
 

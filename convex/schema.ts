@@ -14,17 +14,50 @@ export default defineSchema({
         // Onboarding tracking
         onboardingCompleted: v.optional(v.boolean()),
         onboardingCompletedAt: v.optional(v.number()),
-        // User type from onboarding selection
+        // Enhanced user type from onboarding selection
         userType: v.optional(v.union(
-            v.literal("individual"),    // "I want to help" or "Just exploring"
-            v.literal("organization"),  // "I represent a clinic/org"
+            v.literal("individual"),    // Legacy: "I want to help" or "Just exploring"
+            v.literal("organization"),  // Legacy: "I represent a clinic/org"
+            v.literal("pet_lover"),     // Pet owner / animal supporter
+            v.literal("volunteer"),     // Active volunteer
+            v.literal("professional"),  // Individual professional (vet, groomer, trainer)
+            v.literal("business"),      // Business owner (clinic, store, shelter)
+            v.literal("exploring"),     // Just browsing
         )),
+        // Volunteer-specific fields (if userType is "volunteer")
+        volunteerCapabilities: v.optional(v.array(v.string())), // ["transport", "fostering", "rescue", "events", "social_media", "general"]
+        volunteerAvailability: v.optional(v.union(
+            v.literal("available"),
+            v.literal("busy"),
+            v.literal("offline"),
+        )),
+        volunteerCity: v.optional(v.string()),
+        // Professional-specific fields (if userType is "professional")
+        professionalType: v.optional(v.union(
+            v.literal("veterinarian"),
+            v.literal("groomer"),
+            v.literal("trainer"),
+            v.literal("pet_sitter"),
+            v.literal("other"),
+        )),
+        professionalSpecialties: v.optional(v.array(v.string())),
+        // Linked pet service (for professionals/businesses)
+        linkedPetServiceId: v.optional(v.id("petServices")),
+        // Pet owner fields
+        hasPets: v.optional(v.boolean()),
+        petTypes: v.optional(v.array(v.string())), // ["dog", "cat", "bird", "other"]
+        city: v.optional(v.string()),
+        // Verification status
+        verifiedAt: v.optional(v.number()),
+        verifiedBy: v.optional(v.id("users")),
         // Product tour tracking
         productTourCompleted: v.optional(v.boolean()),
         productTourCompletedAt: v.optional(v.number()),
     })
         .index("by_clerk_id", ["clerkId"])
-        .index("by_onboarding", ["onboardingCompleted"]),
+        .index("by_onboarding", ["onboardingCompleted"])
+        .index("by_user_type", ["userType"])
+        .index("by_volunteer_availability", ["volunteerAvailability"]),
 
     // Donations table - tracks all user donations
     donations: defineTable({
@@ -48,6 +81,7 @@ export default defineSchema({
     achievements: defineTable({
         userId: v.id("users"),
         type: v.union(
+            // Donation badges
             v.literal("first_donation"),
             v.literal("monthly_donor"),
             v.literal("helped_10"),
@@ -55,11 +89,32 @@ export default defineSchema({
             v.literal("helped_100"),
             v.literal("big_heart"),
             v.literal("early_supporter"),
-            v.literal("community_hero")
+            v.literal("community_hero"),
+            // Role/verification badges
+            v.literal("verified_volunteer"),
+            v.literal("verified_veterinarian"),
+            v.literal("verified_groomer"),
+            v.literal("verified_trainer"),
+            v.literal("verified_business"),
+            v.literal("verified_shelter"),
+            // Volunteer activity badges
+            v.literal("top_transporter"),
+            v.literal("foster_hero"),
+            v.literal("rescue_champion"),
+            v.literal("event_organizer"),
+            // Special badges
+            v.literal("founding_member"),
+            v.literal("ambassador")
         ),
         unlockedAt: v.number(),
+        // Optional metadata for the badge
+        metadata: v.optional(v.object({
+            description: v.optional(v.string()),
+            awardedBy: v.optional(v.id("users")),
+        })),
     })
-        .index("by_user", ["userId"]),
+        .index("by_user", ["userId"])
+        .index("by_type", ["type"]),
 
     // Payment methods saved by users
     paymentMethods: defineTable({
@@ -236,6 +291,81 @@ export default defineSchema({
         .index("by_user", ["userId"])
         .index("by_status", ["status"]),
 
+    // Pet Services Directory - unified table for ALL pet-related businesses/services
+    petServices: defineTable({
+        name: v.string(),
+        type: v.union(
+            v.literal("clinic"),        // Veterinary clinic
+            v.literal("grooming"),      // Pet grooming salon
+            v.literal("training"),      // Dog training / behavior
+            v.literal("pet_store"),     // Pet supply store
+            v.literal("shelter"),       // Animal shelter / rescue org
+            v.literal("pet_sitting"),   // Pet sitting / boarding
+            v.literal("pet_hotel"),     // Pet hotel / daycare
+            v.literal("pharmacy"),      // Pet pharmacy
+            v.literal("other"),         // Other pet services
+        ),
+        // Location info
+        city: v.string(),
+        address: v.string(),
+        coordinates: v.optional(v.object({
+            lat: v.number(),
+            lng: v.number(),
+        })),
+        // Contact info
+        phone: v.string(),
+        email: v.optional(v.string()),
+        website: v.optional(v.string()),
+        // Details
+        description: v.optional(v.string()),
+        services: v.array(v.string()), // Specific services offered
+        specializations: v.optional(v.array(v.string())), // For clinics: surgery, dermatology, etc.
+        // Hours
+        is24h: v.optional(v.boolean()),
+        hours: v.optional(v.string()), // e.g., "Mon-Fri 9:00-18:00"
+        // Verification & Ownership
+        verified: v.boolean(),
+        ownerId: v.optional(v.id("users")),
+        claimedAt: v.optional(v.number()),
+        // Media
+        logo: v.optional(v.string()),
+        photos: v.optional(v.array(v.id("_storage"))),
+        // Stats
+        rating: v.optional(v.number()),
+        reviewCount: v.optional(v.number()),
+        // Timestamps
+        createdAt: v.number(),
+        updatedAt: v.optional(v.number()),
+    })
+        .index("by_type", ["type"])
+        .index("by_city", ["city"])
+        .index("by_verified", ["verified"])
+        .index("by_owner", ["ownerId"]),
+
+    // Pet Service Claims - pending verification requests for pet services
+    petServiceClaims: defineTable({
+        petServiceId: v.id("petServices"),
+        userId: v.id("users"),
+        status: v.union(
+            v.literal("pending"),
+            v.literal("approved"),
+            v.literal("rejected")
+        ),
+        // Claimer info
+        claimerRole: v.string(),
+        claimerEmail: v.string(),
+        claimerPhone: v.optional(v.string()),
+        additionalInfo: v.optional(v.string()),
+        // Admin review
+        reviewedBy: v.optional(v.id("users")),
+        reviewedAt: v.optional(v.number()),
+        rejectionReason: v.optional(v.string()),
+        createdAt: v.number(),
+    })
+        .index("by_service", ["petServiceId"])
+        .index("by_user", ["userId"])
+        .index("by_status", ["status"]),
+
     // Campaigns table - fundraising campaigns
     campaigns: defineTable({
         title: v.string(),
@@ -308,4 +438,28 @@ export default defineSchema({
         .index("by_user", ["userId"])
         .index("by_created", ["createdAt"])
         .index("by_pinned", ["isPinned"]),
+
+    // Likes table - tracks user likes on cases
+    likes: defineTable({
+        userId: v.id("users"),
+        caseId: v.id("cases"),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_case", ["caseId"])
+        .index("by_user_case", ["userId", "caseId"]),
+
+    // Comments table - comments on cases
+    comments: defineTable({
+        userId: v.id("users"),
+        caseId: v.id("cases"),
+        content: v.string(),
+        // Optional parent comment for replies
+        parentId: v.optional(v.id("comments")),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_case", ["caseId"])
+        .index("by_parent", ["parentId"])
+        .index("by_case_created", ["caseId", "createdAt"]),
 });

@@ -13,7 +13,8 @@
     "campaigns": "Campaigns",
     "clinics": "Clinics",
     "partners": "Partners",
-    "community": "Community"
+    "community": "Community",
+    "profile": "Profile"
   },
   "actions": {
     "create": "Create",
@@ -708,10 +709,26 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to PawsSafe!",
-      "subtitle": "What brings you here today?"
+      "title": "Welcome to Pawsy!",
+      "subtitle": "What best describes you?"
     },
     "options": {
+      "petLover": {
+        "title": "Pet Lover",
+        "description": "Browse, donate, adopt, or find pet services"
+      },
+      "volunteer": {
+        "title": "Volunteer",
+        "description": "Help with transport, fostering, or rescues"
+      },
+      "business": {
+        "title": "Pet Professional / Business",
+        "description": "Vet, groomer, trainer, pet store, or shelter"
+      },
+      "exploring": {
+        "title": "Just Exploring",
+        "description": "Looking around to see what Pawsy offers"
+      },
       "help": {
         "title": "I want to help animals",
         "description": "Donate, volunteer, or find a pet to adopt"
@@ -719,22 +736,55 @@
       "organization": {
         "title": "I represent a clinic or organization",
         "description": "Claim your profile or register your business"
-      },
-      "exploring": {
-        "title": "Just exploring",
-        "description": "Browse around and see what PawsSafe is about"
       }
     },
+    "volunteer": {
+      "title": "How would you like to help?",
+      "subtitle": "Select all that apply",
+      "transport": "Transport",
+      "fostering": "Fostering",
+      "rescue": "Rescue",
+      "events": "Events",
+      "socialMedia": "Social Media",
+      "medical": "Medical",
+      "general": "General",
+      "yourCity": "Your City",
+      "cityPlaceholder": "e.g., Sofia, Plovdiv...",
+      "cityHint": "This helps us connect you with nearby rescue operations",
+      "badgeTitle": "You'll receive the Volunteer badge!",
+      "badgeDesc": "Shown on your profile and in the community",
+      "creating": "Creating your profile...",
+      "complete": "Complete Registration"
+    },
+    "petInfo": {
+      "title": "Tell us about your pets",
+      "subtitle": "This helps us personalize your experience",
+      "havePets": "Do you have any pets?",
+      "whatKind": "What kind of pets?",
+      "skipNote": "You can always update this later in your profile settings.",
+      "getStarted": "Get Started",
+      "skip": "Skip for now"
+    },
+    "pets": {
+      "dog": "Dog",
+      "cat": "Cat",
+      "bird": "Bird",
+      "other": "Other"
+    },
+    "business": {
+      "typeTitle": "What type of business?",
+      "typeSubtitle": "Select your business category"
+    },
     "claim": {
-      "title": "Find Your Organization",
-      "subtitle": "Is your clinic or organization already on PawsSafe?",
+      "title": "Find Your Business",
+      "subtitle": "Search to claim an existing listing or register new",
       "searchPlaceholder": "Search by name or city...",
       "searchHint": "Enter at least 2 characters to search",
-      "noResults": "No clinics found matching your search",
+      "noResults": "No businesses found matching your search",
       "resultsCount": "{{count}} results found",
       "claimed": "Claimed",
       "claimButton": "Claim",
-      "registerNew": "Register a new organization",
+      "registerNew": "Register New Business",
       "skipButton": "Skip for now",
       "or": "or",
       "claimTitle": "Claim",
@@ -755,6 +805,25 @@
         "staff": "Staff Member",
         "representative": "Official Representative"
       }
+    },
+    "register": {
+      "title": "Register Your Business",
+      "businessName": "Business Name",
+      "namePlaceholder": "Your business name",
+      "city": "City",
+      "cityPlaceholder": "e.g., Sofia",
+      "address": "Address",
+      "addressPlaceholder": "Street address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell customers about your services...",
+      "verificationNote": "Your listing will be reviewed and verified within 24-48 hours.",
+      "registering": "Registering...",
+      "submit": "Register Business",
+      "successTitle": "Business Registered!",
+      "successMessage": "Your business is now listed. We'll verify it soon."
     }
   },
   "tour": {

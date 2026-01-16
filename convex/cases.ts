@@ -110,6 +110,93 @@ export const getForLocale = query({
     },
 });
 
+// UI-friendly paginated list: returns image URLs with cursor-based pagination
+export const listUiForLocalePaginated = query({
+    args: {
+        locale: v.string(),
+        type: v.optional(v.union(v.literal("critical"), v.literal("urgent"), v.literal("recovering"), v.literal("adopted"))),
+        status: v.optional(v.union(v.literal("active"), v.literal("funded"), v.literal("closed"))),
+        limit: v.optional(v.number()),
+        cursor: v.optional(v.number()), // timestamp-based cursor for pagination
+    },
+    handler: async (ctx, args) => {
+        const locale = args.locale;
+        const limit = args.limit ?? 10;
+
+        // Query all cases (we'll filter and paginate)
+        let cases;
+        if (args.type) {
+            cases = await ctx.db
+                .query("cases")
+                .withIndex("by_type", (q) => q.eq("type", args.type!))
+                .order("desc")
+                .collect();
+        } else {
+            cases = await ctx.db.query("cases").order("desc").collect();
+        }
+
+        // Filter by status if provided
+        if (args.status) {
+            cases = cases.filter((c) => c.status === args.status);
+        }
+
+        // Apply cursor filter (get cases created before the cursor timestamp)
+        if (args.cursor) {
+            cases = cases.filter((c) => c.createdAt < args.cursor!);
+        }
+
+        // Get one more than limit to check if there's more
+        const hasMore = cases.length > limit;
+        const paginatedCases = cases.slice(0, limit);
+
+        // Calculate next cursor
+        const nextCursor = paginatedCases.length > 0
+            ? paginatedCases[paginatedCases.length - 1].createdAt
+            : null;
+
+        // Transform to UI format
+        const items = await Promise.all(
+            paginatedCases.map(async (c) => {
+                const localized = pickLocalizedFields(c, locale);
+                const imageUrls = (await Promise.all(c.images.map((id) => ctx.storage.getUrl(id))))
+                    .filter((u): u is string => Boolean(u));
+                const targetLocale = normalizeLocale(locale);
+                const translationStatus = c.translationStatus?.[targetLocale]?.status ?? null;
+
+                return {
+                    id: c._id,
+                    title: localized.title,
+                    description: localized.description,
+                    story: localized.story ?? "",
+                    images: imageUrls,
+                    status: c.type,
+                    species: "other",
+                    location: { city: c.location.city, neighborhood: c.location.neighborhood },
+                    fundraising: c.fundraising,
+                    updates: c.updates.map((u, index) => ({
+                        id: `${c._id}:${index}`,
+                        date: new Date(u.date).toISOString(),
+                        title: "",
+                        description: u.text,
+                        type: "update" as const,
+                    })),
+                    createdAt: new Date(c.createdAt).toISOString(),
+                    isMachineTranslated: localized.isMachineTranslated,
+                    translatedFrom: localized.translatedFrom ?? null,
+                    originalLanguage: normalizeLocale(c.language ?? "") || null,
+                    translationStatus,
+                };
+            })
+        );
+
+        return {
+            items,
+            nextCursor: hasMore ? nextCursor : null,
+            hasMore,
+        };
+    },
+});
+
 // UI-friendly list: returns image URLs and includes translation metadata.
 export const listUiForLocale = query({
     args: {

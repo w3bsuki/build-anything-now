@@ -13,7 +13,8 @@
     "campaigns": "Kampagnen",
     "clinics": "Kliniken",
     "partners": "Partner",
-    "community": "Gemeinschaft"
+    "community": "Gemeinschaft",
+    "profile": "Profil"
   },
   "actions": {
     "create": "Erstellen",
@@ -669,5 +670,135 @@
         "content": "Kann jemand eine gute Tierklinik in Plovdiv für eine streunende Katze empfehlen, die ich gefunden habe? Sie scheint eine Augeninfektion zu haben und ich möchte ihr helfen. Jeden Rat schätze ich! 🙏"
       }
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Willkommen bei Pawsy!",
+      "subtitle": "Was beschreibt Sie am besten?"
+    },
+    "options": {
+      "petLover": {
+        "title": "Tierliebhaber",
+        "description": "Stöbern, spenden, adoptieren oder Tierservices finden"
+      },
+      "volunteer": {
+        "title": "Freiwilliger",
+        "description": "Helfen bei Transport, Pflege oder Rettung"
+      },
+      "business": {
+        "title": "Tierprofi / Unternehmen",
+        "description": "Tierarzt, Groomer, Trainer, Tiergeschäft oder Tierheim"
+      },
+      "exploring": {
+        "title": "Nur schauen",
+        "description": "Entdecken, was Pawsy bietet"
+      },
+      "help": {
+        "title": "Ich möchte Tieren helfen",
+        "description": "Spenden, ehrenamtlich helfen oder ein Tier adoptieren"
+      },
+      "organization": {
+        "title": "Ich vertrete eine Klinik oder Organisation",
+        "description": "Profil beanspruchen oder Unternehmen registrieren"
+      }
+    },
+    "volunteer": {
+      "title": "Wie möchten Sie helfen?",
+      "subtitle": "Wählen Sie alle zutreffenden",
+      "transport": "Transport",
+      "fostering": "Pflege",
+      "rescue": "Rettung",
+      "events": "Veranstaltungen",
+      "socialMedia": "Social Media",
+      "medical": "Medizinisch",
+      "general": "Allgemein",
+      "yourCity": "Ihre Stadt",
+      "cityPlaceholder": "z.B. Berlin, München...",
+      "cityHint": "Dies hilft uns, Sie mit nahegelegenen Rettungsaktionen zu verbinden",
+      "badgeTitle": "Sie erhalten das Freiwilligen-Abzeichen!",
+      "badgeDesc": "Wird in Ihrem Profil und in der Community angezeigt",
+      "creating": "Profil wird erstellt...",
+      "complete": "Registrierung abschließen"
+    },
+    "petInfo": {
+      "title": "Erzählen Sie uns von Ihren Haustieren",
+      "subtitle": "Dies hilft uns, Ihre Erfahrung zu personalisieren",
+      "havePets": "Haben Sie Haustiere?",
+      "whatKind": "Welche Art von Haustieren?",
+      "skipNote": "Sie können dies später in Ihren Profileinstellungen aktualisieren.",
+      "getStarted": "Loslegen",
+      "skip": "Überspringen"
+    },
+    "pets": {
+      "dog": "Hund",
+      "cat": "Katze",
+      "bird": "Vogel",
+      "other": "Andere"
+    },
+    "business": {
+      "typeTitle": "Welche Art von Unternehmen?",
+      "typeSubtitle": "Wählen Sie Ihre Unternehmenskategorie"
+    },
+    "claim": {
+      "title": "Finden Sie Ihr Unternehmen",
+      "subtitle": "Suchen Sie, um einen bestehenden Eintrag zu beanspruchen oder neu zu registrieren",
+      "searchPlaceholder": "Suche nach Name oder Stadt...",
+      "searchHint": "Geben Sie mindestens 2 Zeichen ein",
+      "noResults": "Keine passenden Unternehmen gefunden",
+      "resultsCount": "{{count}} Ergebnisse gefunden",
+      "claimed": "Beansprucht",
+      "claimButton": "Beanspruchen",
+      "registerNew": "Neues Unternehmen registrieren",
+      "skipButton": "Überspringen",
+      "or": "oder",
+      "claimTitle": "Beanspruchen",
+      "claimDescription": "Bitte geben Sie Ihre Daten zur Verifizierung an.",
+      "yourRole": "Ihre Rolle",
+      "selectRole": "Rolle auswählen",
+      "contactEmail": "Kontakt-E-Mail",
+      "phone": "Telefon",
+      "additionalInfo": "Zusätzliche Informationen",
+      "additionalInfoPlaceholder": "Weitere Details zur Verifizierung...",
+      "submitClaim": "Antrag einreichen",
+      "successTitle": "Antrag eingereicht!",
+      "successMessage": "Wir werden Ihren Antrag prüfen und uns bald melden.",
+      "redirecting": "Weiterleiten...",
+      "roles": {
+        "owner": "Eigentümer",
+        "manager": "Manager",
+        "staff": "Mitarbeiter",
+        "representative": "Offizieller Vertreter"
+      }
+    },
+    "register": {
+      "title": "Registrieren Sie Ihr Unternehmen",
+      "businessName": "Unternehmensname",
+      "namePlaceholder": "Ihr Unternehmensname",
+      "city": "Stadt",
+      "cityPlaceholder": "z.B. Berlin",
+      "address": "Adresse",
+      "addressPlaceholder": "Straße und Hausnummer",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "website": "Webseite",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Erzählen Sie Kunden von Ihren Dienstleistungen...",
+      "verificationNote": "Ihr Eintrag wird innerhalb von 24-48 Stunden überprüft und verifiziert.",
+      "registering": "Registrieren...",
+      "submit": "Unternehmen registrieren",
+      "successTitle": "Unternehmen registriert!",
+      "successMessage": "Ihr Unternehmen ist jetzt gelistet. Wir werden es bald verifizieren."
+    }
+  },
+  "tour": {
+    "welcome": "Willkommen bei PawsSafe! 🐾 Lass mich dir zeigen, wie du Tieren in Not helfen kannst.",
+    "urgentCases": "Hier findest du Tiere, die sofortige Hilfe brauchen. Jeder Fall zeigt ihre Geschichte und wie viel Finanzierung sie brauchen.",
+    "caseCard": "Klicke auf jeden Fall, um Details zu sehen und zu spenden. Jeder Betrag hilft!",
+    "navigation": "Erkunde Kampagnen, Partnerkliniken und Tierheime, die mit uns arbeiten.",
+    "profile": "Greife auf dein Profil, Spendenhistorie und Errungenschaften zu.",
+    "complete": "Du bist startklar! Beginne zu erkunden und Tieren heute zu helfen. 🐾💝"
+  },
+  "common": {
+    "optional": "Optional"
   }
 }
