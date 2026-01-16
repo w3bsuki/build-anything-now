@@ -5,12 +5,31 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 ```
 
-## Twitter Theme Style
+## Twitter Blue Theme Style
 
 In our Twitter-inspired theme, cards are:
-- **Bordered** (not shadowed) — Use `border border-border`
-- **Flat** — No elevation, clean appearance
-- **Rounded** — `rounded-lg` by default (radius based on design token)
+- **Bordered** (NOT shadowed) — Use `border border-border` or `border border-border/50`
+- **Flat** — Theme has shadow-* at 0% opacity, so shadows won't show
+- **Rounded** — `rounded-xl` recommended (--radius: 1.3rem)
+- **Clean** — Use `bg-card` for card background
+
+### From STYLING-GUIDE.md
+```tsx
+// Basic Card
+<div className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-sm">
+  {/* Content */}
+</div>
+
+// Card with Image
+<div className="bg-card rounded-xl overflow-hidden shadow-sm">
+  <div className="aspect-[3/2] bg-muted">
+    <img className="w-full h-full object-cover" />
+  </div>
+  <div className="p-3">
+    {/* Content */}
+  </div>
+</div>
+```
 
 ## Basic Structure
 
@@ -33,8 +52,8 @@ In our Twitter-inspired theme, cards are:
 
 ### Pet/Case Card (Compact Mobile)
 ```tsx
-<Card className="border border-border overflow-hidden">
-  <div className="relative aspect-[4/3]">
+<Card className="border border-border/50 overflow-hidden">
+  <div className="relative aspect-[3/2]">
     <img src={imageUrl} alt={petName} className="object-cover w-full h-full" />
     <Badge className="absolute top-2 left-2">{status}</Badge>
   </div>
@@ -95,31 +114,47 @@ In our Twitter-inspired theme, cards are:
 | Element | Padding |
 |---------|---------|
 | CardHeader | `p-4 pb-3` or `p-3 pb-2` (compact) |
-| CardContent | `p-4 pt-0` or `p-3 pt-0` (compact) |
-| CardFooter | `p-4 pt-0` or `p-3 pt-0` (compact) |
+| CardContent | `p-4 pt-0` or `p-3` |
+| CardFooter | `p-4 pt-0` or `p-3 pt-0` |
 | Compact card overall | `p-3` |
+
+## Aspect Ratios (From STYLING-GUIDE.md)
+
+```
+16:9 - Wide landscape (desktop)
+3:2  - Standard photos (RECOMMENDED for cards)
+4:3  - Instagram-style (tall)
+1:1  - Square (avatars)
+```
 
 ## Best Practices
 
 ✅ **DO:**
 ```tsx
-// Use border for Twitter theme
+// Use border for Twitter theme (shadows are 0% opacity)
 <Card className="border border-border">
+<Card className="border border-border/50">
 
-// Responsive images with aspect ratio
-<div className="aspect-[4/3] relative overflow-hidden rounded-t-lg">
+// Use aspect-[3/2] for card images
+<div className="aspect-[3/2] relative overflow-hidden">
 
 // Truncate long text
 <p className="line-clamp-2">{description}</p>
 
 // Group cards with consistent gap
 <div className="grid gap-4 sm:grid-cols-2">
+
+// Use rounded-xl for card radius
+<Card className="rounded-xl border border-border/50 overflow-hidden">
 ```
 
 ❌ **DON'T:**
 ```tsx
-// Don't use shadows in Twitter theme
-<Card className="shadow-lg">
+// Don't rely on shadows (they're 0% opacity in theme)
+<Card className="shadow-lg"> // Won't show!
+
+// Don't use Tailwind color palette
+<Card className="bg-gray-50"> // Use bg-card
 
 // Don't nest cards
 <Card><Card>Bad</Card></Card>
@@ -127,14 +162,14 @@ In our Twitter-inspired theme, cards are:
 // Don't use inconsistent padding
 <CardContent className="px-2 py-6">
 
-// Don't forget overflow hidden for images
+// Don't forget overflow-hidden for images
 <Card><img className="rounded-lg" /></Card>
 ```
 
 ## Loading State
 ```tsx
 <Card className="border border-border">
-  <Skeleton className="aspect-[4/3] rounded-t-lg" />
+  <Skeleton className="aspect-[3/2]" />
   <CardContent className="p-3 space-y-2">
     <Skeleton className="h-5 w-3/4" />
     <Skeleton className="h-4 w-full" />

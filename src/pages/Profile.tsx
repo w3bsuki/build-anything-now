@@ -26,7 +26,7 @@ const mockStats = {
 const achievementCount = 3;
 
 // TODO: Replace with useQuery(api.notifications.getUnreadCount)
-const unreadNotifications = 2;
+const unreadNotifications = 5;
 
 const Profile = () => {
   const { t } = useTranslation();

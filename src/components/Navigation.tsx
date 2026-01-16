@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Megaphone, Users, User, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake } from 'lucide-react';
+import { Home, Megaphone, Users, User, Plus, Bell, Heart, MessageCircle, HeartHandshake, Handshake, Stethoscope } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 
-// Bottom nav: Home, Campaigns, Create (center), Community, Partners
+// Bottom nav: Home, Campaigns, Create (center), Clinics, Partners
 const navItems = [
   { path: '/', labelKey: 'nav.home', icon: Home },
   { path: '/campaigns', labelKey: 'nav.campaigns', icon: Megaphone },
   { path: 'create', labelKey: 'actions.create', icon: Plus, isCreate: true },
-  { path: '/community', labelKey: 'nav.community', icon: MessageCircle },
+  { path: '/clinics', labelKey: 'nav.clinics', icon: Stethoscope },
   { path: '/partners', labelKey: 'nav.partners', icon: Handshake },
 ];
 
@@ -25,7 +25,7 @@ const desktopNavItems = [
 ];
 
 // TODO: Replace with real data from Convex
-const unreadNotifications = 2;
+const unreadNotifications = 5;
 
 // Pages that show the mobile header
 const mobileHeaderPages = ['/', '/campaigns', '/community', '/partners', '/profile'];
@@ -62,9 +62,7 @@ export function Navigation() {
           <div className="flex items-center justify-between h-14 px-4">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2">
-              <div className="size-8 rounded-lg flex items-center justify-center bg-primary/10">
-                <HeartHandshake className="size-4 text-primary" />
-              </div>
+              <HeartHandshake className="size-6 text-primary" />
               <span className="font-semibold text-lg text-foreground">Pawtreon</span>
             </NavLink>
 
@@ -78,6 +76,7 @@ export function Navigation() {
               >
                 <NavLink to="/notifications">
                   <Bell className={cn(
+                    "size-6",
                     location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
                   )} />
                   {unreadNotifications > 0 && (
@@ -94,6 +93,7 @@ export function Navigation() {
               >
                 <NavLink to="/profile">
                   <User className={cn(
+                    "size-6",
                     location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
                   )} />
                 </NavLink>
@@ -202,7 +202,7 @@ export function Navigation() {
                     onClick={() => setIsCreateOpen(true)}
                     className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
                   >
-                    <div className="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground -mt-3 shadow-lg">
+                    <div className="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground border-2 border-background shadow-sm">
                       <Icon className="size-5" strokeWidth={2.5} />
                     </div>
                   </button>

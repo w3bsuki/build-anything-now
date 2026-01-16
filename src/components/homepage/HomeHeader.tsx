@@ -1,11 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Bell, User, HeartHandshake } from 'lucide-react';
+import { Bell, User, HeartHandshake, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 // TODO: Replace with real data from Convex
-const unreadNotifications = 2;
+const unreadNotifications = 5;
 
 export function HomeHeader() {
   const location = useLocation();
@@ -15,14 +15,20 @@ export function HomeHeader() {
       <div className="flex items-center justify-between h-14 px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2">
-          <div className="size-8 rounded-lg flex items-center justify-center bg-primary/10">
-            <HeartHandshake className="size-4 text-primary" />
-          </div>
+          <HeartHandshake className="size-6 text-primary" />
           <span className="font-semibold text-lg text-foreground">Pawtreon</span>
         </NavLink>
 
         {/* Actions - 44px touch targets */}
         <div className="flex items-center -mr-1.5">
+          <Button variant="iconHeader" size="iconTouch" asChild>
+            <NavLink to="/community">
+              <MessageCircle className={cn(
+                "size-6",
+                location.pathname === '/community' ? "text-primary" : "text-muted-foreground"
+              )} />
+            </NavLink>
+          </Button>
           <Button variant="iconHeader" size="iconTouch" className="relative" asChild>
             <NavLink to="/notifications">
               <Bell className={cn(

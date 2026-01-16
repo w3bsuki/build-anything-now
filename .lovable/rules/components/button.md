@@ -5,62 +5,82 @@
 import { Button } from "@/components/ui/button"
 ```
 
-## Variants
+## Variants (From src/components/ui/button.tsx)
 
-### Default (Primary)
-Use for: Main CTAs, donate buttons, form submissions
+### default
+Primary CTA - Twitter Blue background
 ```tsx
 <Button>Donate Now</Button>
 <Button><Heart className="mr-2 h-4 w-4" />Support This Pet</Button>
+// Classes: bg-primary text-primary-foreground hover:bg-primary/90
 ```
 
-### Outline
-Use for: Secondary actions, cancel buttons, filters
+### secondary
+Dark/inverted style
+```tsx
+<Button variant="secondary">Secondary Action</Button>
+// Classes: bg-secondary text-secondary-foreground hover:bg-secondary/80
+```
+
+### outline
+Bordered, transparent background - for secondary actions
 ```tsx
 <Button variant="outline">View Details</Button>
 <Button variant="outline" size="sm">Filter</Button>
+// Classes: border border-input bg-background hover:bg-accent
 ```
 
-### Ghost
-Use for: Tertiary actions, icon buttons, navigation items
+### ghost
+No background until hover - for tertiary actions
 ```tsx
 <Button variant="ghost" size="icon"><Settings className="h-4 w-4" /></Button>
 <Button variant="ghost">Learn More</Button>
+// Classes: hover:bg-accent hover:text-accent-foreground
 ```
 
-### Destructive
-Use for: Delete actions, cancellations, warnings
+### link
+Text link style with underline on hover
+```tsx
+<Button variant="link">Learn More</Button>
+// Classes: text-primary underline-offset-4 hover:underline
+```
+
+### destructive
+For dangerous/delete actions
 ```tsx
 <Button variant="destructive">Remove</Button>
+// Classes: bg-destructive text-destructive-foreground hover:bg-destructive/90
 ```
 
-### Donate (Custom)
-Use for: Donation-specific CTAs with emphasis
+### donate (Custom)
+Donation-specific CTA with shadow emphasis
 ```tsx
 <Button variant="donate" className="w-full">
   <Heart className="mr-2 h-4 w-4" />
   Donate ₱500
 </Button>
+// Classes: bg-primary text-primary-foreground font-semibold rounded-md hover:brightness-105 shadow-lg
 ```
 
-### Icon Header (Custom)
-Use for: Header action buttons with touch-optimized size
+### iconHeader (Custom)
+Header action buttons with scale feedback
 ```tsx
-<Button variant="iconHeader" size="icon">
+<Button variant="iconHeader" size="iconSm">
   <Bell className="h-5 w-5" />
 </Button>
+// Classes: rounded-xl hover:bg-muted/60 active:scale-95 transition-all [&_svg]:size-6
 ```
 
-## Sizes
+## Sizes (From button.tsx)
 
-| Size | Height | Usage |
-|------|--------|-------|
-| `default` | 40px (h-10) | Standard buttons |
-| `sm` | 36px (h-9) | Compact buttons, inline actions |
-| `lg` | 44px (h-11) | Emphasized CTAs |
-| `icon` | 40x40px | Icon-only buttons |
-| `iconSm` | 36x36px | Compact icon buttons |
-| `iconTouch` | 44x44px | Touch-optimized icon buttons |
+| Size | Dimensions | Usage |
+|------|------------|-------|
+| `default` | h-10 px-4 py-2 | Standard buttons |
+| `sm` | h-9 rounded-md px-3 | Compact buttons, inline actions |
+| `lg` | h-11 rounded-md px-8 | Emphasized CTAs |
+| `icon` | size-10 (40px) | Icon-only buttons |
+| `iconSm` | size-9 (36px) | Compact icon buttons |
+| `iconTouch` | size-10 (40px) | Touch-optimized icon buttons |
 
 ## Best Practices
 

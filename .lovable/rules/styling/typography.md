@@ -1,11 +1,20 @@
 # Typography System
 
-## Font Family
+## Font Family (From Theme)
 
 ```css
-/* System font stack for optimal performance */
-font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 
-             "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* Defined in src/index.css */
+--font-sans: Open Sans, sans-serif;
+--font-serif: Georgia, serif;
+--font-mono: Menlo, monospace;
+```
+
+The theme uses **Open Sans** as the primary font, applied globally via:
+```css
+body {
+  @apply font-sans antialiased;
+  letter-spacing: var(--tracking-normal);
+}
 ```
 
 ## Type Scale
@@ -30,28 +39,22 @@ font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
 <p className="text-xs">Caption/timestamp</p>              // 12px
 ```
 
-### Common Patterns
+### From STYLING-GUIDE.md
 ```tsx
-// Page title
-<h1 className="text-xl font-semibold">Settings</h1>
+// Page titles
+className="text-lg font-bold"  // 18px bold
 
-// Card title
-<h2 className="font-semibold">{title}</h2>  // 16px default
+// Section headers  
+className="text-base font-semibold"  // 16px semibold
 
-// Card description
-<p className="text-sm text-muted-foreground">{description}</p>
+// Card titles
+className="text-base font-semibold"  // 16px semibold
 
-// Timestamp
-<span className="text-xs text-muted-foreground">2 hours ago</span>
+// Body text
+className="text-sm"  // 14px
 
-// Label
-<label className="text-sm font-medium">Email Address</label>
-
-// Helper text
-<p className="text-sm text-muted-foreground">We'll never share your email.</p>
-
-// Error text
-<p className="text-sm text-destructive">This field is required.</p>
+// Captions, metadata
+className="text-xs"  // 12px
 ```
 
 ## Font Weights

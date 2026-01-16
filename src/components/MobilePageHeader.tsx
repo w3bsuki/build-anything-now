@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 // TODO: Replace with real data from Convex
-const unreadNotifications = 2;
+const unreadNotifications = 5;
 const unreadPosts = 5;
 
 interface MobilePageHeaderProps {

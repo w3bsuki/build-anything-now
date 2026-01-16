@@ -4,15 +4,16 @@
 
 ## Project Identity
 
-**Pawtreon** is a mobile-first animal welfare platform connecting donors with rescue animals. We use a **Twitter/X-inspired theme** with a focus on trust, warmth, and professional polish.
+**Pawtreon** is a mobile-first animal welfare platform connecting donors with rescue animals. We use a **Twitter Blue theme** with OKLCH colors - clean, flat design with signature blue primary.
 
 **Tech Stack:**
 - React 18 + TypeScript + Vite
 - Tailwind CSS v4 with CSS variables (OKLCH color space)
 - shadcn/ui components (customized)
 - Convex backend
-- Clerk authentication
+- Clerk authentication  
 - Capacitor for iOS/Android
+- Font: Open Sans (--font-sans)
 
 ---
 
@@ -21,12 +22,12 @@
 ### Core Principles
 1. **Mobile-first, always** — Design for 375px width first, then scale up
 2. **Touch-optimized** — Minimum 44px touch targets, generous spacing
-3. **Twitter-inspired cleanliness** — Flat design, minimal shadows, crisp borders
-4. **Emotional connection** — Warm colors, rounded corners, friendly typography
+3. **Twitter-inspired cleanliness** — Flat design, borders over shadows, crisp edges
+4. **Emotional connection** — Rounded corners (1.3rem radius), friendly typography
 5. **Accessibility** — WCAG 2.1 AA contrast, clear focus states
 
 ### Visual Language Keywords
-Use these when generating UI: `clean`, `minimal`, `trustworthy`, `warm`, `professional`, `modern`, `accessible`, `delightful`, `Twitter-like`, `flat design`
+Use these when generating UI: `clean`, `minimal`, `trustworthy`, `professional`, `modern`, `accessible`, `Twitter-like`, `flat design`, `borders not shadows`
 
 ---
 
@@ -35,13 +36,14 @@ Use these when generating UI: `clean`, `minimal`, `trustworthy`, `warm`, `profes
 1. **NEVER use placeholder text** — Use real, contextual content (pet names, realistic amounts)
 2. **NEVER make touch targets smaller than 44px**
 3. **NEVER use inline styles** — Always use Tailwind classes
-4. **NEVER hardcode colors** — Always use CSS variables via Tailwind (`bg-primary`, not `bg-blue-500`)
-5. **NEVER create new color tokens** — Use existing semantic colors only
-6. **NEVER use `px` values for spacing** — Use Tailwind spacing scale
-7. **NEVER forget dark mode** — All components must work in both themes
-8. **NEVER add shadows to cards by default** — Twitter theme is flat, use borders instead
-9. **NEVER use generic icons** — Use Lucide icons only
-10. **NEVER create modals for simple actions** — Use inline expansion or sheets
+4. **NEVER hardcode colors** — ALWAYS use theme tokens (`bg-primary`, NEVER `bg-blue-500` or `bg-[#1DA1F2]`)
+5. **NEVER use Tailwind color palette** — No `bg-gray-100`, `text-slate-600`, etc.
+6. **NEVER create new color tokens** — Use existing semantic colors from index.css
+7. **NEVER use `px` values for spacing** — Use Tailwind spacing scale
+8. **NEVER forget dark mode** — All components must work in both themes
+9. **NEVER use shadow-* for depth** — Theme has 0% shadow opacity, use borders instead
+10. **NEVER use generic icons** — Use Lucide icons only
+11. **NEVER create modals on mobile** — Use Sheet (bottom slide) instead of Dialog
 
 ---
 
@@ -49,14 +51,15 @@ Use these when generating UI: `clean`, `minimal`, `trustworthy`, `warm`, `profes
 
 1. **ALWAYS use semantic HTML** — `<button>` for actions, `<a>` for navigation
 2. **ALWAYS use the component library** — Import from `@/components/ui/*`
-3. **ALWAYS include loading states** — Use Skeleton components
-4. **ALWAYS include empty states** — Friendly message + CTA
-5. **ALWAYS include error states** — Clear message + retry action
-6. **ALWAYS use `cn()` for conditional classes** — Import from `@/lib/utils`
-7. **ALWAYS respect the 4px grid** — Spacing in multiples of 4
-8. **ALWAYS test both light and dark modes mentally**
-9. **ALWAYS consider the mobile bottom nav** — Add padding-bottom where needed
-10. **ALWAYS use descriptive component names** — `PetDonationCard` not `Card1`
+3. **ALWAYS use theme color tokens** — `bg-primary`, `text-muted-foreground`, `border-border`
+4. **ALWAYS include loading states** — Use Skeleton components
+5. **ALWAYS include empty states** — Friendly message + CTA
+6. **ALWAYS include error states** — Clear message + retry action
+7. **ALWAYS use `cn()` for conditional classes** — Import from `@/lib/utils`
+8. **ALWAYS respect the 4px grid** — Spacing in multiples of 4
+9. **ALWAYS test both light and dark modes mentally**
+10. **ALWAYS consider the mobile bottom nav** — Add pb-20 where needed
+11. **ALWAYS use descriptive component names** — `PetDonationCard` not `Card1`
 
 ---
 
@@ -101,21 +104,37 @@ Pattern: `className="mobile-style sm:tablet-style lg:desktop-style"`
 
 ---
 
-## 🎨 When to Use Which Color
+## 🎨 Theme Color Tokens (From index.css)
 
-| Purpose | Token | Usage |
-|---------|-------|-------|
-| Primary actions, links | `primary` | Donate buttons, CTAs, active nav |
-| Backgrounds | `background` | Page backgrounds |
-| Cards, elevated surfaces | `card` | Card components |
-| Subtle backgrounds | `muted` | Secondary sections, disabled |
-| Subdued text | `muted-foreground` | Captions, metadata |
-| Borders | `border` | Card borders, dividers |
-| Critical status | `destructive` | Errors, critical pets |
-| Success/Adopted | `success` | Adopted badges, confirmations |
-| Warning | `warning` | Low funds, attention needed |
-| Urgent/Needs help | `urgent` | Urgent badges |
-| Recovering | `recovering` | Recovery status |
+| Purpose | Token | Example |
+|---------|-------|---------|
+| Primary actions, links | `primary` | `bg-primary`, `text-primary` |
+| Page backgrounds | `background` | `bg-background` |
+| Cards, surfaces | `card` | `bg-card` |
+| Subtle backgrounds | `muted` | `bg-muted`, `hover:bg-muted` |
+| Secondary text | `muted-foreground` | `text-muted-foreground` |
+| Borders, dividers | `border` | `border-border`, `border-border/50` |
+| Danger/errors | `destructive` | `bg-destructive`, `text-destructive` |
+| Pet: Urgent | `urgent` | `bg-urgent text-urgent-foreground` |
+| Pet: Recovering | `recovering` | `bg-recovering text-recovering-foreground` |
+| Pet: Adopted | `adopted` | `bg-adopted text-adopted-foreground` |
+| Success states | `success` | `bg-success text-success-foreground` |
+| Warnings | `warning` | `bg-warning text-warning-foreground` |
+
+### Pre-defined Badge Classes (in index.css)
+```tsx
+<span className="badge-urgent">Urgent</span>
+<span className="badge-critical">Critical</span>
+<span className="badge-recovering">Recovering</span>
+<span className="badge-adopted">Adopted</span>
+```
+
+### Glass Utilities (in index.css)
+```tsx
+<div className="glass-ultra">{/* 70% white, 20px blur */}</div>
+<div className="glass-subtle">{/* 50% white, 12px blur */}</div>
+<nav className="nav-shadow">{/* floating nav shadow */}</nav>
+```
 
 ---
 
@@ -124,12 +143,12 @@ Pattern: `className="mobile-style sm:tablet-style lg:desktop-style"`
 See `.lovable/rules/components/` for detailed specs on each component.
 
 **Most Used:**
-- `Button` — Primary actions, variants: default, outline, ghost, destructive
-- `Card` — Content containers, always with border in Twitter theme
-- `Badge` — Status indicators, use semantic colors
-- `Avatar` — User/pet images, always with fallback
+- `Button` — variants: default, secondary, outline, ghost, destructive, donate, iconHeader
+- `Card` — Content containers, use `border border-border` (no shadows)
+- `Badge` — Status indicators with semantic colors
+- `Avatar` — User/pet images, always with AvatarFallback
 - `Skeleton` — Loading states, match content shape
-- `Sheet` — Mobile-first modals, slide from bottom
+- `Sheet` — Mobile modals (use instead of Dialog on mobile)
 - `Tabs` — Content switching, minimal style
 
 ---
