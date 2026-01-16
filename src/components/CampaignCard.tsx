@@ -41,7 +41,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
   return (
     <article
       className={cn(
-        'group relative bg-card rounded-2xl overflow-hidden border border-border/50 transition-all duration-300 hover:border-border hover:shadow-lg',
+        'group relative bg-card rounded-2xl overflow-hidden shadow-sm ring-1 ring-border/30 transition-all duration-300 hover:ring-border/50 hover:shadow-lg',
         className
       )}
     >

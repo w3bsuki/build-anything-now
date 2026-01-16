@@ -56,7 +56,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
   return (
     <article
       className={cn(
-        'group bg-card rounded-xl overflow-hidden border border-border/50 hover:border-border transition-all duration-200',
+        'group bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
         className
       )}
     >

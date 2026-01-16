@@ -29,7 +29,7 @@ export function IntentFilterPills({ selected, onSelect, followingCount = 0, clas
     },
     { 
       id: 'success' as FilterTab, 
-      label: t('filters.successStories', 'Success Stories'), 
+      label: t('filters.adopted', 'Adopted'), 
       icon: <Heart className="w-3.5 h-3.5" />,
       activeClass: 'bg-adopted text-adopted-foreground',
     },
@@ -44,8 +44,8 @@ export function IntentFilterPills({ selected, onSelect, followingCount = 0, clas
   ];
 
   return (
-    <div className={cn("px-4 pt-2 pb-2", className)}>
-      <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide -mx-4 px-4">
+    <div className={cn("", className)}>
+      <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
         {options.map((option) => {
           const isSelected = selected === option.id;
           return (
@@ -64,8 +64,6 @@ export function IntentFilterPills({ selected, onSelect, followingCount = 0, clas
             </button>
           );
         })}
-        {/* Right edge safe area */}
-        <div className="shrink-0 w-0.5" aria-hidden="true" />
       </div>
     </div>
   );

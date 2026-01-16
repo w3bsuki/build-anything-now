@@ -101,7 +101,7 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
   return (
     <article
       className={cn(
-        'group bg-card rounded-xl overflow-hidden border border-border/50 hover:border-border transition-all duration-200',
+        'group bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
         className
       )}
     >
@@ -255,7 +255,7 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
 // Skeleton for loading state
 export function TwitterCaseCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('bg-card rounded-xl overflow-hidden border border-border/50', className)}>
+    <div className={cn('bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30', className)}>
       {/* Poster Header Skeleton */}
       <div className="flex items-center gap-3 p-3 border-b border-border/30">
         <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />

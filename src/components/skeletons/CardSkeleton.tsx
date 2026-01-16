@@ -7,7 +7,7 @@ interface CardSkeletonProps {
 
 export function CaseCardSkeleton({ className }: CardSkeletonProps) {
   return (
-    <div className={cn('bg-card rounded-xl overflow-hidden border border-border/50', className)}>
+    <div className={cn('bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30', className)}>
       <Skeleton className="aspect-[4/3] w-full" />
       <div className="p-3.5">
         <Skeleton className="h-5 w-3/4 mb-2" />
@@ -24,7 +24,7 @@ export function CaseCardSkeleton({ className }: CardSkeletonProps) {
 
 export function CampaignCardSkeleton({ className }: CardSkeletonProps) {
   return (
-    <div className={cn('bg-card rounded-xl overflow-hidden border border-border/50', className)}>
+    <div className={cn('bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30', className)}>
       <Skeleton className="aspect-video w-full" />
       <div className="p-4">
         <Skeleton className="h-4 w-full mb-2" />
@@ -42,7 +42,7 @@ export function CampaignCardSkeleton({ className }: CardSkeletonProps) {
 
 export function ClinicCardSkeleton({ className }: CardSkeletonProps) {
   return (
-    <div className={cn('bg-card rounded-xl border border-border/50 p-4', className)}>
+    <div className={cn('bg-card rounded-xl shadow-sm ring-1 ring-border/30 p-4', className)}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1">
           <Skeleton className="h-5 w-2/3 mb-2" />
@@ -65,7 +65,7 @@ export function ClinicCardSkeleton({ className }: CardSkeletonProps) {
 
 export function PartnerCardSkeleton({ className }: CardSkeletonProps) {
   return (
-    <div className={cn('bg-card rounded-xl border border-border/50 overflow-hidden', className)}>
+    <div className={cn('bg-card rounded-xl shadow-sm ring-1 ring-border/30 overflow-hidden', className)}>
       <div className="p-4">
         <div className="flex items-start gap-3">
           <Skeleton className="w-14 h-14 rounded-lg flex-shrink-0" />

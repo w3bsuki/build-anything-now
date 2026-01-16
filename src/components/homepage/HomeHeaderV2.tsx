@@ -14,9 +14,10 @@ interface HomeHeaderV2Props {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSearchSubmit?: () => void;
+  children?: React.ReactNode; // For filter pills or other controls below search
 }
 
-export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit }: HomeHeaderV2Props) {
+export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit, children }: HomeHeaderV2Props) {
   const { t } = useTranslation();
   const location = useLocation();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -78,8 +79,8 @@ export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit }: Ho
         </div>
       </div>
 
-      {/* Search Bar Row */}
-      <div className="px-4 pt-1 pb-0">
+      {/* Search Bar Row + Filter Pills */}
+      <div className="px-4 pt-1 pb-2 space-y-2">
         <form onSubmit={handleSubmit} className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 pointer-events-none" />
           <input
@@ -106,6 +107,7 @@ export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit }: Ho
             </button>
           )}
         </form>
+        {children}
       </div>
     </header>
   );

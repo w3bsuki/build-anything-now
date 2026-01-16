@@ -257,19 +257,17 @@ const IndexV2 = () => {
         />
       </div>
       
-      {/* Mobile Header with Search */}
+      {/* Mobile Header with Search + Filter Pills */}
       <HomeHeaderV2 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-      />
-
-      {/* Intent Filter Pills */}
-      <div className="md:hidden sticky top-[calc(env(safe-area-inset-top)+100px)] z-40 bg-background/98 backdrop-blur-lg border-b border-border/30">
+      >
         <IntentFilterPills 
           selected={intentFilter} 
           onSelect={setIntentFilter}
+          className="px-0"
         />
-      </div>
+      </HomeHeaderV2>
 
       {/* Urgent Cases Strip - Always visible at top when not filtering by "success" or "following" */}
       {(intentFilter === 'urgent' || intentFilter === 'nearby') && (
@@ -299,7 +297,7 @@ const IndexV2 = () => {
           <IntentFilterPills 
             selected={intentFilter} 
             onSelect={setIntentFilter}
-            className="justify-center"
+            className="justify-center px-0"
           />
         </div>
       </div>

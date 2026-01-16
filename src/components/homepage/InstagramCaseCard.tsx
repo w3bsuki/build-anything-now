@@ -200,7 +200,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   return (
     <article
       className={cn(
-        'group bg-card rounded-2xl overflow-hidden border border-border/50 transition-all duration-300 hover:border-border hover:shadow-lg',
+        'group bg-card rounded-2xl overflow-hidden shadow-sm ring-1 ring-border/30 transition-all duration-300 hover:ring-border/50 hover:shadow-lg',
         className
       )}
     >
