@@ -36,41 +36,35 @@ interface ActivityItem {
 // Story circle for system messages, cases, or helpers
 function StoryCircle({ name, image, isNew = true, type, onClick }: StoryCircleProps) {
   const isEmoji = image.length <= 2;
-  const size = 52;
 
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 flex-shrink-0"
+      className="flex flex-col items-center gap-1 shrink-0"
     >
       <div
         className={cn(
-          "rounded-full p-[2px]",
+          "rounded-full p-0.5 size-16",
           isNew
-            ? "bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
+            ? "bg-linear-to-tr from-sky-400 via-primary to-blue-500"
             : "bg-muted"
         )}
-        style={{ width: size + 4, height: size + 4 }}
       >
-        <div className="rounded-full bg-background p-[2px] w-full h-full">
+        <div className="rounded-full bg-background p-0.5 size-full">
           {isEmoji ? (
-            <div
-              className="rounded-full bg-muted flex items-center justify-center w-full h-full text-xl"
-              style={{ width: size - 4, height: size - 4 }}
-            >
+            <div className="rounded-full bg-muted flex items-center justify-center size-14 text-xl">
               {image}
             </div>
           ) : (
             <img
               src={image}
               alt={name}
-              className="rounded-full object-cover w-full h-full"
-              style={{ width: size - 4, height: size - 4 }}
+              className="rounded-full object-cover size-14"
             />
           )}
         </div>
       </div>
-      <span className="text-[11px] text-muted-foreground truncate max-w-[56px]">
+      <span className="text-[11px] text-muted-foreground truncate max-w-16">
         {name}
       </span>
     </button>
@@ -93,10 +87,9 @@ interface HeroCirclesProps {
 // Skeleton for loading state
 function HeroAvatarSkeleton() {
   return (
-    <div className="flex flex-col items-center gap-1 flex-shrink-0 animate-pulse">
-      <div className="w-14 h-14 rounded-full bg-muted" />
+    <div className="flex flex-col items-center gap-1 shrink-0 animate-pulse">
+      <div className="size-16 rounded-full bg-muted" />
       <div className="w-10 h-3 rounded bg-muted" />
-      <div className="w-8 h-3 rounded bg-muted" />
     </div>
   );
 }
@@ -109,7 +102,6 @@ function ActivityCircle({
   activity: ActivityItem;
   onClick: () => void;
 }) {
-  const size = 52;
   const hasCase = !!activity.case;
   const hasUser = !!activity.user;
   const image = activity.case?.imageUrl || activity.user?.avatar;
@@ -119,25 +111,18 @@ function ActivityCircle({
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 flex-shrink-0"
+      className="flex flex-col items-center gap-1 shrink-0"
     >
-      <div
-        className="rounded-full p-[2px] bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
-        style={{ width: size + 4, height: size + 4 }}
-      >
-        <div className="rounded-full bg-background p-[2px] w-full h-full">
+      <div className="rounded-full p-0.5 bg-linear-to-tr from-sky-400 via-primary to-blue-500 size-16">
+        <div className="rounded-full bg-background p-0.5 size-full">
           {image ? (
             <img
               src={image}
               alt={name}
-              className="rounded-full object-cover w-full h-full"
-              style={{ width: size - 4, height: size - 4 }}
+              className="rounded-full object-cover size-14"
             />
           ) : (
-            <div
-              className="rounded-full bg-muted flex items-center justify-center w-full h-full"
-              style={{ width: size - 4, height: size - 4 }}
-            >
+            <div className="rounded-full bg-muted flex items-center justify-center size-14">
               <span className="text-lg">
                 {hasCase ? '🐾' : hasUser ? name.charAt(0).toUpperCase() : '📢'}
               </span>
@@ -145,7 +130,7 @@ function ActivityCircle({
           )}
         </div>
       </div>
-      <span className="text-[11px] text-muted-foreground truncate max-w-[56px]">
+      <span className="text-[11px] text-muted-foreground truncate max-w-16">
         {displayName}
       </span>
     </button>

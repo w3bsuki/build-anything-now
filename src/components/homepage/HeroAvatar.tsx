@@ -13,8 +13,8 @@ interface HeroAvatarProps {
 }
 
 export function HeroAvatar({ id, name, avatar, count, size = 'md', className, onClick }: HeroAvatarProps) {
-  const dimensions = size === 'sm' ? 48 : 56;
-  const innerSize = dimensions - 8; // Account for ring + padding
+  const sizeClasses = size === 'sm' ? 'size-14' : 'size-16';
+  const innerClasses = size === 'sm' ? 'size-12' : 'size-14';
 
   const content = (
     <>
@@ -22,21 +22,24 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
       <div className="relative">
         {/* Gradient Ring - Twitter blue gradient */}
         <div
-          className="rounded-full p-[2px] bg-gradient-to-tr from-sky-400 via-primary to-blue-500"
-          style={{ width: dimensions, height: dimensions }}
+          className={cn(
+            "rounded-full p-0.5 bg-linear-to-tr from-sky-400 via-primary to-blue-500",
+            sizeClasses
+          )}
         >
-          <div className="rounded-full bg-background p-[2px] w-full h-full">
+          <div className="rounded-full bg-background p-0.5 size-full">
             {avatar ? (
               <img
                 src={avatar}
                 alt={name}
-                className="rounded-full object-cover w-full h-full"
-                style={{ width: innerSize, height: innerSize }}
+                className={cn("rounded-full object-cover", innerClasses)}
               />
             ) : (
               <div
-                className="rounded-full bg-muted flex items-center justify-center w-full h-full"
-                style={{ width: innerSize, height: innerSize }}
+                className={cn(
+                  "rounded-full bg-muted flex items-center justify-center",
+                  innerClasses
+                )}
               >
                 <span className="text-sm font-medium text-muted-foreground">
                   {name.charAt(0).toUpperCase()}
@@ -57,7 +60,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
       </div>
 
       {/* Name */}
-      <span className="text-[11px] text-muted-foreground truncate max-w-[56px]">
+      <span className="text-[11px] text-muted-foreground truncate max-w-16">
         {name}
       </span>
     </>
@@ -68,7 +71,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
     return (
       <button
         onClick={onClick}
-        className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
+        className={cn('flex flex-col items-center gap-0.5 shrink-0', className)}
       >
         {content}
       </button>
@@ -79,7 +82,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
   return (
     <Link
       to={`/profile/${id}`}
-      className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
+      className={cn('flex flex-col items-center gap-0.5 shrink-0', className)}
     >
       {content}
     </Link>
@@ -92,18 +95,20 @@ interface AddCaseCircleProps {
 }
 
 export function AddCaseCircle({ size = 'md', className }: AddCaseCircleProps) {
-  const dimensions = size === 'sm' ? 48 : 56;
+  const sizeClasses = size === 'sm' ? 'size-14' : 'size-16';
 
   return (
     <Link
       to="/create-case"
-      className={cn('flex flex-col items-center gap-0.5 flex-shrink-0', className)}
+      className={cn('flex flex-col items-center gap-0.5 shrink-0', className)}
     >
       <div
-        className="rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors"
-        style={{ width: dimensions, height: dimensions }}
+        className={cn(
+          "rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors",
+          sizeClasses
+        )}
       >
-        <Plus className="w-5 h-5 text-primary" />
+        <Plus className="size-6 text-primary" />
       </div>
       <span className="text-[11px] text-muted-foreground">Add</span>
     </Link>
