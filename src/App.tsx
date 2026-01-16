@@ -9,7 +9,7 @@ import { LanguageDetectionBanner } from "./components/LanguageDetectionBanner";
 import { AuthGuard } from "./components/auth/AuthGuard";
 import { OnboardingRedirect } from "./hooks/useOnboardingRedirect";
 import { ProductTour } from "./components/tour/ProductTour";
-import Index from "./pages/Index";
+import Index from "./pages/IndexV2";
 import AnimalProfile from "./pages/AnimalProfile";
 import Campaigns from "./pages/Campaigns";
 import CampaignProfile from "./pages/CampaignProfile";
