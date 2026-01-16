@@ -125,7 +125,7 @@ const ClinicProfile = () => {
                 </div>
               </div>
               {clinic.is24h && (
-                <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-sm">
+                <Badge className="bg-success/10 text-success dark:bg-success/20 text-sm">
                   24/7
                 </Badge>
               )}

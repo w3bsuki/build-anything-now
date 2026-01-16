@@ -25,9 +25,9 @@ export function FeedFilter({ selected, onSelect, className }: FeedFilterProps) {
 
   const options: FilterOption[] = [
     { id: 'all', label: t('status.all', 'All cases') },
-    { id: 'urgent', label: t('status.urgentOnly', 'Urgent only'), icon: <Heart className="w-4 h-4 text-red-500" /> },
-    { id: 'adopted', label: t('status.adopted', 'Adopted'), icon: <Home className="w-4 h-4 text-green-500" /> },
-    { id: 'nearby', label: t('status.nearMe', 'Near me'), icon: <MapPin className="w-4 h-4 text-blue-500" /> },
+    { id: 'urgent', label: t('status.urgentOnly', 'Urgent only'), icon: <Heart className="w-4 h-4 text-destructive" /> },
+    { id: 'adopted', label: t('status.adopted', 'Adopted'), icon: <Home className="w-4 h-4 text-success" /> },
+    { id: 'nearby', label: t('status.nearMe', 'Near me'), icon: <MapPin className="w-4 h-4 text-primary" /> },
   ];
 
   const selectedOption = options.find(o => o.id === selected) || options[0];

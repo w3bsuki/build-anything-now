@@ -64,7 +64,9 @@
     "urgentCases": "Срочные случаи",
     "otherCases": "Другие случаи",
     "allCases": "Все случаи",
-    "noMatches": "Нет подходящих случаев"
+    "noMatches": "Нет подходящих случаев",
+    "activeCampaigns": "Активные кампании",
+    "campaignsSubtitle": "Помогите нам достичь наших целей"
   },
   "campaigns": {
     "searchPlaceholder": "Поиск кампаний...",
@@ -72,7 +74,10 @@
     "allCampaigns": "Все кампании",
     "trending": "Популярные",
     "completed": "Завершённые",
-    "noResults": "Нет {{filter}} кампаний в данный момент"
+    "noResults": "Нет {{filter}} кампаний в данный момент",
+    "active": "Активные",
+    "raised": "собрано",
+    "viewAllCampaigns": "Посмотреть все кампании"
   },
   "clinics": {
     "searchPlaceholder": "Поиск клиник или специализаций...",
@@ -152,7 +157,36 @@
     "achievements": "Достижения",
     "paymentMethods": "Способы оплаты",
     "notifications": "Уведомления",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "accountSettings": "Настройки аккаунта",
+    "editProfile": "Редактировать профиль",
+    "editProfileDesc": "Обновите фото профиля, имя и биографию",
+    "viewProfile": "Просмотр профиля",
+    "displayName": "Отображаемое имя",
+    "displayNamePlaceholder": "Введите отображаемое имя",
+    "bio": "Биография",
+    "bioPlaceholder": "Расскажите о себе...",
+    "publicProfile": "Публичный профиль",
+    "publicProfileDesc": "Разрешить другим находить и просматривать ваш профиль",
+    "followers": "Подписчики",
+    "following": "Подписки",
+    "follow": "Подписаться",
+    "unfollow": "Отписаться",
+    "impact": "Влияние",
+    "cases": "Случаи",
+    "badges": "Значки",
+    "saved": "Сохранённые",
+    "noBadgesYet": "Пока нет значков",
+    "noBadgesDesc": "Делайте пожертвования и взаимодействуйте со случаями, чтобы получать значки!",
+    "noCasesYet": "Пока нет случаев",
+    "noCasesDesc": "Случаи с пожертвованиями появятся здесь",
+    "noSavedCases": "Нет сохранённых случаев",
+    "noSavedCasesDesc": "Сохраняйте случаи, чтобы просмотреть позже",
+    "memberSince": "Участник с",
+    "totalDonated": "Всего пожертвовано",
+    "casesSupported": "Поддержано случаев",
+    "shareProfile": "Поделиться профилем",
+    "profileCopied": "Ссылка на профиль скопирована!"
   },
   "settings": {
     "title": "Настройки",
@@ -357,6 +391,7 @@
     "of": "из",
     "and": "и",
     "or": "или",
+    "viewAll": "Посмотреть все",
     "comingSoon": "Скоро",
     "notAvailable": "Недоступно",
     "mapComingSoon": "Просмотр карты скоро",
@@ -375,7 +410,12 @@
     "goBackPartners": "Вернуться к партнёрам",
     "backToPartners": "Назад к партнёрам",
     "volunteerNotFound": "Волонтёр не найден",
-    "anonymous": "Аноним"
+    "anonymous": "Аноним",
+    "unknownError": "Неизвестная ошибка",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "share": "Поделиться",
+    "goHome": "На главную"
   },
   "time": {
     "justNow": "Только что",

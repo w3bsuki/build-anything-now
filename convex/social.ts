@@ -326,3 +326,386 @@ export const getSocialStats = query({
         return results;
     },
 });
+
+// ============================================
+// FOLLOW SYSTEM
+// ============================================
+
+// Toggle follow a user
+export const toggleFollow = mutation({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) throw new Error("User not found");
+
+        // Can't follow yourself
+        if (currentUser._id === args.userId) {
+            throw new Error("Cannot follow yourself");
+        }
+
+        // Check if already following
+        const existing = await ctx.db
+            .query("follows")
+            .withIndex("by_follower_following", (q) => 
+                q.eq("followerId", currentUser._id).eq("followingId", args.userId)
+            )
+            .unique();
+
+        if (existing) {
+            // Unfollow
+            await ctx.db.delete(existing._id);
+            return { following: false };
+        } else {
+            // Follow
+            await ctx.db.insert("follows", {
+                followerId: currentUser._id,
+                followingId: args.userId,
+                createdAt: Date.now(),
+            });
+            return { following: true };
+        }
+    },
+});
+
+// Check if current user is following a user
+export const isFollowing = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return false;
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) return false;
+
+        const follow = await ctx.db
+            .query("follows")
+            .withIndex("by_follower_following", (q) => 
+                q.eq("followerId", currentUser._id).eq("followingId", args.userId)
+            )
+            .unique();
+
+        return !!follow;
+    },
+});
+
+// Get followers of a user
+export const getFollowers = query({
+    args: { 
+        userId: v.id("users"),
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const limit = args.limit ?? 50;
+
+        const followers = await ctx.db
+            .query("follows")
+            .withIndex("by_following", (q) => q.eq("followingId", args.userId))
+            .order("desc")
+            .take(limit);
+
+        // Get user details
+        const followerDetails = await Promise.all(
+            followers.map(async (f) => {
+                const user = await ctx.db.get(f.followerId);
+                if (!user) return null;
+                return {
+                    id: user._id,
+                    name: user.displayName || user.name,
+                    avatar: user.avatar,
+                    followedAt: f.createdAt,
+                };
+            })
+        );
+
+        return followerDetails.filter(Boolean);
+    },
+});
+
+// Get users that a user is following
+export const getFollowing = query({
+    args: { 
+        userId: v.id("users"),
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const limit = args.limit ?? 50;
+
+        const following = await ctx.db
+            .query("follows")
+            .withIndex("by_follower", (q) => q.eq("followerId", args.userId))
+            .order("desc")
+            .take(limit);
+
+        // Get user details
+        const followingDetails = await Promise.all(
+            following.map(async (f) => {
+                const user = await ctx.db.get(f.followingId);
+                if (!user) return null;
+                return {
+                    id: user._id,
+                    name: user.displayName || user.name,
+                    avatar: user.avatar,
+                    followedAt: f.createdAt,
+                };
+            })
+        );
+
+        return followingDetails.filter(Boolean);
+    },
+});
+
+// Get follow counts for a user
+export const getFollowCounts = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        const [followers, following] = await Promise.all([
+            ctx.db
+                .query("follows")
+                .withIndex("by_following", (q) => q.eq("followingId", args.userId))
+                .collect(),
+            ctx.db
+                .query("follows")
+                .withIndex("by_follower", (q) => q.eq("followerId", args.userId))
+                .collect(),
+        ]);
+
+        return {
+            followerCount: followers.length,
+            followingCount: following.length,
+        };
+    },
+});
+
+// ============================================
+// MESSAGING SYSTEM (Basic 1:1)
+// ============================================
+
+// Send a message
+export const sendMessage = mutation({
+    args: {
+        receiverId: v.id("users"),
+        content: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const sender = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!sender) throw new Error("User not found");
+
+        // Validate content
+        const content = args.content.trim();
+        if (!content) throw new Error("Message cannot be empty");
+        if (content.length > 2000) throw new Error("Message too long (max 2000 characters)");
+
+        // Can't message yourself
+        if (sender._id === args.receiverId) {
+            throw new Error("Cannot message yourself");
+        }
+
+        const messageId = await ctx.db.insert("messages", {
+            senderId: sender._id,
+            receiverId: args.receiverId,
+            content,
+            read: false,
+            createdAt: Date.now(),
+        });
+
+        return messageId;
+    },
+});
+
+// Get conversation between two users
+export const getConversation = query({
+    args: {
+        otherUserId: v.id("users"),
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return [];
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) return [];
+
+        const limit = args.limit ?? 50;
+
+        // Get messages where current user is sender or receiver
+        const sentMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversation", (q) => 
+                q.eq("senderId", currentUser._id).eq("receiverId", args.otherUserId)
+            )
+            .collect();
+
+        const receivedMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversation", (q) => 
+                q.eq("senderId", args.otherUserId).eq("receiverId", currentUser._id)
+            )
+            .collect();
+
+        // Combine and sort by date
+        const allMessages = [...sentMessages, ...receivedMessages]
+            .sort((a, b) => a.createdAt - b.createdAt)
+            .slice(-limit);
+
+        return allMessages.map(m => ({
+            id: m._id,
+            content: m.content,
+            senderId: m.senderId,
+            receiverId: m.receiverId,
+            read: m.read,
+            createdAt: m.createdAt,
+            isOwn: m.senderId === currentUser._id,
+        }));
+    },
+});
+
+// Get conversation list (recent chats)
+export const getConversationList = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return [];
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) return [];
+
+        // Get all messages involving current user
+        const sentMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_sender", (q) => q.eq("senderId", currentUser._id))
+            .collect();
+
+        const receivedMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_receiver", (q) => q.eq("receiverId", currentUser._id))
+            .collect();
+
+        // Find unique conversation partners with last message
+        const conversationMap = new Map<string, { otherUserId: string; lastMessage: typeof sentMessages[0] }>();
+
+        for (const msg of [...sentMessages, ...receivedMessages]) {
+            const otherUserId = msg.senderId === currentUser._id 
+                ? msg.receiverId 
+                : msg.senderId;
+            
+            const existing = conversationMap.get(otherUserId.toString());
+            if (!existing || msg.createdAt > existing.lastMessage.createdAt) {
+                conversationMap.set(otherUserId.toString(), {
+                    otherUserId: otherUserId.toString(),
+                    lastMessage: msg,
+                });
+            }
+        }
+
+        // Sort by most recent and get user details
+        const conversations = Array.from(conversationMap.values())
+            .sort((a, b) => b.lastMessage.createdAt - a.lastMessage.createdAt);
+
+        const conversationDetails = await Promise.all(
+            conversations.map(async (conv) => {
+                const users = await ctx.db.query("users").collect();
+                const otherUser = users.find(u => u._id.toString() === conv.otherUserId);
+                
+                if (!otherUser) return null;
+
+                // Count unread messages from this user
+                const unreadCount = receivedMessages.filter(
+                    m => m.senderId.toString() === conv.otherUserId && !m.read
+                ).length;
+
+                return {
+                    id: otherUser._id,
+                    name: otherUser.displayName || otherUser.name,
+                    avatar: otherUser.avatar,
+                    lastMessage: conv.lastMessage.content,
+                    lastMessageAt: conv.lastMessage.createdAt,
+                    unreadCount,
+                };
+            })
+        );
+
+        return conversationDetails.filter(Boolean);
+    },
+});
+
+// Mark messages as read
+export const markMessagesRead = mutation({
+    args: { senderId: v.id("users") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) throw new Error("User not found");
+
+        // Get unread messages from sender
+        const unreadMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversation", (q) => 
+                q.eq("senderId", args.senderId).eq("receiverId", currentUser._id)
+            )
+            .filter((q) => q.eq(q.field("read"), false))
+            .collect();
+
+        // Mark all as read
+        await Promise.all(
+            unreadMessages.map((m) => ctx.db.patch(m._id, { read: true }))
+        );
+
+        return { markedCount: unreadMessages.length };
+    },
+});
+
+// Get unread message count
+export const getUnreadCount = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return 0;
+
+        const currentUser = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!currentUser) return 0;
+
+        const unreadMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_receiver", (q) => q.eq("receiverId", currentUser._id))
+            .filter((q) => q.eq(q.field("read"), false))
+            .collect();
+
+        return unreadMessages.length;
+    },
+});

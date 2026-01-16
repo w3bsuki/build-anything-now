@@ -91,10 +91,10 @@ export function Navigation() {
                 size="iconTouch"
                 asChild
               >
-                <NavLink to="/profile">
+                <NavLink to="/account">
                   <User className={cn(
                     "size-6",
-                    location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                    location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
                   )} />
                 </NavLink>
               </Button>
@@ -168,12 +168,12 @@ export function Navigation() {
               <Button
                 variant="iconHeader"
                 size="icon"
-                className={cn(location.pathname === '/profile' && "bg-primary/10")}
+                className={cn(location.pathname === '/account' && "bg-primary/10")}
                 asChild
               >
-                <NavLink to="/profile">
+                <NavLink to="/account">
                   <User className={cn(
-                    location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                    location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
                   )} />
                 </NavLink>
               </Button>

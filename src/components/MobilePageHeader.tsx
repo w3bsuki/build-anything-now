@@ -88,9 +88,9 @@ export function MobilePageHeader({
             size="iconTouch"
             asChild
           >
-            <NavLink to="/profile">
+            <NavLink to="/account">
               <User className={cn(
-                location.pathname === '/profile' ? "text-primary" : "text-muted-foreground"
+                location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
               )} />
             </NavLink>
           </Button>

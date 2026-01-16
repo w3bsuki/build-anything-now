@@ -182,23 +182,23 @@ function StoryTypeBadge({ type }: { type: Story["type"] }) {
     const badges: Record<Story["type"], { label: string; className: string }> = {
         case_update: { 
             label: "Update", 
-            className: "bg-blue-500/80" 
+            className: "bg-primary/80" 
         },
         donation: { 
             label: "Donation", 
-            className: "bg-green-500/80" 
+            className: "bg-success/80" 
         },
         milestone: { 
             label: "Milestone", 
-            className: "bg-amber-500/80" 
+            className: "bg-warning/80" 
         },
         case_created: { 
             label: "New Case", 
-            className: "bg-rose-500/80" 
+            className: "bg-destructive/80" 
         },
         system_announcement: { 
             label: "Announcement", 
-            className: "bg-purple-500/80" 
+            className: "bg-accent/80" 
         },
     };
 

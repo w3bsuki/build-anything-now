@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 
 // Volunteer capability options for frontend
 export const VOLUNTEER_CAPABILITIES = [
@@ -438,5 +439,331 @@ export const getVolunteers = query({
             availability: v.volunteerAvailability || "offline",
             createdAt: v.createdAt,
         }));
+    },
+});
+
+// ============================================
+// PROFILE SYSTEM QUERIES & MUTATIONS
+// ============================================
+
+// Get public profile by user ID
+export const getPublicProfile = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        const user = await ctx.db.get(args.userId);
+        if (!user) return null;
+        
+        // Check if profile is public (or if viewing own profile)
+        const identity = await ctx.auth.getUserIdentity();
+        const isOwnProfile = identity && user.clerkId === identity.subject;
+        
+        if (!user.isPublic && !isOwnProfile) {
+            return {
+                id: user._id,
+                displayName: user.displayName || user.name,
+                avatar: user.avatar,
+                isPublic: false,
+                isOwnProfile: false,
+            };
+        }
+
+        // Get follower/following counts
+        const followers = await ctx.db
+            .query("follows")
+            .withIndex("by_following", (q) => q.eq("followingId", args.userId))
+            .collect();
+        
+        const following = await ctx.db
+            .query("follows")
+            .withIndex("by_follower", (q) => q.eq("followerId", args.userId))
+            .collect();
+
+        // Get achievements/badges
+        const achievements = await ctx.db
+            .query("achievements")
+            .withIndex("by_user", (q) => q.eq("userId", args.userId))
+            .collect();
+
+        return {
+            id: user._id,
+            displayName: user.displayName || user.name,
+            name: user.name,
+            avatar: user.avatar,
+            bio: user.bio,
+            isPublic: user.isPublic ?? true,
+            role: user.role,
+            userType: user.userType,
+            city: user.city || user.volunteerCity,
+            memberSince: new Date(user.createdAt).getFullYear().toString(),
+            followerCount: followers.length,
+            followingCount: following.length,
+            badges: achievements.map(a => a.type),
+            isOwnProfile: !!isOwnProfile,
+            // Volunteer-specific fields
+            volunteerCapabilities: user.volunteerCapabilities,
+            volunteerAvailability: user.volunteerAvailability,
+        };
+    },
+});
+
+// Get profile stats for a user
+export const getProfileStats = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        // Get donations made by this user
+        const donations = await ctx.db
+            .query("donations")
+            .withIndex("by_user", (q) => q.eq("userId", args.userId))
+            .filter((q) => q.eq(q.field("status"), "completed"))
+            .collect();
+
+        const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
+        const uniqueCases = new Set(donations.filter(d => d.caseId).map(d => d.caseId));
+
+        // Get cases created by this user (for rescuers/volunteers)
+        const cases = await ctx.db
+            .query("cases")
+            .withIndex("by_user", (q) => q.eq("userId", args.userId))
+            .collect();
+
+        const activeCases = cases.filter(c => c.status === "active").length;
+        const fundedCases = cases.filter(c => c.status === "funded").length;
+
+        return {
+            totalDonations: donations.length,
+            totalAmount,
+            animalsHelped: uniqueCases.size,
+            casesCreated: cases.length,
+            activeCases,
+            fundedCases,
+        };
+    },
+});
+
+// Update profile (bio, displayName, visibility)
+export const updateProfile = mutation({
+    args: {
+        displayName: v.optional(v.string()),
+        bio: v.optional(v.string()),
+        isPublic: v.optional(v.boolean()),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        // Validate bio length
+        if (args.bio && args.bio.length > 280) {
+            throw new Error("Bio must be 280 characters or less");
+        }
+
+        // Validate display name
+        if (args.displayName && args.displayName.length > 50) {
+            throw new Error("Display name must be 50 characters or less");
+        }
+
+        const updateData: Record<string, unknown> = {};
+        
+        if (args.displayName !== undefined) {
+            updateData.displayName = args.displayName.trim() || null;
+        }
+        if (args.bio !== undefined) {
+            updateData.bio = args.bio.trim() || null;
+        }
+        if (args.isPublic !== undefined) {
+            updateData.isPublic = args.isPublic;
+        }
+
+        await ctx.db.patch(user._id, updateData);
+        return { success: true };
+    },
+});
+
+// Get profile by username/ID or "me"
+export const getProfileByIdOrMe = query({
+    args: { userId: v.union(v.id("users"), v.literal("me")) },
+    handler: async (ctx, args) => {
+        let targetUserId: typeof args.userId | null = args.userId;
+        
+        if (args.userId === "me") {
+            const identity = await ctx.auth.getUserIdentity();
+            if (!identity) return null;
+
+            const user = await ctx.db
+                .query("users")
+                .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+                .unique();
+            
+            if (!user) return null;
+            targetUserId = user._id;
+        }
+
+        // Now fetch the public profile
+        const user = await ctx.db.get(targetUserId as Id<"users">);
+        if (!user) return null;
+
+        const identity = await ctx.auth.getUserIdentity();
+        const isOwnProfile = identity && user.clerkId === identity.subject;
+
+        // Get stats
+        const donations = await ctx.db
+            .query("donations")
+            .withIndex("by_user", (q) => q.eq("userId", user._id))
+            .filter((q) => q.eq(q.field("status"), "completed"))
+            .collect();
+
+        const totalAmount = donations.reduce((sum, d) => sum + d.amount, 0);
+        const uniqueCases = new Set(donations.filter(d => d.caseId).map(d => d.caseId));
+
+        // Get followers/following
+        const followers = await ctx.db
+            .query("follows")
+            .withIndex("by_following", (q) => q.eq("followingId", user._id))
+            .collect();
+        
+        const following = await ctx.db
+            .query("follows")
+            .withIndex("by_follower", (q) => q.eq("followerId", user._id))
+            .collect();
+
+        // Get achievements
+        const achievements = await ctx.db
+            .query("achievements")
+            .withIndex("by_user", (q) => q.eq("userId", user._id))
+            .collect();
+
+        return {
+            id: user._id,
+            displayName: user.displayName || user.name,
+            name: user.name,
+            email: isOwnProfile ? user.email : undefined,
+            avatar: user.avatar,
+            bio: user.bio,
+            isPublic: user.isPublic ?? true,
+            role: user.role,
+            userType: user.userType,
+            city: user.city || user.volunteerCity,
+            memberSince: new Date(user.createdAt).getFullYear().toString(),
+            followerCount: followers.length,
+            followingCount: following.length,
+            badges: achievements.map(a => a.type),
+            isOwnProfile: !!isOwnProfile,
+            stats: {
+                totalDonations: donations.length,
+                totalAmount,
+                animalsHelped: uniqueCases.size,
+            },
+        };
+    },
+});
+
+// Toggle save/bookmark a case
+export const toggleSaveCase = mutation({
+    args: { caseId: v.id("cases") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        // Check if already saved
+        const existing = await ctx.db
+            .query("savedCases")
+            .withIndex("by_user_case", (q) => 
+                q.eq("userId", user._id).eq("caseId", args.caseId)
+            )
+            .unique();
+
+        if (existing) {
+            await ctx.db.delete(existing._id);
+            return { saved: false };
+        } else {
+            await ctx.db.insert("savedCases", {
+                userId: user._id,
+                caseId: args.caseId,
+                createdAt: Date.now(),
+            });
+            return { saved: true };
+        }
+    },
+});
+
+// Get saved cases for current user
+export const getSavedCases = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return [];
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) return [];
+
+        const savedCases = await ctx.db
+            .query("savedCases")
+            .withIndex("by_user", (q) => q.eq("userId", user._id))
+            .order("desc")
+            .collect();
+
+        // Fetch full case data
+        const cases = await Promise.all(
+            savedCases.map(async (saved) => {
+                const caseData = await ctx.db.get(saved.caseId);
+                if (!caseData) return null;
+
+                // Get first image URL
+                let imageUrl = null;
+                if (caseData.images.length > 0) {
+                    imageUrl = await ctx.storage.getUrl(caseData.images[0]);
+                }
+
+                return {
+                    ...caseData,
+                    imageUrl,
+                    savedAt: saved.createdAt,
+                };
+            })
+        );
+
+        return cases.filter(Boolean);
+    },
+});
+
+// Check if a case is saved
+export const isCaseSaved = query({
+    args: { caseId: v.id("cases") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return false;
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) return false;
+
+        const saved = await ctx.db
+            .query("savedCases")
+            .withIndex("by_user_case", (q) => 
+                q.eq("userId", user._id).eq("caseId", args.caseId)
+            )
+            .unique();
+
+        return !!saved;
     },
 });

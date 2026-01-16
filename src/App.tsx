@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { LanguageDetectionBanner } from "./components/LanguageDetectionBanner";
@@ -17,7 +17,8 @@ import Partners from "./pages/Partners";
 import Clinics from "./pages/Clinics";
 import ClinicProfile from "./pages/ClinicProfile";
 import PartnerProfile from "./pages/PartnerProfile";
-import Profile from "./pages/Profile";
+import Account from "./pages/Account";
+import PublicProfile from "./pages/PublicProfile";
 import MyDonations from "./pages/MyDonations";
 import DonationHistory from "./pages/DonationHistory";
 import Achievements from "./pages/Achievements";
@@ -74,14 +75,19 @@ const App = () => (
             <Route path="/partners/:id" element={<PartnerProfile />} />
             <Route path="/clinics" element={<Clinics />} />
             <Route path="/clinics/:id" element={<ClinicProfile />} />
+            {/* Profile redirect: /profile → /u/me */}
+            <Route path="/profile" element={<Navigate to="/u/me" replace />} />
+            {/* Account settings hub */}
             <Route
-              path="/profile"
+              path="/account"
               element={
                 <AuthGuard>
-                  <Profile />
+                  <Account />
                 </AuthGuard>
               }
             />
+            {/* Public profile pages */}
+            <Route path="/u/:userId" element={<PublicProfile />} />
             <Route
               path="/donations"
               element={

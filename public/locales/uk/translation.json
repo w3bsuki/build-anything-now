@@ -64,7 +64,9 @@
     "urgentCases": "Термінові випадки",
     "otherCases": "Інші випадки",
     "allCases": "Всі випадки",
-    "noMatches": "Немає відповідних випадків"
+    "noMatches": "Немає відповідних випадків",
+    "activeCampaigns": "Активні кампанії",
+    "campaignsSubtitle": "Допоможіть нам досягти наших цілей"
   },
   "campaigns": {
     "searchPlaceholder": "Пошук кампаній...",
@@ -72,7 +74,10 @@
     "allCampaigns": "Всі кампанії",
     "trending": "Популярні",
     "completed": "Завершені",
-    "noResults": "Немає {{filter}} кампаній наразі"
+    "noResults": "Немає {{filter}} кампаній наразі",
+    "active": "Активні",
+    "raised": "зібрано",
+    "viewAllCampaigns": "Переглянути всі кампанії"
   },
   "clinics": {
     "searchPlaceholder": "Пошук клінік або спеціалізацій...",
@@ -152,7 +157,36 @@
     "achievements": "Досягнення",
     "paymentMethods": "Методи оплати",
     "notifications": "Сповіщення",
-    "settings": "Налаштування"
+    "settings": "Налаштування",
+    "accountSettings": "Налаштування акаунту",
+    "editProfile": "Редагувати профіль",
+    "editProfileDesc": "Оновіть фото профілю, ім'я та біографію",
+    "viewProfile": "Переглянути профіль",
+    "displayName": "Відображуване ім'я",
+    "displayNamePlaceholder": "Введіть відображуване ім'я",
+    "bio": "Біографія",
+    "bioPlaceholder": "Розкажіть про себе...",
+    "publicProfile": "Публічний профіль",
+    "publicProfileDesc": "Дозволити іншим знаходити та переглядати ваш профіль",
+    "followers": "Підписники",
+    "following": "Підписки",
+    "follow": "Підписатися",
+    "unfollow": "Відписатися",
+    "impact": "Вплив",
+    "cases": "Випадки",
+    "badges": "Значки",
+    "saved": "Збережені",
+    "noBadgesYet": "Ще немає значків",
+    "noBadgesDesc": "Робіть пожертви та взаємодійте з випадками, щоб отримати значки!",
+    "noCasesYet": "Ще немає випадків",
+    "noCasesDesc": "Випадки з пожертвами з'являться тут",
+    "noSavedCases": "Немає збережених випадків",
+    "noSavedCasesDesc": "Зберігайте випадки, щоб переглянути пізніше",
+    "memberSince": "Учасник з",
+    "totalDonated": "Всього пожертвувано",
+    "casesSupported": "Підтримано випадків",
+    "shareProfile": "Поділитися профілем",
+    "profileCopied": "Посилання на профіль скопійовано!"
   },
   "settings": {
     "title": "Налаштування",
@@ -357,6 +391,7 @@
     "of": "з",
     "and": "та",
     "or": "або",
+    "viewAll": "Переглянути все",
     "comingSoon": "Незабаром",
     "notAvailable": "Недоступно",
     "mapComingSoon": "Перегляд карти незабаром",
@@ -375,7 +410,12 @@
     "goBackPartners": "Повернутися до партнерів",
     "backToPartners": "Назад до партнерів",
     "volunteerNotFound": "Волонтера не знайдено",
-    "anonymous": "Анонім"
+    "anonymous": "Анонім",
+    "unknownError": "Невідома помилка",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "share": "Поділитися",
+    "goHome": "На головну"
   },
   "time": {
     "justNow": "Щойно",

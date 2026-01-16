@@ -11,6 +11,10 @@ export default defineSchema({
         phone: v.optional(v.string()),
         role: v.union(v.literal("user"), v.literal("volunteer"), v.literal("clinic"), v.literal("admin")),
         createdAt: v.number(),
+        // Profile fields
+        displayName: v.optional(v.string()),
+        bio: v.optional(v.string()),
+        isPublic: v.optional(v.boolean()),
         // Onboarding tracking
         onboardingCompleted: v.optional(v.boolean()),
         onboardingCompletedAt: v.optional(v.number()),
@@ -462,4 +466,35 @@ export default defineSchema({
         .index("by_case", ["caseId"])
         .index("by_parent", ["parentId"])
         .index("by_case_created", ["caseId", "createdAt"]),
+
+    // Follows table - social follow relationships
+    follows: defineTable({
+        followerId: v.id("users"),
+        followingId: v.id("users"),
+        createdAt: v.number(),
+    })
+        .index("by_follower", ["followerId"])
+        .index("by_following", ["followingId"])
+        .index("by_follower_following", ["followerId", "followingId"]),
+
+    // Saved cases - bookmarked cases by users
+    savedCases: defineTable({
+        userId: v.id("users"),
+        caseId: v.id("cases"),
+        createdAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_user_case", ["userId", "caseId"]),
+
+    // Messages table - 1:1 chat messages
+    messages: defineTable({
+        senderId: v.id("users"),
+        receiverId: v.id("users"),
+        content: v.string(),
+        read: v.boolean(),
+        createdAt: v.number(),
+    })
+        .index("by_sender", ["senderId"])
+        .index("by_receiver", ["receiverId"])
+        .index("by_conversation", ["senderId", "receiverId"]),
 });

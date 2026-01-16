@@ -357,8 +357,8 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
               className={cn(
                 'w-6 h-6 transition-all',
                 optimisticLiked
-                  ? 'fill-red-500 text-red-500 scale-110'
-                  : 'text-foreground group-hover:text-red-500'
+                  ? 'fill-destructive text-destructive scale-110'
+                  : 'text-foreground group-hover:text-destructive'
               )}
             />
             <span className="text-sm font-medium">{optimisticLikeCount}</span>

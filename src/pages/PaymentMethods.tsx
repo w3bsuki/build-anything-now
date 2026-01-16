@@ -59,7 +59,7 @@ const PaymentMethods = () => {
       <div className="sticky top-0 md:top-14 z-40 bg-card/95 backdrop-blur-md border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
-            to="/profile"
+            to="/account"
             className="w-9 h-9 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />

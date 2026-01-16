@@ -310,6 +310,37 @@ export const listByUser = query({
     },
 });
 
+// Get cases by user with image URLs (for profile display)
+export const listByUserWithImages = query({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        const cases = await ctx.db
+            .query("cases")
+            .withIndex("by_user", (q) => q.eq("userId", args.userId))
+            .collect();
+
+        return await Promise.all(
+            cases.map(async (c) => {
+                let imageUrl: string | null = null;
+                if (c.images.length > 0) {
+                    imageUrl = await ctx.storage.getUrl(c.images[0]);
+                }
+                return {
+                    _id: c._id,
+                    title: c.title,
+                    description: c.description,
+                    type: c.type,
+                    status: c.status,
+                    location: c.location,
+                    fundraising: c.fundraising,
+                    imageUrl,
+                    createdAt: c.createdAt,
+                };
+            })
+        );
+    },
+});
+
 // Create a new case
 export const create = mutation({
     args: {
