@@ -54,11 +54,11 @@ export const FeaturedClinicCard = ({ clinic, variant = 'horizontal' }: FeaturedC
     );
   }
 
-  // Horizontal card for featured section - matches screenshot left side
+  // Horizontal card for featured section - scrollable cards
   return (
     <Link
       to={`/clinics/${clinicId}`}
-      className="flex items-center gap-3 p-2 rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-sm transition-all group"
+      className="flex-shrink-0 w-[280px] flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-md transition-all group"
     >
       {/* Circular Avatar */}
       <div className="relative flex-shrink-0">
@@ -69,6 +69,11 @@ export const FeaturedClinicCard = ({ clinic, variant = 'horizontal' }: FeaturedC
             className="w-full h-full object-cover"
           />
         </div>
+        {clinic.is24h && (
+          <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">
+            24/7
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -82,13 +87,11 @@ export const FeaturedClinicCard = ({ clinic, variant = 'horizontal' }: FeaturedC
           </h3>
         </div>
 
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
           <MapPin className="w-3 h-3 flex-shrink-0" />
           <span className="truncate">{clinic.city}</span>
           {clinic.distance && (
-            <>
-              <span className="text-primary font-medium">{clinic.distance}</span>
-            </>
+            <span className="text-primary font-medium">{clinic.distance}</span>
           )}
         </div>
 

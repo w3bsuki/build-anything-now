@@ -103,37 +103,24 @@ const Clinics = () => {
               </h2>
             </div>
 
-            {isLoading ? (
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                {[1, 2].map((i) => (
-                  <div key={i} className="flex-shrink-0 w-[280px] h-[88px] rounded-2xl bg-muted animate-pulse" />
-                ))}
-              </div>
-            ) : (
-              <div className="flex gap-3">
-                {/* Main featured card */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  {featuredClinics.slice(0, 2).map((clinic) => (
-                    <FeaturedClinicCard
-                      key={clinic._id}
-                      clinic={clinic}
-                      variant="horizontal"
-                    />
+            {/* Horizontal scroll container */}
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+              {isLoading ? (
+                <>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex-shrink-0 w-[280px] h-[88px] rounded-2xl bg-muted animate-pulse" />
                   ))}
-                </div>
-
-                {/* Compact image cards on the right */}
-                <div className="flex-shrink-0 flex flex-col gap-2">
-                  {featuredClinics.slice(2, 4).map((clinic) => (
-                    <FeaturedClinicCard
-                      key={clinic._id}
-                      clinic={clinic}
-                      variant="compact"
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+                </>
+              ) : (
+                featuredClinics.map((clinic) => (
+                  <FeaturedClinicCard
+                    key={clinic._id}
+                    clinic={clinic}
+                    variant="horizontal"
+                  />
+                ))
+              )}
+            </div>
           </section>
         )}
 
