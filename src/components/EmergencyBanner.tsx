@@ -14,7 +14,7 @@ export const EmergencyBanner = ({ className }: EmergencyBannerProps) => {
     <Link
       to="/clinics?filter=24h"
       className={cn(
-        "group flex items-center gap-3 p-4 rounded-2xl",
+        "group flex items-center gap-3 p-3 rounded-xl",
         "bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent",
         "border border-rose-200/60 dark:border-rose-500/20",
         "hover:border-rose-300 dark:hover:border-rose-500/30",
@@ -23,16 +23,16 @@ export const EmergencyBanner = ({ className }: EmergencyBannerProps) => {
       )}
     >
       {/* Icon */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500/15 flex items-center justify-center">
-        <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-rose-500/15 flex items-center justify-center">
+        <AlertCircle className="w-4.5 h-4.5 text-rose-600 dark:text-rose-400" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-rose-700 dark:text-rose-400 text-sm">
+        <h3 className="font-semibold text-rose-700 dark:text-rose-400 text-sm leading-tight">
           {t('clinics.petEmergency', 'Pet Emergency?')}
         </h3>
-        <p className="text-xs text-rose-600/80 dark:text-rose-400/70 mt-0.5">
+        <p className="text-[11px] text-rose-600/80 dark:text-rose-400/70 mt-0.5">
           {t('clinics.tapToFind247', 'Tap to find 24/7 emergency care')}
         </p>
       </div>

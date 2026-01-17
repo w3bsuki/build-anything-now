@@ -20,30 +20,28 @@ interface FeaturedClinicCardProps {
     distance?: string;
     featured?: boolean;
   };
-  variant?: 'horizontal' | 'compact';
+  variant?: 'horizontal' | 'compact' | 'vertical';
 }
 
-export const FeaturedClinicCard = ({ clinic, variant = 'horizontal' }: FeaturedClinicCardProps) => {
+export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedClinicCardProps) => {
   const { t } = useTranslation();
   const clinicId = clinic._id || clinic.id;
 
   const fallbackImage = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&q=80';
 
   if (variant === 'compact') {
-    // Square image card for horizontal scroll - matches screenshot right side
+    // Square image card for horizontal scroll
     return (
       <Link
         to={`/clinics/${clinicId}`}
         className="relative flex-shrink-0 w-[100px] overflow-hidden rounded-2xl group"
       >
-        {/* Square Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
           <img
             src={clinic.image || fallbackImage}
             alt={clinic.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          {/* 24/7 Badge */}
           {clinic.is24h && (
             <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
               24/7
@@ -54,7 +52,72 @@ export const FeaturedClinicCard = ({ clinic, variant = 'horizontal' }: FeaturedC
     );
   }
 
-  // Horizontal card for featured section - scrollable cards
+  if (variant === 'vertical') {
+    // Vertical card style similar to campaign cards
+    return (
+      <Link
+        to={`/clinics/${clinicId}`}
+        className="flex-shrink-0 w-[160px] rounded-2xl bg-card border border-border/50 overflow-hidden hover:border-border hover:shadow-md transition-all group"
+      >
+        {/* Image */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden">
+          <img
+            src={clinic.image || fallbackImage}
+            alt={clinic.name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          
+          {/* 24/7 Badge */}
+          {clinic.is24h && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+              <Clock className="w-3 h-3" />
+              24/7
+            </div>
+          )}
+          
+          {/* Verified Badge */}
+          {clinic.verified && (
+            <div className="absolute top-2 right-2">
+              <BadgeCheck className="w-5 h-5 text-white drop-shadow-md" />
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="p-2.5">
+          <h3 className="font-semibold text-xs text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+            {clinic.name}
+          </h3>
+
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-1">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="truncate">{clinic.city}</span>
+            {clinic.distance && (
+              <span className="text-primary font-medium">{clinic.distance}</span>
+            )}
+          </div>
+
+          {/* Rating */}
+          {clinic.rating && (
+            <div className="flex items-center gap-1 mt-1.5">
+              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <span className="text-[11px] font-semibold text-foreground">{clinic.rating}</span>
+              {clinic.reviewCount && (
+                <span className="text-[10px] text-muted-foreground">
+                  ({clinic.reviewCount})
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </Link>
+    );
+  }
+
+  // Horizontal card for featured section (legacy)
   return (
     <Link
       to={`/clinics/${clinicId}`}

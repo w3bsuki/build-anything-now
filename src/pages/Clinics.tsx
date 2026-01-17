@@ -91,24 +91,24 @@ const Clinics = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-4 space-y-6">
+      <div className="container mx-auto px-4 py-3 space-y-4">
 
         {/* === FEATURED CLINICS SECTION === */}
         {(isLoading || featuredClinics.length > 0) && !show24hOnly && (
           <section>
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-2.5">
               <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
               <h2 className="text-sm font-semibold text-foreground">
                 {t('clinics.featuredClinics', 'Featured Clinics')}
               </h2>
             </div>
 
-            {/* Horizontal scroll container */}
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+            {/* Horizontal scroll container - vertical cards */}
+            <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
               {isLoading ? (
                 <>
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex-shrink-0 w-[280px] h-[88px] rounded-2xl bg-muted animate-pulse" />
+                    <div key={i} className="flex-shrink-0 w-[160px] h-[200px] rounded-2xl bg-muted animate-pulse" />
                   ))}
                 </>
               ) : (
@@ -116,7 +116,7 @@ const Clinics = () => {
                   <FeaturedClinicCard
                     key={clinic._id}
                     clinic={clinic}
-                    variant="horizontal"
+                    variant="vertical"
                   />
                 ))
               )}
@@ -130,7 +130,7 @@ const Clinics = () => {
         {/* === ALL CLINICS SECTION === */}
         <section>
           {/* Section Header with View Toggle */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <Building2 className="w-4 h-4 text-muted-foreground" />
               <h2 className="text-sm font-semibold text-foreground">
