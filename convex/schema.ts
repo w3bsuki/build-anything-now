@@ -263,13 +263,20 @@ export default defineSchema({
         is24h: v.boolean(),
         specializations: v.array(v.string()),
         verified: v.boolean(),
+        // Enhanced clinic fields
+        image: v.optional(v.string()),          // Hero/cover image
+        rating: v.optional(v.number()),         // Average rating 0-5
+        reviewCount: v.optional(v.number()),    // Number of reviews
+        distance: v.optional(v.string()),       // Distance from user e.g. "0.8 km"
+        featured: v.optional(v.boolean()),      // Featured clinic flag
         // Ownership tracking for claimed clinics
         ownerId: v.optional(v.id("users")),
         claimedAt: v.optional(v.number()),
     })
         .index("by_city", ["city"])
         .index("by_owner", ["ownerId"])
-        .index("by_verified", ["verified"]),
+        .index("by_verified", ["verified"])
+        .index("by_featured", ["featured"]),
 
     // Clinic claims - pending verification requests
     clinicClaims: defineTable({

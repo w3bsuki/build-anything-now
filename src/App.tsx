@@ -39,6 +39,7 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomepageDemo from "./pages/HomepageDemo";
 import CardComparisonDemo from "./pages/CardComparisonDemo";
+import ClinicsDemo from "./pages/demo/ClinicsDemo";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import ClaimOrganizationPage from "./pages/onboarding/ClaimOrganizationPage";
 
@@ -66,6 +67,7 @@ const App = () => (
             
             {/* Demo route - DELETE AFTER DECIDING */}
             <Route path="/demo" element={<HomepageDemo />} />
+            <Route path="/demo/clinics" element={<ClinicsDemo />} />
             <Route path="/card-compare" element={<CardComparisonDemo />} />
             
             {/* Main app routes */}

@@ -104,13 +104,22 @@
     "donateNowEndingSoon": "Дарете сега - Скоро приключва!"
   },
   "clinics": {
-    "searchPlaceholder": "Търсене на клиники или специализации...",
+    "searchPlaceholder": "Търсене на клиники, специализации...",
     "allCities": "Всички градове",
     "allClinics": "Всички клиники",
+    "featuredClinics": "Препоръчани клиники",
     "24hClinics": "Денонощни клиники",
     "24hOnly": "Само 24/7",
-    "noResults": "Не са намерени клиники по вашите критерии",
-    "verified": "Верифицирана"
+    "noResults": "Не са намерени клиники",
+    "tryDifferentFilters": "Опитайте да промените филтрите",
+    "verified": "Верифицирана",
+    "reviews": "отзива",
+    "filters": "Филтри",
+    "petEmergency": "Спешен случай?",
+    "tapToFind247": "Натиснете за денонощна помощ",
+    "emergencyHotline": "Спешна линия",
+    "available247": "Работи денонощно",
+    "contactForHours": "Свържете се за работно време"
   },
   "partners": {
     "searchPlaceholder": "Търсене на партньори...",

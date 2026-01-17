@@ -104,13 +104,22 @@
     "donateNowEndingSoon": "Donate Now - Ending Soon!"
   },
   "clinics": {
-    "searchPlaceholder": "Search clinics or specializations...",
+    "searchPlaceholder": "Search clinics, specializations...",
     "allCities": "All Cities",
     "allClinics": "All Clinics",
+    "featuredClinics": "Featured Clinics",
     "24hClinics": "24/7 Clinics",
     "24hOnly": "24/7 Only",
-    "noResults": "No clinics found matching your criteria",
-    "verified": "Verified"
+    "noResults": "No clinics found",
+    "tryDifferentFilters": "Try adjusting your filters",
+    "verified": "Verified",
+    "reviews": "reviews",
+    "filters": "Filters",
+    "petEmergency": "Pet Emergency?",
+    "tapToFind247": "Tap to find 24/7 emergency care",
+    "emergencyHotline": "Emergency Hotline",
+    "available247": "Available 24/7",
+    "contactForHours": "Contact for hours"
   },
   "partners": {
     "searchPlaceholder": "Search partners...",
