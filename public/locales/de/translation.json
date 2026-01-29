@@ -213,7 +213,7 @@
     "support": "Unterstützung",
     "helpCenter": "Hilfezentrum",
     "termsPrivacy": "Nutzungsbedingungen & Datenschutz",
-    "appVersion": "Pawsy v1.0.0"
+    "appVersion": "Pawtreon v1.0.0"
   },
   "languages": {
     "en": "English",
@@ -281,7 +281,7 @@
     "caseUpdate": "Fallaktualisierung",
     "achievementUnlocked": "Erfolg freigeschaltet!",
     "campaignCompleted": "Kampagne abgeschlossen",
-    "welcome": "Willkommen bei Pawsy!"
+    "welcome": "Willkommen bei Pawtreon!"
   },
   "achievements": {
     "title": "Erfolge",
@@ -431,6 +431,15 @@
     "reportAnimal": "Tier melden",
     "urgencyLevel": "Dringlichkeitsstufe",
     "whatDoTheyNeed": "Was brauchen sie?",
+    "details": "Details",
+    "images": "Fotos",
+    "funding": "Finanzierung",
+    "critical": "Kritisch",
+    "criticalDescription": "Lebensbedrohlich, braucht sofortige Hilfe",
+    "urgent": "Dringend",
+    "urgentDescription": "Braucht bald Hilfe, aber stabil",
+    "recovering": "Erholend",
+    "recoveringDescription": "Wird behandelt, braucht Finanzierung",
     "criticalLabel": "Kritisch",
     "criticalDesc": "Lebensbedrohlich, braucht sofortige Hilfe",
     "urgentLabel": "Dringend",
@@ -717,7 +726,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Willkommen bei Pawsy!",
+      "title": "Willkommen bei Pawtreon!",
       "subtitle": "Was beschreibt Sie am besten?"
     },
     "options": {
@@ -735,7 +744,7 @@
       },
       "exploring": {
         "title": "Nur schauen",
-        "description": "Entdecken, was Pawsy bietet"
+        "description": "Entdecken, was Pawtreon bietet"
       },
       "help": {
         "title": "Ich möchte Tieren helfen",
@@ -835,7 +844,7 @@
     }
   },
   "tour": {
-    "welcome": "Willkommen bei PawsSafe! 🐾 Lass mich dir zeigen, wie du Tieren in Not helfen kannst.",
+    "welcome": "Willkommen bei Pawtreon! 🐾 Lass mich dir zeigen, wie du Tieren in Not helfen kannst.",
     "urgentCases": "Hier findest du Tiere, die sofortige Hilfe brauchen. Jeder Fall zeigt ihre Geschichte und wie viel Finanzierung sie brauchen.",
     "caseCard": "Klicke auf jeden Fall, um Details zu sehen und zu spenden. Jeder Betrag hilft!",
     "navigation": "Erkunde Kampagnen, Partnerkliniken und Tierheime, die mit uns arbeiten.",

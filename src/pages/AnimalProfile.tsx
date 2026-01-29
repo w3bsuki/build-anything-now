@@ -9,9 +9,12 @@ import { UpdatesTimeline } from '@/components/UpdatesTimeline';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import { CommentsSheet } from '@/components/homepage/CommentsSheet';
-import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle } from 'lucide-react';
+import { DonationFlowDrawer } from '@/components/donations/DonationFlowDrawer';
+import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { VerificationBadge } from '@/components/trust/VerificationBadge';
+import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
 
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
@@ -26,6 +29,8 @@ const AnimalProfile = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [donateOpen, setDonateOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const locale = i18n.language;
   const caseId = id as Id<'cases'> | undefined;
@@ -86,6 +91,13 @@ const AnimalProfile = () => {
           >
             <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
           </button>
+          <button
+            onClick={() => setReportOpen(true)}
+            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center text-foreground transition-colors active:opacity-90"
+            aria-label={t('report.reportConcern', 'Report concern')}
+          >
+            <Flag className="w-5 h-5" />
+          </button>
           <ShareButton title={displayTitle} text={displayDescription} />
         </div>
       </div>
@@ -115,6 +127,8 @@ const AnimalProfile = () => {
               <Calendar className="w-3.5 h-3.5" />
               <span>{format(new Date(caseData.createdAt), 'MMM d, yyyy')}</span>
             </div>
+            <span className="text-muted-foreground/40">•</span>
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} showExplainer />
           </div>
 
           {caseData.isMachineTranslated && caseData.translatedFrom && (
@@ -194,7 +208,10 @@ const AnimalProfile = () => {
             </Button>
 
             {/* Donate - primary, takes remaining space */}
-            <Button className="flex-1 h-10 rounded-xl font-semibold">
+            <Button
+              className="flex-1 h-10 rounded-xl font-semibold"
+              onClick={() => setDonateOpen(true)}
+            >
               <Heart className="w-4 h-4 mr-1.5 fill-current" />
               {t('actions.donateNow')}
             </Button>
@@ -211,6 +228,22 @@ const AnimalProfile = () => {
           caseTitle={caseData?.title || ''}
         />
       )}
+
+      <DonationFlowDrawer
+        open={donateOpen}
+        onOpenChange={setDonateOpen}
+        caseId={caseData.id}
+        caseTitle={displayTitle}
+        caseCoverImage={caseData.images?.[0]}
+        currency={caseData.fundraising.currency}
+      />
+
+      <ReportConcernSheet
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        caseId={caseData.id}
+        caseTitle={displayTitle}
+      />
     </div>
   );
 };

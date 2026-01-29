@@ -225,10 +225,10 @@ We especially value investors who can help with:
 5. **Close** — Wire funds, sign SAFE
 
 ### Contact
-
-📧 **Email:** [your@email.com]  
-📱 **Phone:** [your phone]  
-📅 **Calendar:** [calendly link]
+ 
+📧 **Email:** TODO  
+📱 **Phone:** TODO  
+📅 **Calendar:** TODO
 
 ---
 
@@ -238,7 +238,7 @@ We're building something meaningful — a platform that helps animals in need wh
 
 **Join us in making animal welfare more accessible, transparent, and impactful.**
 
-🐾 **PawsSafe** — Every paw deserves a safe home.
+🐾 **Pawtreon** — Every paw deserves a safe home.
 
 ---
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
@@ -14,7 +15,7 @@ function requireDevSecret(secret: string) {
 
 // Demo user IDs (predictable for cleanup)
 const DEMO_CLERK_IDS = {
-  admin: "demo_admin_pawssafe",
+  admin: "demo_admin_pawtreon",
   volunteer1: "demo_volunteer_maria",
   volunteer2: "demo_volunteer_georgi",
   volunteer3: "demo_volunteer_elena",

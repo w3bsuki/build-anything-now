@@ -4,41 +4,40 @@
  * works offline and remains consistent across demo sessions.
  */
 
-import type { Campaign, Case, Volunteer } from '@/types';
+import type { AnimalCase, Campaign, Partner, Volunteer } from '@/types';
 
 // Sample cases for presentation
-export const presentationCases: Case[] = [
+export const presentationCases: AnimalCase[] = [
   {
     id: 'case-1',
     title: 'Luna - Hit by car, needs surgery',
     description: 'Beautiful stray dog found injured after being hit by a car. Needs emergency surgery.',
     story: 'Luna was found by a kind passerby who noticed she couldn\'t walk. X-rays show she needs immediate surgery on her hind legs.',
     status: 'critical',
+    verificationStatus: 'clinic',
+    species: 'dog',
     images: [
       'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
     ],
     location: {
       city: 'Sofia',
-      neighborhood: 'Lozenets',
-      coordinates: { lat: 42.6687, lng: 23.3088 }
+      neighborhood: 'Lozenets'
     },
     fundraising: {
       goal: 1500,
       current: 890,
-      currency: 'BGN',
-      donorCount: 42
+      currency: 'BGN'
     },
     updates: [
       {
         id: 'u1',
         date: new Date().toISOString(),
         title: 'Surgery scheduled',
-        content: 'Luna\'s surgery is scheduled for tomorrow morning.',
+        description: 'Luna\'s surgery is scheduled for tomorrow morning.',
         type: 'medical'
       }
     ],
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
   },
   {
     id: 'case-2',
@@ -46,55 +45,53 @@ export const presentationCases: Case[] = [
     description: 'Tiny kitten found abandoned with severe eye infection.',
     story: 'Mila was found in a cardboard box, barely 4 weeks old with a severe eye infection that needs treatment.',
     status: 'urgent',
+    verificationStatus: 'community',
+    species: 'cat',
     images: [
       'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
     ],
     location: {
       city: 'Plovdiv',
-      neighborhood: 'Center',
-      coordinates: { lat: 42.1505, lng: 24.7489 }
+      neighborhood: 'Center'
     },
     fundraising: {
       goal: 400,
       current: 320,
-      currency: 'BGN',
-      donorCount: 28
+      currency: 'BGN'
     },
     updates: [],
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
   },
   {
     id: 'case-3',
     title: 'Max - Senior dog needs dental care',
     description: 'Elderly stray with severe dental problems causing pain.',
     story: 'Max is estimated to be around 12 years old. He was found with infected teeth that are causing him constant pain.',
-    status: 'stable',
+    status: 'recovering',
+    verificationStatus: 'community',
+    species: 'dog',
     images: [
       'https://images.unsplash.com/photo-1544568100-847a948585b9?w=800',
     ],
     location: {
       city: 'Varna',
-      neighborhood: 'Sea Garden',
-      coordinates: { lat: 43.2047, lng: 27.9116 }
+      neighborhood: 'Sea Garden'
     },
     fundraising: {
       goal: 600,
       current: 600,
-      currency: 'BGN',
-      donorCount: 35
+      currency: 'BGN'
     },
     updates: [
       {
         id: 'u2',
         date: new Date().toISOString(),
         title: 'Fully funded!',
-        content: 'Thanks to amazing donors, Max\'s treatment is fully funded!',
+        description: 'Thanks to amazing donors, Max\'s treatment is fully funded!',
         type: 'milestone'
       }
     ],
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
   },
 ];
 
@@ -106,17 +103,9 @@ export const presentationCampaigns: Campaign[] = [
     description: 'Help us provide warm shelters for street animals this winter.',
     image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
     goal: 5000,
-    raised: 3200,
-    currency: 'BGN',
-    donorCount: 89,
-    daysLeft: 21,
-    organizer: {
-      id: 'org-1',
-      name: 'Pawtreon Foundation',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200',
-      verified: true,
-    },
-    isFeatured: true,
+    current: 3200,
+    unit: 'BGN',
+    endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     id: 'campaign-2',
@@ -124,17 +113,9 @@ export const presentationCampaigns: Campaign[] = [
     description: 'Free sterilization for 100 stray cats in Sofia.',
     image: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=800',
     goal: 8000,
-    raised: 5600,
-    currency: 'BGN',
-    donorCount: 124,
-    daysLeft: 45,
-    organizer: {
-      id: 'org-2',
-      name: 'Sofia Cat Rescue',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-      verified: true,
-    },
-    isFeatured: false,
+    current: 5600,
+    unit: 'BGN',
+    endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 
@@ -165,26 +146,31 @@ export const presentationClinics = [
 ];
 
 // Sample partners for presentation
-export const presentationPartners = [
+export const presentationPartners: Partner[] = [
   {
     id: 'partner-1',
     name: 'Happy Paws Foundation',
     logo: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200',
-    type: 'nonprofit' as const,
+    type: 'sponsor',
+    contribution: 'Funds emergency surgeries and supports rescue operations.',
     description: 'Leading animal welfare organization in Bulgaria.',
     website: 'https://happypaws.bg',
-    verified: true,
-    joinedAt: '2024-01-15',
+    since: '2024',
+    animalsHelped: 1200,
+    totalContributed: 85000,
+    featured: true,
   },
   {
     id: 'partner-2',
     name: 'PetShop Bulgaria',
     logo: 'https://images.unsplash.com/photo-1560807707-8cc77767d783?w=200',
-    type: 'business' as const,
+    type: 'pet-shop',
+    contribution: 'Donates supplies and hosts adoption days with local rescues.',
     description: 'Largest pet supply chain donating 5% of sales.',
     website: 'https://petshop.bg',
-    verified: true,
-    joinedAt: '2024-02-01',
+    since: '2024',
+    animalsHelped: 450,
+    totalContributed: 42000,
   },
 ];
 
@@ -204,6 +190,8 @@ export const presentationVolunteers: Volunteer[] = [
       animalsHelped: 127,
       adoptions: 43,
       campaigns: 12,
+      donationsReceived: 18500,
+      hoursVolunteered: 640,
     },
   },
   {
@@ -220,6 +208,8 @@ export const presentationVolunteers: Volunteer[] = [
       animalsHelped: 45,
       adoptions: 12,
       campaigns: 5,
+      donationsReceived: 4200,
+      hoursVolunteered: 180,
     },
   },
 ];

@@ -215,6 +215,12 @@ export default defineSchema({
             })),
         }),
         clinicId: v.optional(v.id("clinics")),
+        // Trust signal shown in the UI (defaults to "unverified" in queries if missing)
+        verificationStatus: v.optional(v.union(
+            v.literal("unverified"),
+            v.literal("community"),
+            v.literal("clinic"),
+        )),
         foundAt: v.number(),
         broughtToClinicAt: v.optional(v.number()),
         fundraising: v.object({
@@ -391,7 +397,7 @@ export default defineSchema({
     })
         .index("by_status", ["status"]),
 
-    // Partners table - organizations that support PawsSafe
+    // Partners table - organizations that support Pawtreon
     partners: defineTable({
         name: v.string(),
         logo: v.string(), // URL
@@ -473,6 +479,26 @@ export default defineSchema({
         .index("by_case", ["caseId"])
         .index("by_parent", ["parentId"])
         .index("by_case_created", ["caseId", "createdAt"]),
+
+    // Reports table - user-submitted trust & safety reports (Phase 0: case reports only)
+    reports: defineTable({
+        caseId: v.id("cases"),
+        reason: v.union(
+            v.literal("suspected_scam"),
+            v.literal("duplicate_case"),
+            v.literal("incorrect_information"),
+            v.literal("animal_welfare"),
+            v.literal("other"),
+        ),
+        details: v.optional(v.string()),
+        reporterId: v.optional(v.id("users")),
+        reporterClerkId: v.optional(v.string()),
+        status: v.union(v.literal("open"), v.literal("reviewing"), v.literal("closed")),
+        createdAt: v.number(),
+    })
+        .index("by_case", ["caseId"])
+        .index("by_status", ["status"])
+        .index("by_reporter", ["reporterId"]),
 
     // Follows table - social follow relationships
     follows: defineTable({

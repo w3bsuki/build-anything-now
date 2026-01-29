@@ -1,4 +1,4 @@
-package com.pawsy.app;
+package com.pawtreon.app;
 
 import com.getcapacitor.BridgeActivity;
 

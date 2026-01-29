@@ -54,11 +54,11 @@ Shelter D → Word of mouth only
 
 ## Our Solution
 
-### PawsSafe: One Platform for All
+### Pawtreon: One Platform for All
 
 ```
 ┌─────────────────────────────────────────────┐
-│              PAWSSAFE PLATFORM              │
+│              PAWTREON PLATFORM              │
 ├─────────────────────────────────────────────┤
 │                                             │
 │  🏠 Shelters     💝 Donors     🐕 Adopters  │
@@ -80,7 +80,7 @@ Shelter D → Word of mouth only
 
 ### For Shelters
 
-| Problem | PawsSafe Solution |
+| Problem | Pawtreon Solution |
 |---------|-------------------|
 | Fragmented fundraising | One dashboard for all donations |
 | No visibility | Featured in app, SEO, social sharing |
@@ -90,7 +90,7 @@ Shelter D → Word of mouth only
 
 ### For Donors
 
-| Problem | PawsSafe Solution |
+| Problem | Pawtreon Solution |
 |---------|-------------------|
 | Can't find causes | Curated feed of verified cases |
 | Trust concerns | Only verified shelters, full transparency |
@@ -100,7 +100,7 @@ Shelter D → Word of mouth only
 
 ### For Adopters
 
-| Problem | PawsSafe Solution |
+| Problem | Pawtreon Solution |
 |---------|-------------------|
 | Discovery problem | All pets in one searchable database |
 | Outdated listings | Real-time sync with shelter inventory |
@@ -130,12 +130,12 @@ Supporting Bulgarian, English, German, Russian, Ukrainian from day one.
 
 ## The Vision
 
-**Before PawsSafe:**
+**Before Pawtreon:**
 - Shelters struggle alone
 - Donors don't know where to give
 - Animals wait longer for help
 
-**After PawsSafe:**
+**After Pawtreon:**
 - Shelters have professional fundraising tools
 - Donors find and trust verified causes instantly
 - Animals get help faster through collective action
@@ -144,7 +144,7 @@ Supporting Bulgarian, English, German, Russian, Ukrainian from day one.
 
 ## Success Stories (Projected)
 
-> "Before PawsSafe, we raised €500/month. Now we raise €5,000/month and have a waitlist of adopters."
+> "Before Pawtreon, we raised €500/month. Now we raise €5,000/month and have a waitlist of adopters."
 > — *Future shelter partner*
 
 > "I donated €20 and got updates every week. I know exactly how I helped save Max."

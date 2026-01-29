@@ -7,7 +7,7 @@
 
 ## The Opportunity
 
-**PawsSafe** is building the definitive platform for animal welfare — connecting shelters, donors, and adopters in one seamless experience.
+**Pawtreon** is building the definitive platform for animal welfare — connecting rescuers, verified partners/clinics, donors, and adopters in one seamless experience.
 
 ---
 
@@ -95,16 +95,16 @@ A **mobile-first platform** that:
 
 | Role | Name | Background |
 |------|------|------------|
-| **Founder/CEO** | [Name] | [Background] |
-| **CTO** | [Name] | [Background] |
-| **Advisor** | [Name] | [Background] |
+| **Founder/CEO** | TODO | TODO |
+| **CTO** | TODO | TODO |
+| **Advisor** | TODO | TODO |
 
 ---
 
 ## Contact
 
-📧 [your@email.com]  
-🌐 [pawssafe.com]  
+📧 TODO  
+🌐 TODO  
 📱 Demo available upon request
 
 ---

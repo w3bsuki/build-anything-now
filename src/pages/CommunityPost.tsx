@@ -6,11 +6,15 @@ import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { ShareButton } from '@/components/ShareButton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
   ArrowLeft,
   ThumbsUp,
   MessageSquare,
   MoreHorizontal,
+  Flag,
   Send,
   Bookmark,
   ImagePlus,
@@ -26,6 +30,7 @@ const CommunityPostPage = () => {
   const [newComment, setNewComment] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,6 +44,7 @@ const CommunityPostPage = () => {
       isVolunteer: false,
     },
     content: t('community.rulesBody'),
+    image: undefined as string | undefined,
     likes: 0,
     comments: 0,
     timeAgo: t('community.pinned'),
@@ -153,9 +159,23 @@ const CommunityPostPage = () => {
                 </div>
                 <span className="text-sm text-muted-foreground">{post.timeAgo}</span>
               </div>
-              <button className="p-2 hover:bg-muted rounded-full transition-colors">
-                <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-2 hover:bg-muted rounded-full transition-colors"
+                    aria-label={t('community.more', 'More')}
+                  >
+                    <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onClick={() => setReportOpen(true)}>
+                    <Flag className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {t('report.reportConcern', 'Report concern')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Mobile author info */}
@@ -181,6 +201,9 @@ const CommunityPostPage = () => {
                 src={post.image}
                 alt="Post"
                 className="w-full aspect-video object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
           )}
@@ -348,6 +371,36 @@ const CommunityPostPage = () => {
           </div>
         </div>
       </div>
+
+      <Sheet open={reportOpen} onOpenChange={setReportOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+          <SheetHeader className="text-left">
+            <SheetTitle className="flex items-center gap-2">
+              <Flag className="h-5 w-5 text-muted-foreground" />
+              {t('report.reportConcern', 'Report concern')}
+            </SheetTitle>
+            <SheetDescription>
+              {t(
+                'community.reportComingSoon',
+                'Reporting community posts is coming soon. For now, you can report cases from the case page.'
+              )}
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="mt-4 rounded-xl border border-border/60 bg-card/40 p-3 text-sm text-muted-foreground">
+            <div className="font-semibold text-foreground">{t('community.reportWhyTitle', 'Why this matters')}</div>
+            <div className="mt-1">
+              {t('community.reportWhyBody', 'We use reports to stop scams and keep the community safe.')}
+            </div>
+          </div>
+
+          <SheetFooter className="mt-4">
+            <Button variant="outline" onClick={() => setReportOpen(false)}>
+              {t('actions.close', 'Close')}
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 
 // List all volunteers with optional filters
 export const list = query({
@@ -7,7 +8,7 @@ export const list = query({
         topOnly: v.optional(v.boolean()),
     },
     handler: async (ctx, args) => {
-        let volunteers;
+        let volunteers: Doc<"volunteers">[];
         
         if (args.topOnly) {
             volunteers = await ctx.db
@@ -47,7 +48,7 @@ export const get = query({
             ...volunteer,
             name: user?.name ?? "Unknown",
             avatar: user?.avatar,
-            email: user?.email,
+            // Never expose user email on public volunteer endpoints.
         };
     },
 });
@@ -59,7 +60,7 @@ export const getByUserId = query({
         const volunteer = await ctx.db
             .query("volunteers")
             .withIndex("by_user", (q) => q.eq("userId", args.userId))
-            .unique();
+            .first();
 
         if (!volunteer) return null;
 
@@ -77,7 +78,7 @@ export const getTop = query({
     args: { limit: v.optional(v.number()) },
     handler: async (ctx, args) => {
         const limit = args.limit ?? 3;
-        const volunteers = await ctx.db
+        const volunteers: Doc<"volunteers">[] = await ctx.db
             .query("volunteers")
             .withIndex("by_top", (q) => q.eq("isTopVolunteer", true))
             .collect();

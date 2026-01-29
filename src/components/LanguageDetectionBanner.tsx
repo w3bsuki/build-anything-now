@@ -5,7 +5,7 @@ import { Globe, X, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createPortal } from 'react-dom';
 
-const STORAGE_KEY = 'pawsy_language_prompt_dismissed';
+const STORAGE_KEY = 'pawtreon_language_prompt_dismissed';
 const COUNTRY_LANGUAGE_MAP: Record<string, string> = {
   BG: 'bg', // Bulgaria
   UA: 'uk', // Ukraine

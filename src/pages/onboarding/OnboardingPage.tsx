@@ -136,7 +136,7 @@ export default function OnboardingPage() {
       id: 'exploring' as const,
       icon: <Eye className="size-6 text-muted-foreground" />,
       title: t('onboarding.options.exploring.title', 'Just exploring'),
-      description: t('onboarding.options.exploring.description', 'Looking around to see what Pawsy offers'),
+      description: t('onboarding.options.exploring.description', 'Looking around to see what Pawtreon offers'),
     },
   ];
 
@@ -164,7 +164,7 @@ export default function OnboardingPage() {
           <PawPrint className="size-8 text-primary" />
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-2">
-          {t('onboarding.welcome.title', 'Welcome to Pawsy!')}
+          {t('onboarding.welcome.title', 'Welcome to Pawtreon!')}
         </h1>
         <p className="text-base text-muted-foreground max-w-xs mx-auto">
           {t('onboarding.welcome.subtitle', 'What brings you here?')}

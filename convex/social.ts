@@ -295,11 +295,21 @@ export const getSocialStats = query({
             userId = user?._id ?? null;
         }
 
-        const results: Record<string, { likeCount: number; commentCount: number; liked: boolean }> = {};
+        const results: Record<
+            string,
+            {
+                likeCount: number;
+                commentCount: number;
+                liked: boolean;
+                supporterAvatars: (string | null)[];
+                helperCount: number;
+                helperAvatars: (string | null)[];
+            }
+        > = {};
 
         await Promise.all(
             args.caseIds.map(async (caseId) => {
-                const [likes, comments] = await Promise.all([
+                const [likes, comments, donations] = await Promise.all([
                     ctx.db
                         .query("likes")
                         .withIndex("by_case", (q) => q.eq("caseId", caseId))
@@ -308,6 +318,11 @@ export const getSocialStats = query({
                         .query("comments")
                         .withIndex("by_case", (q) => q.eq("caseId", caseId))
                         .collect(),
+                    ctx.db
+                        .query("donations")
+                        .withIndex("by_case", (q) => q.eq("caseId", caseId))
+                        .filter((q) => q.eq(q.field("status"), "completed"))
+                        .collect(),
                 ]);
 
                 let liked = false;
@@ -315,10 +330,39 @@ export const getSocialStats = query({
                     liked = likes.some((l) => l.userId === userId);
                 }
 
+                // Supporters/helping avatars:
+                // - Prefer donors (completed donations) as "helpers"
+                // - Fall back to likers as lightweight social proof
+                const uniqueDonorIds = Array.from(
+                    new Set(donations.map((d) => d.userId).map((id) => id.toString()))
+                );
+
+                const helperCount = uniqueDonorIds.length > 0 ? uniqueDonorIds.length : likes.length;
+
+                const topDonations = [...donations]
+                    .sort((a, b) => b.createdAt - a.createdAt)
+                    .filter((d) => !d.anonymous)
+                    .slice(0, 3);
+
+                const donorAvatars = await Promise.all(
+                    topDonations.map(async (d) => (await ctx.db.get(d.userId))?.avatar ?? null)
+                );
+
+                const topLikers = [...likes].sort((a, b) => b.createdAt - a.createdAt).slice(0, 3);
+                const likerAvatars = await Promise.all(
+                    topLikers.map(async (l) => (await ctx.db.get(l.userId))?.avatar ?? null)
+                );
+
+                const helperAvatars = donorAvatars.filter(Boolean).length ? donorAvatars : likerAvatars;
+                const supporterAvatars = likerAvatars;
+
                 results[caseId] = {
                     likeCount: likes.length,
                     commentCount: comments.length,
                     liked,
+                    supporterAvatars,
+                    helperCount,
+                    helperAvatars,
                 };
             })
         );

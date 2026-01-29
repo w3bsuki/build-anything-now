@@ -14,10 +14,11 @@ interface HomeHeaderV2Props {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSearchSubmit?: () => void;
+  topContent?: React.ReactNode; // Stories row or other "alive" content above search
   children?: React.ReactNode; // For filter pills or other controls below search
 }
 
-export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit, children }: HomeHeaderV2Props) {
+export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit, topContent, children }: HomeHeaderV2Props) {
   const { t } = useTranslation();
   const location = useLocation();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -28,59 +29,68 @@ export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit, chil
   };
 
   return (
-    <header className="md:hidden sticky top-0 z-50 bg-background/98 backdrop-blur-lg pt-[env(safe-area-inset-top)]">
-      {/* Top Row: Logo + Actions */}
-      <div className="flex items-center justify-between h-14 px-4">
-        {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-2">
-          <HeartHandshake className="size-5 text-primary" strokeWidth={2} />
-          <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
-        </NavLink>
+    <>
+      {/* Sticky Top Bar (always stays) */}
+      <header className="md:hidden sticky top-0 z-50 bg-background/98 backdrop-blur-lg pt-[env(safe-area-inset-top)] border-b border-border/30">
+        <div className="flex items-center justify-between h-14 px-4">
+          {/* Logo */}
+          <NavLink to="/" className="flex items-center gap-2">
+            <HeartHandshake className="size-5 text-primary" strokeWidth={2} />
+            <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
+          </NavLink>
 
-        {/* Actions */}
-        <div className="flex items-center -mr-1.5">
-          <Button variant="iconHeader" size="iconTouch" className="relative" asChild>
-            <NavLink to="/community">
-              <MessageCircle className={cn(
-                "size-5",
-                location.pathname === '/community' ? "text-primary fill-primary/20" : "text-muted-foreground"
-              )} />
-              {unreadPosts > 0 && location.pathname !== '/community' && (
-                <Badge
-                  variant="secondary"
-                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
-                >
-                  {unreadPosts > 9 ? '9+' : unreadPosts}
-                </Badge>
-              )}
-            </NavLink>
-          </Button>
-          <Button variant="iconHeader" size="iconTouch" className="relative" asChild>
-            <NavLink to="/notifications">
-              <Bell className={cn(
-                "size-5",
-                location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
-              )} />
-              {unreadNotifications > 0 && (
-                <Badge className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background">
-                  {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                </Badge>
-              )}
-            </NavLink>
-          </Button>
-          <Button variant="iconHeader" size="iconTouch" asChild>
-            <NavLink to="/account">
-              <User className={cn(
-                "size-5",
-                location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
-              )} />
-            </NavLink>
-          </Button>
+          {/* Actions */}
+          <div className="flex items-center -mr-1.5">
+            <Button variant="iconHeader" size="iconTouch" className="relative" asChild>
+              <NavLink to="/community">
+                <MessageCircle className={cn(
+                  "size-5",
+                  location.pathname === '/community' ? "text-primary fill-primary/20" : "text-muted-foreground"
+                )} />
+                {unreadPosts > 0 && location.pathname !== '/community' && (
+                  <Badge
+                    variant="secondary"
+                    className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
+                  >
+                    {unreadPosts > 9 ? '9+' : unreadPosts}
+                  </Badge>
+                )}
+              </NavLink>
+            </Button>
+            <Button variant="iconHeader" size="iconTouch" className="relative" asChild>
+              <NavLink to="/notifications">
+                <Bell className={cn(
+                  "size-5",
+                  location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
+                )} />
+                {unreadNotifications > 0 && (
+                  <Badge className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </Badge>
+                )}
+              </NavLink>
+            </Button>
+            <Button variant="iconHeader" size="iconTouch" asChild>
+              <NavLink to="/account">
+                <User className={cn(
+                  "size-5",
+                  location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
+                )} />
+              </NavLink>
+            </Button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Search Bar Row + Filter Pills */}
-      <div className="px-4 pt-1 pb-2 space-y-2">
+      {/* Stories row ABOVE search, but NOT sticky (scrolls away naturally) */}
+      {topContent ? (
+        <div className="md:hidden border-b border-border/30">
+          {topContent}
+        </div>
+      ) : null}
+
+      {/* Sticky Search + Filters (stays, stories doesn't) */}
+      <div className="md:hidden sticky top-[calc(env(safe-area-inset-top)+56px)] z-40 bg-background/98 backdrop-blur-lg border-b border-border/30 px-4 pt-2 pb-2 space-y-2">
         <form onSubmit={handleSubmit} className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50 pointer-events-none" />
           <input
@@ -109,6 +119,6 @@ export function HomeHeaderV2({ searchQuery, onSearchChange, onSearchSubmit, chil
         </form>
         {children}
       </div>
-    </header>
+    </>
   );
 }

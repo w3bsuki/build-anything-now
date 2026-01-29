@@ -5,11 +5,16 @@ import { api } from '../../convex/_generated/api';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   ThumbsUp,
   MessageSquare,
   Share2,
   MoreHorizontal,
+  Flag,
   Shield,
   TrendingUp
 } from 'lucide-react';
@@ -30,6 +35,11 @@ const CommunityFeedPostCard = ({
   t: TFunction;
 }) => {
   const isRules = post.id === 'rules';
+  const [reportOpen, setReportOpen] = useState(false);
+
+  const authorInitials = post.author.name
+    ? post.author.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+    : 'U';
 
   return (
     <Link
@@ -47,11 +57,10 @@ const CommunityFeedPostCard = ({
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <img
-              src={post.author.avatar}
-              alt={post.author.name}
-              className={cn('rounded-full object-cover', compact ? 'w-9 h-9' : 'w-10 h-10')}
-            />
+            <Avatar className={cn('shrink-0', compact ? 'h-9 w-9' : 'h-10 w-10')}>
+              <AvatarImage src={post.author.avatar} alt={post.author.name} />
+              <AvatarFallback className="text-xs font-semibold bg-muted">{authorInitials}</AvatarFallback>
+            </Avatar>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-sm text-foreground truncate">{post.author.name}</span>
@@ -74,13 +83,42 @@ const CommunityFeedPostCard = ({
               <span className="text-xs text-muted-foreground">{post.timeAgo}</span>
             </div>
           </div>
-          <button
-            className="p-1.5 hover:bg-muted rounded-full transition-colors"
-            onClick={(e) => e.preventDefault()}
-            aria-label={t('community.more')}
-          >
-            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-          </button>
+          {!isRules ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="p-1.5 hover:bg-muted rounded-full transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  aria-label={t('community.more')}
+                >
+                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-52"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setReportOpen(true);
+                  }}
+                >
+                  <Flag className="mr-2 h-4 w-4 text-muted-foreground" />
+                  {t('report.reportConcern', 'Report concern')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </div>
 
         {/* Content + optional thumbnail */}
@@ -107,6 +145,9 @@ const CommunityFeedPostCard = ({
                 alt=""
                 className="w-24 h-24 rounded-lg object-cover border border-border shrink-0"
                 loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             )}
           </div>
@@ -128,6 +169,36 @@ const CommunityFeedPostCard = ({
             </div>
           </div>
         )}
+
+        <Sheet open={reportOpen} onOpenChange={setReportOpen}>
+          <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+            <SheetHeader className="text-left">
+              <SheetTitle className="flex items-center gap-2">
+                <Flag className="h-5 w-5 text-muted-foreground" />
+                {t('report.reportConcern', 'Report concern')}
+              </SheetTitle>
+              <SheetDescription>
+                {t(
+                  'community.reportComingSoon',
+                  'Reporting community posts is coming soon. For now, you can report cases from the case page.'
+                )}
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="mt-4 rounded-xl border border-border/60 bg-card/40 p-3 text-sm text-muted-foreground">
+              <div className="font-semibold text-foreground">{t('community.reportWhyTitle', 'Why this matters')}</div>
+              <div className="mt-1">
+                {t('community.reportWhyBody', 'We use reports to stop scams and keep the community safe.')}
+              </div>
+            </div>
+
+            <SheetFooter className="mt-4">
+              <Button variant="outline" onClick={() => setReportOpen(false)}>
+                {t('actions.close', 'Close')}
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </article>
     </Link>
   );

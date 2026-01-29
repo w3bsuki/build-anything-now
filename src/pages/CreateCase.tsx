@@ -1,14 +1,21 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ArrowRight, Camera, MapPin, Building2, AlertTriangle, Heart, DollarSign, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, MapPin, Building2, AlertTriangle, Heart, DollarSign, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const CreateCase = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const createCase = useMutation(api.cases.create);
+    const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const steps = [
         { id: 1, label: t('createCase.type'), icon: AlertTriangle },
@@ -33,6 +40,9 @@ const CreateCase = () => {
     ];
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [hasSeenPhotoTip, setHasSeenPhotoTip] = useState(false);
+    const [createdCaseId, setCreatedCaseId] = useState<Id<"cases"> | null>(null);
     const [formData, setFormData] = useState({
         type: '',
         category: '',
@@ -49,11 +59,60 @@ const CreateCase = () => {
         currency: 'EUR',
     });
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentStep, isSubmitted]);
+
     const updateForm = (field: string, value: string | File[]) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    const validateStep = (step: number) => {
+        switch (step) {
+            case 1:
+                if (!formData.type) return t('createCase.validation.urgency', 'Select an urgency level to continue.');
+                if (!formData.category) return t('createCase.validation.category', 'Select what help is needed to continue.');
+                return null;
+            case 2:
+                if (!formData.city.trim()) return t('createCase.validation.city', 'Add a city to continue.');
+                if (!formData.neighborhood.trim()) return t('createCase.validation.neighborhood', 'Add an area/neighborhood to continue.');
+                return null;
+            case 3:
+                if (!formData.title.trim()) return t('createCase.validation.title', 'Add a title to continue.');
+                if (!formData.description.trim()) return t('createCase.validation.description', 'Add a short description to continue.');
+                return null;
+            case 4:
+                return null;
+            case 5:
+                if (!formData.fundraisingGoal.trim() || Number(formData.fundraisingGoal) <= 0) {
+                    return t('createCase.validation.goal', 'Set a fundraising goal to continue.');
+                }
+                return null;
+            default:
+                return null;
+        }
+    };
+
     const nextStep = () => {
+        if (currentStep === 4 && formData.images.length === 0 && !hasSeenPhotoTip) {
+            setHasSeenPhotoTip(true);
+            toast({
+                title: t('createCase.photosTipTitle', 'Photos recommended'),
+                description: t(
+                    'createCase.photosTipBody',
+                    'Photos help verification and build donor trust. You can continue now and add photos later.'
+                ),
+            });
+        }
+        const error = validateStep(currentStep);
+        if (error) {
+            toast({
+                title: t('common.missingInfo', 'Missing info'),
+                description: error,
+                variant: 'destructive',
+            });
+            return;
+        }
         if (currentStep < steps.length) {
             setCurrentStep(currentStep + 1);
         }
@@ -65,10 +124,90 @@ const CreateCase = () => {
         }
     };
 
+    const uploadImages = async (files: File[]): Promise<Id<"_storage">[]> => {
+        const uploadedIds: Id<"_storage">[] = [];
+        for (const file of files) {
+            const uploadUrl = await generateUploadUrl();
+            const response = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': file.type },
+                body: file,
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to upload image: ${response.statusText}`);
+            }
+            const { storageId } = await response.json();
+            uploadedIds.push(storageId as Id<"_storage">);
+        }
+        return uploadedIds;
+    };
+
     const handleSubmit = async () => {
-        // TODO: Implement Convex mutation with image upload
-        console.log('Submitting:', formData);
-        navigate('/');
+        const error = validateStep(steps.length);
+        if (error) {
+            toast({
+                title: t('common.missingInfo', 'Missing info'),
+                description: error,
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // Upload images first
+            let imageIds: Id<"_storage">[] = [];
+            if (formData.images.length > 0) {
+                imageIds = await uploadImages(formData.images);
+            }
+
+            // Parse foundAt to timestamp (or use now)
+            const foundAtTimestamp = formData.foundAt
+                ? new Date(formData.foundAt).getTime()
+                : Date.now();
+
+            // Parse broughtToClinicAt if provided
+            const broughtToClinicAtTimestamp = formData.broughtToClinicAt
+                ? new Date(formData.broughtToClinicAt).getTime()
+                : undefined;
+
+            // Create the case
+            const caseId = await createCase({
+                type: formData.type as "critical" | "urgent" | "recovering" | "adopted",
+                category: formData.category as "surgery" | "shelter" | "food" | "medical" | "rescue",
+                language: i18n.language,
+                title: formData.title,
+                description: formData.description,
+                story: formData.story || undefined,
+                images: imageIds,
+                location: {
+                    city: formData.city,
+                    neighborhood: formData.neighborhood,
+                },
+                foundAt: foundAtTimestamp,
+                broughtToClinicAt: broughtToClinicAtTimestamp,
+                fundraisingGoal: Number(formData.fundraisingGoal),
+                currency: formData.currency,
+            });
+
+            setCreatedCaseId(caseId);
+            setIsSubmitted(true);
+
+            toast({
+                title: t('createCase.successTitle', 'Case created!'),
+                description: t('createCase.successBody', 'Your case has been published and is now live.'),
+            });
+        } catch (err) {
+            console.error('Failed to create case:', err);
+            toast({
+                title: t('createCase.errorTitle', 'Something went wrong'),
+                description: t('createCase.errorBody', 'Failed to create case. Please try again.'),
+                variant: 'destructive',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -84,6 +223,63 @@ const CreateCase = () => {
             </div>
 
             {/* Progress Steps */}
+            {isSubmitted ? (
+                <div className="container mx-auto px-4 py-6">
+                    <div className="max-w-lg mx-auto space-y-4">
+                        <div className="rounded-2xl border border-border bg-card p-4">
+                            <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                    <Check className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-foreground">
+                                        {t('createCase.readyTitle', 'Your case is ready')}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        {t(
+                                            'createCase.publishedBody',
+                                            'Your case is now live and visible to donors. Share it to get more support!'
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-border bg-card p-4">
+                            <p className="font-semibold text-foreground mb-2">{t('createCase.summary', 'Summary')}</p>
+                            <div className="text-sm text-muted-foreground space-y-1">
+                                <p><strong>{t('createCase.type', 'Type')}:</strong> {formData.type || t('createCase.notSelected', 'Not selected')}</p>
+                                <p><strong>{t('createCase.category', 'Category')}:</strong> {formData.category || t('createCase.notSelected', 'Not selected')}</p>
+                                <p><strong>{t('createCase.location', 'Location')}:</strong> {formData.city}, {formData.neighborhood}</p>
+                                <p><strong>{t('createCase.title', 'Title')}:</strong> {formData.title || t('createCase.notSet', 'Not set')}</p>
+                                <p><strong>{t('createCase.goal', 'Goal')}:</strong> {formData.fundraisingGoal || '0'} {formData.currency}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            {createdCaseId ? (
+                                <>
+                                    <Button variant="outline" className="h-11 rounded-xl" onClick={() => navigate('/')}>
+                                        {t('createCase.backToFeed', 'Back to feed')}
+                                    </Button>
+                                    <Button className="h-11 rounded-xl font-semibold" onClick={() => navigate(`/case/${createdCaseId}`)}>
+                                        {t('createCase.viewCase', 'View case')}
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button variant="outline" className="h-11 rounded-xl" onClick={() => setIsSubmitted(false)}>
+                                        {t('createCase.editDraft', 'Edit draft')}
+                                    </Button>
+                                    <Button className="h-11 rounded-xl font-semibold" onClick={() => navigate('/')}>
+                                        {t('createCase.backToFeed', 'Back to feed')}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : (
             <div className="container mx-auto px-4 py-4">
                 <div className="flex items-center justify-between mb-6">
                     {steps.map((step, index) => {
@@ -170,7 +366,7 @@ const CreateCase = () => {
                                 <Label htmlFor="city">{t('createCase.city')}</Label>
                                 <Input
                                     id="city"
-                                    placeholder={t('createCase.cityPlaceholder')}
+                                    placeholder={t('createCase.cityPlaceholder', 'e.g., Sofia')}
                                     value={formData.city}
                                     onChange={(e) => updateForm('city', e.target.value)}
                                 />
@@ -179,7 +375,7 @@ const CreateCase = () => {
                                 <Label htmlFor="neighborhood">{t('createCase.neighborhood')}</Label>
                                 <Input
                                     id="neighborhood"
-                                    placeholder={t('createCase.neighborhoodPlaceholder')}
+                                    placeholder={t('createCase.neighborhoodPlaceholder', 'e.g., Lozenets')}
                                     value={formData.neighborhood}
                                     onChange={(e) => updateForm('neighborhood', e.target.value)}
                                 />
@@ -213,7 +409,7 @@ const CreateCase = () => {
                                 <textarea
                                     id="description"
                                     className="w-full min-h-20 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
-                                    placeholder={t('createCase.shortDescriptionPlaceholder')}
+                                    placeholder={t('createCase.shortDescPlaceholder', 'Brief description of the situation...')}
                                     value={formData.description}
                                     onChange={(e) => updateForm('description', e.target.value)}
                                 />
@@ -223,7 +419,7 @@ const CreateCase = () => {
                                 <textarea
                                     id="story"
                                     className="w-full min-h-32 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
-                                    placeholder={t('createCase.fullStoryPlaceholder')}
+                                    placeholder={t('createCase.storyPlaceholder', 'Tell the full story of how the animal was found...')}
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
                                 />
@@ -238,7 +434,7 @@ const CreateCase = () => {
                             <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
                                 <Camera className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                                 <p className="text-sm text-muted-foreground mb-3">
-                                    {t('createCase.photoInstructions')}
+                                    {t('createCase.tapToPhoto', 'Tap to take a photo or select from gallery')}
                                 </p>
                                 <input
                                     type="file"
@@ -316,7 +512,7 @@ const CreateCase = () => {
                 {/* Navigation Buttons */}
                 <div className="flex gap-3 mt-6">
                     {currentStep > 1 && (
-                        <Button variant="outline" onClick={prevStep} className="flex-1">
+                        <Button variant="outline" onClick={prevStep} className="flex-1" disabled={isSubmitting}>
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             {t('createCase.back')}
                         </Button>
@@ -327,13 +523,23 @@ const CreateCase = () => {
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit} variant="donate" className="flex-1">
-                            <Heart className="w-4 h-4 mr-2" />
-                            {t('createCase.submitReport')}
+                        <Button onClick={handleSubmit} variant="donate" className="flex-1" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    {t('createCase.publishing', 'Publishing...')}
+                                </>
+                            ) : (
+                                <>
+                                    <Heart className="w-4 h-4 mr-2" />
+                                    {t('createCase.submitReport')}
+                                </>
+                            )}
                         </Button>
                     )}
                 </div>
             </div>
+            )}
         </div>
     );
 };

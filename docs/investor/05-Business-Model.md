@@ -6,7 +6,7 @@
 
 ## Revenue Model Overview
 
-PawsSafe generates revenue through **four primary streams**:
+Pawtreon generates revenue through **four primary streams**:
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -43,7 +43,7 @@ PawsSafe generates revenue through **four primary streams**:
 | GoFundMe | 2.9% + $0.30 |
 | Facebook | 0% (but poor tools) |
 | JustGiving | 5% |
-| **PawsSafe** | **5%** |
+| **Pawtreon** | **5%** |
 
 ### Revenue Projection
 

@@ -41,9 +41,9 @@
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Email Waitlist | 500 | [TBD] |
-| Social Followers | 1,000 | [TBD] |
-| Shelter Interest | 20 | [TBD] |
+| Email Waitlist | 500 | TODO |
+| Social Followers | 1,000 | TODO |
+| Shelter Interest | 20 | TODO |
 
 *Fill in actual numbers*
 
@@ -53,9 +53,9 @@
 
 | Shelter | Location | Status | Notes |
 |---------|----------|--------|-------|
-| [Shelter 1] | Sofia, BG | Interested | Initial call done |
-| [Shelter 2] | Plovdiv, BG | Interested | Awaiting demo |
-| [Shelter 3] | Varna, BG | Lead | Outreach sent |
+| TODO Shelter | Sofia, BG | Interested | Initial call done |
+| TODO Shelter | Plovdiv, BG | Interested | Awaiting demo |
+| TODO Shelter | Varna, BG | Lead | Outreach sent |
 | ... | ... | ... | ... |
 
 ---
@@ -66,28 +66,28 @@
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Registered Users | 500 | [ ] |
-| Monthly Active Users | 200 | [ ] |
-| Returning Users (D7) | 30% | [ ] |
-| Returning Users (D30) | 15% | [ ] |
+| Registered Users | 500 | TODO |
+| Monthly Active Users | 200 | TODO |
+| Returning Users (D7) | 30% | TODO |
+| Returning Users (D30) | 15% | TODO |
 
 ### Donation Metrics
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Total Donations | €10,000 | [ ] |
-| Number of Donations | 200 | [ ] |
-| Average Donation | €50 | [ ] |
-| Recurring Donors | 20 | [ ] |
+| Total Donations | €10,000 | TODO |
+| Number of Donations | 200 | TODO |
+| Average Donation | €50 | TODO |
+| Recurring Donors | 20 | TODO |
 
 ### Shelter Metrics
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Registered Shelters | 20 | [ ] |
-| Active Shelters | 10 | [ ] |
-| Cases Created | 50 | [ ] |
-| Campaigns Created | 5 | [ ] |
+| Registered Shelters | 20 | TODO |
+| Active Shelters | 10 | TODO |
+| Cases Created | 50 | TODO |
+| Campaigns Created | 5 | TODO |
 
 ---
 
@@ -175,10 +175,10 @@
 
 | Partner Type | Status | Details |
 |--------------|--------|---------|
-| Animal Welfare NGO | [TBD] | [Details] |
-| Vet Clinic Chain | [TBD] | [Details] |
-| Pet Food Brand | [TBD] | [Details] |
-| Corporate CSR Partner | [TBD] | [Details] |
+| Animal Welfare NGO | TODO | TODO |
+| Vet Clinic Chain | TODO | TODO |
+| Pet Food Brand | TODO | TODO |
+| Corporate CSR Partner | TODO | TODO |
 
 ---
 
@@ -212,7 +212,7 @@
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  📊 PawsSafe Dashboard - January 2026           │
+│  📊 Pawtreon Dashboard - January 2026           │
 ├─────────────────────────────────────────────────┤
 │                                                 │
 │  Users        Donations     Shelters   Cases    │

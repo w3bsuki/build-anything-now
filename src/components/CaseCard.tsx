@@ -7,6 +7,8 @@ import { StatusBadge } from './StatusBadge';
 import { ShareButton } from './ShareButton';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { VerificationBadge } from '@/components/trust/VerificationBadge';
+import { ReportedBadge } from '@/components/trust/ReportedBadge';
 
 interface CaseCardProps {
   caseData: AnimalCase;
@@ -178,6 +180,9 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
             <span className="truncate font-medium">{caseData.location.city}, {caseData.location.neighborhood}</span>
             <span className="text-muted-foreground/60">•</span>
             <span className="shrink-0">{timeAgo}</span>
+            <span className="text-muted-foreground/60">•</span>
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} />
+            <ReportedBadge caseId={caseData.id} />
           </div>
         </div>
       </Link>

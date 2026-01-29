@@ -23,7 +23,7 @@ import { CaseCard } from '@/components/CaseCard';
 import type { Id } from '../../convex/_generated/dataModel';
 
 const VolunteerProfile = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   
   // Fetch volunteer from Convex
@@ -32,8 +32,8 @@ const VolunteerProfile = () => {
     id ? { id: id as Id<"volunteers"> } : "skip"
   );
   
-  // Fetch cases for display
-  const rawCases = useQuery(api.cases.list, {});
+  // Fetch cases for display (UI-shaped, not raw Convex docs)
+  const rawCases = useQuery(api.cases.listUiForLocale, { locale: i18n.language });
   
   const isLoading = rawVolunteer === undefined;
   

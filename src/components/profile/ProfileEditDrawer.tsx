@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'convex/react';
 import { api } from '../../../convex/_generated/api';
+import type { Id } from '../../../convex/_generated/dataModel';
 import {
   Drawer,
   DrawerClose,
@@ -23,11 +24,11 @@ interface ProfileEditDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentUser: {
-    _id: string;
-    displayName?: string;
+    _id: Id<"users">;
+    displayName?: string | null;
     name: string;
-    bio?: string;
-    isPublic?: boolean;
+    bio?: string | null;
+    isPublic?: boolean | null;
   } | null | undefined;
 }
 

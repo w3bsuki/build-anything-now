@@ -42,10 +42,18 @@ pnpm build
 ```
 
 ## Docs
-- [`docs/README.md`](docs/README.md) — execution docs (canonical)
-- [`docs/archive/gpt/README.md`](docs/archive/gpt/README.md) — audit artifacts (reference)
-- [`DECISIONS.md`](DECISIONS.md) — project-wide decisions
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — dev workflow
+- Core (canonical):
+  - [`VISION.md`](VISION.md)
+  - [`PRD.md`](PRD.md)
+  - [`ROADMAP.md`](ROADMAP.md)
+  - [`PLAN.md`](PLAN.md)
+  - [`TODO.md`](TODO.md)
+  - [`STYLE.md`](STYLE.md)
+  - [`TECH-STACK.md`](TECH-STACK.md)
+  - [`TRUST-SAFETY.md`](TRUST-SAFETY.md)
+  - [`DECISIONS.md`](DECISIONS.md)
+- Investor + archive index: [`docs/README.md`](docs/README.md)
+- Dev workflow: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ## Mobile (Capacitor)
 ```bash
@@ -54,3 +62,8 @@ npx cap sync
 npx cap open android
 npx cap open ios
 ```
+
+## Investor / Partner decks
+- Investor deck (in-app): `/presentation`
+- Partner deck (in-app): `/partner`
+- Investor hub: [`docs/investor/README.md`](docs/investor/README.md)

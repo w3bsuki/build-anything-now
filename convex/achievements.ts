@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 
 // Achievement definitions
 export const ACHIEVEMENT_DETAILS: Record<string, { title: string; description: string; icon: string }> = {
@@ -134,8 +134,8 @@ export const getMyAchievements = query({
     },
 });
 
-// Award achievement to user (internal use)
-export const award = mutation({
+// Award achievement to user (internal use only)
+export const award = internalMutation({
     args: {
         type: v.union(
             v.literal("first_donation"),

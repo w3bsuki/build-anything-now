@@ -1,26 +1,51 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState, type HTMLAttributes } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MapPin, PawPrint, ChevronRight } from 'lucide-react';
+import { Flag, Heart, MapPin, MoreHorizontal, PawPrint, Share2, ChevronRight } from 'lucide-react';
 import { AnimalCase } from '@/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ShareButton } from '@/components/ShareButton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { toast } from '@/hooks/use-toast';
+import { VerificationBadge } from '@/components/trust/VerificationBadge';
+import { ReportedBadge } from '@/components/trust/ReportedBadge';
+import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
 
-interface TwitterCaseCardProps {
+interface TwitterCaseCardProps extends HTMLAttributes<HTMLElement> {
   caseData: AnimalCase;
-  className?: string;
+  socialStats?: {
+    likeCount: number;
+    commentCount: number;
+    liked: boolean;
+    supporterAvatars: (string | null)[];
+    helperCount: number;
+    helperAvatars: (string | null)[];
+  };
 }
 
-// Generate deterministic counts based on case ID
-function getHelpersCount(caseId: string): number {
+function hashString(input: string): number {
   let hash = 0;
-  for (let i = 0; i < caseId.length; i++) {
-    hash = ((hash << 5) - hash) + caseId.charCodeAt(i);
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
     hash |= 0;
   }
+  return hash;
+}
+
+// Generate deterministic "helpers" placeholders for dev/demo
+function getFallbackHelpersCount(caseId: string): number {
+  const hash = hashString(caseId);
   return Math.abs(hash % 26) + 5; // 5-30 helpers
+}
+
+function getFallbackHelperAvatars(caseId: string): (string | null)[] {
+  const hash = Math.abs(hashString(caseId));
+  return Array.from({ length: 3 }).map((_, index) => {
+    // pravatar supports img=1..70ish; keep it in-range.
+    const img = ((hash + index) % 70) + 1;
+    return `https://i.pravatar.cc/48?img=${img}`;
+  });
 }
 
 function getTimeAgo(dateString: string): string {
@@ -81,17 +106,55 @@ const statusConfig = {
   },
 };
 
-export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
+export function TwitterCaseCard({ caseData, className, socialStats, ...props }: TwitterCaseCardProps) {
   const { t } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
-  const helpersCount = useMemo(() => getHelpersCount(caseData.id), [caseData.id]);
+  const fallbackHelpersCount = useMemo(() => getFallbackHelpersCount(caseData.id), [caseData.id]);
+  const fallbackHelperAvatars = useMemo(() => getFallbackHelperAvatars(caseData.id), [caseData.id]);
+
+  const baseLikeCount = socialStats?.likeCount ?? 0;
+  const helpersFromStats = socialStats?.helperCount ?? baseLikeCount;
+  const helpersCount = helpersFromStats > 0 ? helpersFromStats : (import.meta.env.DEV ? fallbackHelpersCount : 0);
+
+  const helperAvatarsFromStats = (socialStats?.helperAvatars ?? socialStats?.supporterAvatars ?? []);
+  const helperAvatars =
+    helperAvatarsFromStats.filter(Boolean).length > 0
+      ? helperAvatarsFromStats
+      : (import.meta.env.DEV ? fallbackHelperAvatars : []);
   const timeAgo = getTimeAgo(caseData.createdAt);
   const animalName = getAnimalName(caseData.title);
   const status = statusConfig[caseData.status];
   const isUrgent = caseData.status === 'critical' || caseData.status === 'urgent';
+  const shareUrl = `${window.location.origin}/case/${caseData.id}`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: t('common.copied', 'Copied'), description: t('common.linkCopied', 'Link copied to clipboard') });
+    } catch {
+      window.prompt(t('common.copyThisLink', 'Copy this link:'), shareUrl);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: caseData.title,
+          text: caseData.description,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // user cancelled, fall back to copy
+      }
+    }
+    await copyLink();
+  };
 
   // Get author initials for avatar fallback
   const authorInitials = caseData.author?.name
@@ -100,6 +163,7 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
 
   return (
     <article
+      {...props}
       className={cn(
         'group bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
         className
@@ -127,16 +191,32 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
             <span className="truncate">{caseData.location.city}</span>
             <span className="text-muted-foreground/60">•</span>
             <span>{timeAgo}</span>
+            <span className="text-muted-foreground/60">•</span>
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} />
+            <ReportedBadge caseId={caseData.id} />
           </div>
         </div>
-        <div onClick={e => e.preventDefault()}>
-          <ShareButton
-            title={caseData.title}
-            text={caseData.description}
-            url={`${window.location.origin}/case/${caseData.id}`}
-            size="sm"
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label={t('actions.more', 'More')}
+              className="h-8 w-8 rounded-full bg-muted text-foreground transition-all duration-200 hover:bg-muted/80 active:bg-muted/70"
+            >
+              <MoreHorizontal className="mx-auto h-4 w-4 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuItem onClick={handleShare}>
+              <Share2 className="mr-2 h-4 w-4 text-muted-foreground" />
+              {t('actions.share', 'Share')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setReportOpen(true)}>
+              <Flag className="mr-2 h-4 w-4 text-muted-foreground" />
+              {t('report.reportConcern', 'Report concern')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Link to={`/case/${caseData.id}`} className="block">
@@ -213,32 +293,31 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
                 <span className="font-semibold text-foreground">{caseData.fundraising.current.toLocaleString()}</span>
                 <span className="text-muted-foreground"> / {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
               </span>
-              
+               
               {/* Avatar group for helpers - using stacked border token */}
-              <div className="flex items-center gap-1.5">
-                <div className="flex -space-x-2">
-                  <Avatar className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background">
-                    <AvatarImage src="https://i.pravatar.cc/24?img=1" />
-                    <AvatarFallback className="text-[10px] font-medium">A</AvatarFallback>
-                  </Avatar>
-                  <Avatar className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background">
-                    <AvatarImage src="https://i.pravatar.cc/24?img=2" />
-                    <AvatarFallback className="text-[10px] font-medium">B</AvatarFallback>
-                  </Avatar>
-                  <Avatar className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background">
-                    <AvatarImage src="https://i.pravatar.cc/24?img=3" />
-                    <AvatarFallback className="text-[10px] font-medium">C</AvatarFallback>
-                  </Avatar>
+              {helpersCount > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <div className="flex -space-x-2">
+                    {Array.from({ length: Math.min(3, helpersCount) }).map((_, index) => {
+                      const src = helperAvatars[index] ?? null;
+                      return (
+                        <Avatar key={index} className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background">
+                          {src ? <AvatarImage src={src} alt="" /> : null}
+                          <AvatarFallback className="text-[10px] font-medium">🐾</AvatarFallback>
+                        </Avatar>
+                      );
+                    })}
+                  </div>
+                  <span className="text-muted-foreground font-medium">{helpersCount} helping</span>
                 </div>
-                <span className="text-muted-foreground font-medium">{helpersCount} helping</span>
-              </div>
+              )}
             </div>
           </div>
 
           {/* CTA Button - status colored */}
           <Button 
             className={cn(
-              "w-full h-10 rounded-lg font-semibold text-sm transition-all text-white",
+              "w-full h-10 rounded-full font-semibold text-sm transition-all text-white",
               status.button
             )}
           >
@@ -248,6 +327,13 @@ export function TwitterCaseCard({ caseData, className }: TwitterCaseCardProps) {
           </Button>
         </div>
       </Link>
+
+      <ReportConcernSheet
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        caseId={caseData.id}
+        caseTitle={caseData.title}
+      />
     </article>
   );
 }

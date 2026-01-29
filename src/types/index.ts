@@ -2,6 +2,8 @@ export type AnimalStatus = 'critical' | 'urgent' | 'recovering' | 'adopted';
 
 export type AnimalSpecies = 'dog' | 'cat' | 'bird' | 'other';
 
+export type CaseVerificationStatus = 'unverified' | 'community' | 'clinic';
+
 export interface AnimalCase {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export interface AnimalCase {
   story: string;
   images: string[];
   status: AnimalStatus;
+  verificationStatus?: CaseVerificationStatus;
   species: AnimalSpecies;
   location: {
     city: string;

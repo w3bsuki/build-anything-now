@@ -38,7 +38,7 @@ export const list = query({
         status: v.optional(v.union(v.literal("active"), v.literal("funded"), v.literal("closed"))),
     },
     handler: async (ctx, args) => {
-        let cases;
+        let cases: Doc<"cases">[];
 
         if (args.type) {
             cases = await ctx.db
@@ -69,7 +69,7 @@ export const listForLocale = query({
     handler: async (ctx, args) => {
         const locale = args.locale;
 
-        let cases;
+        let cases: Doc<"cases">[];
         if (args.type) {
             cases = await ctx.db
                 .query("cases")
@@ -124,7 +124,7 @@ export const listUiForLocalePaginated = query({
         const limit = args.limit ?? 10;
 
         // Query all cases (we'll filter and paginate)
-        let cases;
+        let cases: Doc<"cases">[];
         if (args.type) {
             cases = await ctx.db
                 .query("cases")
@@ -178,7 +178,8 @@ export const listUiForLocalePaginated = query({
                     story: localized.story ?? "",
                     images: imageUrls,
                     status: c.type,
-                    species: "other",
+                    verificationStatus: c.verificationStatus ?? "unverified",
+                    species: "other" as const,
                     location: { city: c.location.city, neighborhood: c.location.neighborhood },
                     fundraising: c.fundraising,
                     updates: c.updates.map((u, index) => ({
@@ -216,7 +217,7 @@ export const listUiForLocale = query({
     handler: async (ctx, args) => {
         const locale = args.locale;
 
-        let cases;
+        let cases: Doc<"cases">[];
         if (args.type) {
             cases = await ctx.db
                 .query("cases")
@@ -245,7 +246,8 @@ export const listUiForLocale = query({
                     story: localized.story ?? "",
                     images: imageUrls,
                     status: c.type,
-                    species: "other",
+                    verificationStatus: c.verificationStatus ?? "unverified",
+                    species: "other" as const,
                     location: { city: c.location.city, neighborhood: c.location.neighborhood },
                     fundraising: c.fundraising,
                     updates: c.updates.map((u, index) => ({
@@ -289,6 +291,7 @@ export const getUiForLocale = query({
             originalStory: caseDoc.story ?? "",
             images: imageUrls,
             status: caseDoc.type,
+            verificationStatus: caseDoc.verificationStatus ?? "unverified",
             species: "other",
             location: { city: caseDoc.location.city, neighborhood: caseDoc.location.neighborhood },
             fundraising: caseDoc.fundraising,
@@ -397,6 +400,7 @@ export const create = mutation({
             images: args.images,
             location: args.location,
             clinicId: args.clinicId,
+            verificationStatus: "unverified",
             foundAt: args.foundAt,
             broughtToClinicAt: args.broughtToClinicAt,
             fundraising: {

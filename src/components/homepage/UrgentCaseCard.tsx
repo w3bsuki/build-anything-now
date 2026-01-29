@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import type { AnimalCase } from '@/types';
+import { VerificationBadge } from '@/components/trust/VerificationBadge';
 
 interface UrgentCaseCardProps {
   caseData: AnimalCase;
@@ -176,6 +177,8 @@ export function UrgentCaseCard({ caseData, className }: UrgentCaseCardProps) {
             <span>{caseData.location.city}</span>
             <span>•</span>
             <span>{timeAgo}</span>
+            <span>•</span>
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} />
           </div>
           
           <h3 className="font-bold text-base text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">

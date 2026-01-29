@@ -1,7 +1,7 @@
-# 🐾 PawsSafe Investor Hub
+# 🐾 Pawtreon Investor Hub
 
 > **Confidential** - For Investor Review Only  
-> **Last Updated:** January 14, 2026
+> **Last Updated:** January 23, 2026
 
 ---
 
@@ -9,6 +9,7 @@
 
 | Document | Description |
 |----------|-------------|
+| [00-Pitch-Script](./00-PITCH-SCRIPT.md) | Talk track + demo order |
 | [01-Executive-Summary](./01-Executive-Summary.md) | TL;DR overview for investors |
 | [02-Problem-Solution](./02-Problem-Solution.md) | The problem we solve & how |
 | [03-Product-Overview](./03-Product-Overview.md) | Features, screenshots, demo |
@@ -24,12 +25,13 @@
 
 ## Live pitch deck (interactive)
 - `/presentation` (mobile-first investor deck inside the app)
+- `/partner` (partner pitch deck inside the app)
 
 ---
 
 ## Elevator Pitch
 
-**PawsSafe** is a mobile-first platform connecting animal welfare organizations with donors and adopters. We make it easy to donate to verified animal rescue cases, find adoptable pets, and support local shelters — all in one beautiful app.
+**Pawtreon** is a trust-first, mobile-first platform that helps people fund emergency care for animals in need. We connect rescuers, verified clinics/partners, and donors so cases get help faster and updates stay transparent.
 
 ---
 
@@ -46,9 +48,9 @@
 
 ## Contact
 
-**Founder:** [Your Name]  
-**Email:** [your@email.com]  
-**Website:** [pawssafe.com]
+**Founder:** TODO  
+**Email:** TODO  
+**Website:** TODO
 
 ---
 

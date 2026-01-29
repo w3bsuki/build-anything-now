@@ -71,6 +71,8 @@ const mockDonations = [
   },
 ];
 
+const NOW = Date.now();
+
 type DonationFilter = 'all' | 'completed' | 'pending';
 
 const MyDonations = () => {
@@ -92,8 +94,7 @@ const MyDonations = () => {
   const successStories = allDonations.filter(d => d.caseStatus === 'adopted').length;
 
   const formatDate = (timestamp: number) => {
-    const now = Date.now();
-    const diff = now - timestamp;
+    const diff = NOW - timestamp;
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     
     if (days === 0) return t('time.today');

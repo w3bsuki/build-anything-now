@@ -19,6 +19,7 @@ import ClinicProfile from "./pages/ClinicProfile";
 import PartnerProfile from "./pages/PartnerProfile";
 import Account from "./pages/Account";
 import PublicProfile from "./pages/PublicProfile";
+import ProfileEdit from "./pages/ProfileEdit";
 import MyDonations from "./pages/MyDonations";
 import DonationHistory from "./pages/DonationHistory";
 import Achievements from "./pages/Achievements";
@@ -26,7 +27,9 @@ import PaymentMethods from "./pages/PaymentMethods";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import CreateCase from "./pages/CreateCase";
+import CreateCaseAi from "./pages/CreateCaseAi";
 import CreateAdoption from "./pages/CreateAdoption";
+import Messages from "./pages/Messages";
 import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
 import CommunityMembers from "./pages/CommunityMembers";
@@ -37,9 +40,6 @@ import PartnerPresentation from "./pages/PartnerPresentation";
 import NotFound from "./pages/NotFound";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-import HomepageDemo from "./pages/HomepageDemo";
-import CardComparisonDemo from "./pages/CardComparisonDemo";
-import ClinicsDemo from "./pages/demo/ClinicsDemo";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import ClaimOrganizationPage from "./pages/onboarding/ClaimOrganizationPage";
 
@@ -64,11 +64,6 @@ const App = () => (
             {/* Auth routes */}
             <Route path="/sign-in/*" element={<SignInPage />} />
             <Route path="/sign-up/*" element={<SignUpPage />} />
-            
-            {/* Demo route - DELETE AFTER DECIDING */}
-            <Route path="/demo" element={<HomepageDemo />} />
-            <Route path="/demo/clinics" element={<ClinicsDemo />} />
-            <Route path="/card-compare" element={<CardComparisonDemo />} />
             
             {/* Main app routes */}
             <Route path="/" element={<Index />} />
@@ -141,6 +136,14 @@ const App = () => (
               }
             />
             <Route
+              path="/profile/edit"
+              element={
+                <AuthGuard>
+                  <ProfileEdit />
+                </AuthGuard>
+              }
+            />
+            <Route
               path="/create-case"
               element={
                 <AuthGuard>
@@ -148,11 +151,20 @@ const App = () => (
                 </AuthGuard>
               }
             />
+            <Route path="/create-case-ai" element={<CreateCaseAi />} />
             <Route
               path="/create-adoption"
               element={
                 <AuthGuard>
                   <CreateAdoption />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/messages/:userId"
+              element={
+                <AuthGuard>
+                  <Messages />
                 </AuthGuard>
               }
             />

@@ -170,8 +170,8 @@
     "pinned": "Pinned",
     "rulesTitle": "Rules",
     "rulesHeader": "Community rules",
-    "rulesSummary": "Please keep the community safe and helpful. Be kind, protect privacy, and share accurate info—especially for urgent cases.",
-    "rulesBody": "Welcome to Pawtreon Community.\n\n• Be kind and respectful.\n• No personal data (addresses, phone numbers) in public posts.\n• For emergencies, include city + neighborhood and what help is needed.\n• No scams: donation links must be verifiable.\n• Report spam or harmful content.",
+    "rulesSummary": "Trust & safety:\n• Verification: Unverified → Community ✓ → Clinic ✓\n• Report concerns via the ••• menu\n• Protect privacy and be kind",
+    "rulesBody": "Welcome to Pawtreon Community.\n\n• Verification: Unverified → Community ✓ → Clinic ✓\n• Report concerns via the ••• menu on any post or case.\n• Be kind and respectful.\n• No personal data (addresses, phone numbers) in public posts.\n• For urgent cases, include city + neighborhood and what help is needed.\n• Zero tolerance for scams, harassment, or abuse.",
     "openPost": "Open post by {{name}}",
     "more": "More",
     "volunteer": "Volunteer",
@@ -275,7 +275,7 @@
     "support": "Support",
     "helpCenter": "Help Center",
     "termsPrivacy": "Terms & Privacy",
-    "appVersion": "Pawsy v1.0.0"
+    "appVersion": "Pawtreon v1.0.0"
   },
   "languages": {
     "en": "English",
@@ -343,7 +343,7 @@
     "caseUpdate": "Case Update",
     "achievementUnlocked": "Achievement Unlocked!",
     "campaignCompleted": "Campaign Completed",
-    "welcome": "Welcome to Pawsy!"
+    "welcome": "Welcome to Pawtreon!"
   },
   "achievements": {
     "title": "Achievements",
@@ -492,6 +492,15 @@
     "reportAnimal": "Report Animal",
     "urgencyLevel": "Urgency Level",
     "whatDoTheyNeed": "What do they need?",
+    "details": "Details",
+    "images": "Photos",
+    "funding": "Funding",
+    "critical": "Critical",
+    "criticalDescription": "Life-threatening, needs immediate help",
+    "urgent": "Urgent",
+    "urgentDescription": "Needs help soon but stable",
+    "recovering": "Recovering",
+    "recoveringDescription": "Getting treatment, needs funding",
     "criticalLabel": "Critical",
     "criticalDesc": "Life-threatening, needs immediate help",
     "urgentLabel": "Urgent",
@@ -778,7 +787,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to Pawsy!",
+      "title": "Welcome to Pawtreon!",
       "subtitle": "What best describes you?"
     },
     "options": {
@@ -796,7 +805,7 @@
       },
       "exploring": {
         "title": "Just Exploring",
-        "description": "Looking around to see what Pawsy offers"
+        "description": "Looking around to see what Pawtreon offers"
       },
       "help": {
         "title": "I want to help animals",
@@ -896,7 +905,7 @@
     }
   },
   "tour": {
-    "welcome": "Welcome to PawsSafe! 🐾 Let me show you how to help animals in need.",
+    "welcome": "Welcome to Pawtreon! 🐾 Let me show you how to help animals in need.",
     "urgentCases": "Here you'll find animals that need immediate help. Each case shows their story and how much funding they need.",
     "caseCard": "Click on any case to see details and make a donation. Every amount helps!",
     "navigation": "Explore campaigns, partner clinics, and shelters working with us.",

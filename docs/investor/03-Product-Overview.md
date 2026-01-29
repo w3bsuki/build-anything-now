@@ -4,7 +4,7 @@
 
 ## Platform Summary
 
-**PawsSafe** is a cross-platform application available on:
+**Pawtreon** is a cross-platform application available on:
 
 | Platform | Technology | Status |
 |----------|------------|--------|
@@ -149,7 +149,7 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 ### Home Screen
 ```
 ┌─────────────────────────────┐
-│  🐾 PawsSafe               │
+│  🐾 Pawtreon               │
 ├─────────────────────────────┤
 │  [Search...]               │
 ├─────────────────────────────┤

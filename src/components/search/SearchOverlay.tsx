@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { X, Search, Clock, TrendingUp, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -34,6 +34,11 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleClose = useCallback(() => {
+    setQuery('');
+    onClose();
+  }, [onClose]);
+
   // Focus input when overlay opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -42,35 +47,28 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
     }
   }, [isOpen]);
 
-  // Clear query when closing
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery('');
-    }
-  }, [isOpen]);
-
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose();
+        handleClose();
       }
     };
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
-      onClose();
+      handleClose();
     }
   };
 
   const handleQuickSearch = (term: string) => {
     onSearch(term);
-    onClose();
+    handleClose();
   };
 
   if (!isOpen) return null;
@@ -80,7 +78,7 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-background/95 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       {/* Content */}
@@ -99,7 +97,7 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
             />
           </form>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 rounded-full hover:bg-muted transition-colors"
           >
             <X className="w-5 h-5" />

@@ -40,7 +40,7 @@ const mockNotifications = [
   {
     id: '5',
     type: 'system' as const,
-    title: 'Welcome to Pawsy!',
+    title: 'Welcome to Pawtreon!',
     message: 'Thank you for joining our community of animal lovers.',
     read: true,
     createdAt: Date.now() - 30 * 24 * 60 * 60 * 1000, // 1 month ago

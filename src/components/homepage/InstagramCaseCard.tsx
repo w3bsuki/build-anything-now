@@ -1,13 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Heart, MessageCircle, Share2, MoreHorizontal, MapPin, PawPrint } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { AnimalCase } from '@/types';
 import { StatusBadge } from '@/components/StatusBadge';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,36 +26,10 @@ interface InstagramCaseCardProps {
     likeCount: number;
     commentCount: number;
     liked: boolean;
+    supporterAvatars?: (string | null)[];
+    helperCount?: number;
+    helperAvatars?: (string | null)[];
   };
-}
-
-// Generate deterministic counts based on case ID
-function getHelpersCount(caseId: string): number {
-  // Simple hash from ID to generate consistent number
-  let hash = 0;
-  for (let i = 0; i < caseId.length; i++) {
-    hash = ((hash << 5) - hash) + caseId.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 26) + 5; // 5-30 helpers
-}
-
-function getLikeCount(caseId: string): number {
-  let hash = 0;
-  for (let i = 0; i < caseId.length; i++) {
-    hash = ((hash << 3) - hash) + caseId.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 41) + 10; // 10-50 likes
-}
-
-function getCommentCount(caseId: string): number {
-  let hash = 0;
-  for (let i = 0; i < caseId.length; i++) {
-    hash = ((hash << 2) - hash) + caseId.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 15) + 1; // 1-15 comments
 }
 
 function getTimeAgo(dateString: string): string {
@@ -90,8 +64,6 @@ function getAnimalName(title: string): string {
 }
 
 export function InstagramCaseCard({ caseData, className, socialStats }: InstagramCaseCardProps) {
-  const { t } = useTranslation();
-
   // Embla carousel for swipeable images
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -104,17 +76,19 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   // Convex ID for social features
   const caseId = caseData.id as Id<"cases">;
 
-  // Fallback to deterministic counts if no social stats provided
-  const fallbackLikeCount = useMemo(() => getLikeCount(caseData.id), [caseData.id]);
-  const fallbackCommentCount = useMemo(() => getCommentCount(caseData.id), [caseData.id]);
-  const helpersCount = useMemo(() => getHelpersCount(caseData.id), [caseData.id]);
+  const baseLiked = socialStats?.liked ?? false;
+  const baseLikeCount = socialStats?.likeCount ?? 0;
+  const commentCount = socialStats?.commentCount ?? 0;
+  const supporterAvatars = socialStats?.supporterAvatars ?? [];
+  const helperCount = socialStats?.helperCount ?? baseLikeCount;
+  const helperAvatars = socialStats?.helperAvatars ?? supporterAvatars;
 
-  // Use real stats if available, otherwise fallback
-  const [optimisticLiked, setOptimisticLiked] = useState(socialStats?.liked ?? false);
-  const [optimisticLikeCount, setOptimisticLikeCount] = useState(
-    socialStats?.likeCount ?? fallbackLikeCount
-  );
-  const commentCount = socialStats?.commentCount ?? fallbackCommentCount;
+  // Only store the override; counts are derived from Convex state + the override delta.
+  const [optimisticLikedOverride, setOptimisticLikedOverride] = useState<boolean | null>(null);
+
+  const optimisticLiked = optimisticLikedOverride ?? baseLiked;
+  const optimisticLikeCount =
+    baseLikeCount + (optimisticLiked ? 1 : 0) - (baseLiked ? 1 : 0);
 
   // Convex mutations
   const toggleLike = useMutation(api.social.toggleLike);
@@ -137,15 +111,19 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
   const timeAgo = getTimeAgo(caseData.createdAt);
   const animalName = getAnimalName(caseData.title);
   const hasMultipleImages = caseData.images.length > 1;
+  const authorName = caseData.author?.name ?? 'Rescuer';
+  const authorAvatar = caseData.author?.avatar;
+  const progressPercent = Math.min(
+    (caseData.fundraising.current / caseData.fundraising.goal) * 100,
+    100
+  );
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Optimistic update
-    const wasLiked = optimisticLiked;
-    setOptimisticLiked(!wasLiked);
-    setOptimisticLikeCount(prev => wasLiked ? prev - 1 : prev + 1);
+    const nextLiked = !optimisticLiked;
+    setOptimisticLikedOverride(nextLiked);
 
     // Haptic feedback if available
     if (navigator.vibrate) {
@@ -156,8 +134,7 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
       await toggleLike({ caseId });
     } catch (error) {
       // Revert on error
-      setOptimisticLiked(wasLiked);
-      setOptimisticLikeCount(prev => wasLiked ? prev + 1 : prev - 1);
+      setOptimisticLikedOverride(null);
       toast({
         title: 'Error',
         description: 'Please sign in to like cases',
@@ -210,19 +187,26 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
           {/* Animated avatar with gradient ring */}
           <div className="relative">
             <div className="absolute -inset-0.5 bg-gradient-to-tr from-primary via-pink-500 to-orange-400 rounded-full opacity-75 animate-pulse" />
-            <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center ring-2 ring-background">
-              <span className="text-base">🐾</span>
+            <div className="relative w-9 h-9 rounded-full bg-background ring-2 ring-background overflow-hidden flex items-center justify-center">
+              {authorAvatar ? (
+                <img
+                  src={authorAvatar}
+                  alt={authorName}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-sm font-bold text-primary">
+                  {authorName.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
           </div>
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold text-foreground leading-tight">
-                Pawtreon
+                {authorName}
               </span>
-              {/* Verified badge */}
-              <svg className="w-4 h-4 text-primary shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="font-medium">{timeAgo}</span>
@@ -362,8 +346,8 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
         </div>
       </Link>
 
-      {/* Action Bar - Enhanced social engagement */}
-      <div className="flex items-center justify-between px-2 py-1.5 border-t border-border/30">
+      {/* Action Bar - compact social engagement */}
+      <div className="flex items-center justify-between px-2 py-1.5">
         <div className="flex items-center">
           {/* Like - with animation */}
           <button
@@ -403,73 +387,69 @@ export function InstagramCaseCard({ caseData, className, socialStats }: Instagra
             <Share2 className="size-[22px] text-muted-foreground group-hover:text-primary group-hover:scale-110 transition-all duration-200" />
           </button>
         </div>
-        
-        {/* Helpers count */}
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground pr-2">
-          <div className="flex -space-x-1.5">
-            <div className="w-5 h-5 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-[8px]">🙏</div>
-            <div className="w-5 h-5 rounded-full bg-pink-500/20 border-2 border-background flex items-center justify-center text-[8px]">❤️</div>
-            <div className="w-5 h-5 rounded-full bg-orange-500/20 border-2 border-background flex items-center justify-center text-[8px]">✨</div>
-          </div>
-          <span className="font-medium">{helpersCount} helping</span>
-        </div>
+
+        <Button
+          asChild
+          size="sm"
+          variant="outline"
+          className="h-9 rounded-full px-4 font-semibold"
+        >
+          <Link to={`/case/${caseData.id}`}>Help {animalName}</Link>
+        </Button>
       </div>
 
       {/* Content */}
-      <div className="px-3.5 pb-2 space-y-1.5">
+      <div className="px-3.5 pb-2 space-y-1">
         {/* Title with hover effect */}
         <Link to={`/case/${caseData.id}`}>
           <h3 className="font-bold text-base text-foreground line-clamp-2 hover:text-primary transition-colors leading-snug">
             {caseData.title}
           </h3>
         </Link>
-
-        {/* Description - truncated */}
-        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-          {caseData.description}
-        </p>
       </div>
 
-      {/* Funding Progress - Enhanced visual */}
-      <div className="px-3.5 pb-2.5">
-        <div className="bg-muted/50 rounded-xl p-3">
-          <div className="flex items-end justify-between mb-2">
-            <div>
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Raised</span>
-              <div className="text-lg font-bold text-foreground leading-none mt-0.5">
-                {caseData.fundraising.current.toLocaleString()} <span className="text-sm font-medium text-muted-foreground">{caseData.fundraising.currency}</span>
+      {/* Funding progress (compact) */}
+      <div className="px-3.5 pb-3.5">
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            <span className="font-semibold text-foreground">
+              {caseData.fundraising.current.toLocaleString()}
+            </span>
+            {' / '}
+            {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}
+          </span>
+          <span className="font-semibold text-foreground">
+            {Math.round(progressPercent)}%
+          </span>
+        </div>
+
+        {/* Social proof: supporters (currently based on likes; later can be donors/volunteers) */}
+        {helperCount > 0 && (
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {Array.from({ length: Math.min(3, helperCount) }).map((_, index) => {
+                  const src = helperAvatars[index] ?? null;
+                  return (
+                    <Avatar key={index} className="h-6 w-6 border-2 border-background ring-1 ring-background">
+                      {src ? <AvatarImage src={src} alt="" /> : null}
+                      <AvatarFallback className="text-[10px] font-semibold">🐾</AvatarFallback>
+                    </Avatar>
+                  );
+                })}
               </div>
-            </div>
-            <div className="text-right">
-              <span className="text-2xl font-black text-primary">
-                {Math.round((caseData.fundraising.current / caseData.fundraising.goal) * 100)}%
+              <span className="text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">{helperCount}</span> helping
               </span>
             </div>
           </div>
-          <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
-              style={{ width: `${Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100)}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between mt-1.5 text-[11px] text-muted-foreground">
-            <span>Goal: {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Single, focused CTA - drives donations */}
-      <div className="px-3.5 pb-3.5">
-        <Button
-          asChild
-          variant="default"
-          className="w-full h-12 rounded-xl font-bold text-sm shadow-sm hover:shadow-md transition-all"
-        >
-          <Link to={`/case/${caseData.id}`} className="flex items-center justify-center gap-2">
-            <Heart className="size-5 fill-current shrink-0" />
-            <span>Help {animalName}</span>
-          </Link>
-        </Button>
+        )}
       </div>
 
       {/* Comments Bottom Sheet */}

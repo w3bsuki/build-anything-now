@@ -38,7 +38,7 @@ export const list = query({
                 const volunteer = user ? await ctx.db
                     .query("volunteers")
                     .withIndex("by_user", (q) => q.eq("userId", user._id))
-                    .unique() : null;
+                    .first() : null;
 
                 return {
                     ...post,
@@ -66,7 +66,7 @@ export const get = query({
         const volunteer = user ? await ctx.db
             .query("volunteers")
             .withIndex("by_user", (q) => q.eq("userId", user._id))
-            .unique() : null;
+            .first() : null;
 
         return {
             ...post,

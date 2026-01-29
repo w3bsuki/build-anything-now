@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AnimalCase } from '@/types';
+import { VerificationBadge } from '@/components/trust/VerificationBadge';
 
 interface CompactCaseCardProps {
   caseData: AnimalCase;
@@ -97,6 +98,8 @@ export function CompactCaseCard({ caseData, className }: CompactCaseCardProps) {
             <span className="truncate">{caseData.location.city}</span>
             <span className="text-muted-foreground/60">•</span>
             <span className="shrink-0">{timeAgo}</span>
+            <span className="text-muted-foreground/60">•</span>
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} className="text-[11px]" />
           </div>
 
           <div className="mt-2 space-y-1">

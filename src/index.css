@@ -8,6 +8,14 @@
     @apply border-border;
   }
 
+  /* Remove default browser focus outline - we use ring instead */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  button:focus {
+    outline: none;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     letter-spacing: var(--tracking-normal);
@@ -168,6 +176,11 @@
   --color-recovering-foreground: var(--recovering-foreground);
   --color-adopted: var(--adopted);
   --color-adopted-foreground: var(--adopted-foreground);
+  /* Warm accent */
+  --color-warm-accent: var(--warm-accent);
+  --color-warm-accent-foreground: var(--warm-accent-foreground);
+  --color-warm-surface: var(--warm-surface);
+  --color-warm-surface-foreground: var(--warm-surface-foreground);
   /* Surface hierarchy */
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
@@ -238,12 +251,18 @@
   --success-foreground: oklch(1.00 0 0);
   --warning: oklch(0.80 0.16 75);
   --warning-foreground: oklch(0.25 0.02 45);
-  --urgent: oklch(0.65 0.20 25);
+  --urgent: oklch(0.70 0.16 25);
   --urgent-foreground: oklch(1.00 0 0);
   --recovering: oklch(0.70 0.15 175);
   --recovering-foreground: oklch(1.00 0 0);
   --adopted: oklch(0.65 0.18 145);
   --adopted-foreground: oklch(1.00 0 0);
+  
+  /* Warm accent tokens - coral for emotional warmth */
+  --warm-accent: oklch(0.72 0.16 30);
+  --warm-accent-foreground: oklch(1.00 0 0);
+  --warm-surface: oklch(0.98 0.01 60);
+  --warm-surface-foreground: oklch(0.25 0.02 30);
 
   /* Surface hierarchy tokens - Twitter-style */
   --surface: oklch(1.0000 0 0);
@@ -270,7 +289,7 @@
 
   --border: oklch(0.9317 0.0118 231.6594);
   --input: oklch(0.9809 0.0025 228.7836);
-  --ring: oklch(0.6818 0.1584 243.3540);
+  --ring: oklch(0.70 0.15 175); /* Match primary for consistent focus states */
   --chart-1: oklch(0.6723 0.1606 244.9955);
   --chart-2: oklch(0.6907 0.1554 160.3454);
   --chart-3: oklch(0.8214 0.1600 82.5337);
@@ -330,12 +349,18 @@
   --success-foreground: oklch(1.00 0 0);
   --warning: oklch(0.78 0.14 75);
   --warning-foreground: oklch(0.20 0.02 45);
-  --urgent: oklch(0.62 0.18 25);
+  --urgent: oklch(0.70 0.16 25);
   --urgent-foreground: oklch(1.00 0 0);
   --recovering: oklch(0.68 0.14 175);
   --recovering-foreground: oklch(1.00 0 0);
   --adopted: oklch(0.70 0.16 145);
   --adopted-foreground: oklch(1.00 0 0);
+  
+  /* Warm accent tokens - coral for emotional warmth */
+  --warm-accent: oklch(0.70 0.14 30);
+  --warm-accent-foreground: oklch(1.00 0 0);
+  --warm-surface: oklch(0.20 0.02 30);
+  --warm-surface-foreground: oklch(0.95 0.01 60);
 
   /* Surface hierarchy tokens - dark Twitter-style (true black nav) */
   --surface: oklch(0 0 0);
@@ -362,7 +387,7 @@
 
   --border: oklch(0.2674 0.0047 248.0045);
   --input: oklch(0.3020 0.0288 244.8244);
-  --ring: oklch(0.6818 0.1584 243.3540);
+  --ring: oklch(0.70 0.15 175); /* Match primary for consistent focus states */
   --chart-1: oklch(0.6723 0.1606 244.9955);
   --chart-2: oklch(0.6907 0.1554 160.3454);
   --chart-3: oklch(0.8214 0.1600 82.5337);

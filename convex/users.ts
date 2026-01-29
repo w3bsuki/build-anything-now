@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query, internalMutation, internalQuery } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 
 // Volunteer capability options for frontend
@@ -22,16 +22,16 @@ export const PROFESSIONAL_TYPES = [
     { value: "other", label: "Other Professional", icon: "🐾", badge: "verified_business" },
 ] as const;
 
-// List all users (dev only)
-export const listAll = query({
+// List all users (dev only; not callable from clients)
+export const listAll = internalQuery({
     args: {},
     handler: async (ctx) => {
         return await ctx.db.query("users").collect();
     },
 });
 
-// Get current user by Clerk ID
-export const getByClerkId = query({
+// Get user by Clerk ID (internal use only)
+export const getByClerkId = internalQuery({
     args: { clerkId: v.string() },
     handler: async (ctx, args) => {
         return await ctx.db
@@ -117,43 +117,29 @@ export const completeOnboarding = mutation({
         hasPets: v.optional(v.boolean()),
         petTypes: v.optional(v.array(v.string())),
         city: v.optional(v.string()),
-        // Fallback
-        email: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
-        
-        let user;
-        
-        if (identity) {
-            user = await ctx.db
-                .query("users")
-                .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-                .unique();
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
 
-            // Auto-create user if they don't exist
-            if (!user) {
-                const userId = await ctx.db.insert("users", {
-                    clerkId: identity.subject,
-                    name: identity.name || identity.givenName || "User",
-                    email: identity.email || "",
-                    avatar: identity.pictureUrl,
-                    role: "user",
-                    createdAt: Date.now(),
-                });
-                user = await ctx.db.get(userId);
-            }
-        } else if (args.email) {
-            user = await ctx.db
-                .query("users")
-                .filter((q) => q.eq(q.field("email"), args.email))
-                .unique();
-            
-            if (!user) {
-                throw new Error("User not found with that email");
-            }
-        } else {
-            throw new Error("Not authenticated and no email provided");
+        let user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        // Auto-create user if they don't exist
+        if (!user) {
+            const userId = await ctx.db.insert("users", {
+                clerkId: identity.subject,
+                name: identity.name || identity.givenName || "User",
+                email: identity.email || "",
+                avatar: identity.pictureUrl,
+                role: "user",
+                createdAt: Date.now(),
+            });
+            user = await ctx.db.get(userId);
         }
 
         if (!user) throw new Error("User not found");
@@ -316,8 +302,8 @@ export const getTopHeroes = query({
     },
 });
 
-// Reset onboarding for a user (dev only)
-export const resetOnboarding = mutation({
+// Reset onboarding for a user (dev only; not callable from clients)
+export const resetOnboarding = internalMutation({
     args: { email: v.string() },
     handler: async (ctx, args) => {
         const user = await ctx.db

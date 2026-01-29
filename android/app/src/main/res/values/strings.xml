@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Pawsy</string>
-    <string name="title_activity_main">Pawsy</string>
-    <string name="package_name">com.pawsy.app</string>
-    <string name="custom_url_scheme">com.pawsy.app</string>
+    <string name="app_name">Pawtreon</string>
+    <string name="title_activity_main">Pawtreon</string>
+    <string name="package_name">com.pawtreon.app</string>
+    <string name="custom_url_scheme">com.pawtreon.app</string>
 </resources>

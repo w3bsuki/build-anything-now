@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { Loader2, RefreshCw } from 'lucide-react';
@@ -6,8 +6,10 @@ import { TwitterCaseCard } from '@/components/homepage/TwitterCaseCard';
 import { CompactCaseCard, CompactCaseCardSkeleton } from '@/components/homepage/CompactCaseCard';
 import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { HomeHeaderV2 } from '@/components/homepage/HomeHeaderV2';
-import { IntentFilterPills, type FilterTab } from '@/components/homepage/IntentFilterPills';
+import { IntentFilterPills, type FilterTab, BULGARIAN_CITIES, type CityFilter } from '@/components/homepage/IntentFilterPills';
 import { UrgentCasesStrip } from '@/components/homepage/UrgentCasesStrip';
+import { HeroCircles, type TopHero } from '@/components/homepage/HeroCircles';
+import { HeroCaseCard, HeroCaseCardSkeleton } from '@/components/homepage/HeroCaseCard';
 import { cn } from '@/lib/utils';
 import type { AnimalCase } from '@/types';
 import { Switch } from '@/components/ui/switch';
@@ -51,6 +53,14 @@ const IndexV2 = () => {
     api.social.getSocialStats,
     caseIds.length > 0 ? { caseIds } : "skip"
   );
+
+  const topVolunteers = useQuery(api.volunteers.getTop, { limit: 10 });
+  const heroes: TopHero[] = (topVolunteers ?? []).map((vol) => ({
+    id: vol.userId as unknown as string,
+    name: vol.name,
+    avatar: vol.avatar,
+    animalsHelped: vol.stats.animalsHelped,
+  }));
   
   // Initialize cases from first query
   useEffect(() => {
@@ -124,6 +134,30 @@ const IndexV2 = () => {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
         break;
+      
+      // City filters
+      case 'sofia':
+      case 'varna':
+      case 'plovdiv': {
+        const cityMap: Record<CityFilter, string[]> = {
+          sofia: ['sofia', 'софия', 'софія'],
+          varna: ['varna', 'варна'],
+          plovdiv: ['plovdiv', 'пловдив'],
+        };
+        const cityNames = cityMap[intentFilter];
+        filtered = filtered
+          .filter(c => {
+            const city = c.location?.city?.toLowerCase() || '';
+            return cityNames.some(name => city.includes(name));
+          })
+          .sort((a, b) => {
+            const priorityA = priorityOrder[a.status] ?? 99;
+            const priorityB = priorityOrder[b.status] ?? 99;
+            if (priorityA !== priorityB) return priorityA - priorityB;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        break;
+      }
         
       case 'success':
         // Show only adopted/success cases
@@ -133,18 +167,55 @@ const IndexV2 = () => {
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         break;
-        
-      case 'following':
-        // TODO: Implement following filter when we have follow data
-        // For now, show empty state
-        filtered = [];
-        break;
     }
     
     return filtered;
   };
 
   const filteredCases = getFilteredCases();
+  
+  // Get the most critical case for hero feature (only on urgent filter)
+  const heroCase = useMemo(() => {
+    if (intentFilter !== 'urgent') return null;
+    const criticalCases = caseList.filter(c => c.status === 'critical');
+    if (criticalCases.length > 0) {
+      // Return the critical case with lowest funding percentage
+      return criticalCases.sort((a, b) => {
+        const pctA = a.fundraising.current / a.fundraising.goal;
+        const pctB = b.fundraising.current / b.fundraising.goal;
+        return pctA - pctB;
+      })[0];
+    }
+    return null;
+  }, [caseList, intentFilter]);
+  
+  // Filter out hero case from main list to avoid duplication
+  const mainCases = heroCase 
+    ? filteredCases.filter(c => c.id !== heroCase.id)
+    : filteredCases;
+  
+  // Calculate city counts for filter pills
+  const cityCounts = useMemo(() => {
+    const cityMap: Record<CityFilter, string[]> = {
+      sofia: ['sofia', 'софия', 'софія'],
+      varna: ['varna', 'варна'],
+      plovdiv: ['plovdiv', 'пловдив'],
+    };
+    
+    const counts: Record<CityFilter, number> = { sofia: 0, varna: 0, plovdiv: 0 };
+    
+    for (const c of caseList) {
+      const city = c.location?.city?.toLowerCase() || '';
+      for (const [key, names] of Object.entries(cityMap)) {
+        if (names.some(name => city.includes(name))) {
+          counts[key as CityFilter]++;
+          break;
+        }
+      }
+    }
+    
+    return counts;
+  }, [caseList]);
   
   // Get urgent cases for the strip (always from full list, not filtered)
   const urgentCases = caseList.filter(c => c.status === 'critical' || c.status === 'urgent');
@@ -220,29 +291,18 @@ const IndexV2 = () => {
         return t('home.casesNeedingHelp', 'Cases Needing Help');
       case 'nearby':
         return t('home.nearYou', 'Near You');
+      case 'sofia':
+        return t('home.casesInCity', 'Cases in {{city}}', { city: 'София' });
+      case 'varna':
+        return t('home.casesInCity', 'Cases in {{city}}', { city: 'Варна' });
+      case 'plovdiv':
+        return t('home.casesInCity', 'Cases in {{city}}', { city: 'Пловдив' });
       case 'success':
         return t('home.successStories', 'Success Stories');
-      case 'following':
-        return t('home.fromPeopleYouFollow', 'From People You Follow');
       default:
         return t('home.allCases', 'All Cases');
     }
   };
-
-  // Empty state for following
-  const renderFollowingEmptyState = () => (
-    <div className="text-center py-16 px-6">
-      <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-        <span className="text-2xl">👥</span>
-      </div>
-      <h3 className="font-semibold text-foreground mb-2">
-        {t('home.noFollowingYet', "You're not following anyone yet")}
-      </h3>
-      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-        {t('home.followHint', 'Follow rescuers and organizations to see their cases here')}
-      </p>
-    </div>
-  );
 
   return (
     <div 
@@ -273,10 +333,12 @@ const IndexV2 = () => {
       <HomeHeaderV2 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        topContent={<HeroCircles heroes={heroes} isLoading={isLoading || topVolunteers === undefined} />}
       >
         <IntentFilterPills 
           selected={intentFilter} 
           onSelect={setIntentFilter}
+          cityCounts={cityCounts}
           className="px-0"
         />
       </HomeHeaderV2>
@@ -309,6 +371,7 @@ const IndexV2 = () => {
           <IntentFilterPills 
             selected={intentFilter} 
             onSelect={setIntentFilter}
+            cityCounts={cityCounts}
             className="justify-center px-0"
           />
         </div>
@@ -323,9 +386,9 @@ const IndexV2 = () => {
               <h2 className="text-sm font-semibold text-foreground">
                 {getSectionTitle()}
               </h2>
-              {!isLoading && intentFilter !== 'following' && (
+              {!isLoading && (
                 <span className="text-xs text-muted-foreground">
-                  ({filteredCases.length})
+                  ({heroCase ? mainCases.length + 1 : mainCases.length})
                 </span>
               )}
             </div>
@@ -343,6 +406,12 @@ const IndexV2 = () => {
           {/* Content */}
           {isLoading ? (
             <>
+              {/* Hero skeleton on urgent filter */}
+              {intentFilter === 'urgent' && (
+                <div className="mb-6">
+                  <HeroCaseCardSkeleton />
+                </div>
+              )}
               {/* Mobile */}
               {layoutMode === 'browse' ? (
                 <div className="grid grid-cols-2 gap-3 sm:hidden">
@@ -364,14 +433,19 @@ const IndexV2 = () => {
                 ))}
               </div>
             </>
-          ) : intentFilter === 'following' && filteredCases.length === 0 ? (
-            renderFollowingEmptyState()
-          ) : filteredCases.length > 0 ? (
+          ) : mainCases.length > 0 || heroCase ? (
             <>
+              {/* Hero Case - only on urgent filter when we have a critical case */}
+              {heroCase && intentFilter === 'urgent' && (
+                <div className="mb-6">
+                  <HeroCaseCard caseData={heroCase} />
+                </div>
+              )}
+              
               {/* Mobile */}
               {layoutMode === 'browse' ? (
                 <div className="grid grid-cols-2 gap-3 sm:hidden">
-                  {filteredCases.map((caseData, index) => (
+                  {mainCases.map((caseData, index) => (
                     <CompactCaseCard 
                       key={caseData.id}
                       caseData={caseData}
@@ -381,10 +455,11 @@ const IndexV2 = () => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-4 sm:hidden">
-                  {filteredCases.map((caseData, index) => (
+                  {mainCases.map((caseData, index) => (
                     <TwitterCaseCard 
                       key={caseData.id} 
                       caseData={caseData}
+                      socialStats={socialStats?.[caseData.id]}
                       {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
                     />
                   ))}
@@ -392,10 +467,11 @@ const IndexV2 = () => {
               )}
               {/* Desktop list */}
               <div className="hidden sm:flex sm:flex-col sm:gap-4 sm:max-w-lg sm:mx-auto">
-                {filteredCases.map((caseData, index) => (
+                {mainCases.map((caseData, index) => (
                   <TwitterCaseCard 
                     key={caseData.id} 
                     caseData={caseData}
+                    socialStats={socialStats?.[caseData.id]}
                     {...(index === 0 ? { 'data-tour': 'case-card' } : {})}
                   />
                 ))}
@@ -413,7 +489,7 @@ const IndexV2 = () => {
           )}
           
           {/* Infinite Scroll Trigger */}
-          {hasMore && !isLoading && filteredCases.length > 0 && intentFilter !== 'following' && (
+          {hasMore && !isLoading && mainCases.length > 0 && (
             <div 
               ref={loadMoreRef}
               className="flex justify-center py-8"
@@ -428,7 +504,7 @@ const IndexV2 = () => {
           )}
           
           {/* End of list indicator */}
-          {!hasMore && filteredCases.length > 0 && (
+          {!hasMore && mainCases.length > 0 && (
             <div className="text-center py-8 text-muted-foreground text-sm">
               {t('home.endOfList', "You've seen all cases")} 🎉
             </div>

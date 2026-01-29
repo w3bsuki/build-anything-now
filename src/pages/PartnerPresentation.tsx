@@ -33,12 +33,16 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
 
 type SlideDefinition = {
   id: string;
   render: () => ReactNode;
 };
+
+type ApplyRole = 'clinic' | 'shelter' | 'pet_store' | 'sponsor';
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -47,15 +51,50 @@ function clamp(value: number, min: number, max: number) {
 export default function PartnerPresentation() {
   const navigate = useNavigate();
   const contactEmail = import.meta.env['VITE_PARTNER_CONTACT_EMAIL'] || import.meta.env['VITE_INVESTOR_CONTACT_EMAIL'] || '';
+  const [applyOpen, setApplyOpen] = useState(false);
+  const [applyRole, setApplyRole] = useState<ApplyRole>('clinic');
 
   const copyDeckLink = useCallback(async () => {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-    } catch {
-      window.prompt('Copy this link:', url);
+      const { dismiss } = toast({
+        title: 'Link copied!',
+        description: <span className="font-mono text-xs break-all">{url}</span>,
+      });
+      window.setTimeout(() => dismiss(), 2500);
+      return;
+    } catch (error) {
+      void error;
     }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Pawtreon partner deck', url });
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    window.prompt('Copy this link:', url);
   }, []);
+
+  const openApply = useCallback((role: ApplyRole) => {
+    setApplyRole(role);
+    setApplyOpen(true);
+  }, []);
+
+  const applyRoleLabel =
+    applyRole === 'clinic'
+      ? 'Clinic'
+      : applyRole === 'shelter'
+        ? 'Shelter'
+        : applyRole === 'pet_store'
+          ? 'Pet Store'
+          : 'Sponsor';
+
+  const applyEmailSubject = `Pawtreon Partnership Inquiry — ${applyRoleLabel}`;
 
   const slides = useMemo<SlideDefinition[]>(
     () => [
@@ -66,7 +105,7 @@ export default function PartnerPresentation() {
           <div className="mx-auto w-full max-w-md text-center md:max-w-5xl">
             <div className="text-6xl md:text-8xl">🤝</div>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:mt-6 md:text-7xl">
-              Paws<span className="text-primary">Safe</span>
+              Paw<span className="text-primary">treon</span>
             </h1>
             <p className="mt-3 text-base text-muted-foreground md:mt-4 md:text-2xl">
               Partner with the animal rescue network
@@ -1030,21 +1069,21 @@ export default function PartnerPresentation() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-3 md:grid-cols-2">
-                    <Button size="lg" className="w-full">
+                    <Button size="lg" className="w-full" onClick={() => openApply('clinic')}>
                       <Stethoscope className="mr-2 size-5" />
                       Apply as Clinic
                     </Button>
-                    <Button size="lg" variant="outline" className="w-full">
+                    <Button size="lg" variant="outline" className="w-full" onClick={() => openApply('shelter')}>
                       <Building2 className="mr-2 size-5" />
                       Apply as Shelter
                     </Button>
                   </div>
                   <div className="grid gap-3 md:grid-cols-2">
-                    <Button size="lg" variant="outline" className="w-full">
+                    <Button size="lg" variant="outline" className="w-full" onClick={() => openApply('pet_store')}>
                       <Store className="mr-2 size-5" />
                       Apply as Pet Store
                     </Button>
-                    <Button size="lg" variant="outline" className="w-full">
+                    <Button size="lg" variant="outline" className="w-full" onClick={() => openApply('sponsor')}>
                       <Heart className="mr-2 size-5" />
                       Become a Sponsor
                     </Button>
@@ -1083,7 +1122,7 @@ export default function PartnerPresentation() {
         ),
       },
     ],
-    [contactEmail, copyDeckLink],
+    [contactEmail, copyDeckLink, openApply],
   );
 
   const totalSlides = slides.length;
@@ -1309,6 +1348,45 @@ export default function PartnerPresentation() {
           </div>
         </div>
       </footer>
+
+      <Sheet open={applyOpen} onOpenChange={setApplyOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+          <SheetHeader className="text-left">
+            <SheetTitle className="text-lg">{applyRoleLabel} onboarding</SheetTitle>
+            <SheetDescription>
+              We’re onboarding partners manually during beta. Reach out and we’ll follow up with next steps.
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <div className="rounded-xl border border-border/60 bg-card/40 p-3">
+              <div className="font-semibold text-foreground">What happens next</div>
+              <ul className="mt-1 list-disc space-y-1 pl-5">
+                <li>We confirm basic details and availability.</li>
+                <li>We verify partner credentials (where applicable).</li>
+                <li>We enable your partner badge and onboarding.</li>
+              </ul>
+            </div>
+          </div>
+
+          <SheetFooter className="mt-4">
+            <Button variant="outline" onClick={() => setApplyOpen(false)}>
+              Close
+            </Button>
+            {contactEmail ? (
+              <Button asChild>
+                <a href={`mailto:${contactEmail}?subject=${encodeURIComponent(applyEmailSubject)}`}>
+                  Email us
+                </a>
+              </Button>
+            ) : (
+              <Button onClick={copyDeckLink}>
+                Copy presentation link
+              </Button>
+            )}
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

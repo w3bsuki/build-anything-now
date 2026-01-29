@@ -30,6 +30,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
 import { 
   presentationCampaigns as mockCampaigns, 
   presentationCases as mockCases, 
@@ -78,9 +79,26 @@ export default function Presentation() {
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-    } catch {
-      window.prompt('Copy this link:', url);
+      const { dismiss } = toast({
+        title: 'Link copied!',
+        description: <span className="font-mono text-xs break-all">{url}</span>,
+      });
+      window.setTimeout(() => dismiss(), 2500);
+      return;
+    } catch (error) {
+      void error;
     }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Pawtreon deck', url });
+        return;
+      } catch {
+        // user cancelled or share unsupported
+      }
+    }
+
+    window.prompt('Copy this link:', url);
   }, []);
 
   const slides = useMemo<SlideDefinition[]>(

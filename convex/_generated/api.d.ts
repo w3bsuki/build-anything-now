@@ -22,6 +22,7 @@ import type * as notifications from "../notifications.js";
 import type * as partners from "../partners.js";
 import type * as paymentMethods from "../paymentMethods.js";
 import type * as petServices from "../petServices.js";
+import type * as reports from "../reports.js";
 import type * as settings from "../settings.js";
 import type * as social from "../social.js";
 import type * as storage from "../storage.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   partners: typeof partners;
   paymentMethods: typeof paymentMethods;
   petServices: typeof petServices;
+  reports: typeof reports;
   settings: typeof settings;
   social: typeof social;
   storage: typeof storage;
