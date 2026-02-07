@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Lock, Unlock } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { CommentComposer } from "@/components/community/comment-composer";

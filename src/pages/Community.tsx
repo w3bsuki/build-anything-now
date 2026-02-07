@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ForumFilters } from "@/components/community/forum-filters";
 import { ThreadListItem } from "@/components/community/thread-list-item";
 import { CATEGORY_OPTIONS, REPORT_REASON_OPTIONS, SORT_OPTIONS } from "@/components/community/forum-config";

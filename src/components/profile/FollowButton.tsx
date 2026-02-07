@@ -4,7 +4,7 @@ import { api } from '../../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 

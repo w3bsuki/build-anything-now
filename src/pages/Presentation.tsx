@@ -30,7 +30,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { 
   presentationCampaigns as mockCampaigns, 
   presentationCases as mockCases, 

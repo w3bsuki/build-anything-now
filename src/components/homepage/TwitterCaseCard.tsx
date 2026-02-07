@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ReportedBadge } from '@/components/trust/ReportedBadge';
 import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
