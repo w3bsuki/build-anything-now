@@ -73,6 +73,7 @@ const Campaigns = () => {
         searchPlaceholder={t('campaigns.searchPlaceholder')}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
+        searchMode="adaptive"
       >
         <FilterPills
           options={filterOptions}

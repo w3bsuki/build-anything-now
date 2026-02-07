@@ -8,7 +8,7 @@ import { FeaturedClinicCard, ClinicGridCard, ClinicListCard } from '@/components
 import { EmergencyBanner } from '@/components/EmergencyBanner';
 import { ClinicCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { Button } from '@/components/ui/button';
-import { MapPin, LayoutGrid, List, Star, Clock, Building2, Filter } from 'lucide-react';
+import { MapPin, LayoutGrid, List, Star, Clock, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'grid' | 'list';
@@ -60,23 +60,13 @@ const Clinics = () => {
         searchPlaceholder={t('clinics.searchPlaceholder', 'Search clinics, specializations...')}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
+        searchMode="adaptive"
       >
-        {/* Filter Pills Row */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-shrink-0 h-8 px-2.5 rounded-full bg-muted/80 hover:bg-muted"
-          >
-            <Filter className="w-3.5 h-3.5 mr-1.5" />
-            <span className="text-xs font-medium">{t('clinics.filters', 'Filters')}</span>
-          </Button>
-          <FilterPills
-            options={cityFilters}
-            selected={cityFilter}
-            onSelect={setCityFilter}
-          />
-        </div>
+        <FilterPills
+          options={cityFilters}
+          selected={cityFilter}
+          onSelect={setCityFilter}
+        />
       </MobilePageHeader>
 
       {/* Desktop Search + Filters */}

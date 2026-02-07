@@ -37,6 +37,16 @@ const IndexV2 = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [allCases, setAllCases] = useState<AnimalCase[]>([]);
+  const [heroCase, setHeroCase] = useState<AnimalCase | null>(null);
+  const [stories, setStories] = useState<UrgentStoryCircleItem[]>([]);
+  const [cityCounts, setCityCounts] = useState<Record<CityFilter, number>>({
+    sofia: 0,
+    varna: 0,
+    plovdiv: 0,
+  });
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [featuredInitiative, setFeaturedInitiative] = useState<Campaign | null>(null);
+  const [hasLoadedInitialFeed, setHasLoadedInitialFeed] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<number | null>(null);
   const [loadCursor, setLoadCursor] = useState<number | null>(null);
@@ -54,7 +64,6 @@ const IndexV2 = () => {
   useEffect(() => {
     setLoadCursor(null);
     setNextCursor(null);
-    setAllCases([]);
     setHasMore(false);
     setIsLoadingMore(false);
   }, [intentFilter, debouncedSearch, i18n.language]);
@@ -83,7 +92,28 @@ const IndexV2 = () => {
 
   useEffect(() => {
     if (!initialFeed) return;
+    setHasLoadedInitialFeed(true);
     setAllCases((initialFeed.casesPage?.items ?? []) as AnimalCase[]);
+    setHeroCase((initialFeed.heroCase ?? null) as AnimalCase | null);
+    setStories((initialFeed.stories ?? []) as UrgentStoryCircleItem[]);
+    setCityCounts((initialFeed.cityCounts ?? { sofia: 0, varna: 0, plovdiv: 0 }) as Record<CityFilter, number>);
+    setUnreadNotifications(initialFeed.unreadCounts?.notifications ?? 0);
+
+    const featuredInitiativeRaw = initialFeed.featuredInitiative ?? null;
+    const nextFeaturedInitiative: Campaign | null = featuredInitiativeRaw
+      ? {
+        id: featuredInitiativeRaw.id,
+        title: featuredInitiativeRaw.title,
+        description: featuredInitiativeRaw.description,
+        image: featuredInitiativeRaw.image ?? 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+        goal: featuredInitiativeRaw.goal,
+        current: featuredInitiativeRaw.current,
+        unit: featuredInitiativeRaw.unit,
+        endDate: featuredInitiativeRaw.endDate ?? undefined,
+      }
+      : null;
+    setFeaturedInitiative(nextFeaturedInitiative);
+
     setHasMore(Boolean(initialFeed.casesPage?.hasMore));
     setNextCursor(initialFeed.casesPage?.nextCursor ?? null);
     setIsLoadingMore(false);
@@ -100,25 +130,7 @@ const IndexV2 = () => {
     setIsLoadingMore(false);
   }, [paginatedFeed, isLoadingMore]);
 
-  const feedLoading = initialFeed === undefined;
-  const heroCase = (initialFeed?.heroCase ?? null) as AnimalCase | null;
-  const stories = (initialFeed?.stories ?? []) as UrgentStoryCircleItem[];
-  const cityCounts = (initialFeed?.cityCounts ?? { sofia: 0, varna: 0, plovdiv: 0 }) as Record<CityFilter, number>;
-  const unreadNotifications = initialFeed?.unreadCounts?.notifications ?? 0;
-  const featuredInitiativeRaw = initialFeed?.featuredInitiative ?? null;
-
-  const featuredInitiative: Campaign | null = featuredInitiativeRaw
-    ? {
-      id: featuredInitiativeRaw.id,
-      title: featuredInitiativeRaw.title,
-      description: featuredInitiativeRaw.description,
-      image: featuredInitiativeRaw.image ?? 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
-      goal: featuredInitiativeRaw.goal,
-      current: featuredInitiativeRaw.current,
-      unit: featuredInitiativeRaw.unit,
-      endDate: featuredInitiativeRaw.endDate ?? undefined,
-    }
-    : null;
+  const feedLoading = !hasLoadedInitialFeed && initialFeed === undefined;
 
   const loadMore = useCallback(() => {
     if (!hasMore || !nextCursor || isLoadingMore) return;
@@ -188,7 +200,7 @@ const IndexV2 = () => {
       <HomeHeaderV2
         onOpenSearch={() => setIsSearchOpen(true)}
         unreadNotifications={unreadNotifications}
-        topContent={<HeroCircles stories={stories} isLoading={feedLoading} />}
+        topContent={<HeroCircles stories={stories} isLoading={feedLoading && stories.length === 0} />}
       >
         <IntentFilterPills
           selected={intentFilter}

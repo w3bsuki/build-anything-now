@@ -280,29 +280,12 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
           </p>
 
           {/* Funding Progress - Clean Twitter-style */}
-          <div className="rounded-xl border border-border/45 bg-muted/35 p-2.5 space-y-2 mb-3.5">
-            {/* Progress bar - status colored */}
-            <div className="h-1.5 bg-background/70 rounded-full overflow-hidden">
-              <div 
-                className={cn(
-                  "h-full rounded-full transition-all duration-500",
-                  status.progress
-                )}
-                style={{ width: `${percentage}%` }}
-              />
-            </div>
-            
-            {/* Stats row - minimal inline */}
-            <div className="flex items-center justify-between text-sm">
-              <span>
-                <span className="font-semibold text-foreground">{caseData.fundraising.current.toLocaleString()}</span>
-                <span className="text-muted-foreground"> / {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
-              </span>
-               
-              {/* Avatar group for helpers - using stacked border token */}
-              {helpersCount > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <div className="flex -space-x-2">
+          <div className="rounded-xl border border-border/45 bg-muted/35 p-2.5 space-y-2.5 mb-3.5">
+            {/* Top row: helpers left, amount right */}
+            <div className="flex items-start justify-between gap-3 text-sm">
+              {helpersCount > 0 ? (
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="flex -space-x-2 shrink-0">
                     {Array.from({ length: Math.min(3, helpersCount) }).map((_, index) => {
                       const src = helperAvatars[index] ?? null;
                       return (
@@ -313,9 +296,27 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
                       );
                     })}
                   </div>
-                  <span className="text-muted-foreground font-medium">{helpersCount} helping</span>
+                  <span className="truncate text-muted-foreground font-medium">{helpersCount} helping</span>
                 </div>
+              ) : (
+                <span className="text-muted-foreground font-medium">{t('common.noHelpersYet', 'No helpers yet')}</span>
               )}
+
+              <span className="shrink-0 text-right">
+                <span className="font-semibold text-foreground">{caseData.fundraising.current.toLocaleString()}</span>
+                <span className="text-muted-foreground"> / {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
+              </span>
+            </div>
+
+            {/* Middle row: progress bar */}
+            <div className="h-2 rounded-full bg-background/70 ring-1 ring-border/35 overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all duration-500",
+                  status.progress
+                )}
+                style={{ width: `${percentage}%` }}
+              />
             </div>
           </div>
 

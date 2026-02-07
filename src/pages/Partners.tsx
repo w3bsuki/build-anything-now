@@ -181,6 +181,7 @@ const Partners = () => {
         searchPlaceholder={getSearchPlaceholder()}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
+        searchMode="adaptive"
       >
         <FilterPills
           options={filterOptions}
