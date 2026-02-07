@@ -279,3 +279,29 @@ Mitigations:
 - Semantic token-only styling in scoped trust surfaces
 - Accessibility baseline on raw interactive controls (`focus-visible` ring, touch target size)
 - Expanded style gates for home/community/campaign surfaces to prevent regression
+
+### Feature: Convex API Pruning + Security Hardening
+*Status: In progress*
+
+Scope:
+- Remove unreferenced Convex query/mutation/internal handlers from public API surface.
+- Keep schema tables unchanged unless they have zero operational references.
+- Preserve all active product routes, including deck/preview routes.
+
+Data changes:
+- None (no schema/table removals in this pass).
+
+API surface:
+- Convex generated client API shrinks due removal of dead handlers.
+- Dev seed and legacy social helper handlers are removed from callable surface.
+- No new endpoints added.
+
+Abuse/trust risks addressed:
+- Reduce accidental exposure of legacy or dead mutation paths.
+- Reduce operator misuse risk from stale dev-seed handlers.
+- Lower maintenance risk from unused trust-critical code paths.
+
+Mitigations:
+- Regenerate Convex API types after pruning.
+- Run Convex strict typecheck and deployment-safe typecheck gate.
+- Keep webhook/internal security patterns unchanged for active money/auth flows.

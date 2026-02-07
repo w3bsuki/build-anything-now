@@ -168,58 +168,6 @@ export const getRecentActivities = query({
     },
 });
 
-// Case-first stories for home: urgent/new rescue stories only.
-export const getUrgentCaseStories = query({
-    args: {
-        limit: v.optional(v.number()),
-        locale: v.optional(v.string()),
-    },
-    handler: async (ctx, args) => {
-        const limit = Math.min(Math.max(args.limit ?? 12, 1), 30);
-        const targetLocale = args.locale?.trim().toLowerCase().split("-")[0];
-
-        const [criticalCases, urgentCases] = await Promise.all([
-            ctx.db.query("cases").withIndex("by_type", (q) => q.eq("type", "critical")).collect(),
-            ctx.db.query("cases").withIndex("by_type", (q) => q.eq("type", "urgent")).collect(),
-        ]);
-
-        const sortedCases = [...criticalCases, ...urgentCases]
-            .sort((a, b) => b.createdAt - a.createdAt)
-            .slice(0, Math.max(limit * 2, 16));
-
-        const stories = await Promise.all(
-            sortedCases.map(async (caseDoc) => {
-                const sourceLocale = (caseDoc.language ?? "").trim().toLowerCase().split("-")[0];
-                const translation = targetLocale ? caseDoc.translations?.[targetLocale] : undefined;
-                const title =
-                    translation && sourceLocale !== targetLocale
-                        ? (translation.title ?? caseDoc.title)
-                        : caseDoc.title;
-                const description =
-                    translation && sourceLocale !== targetLocale
-                        ? (translation.description ?? caseDoc.description)
-                        : caseDoc.description;
-
-                const imageUrl = caseDoc.images[0] ? await ctx.storage.getUrl(caseDoc.images[0]) : null;
-                const latestUpdate = [...(caseDoc.updates ?? [])].sort((a, b) => b.date - a.date)[0];
-
-                return {
-                    id: `case-${caseDoc._id}`,
-                    type: latestUpdate ? "case_update" : "case_created",
-                    caseId: caseDoc._id,
-                    title,
-                    subtitle: latestUpdate?.text ?? description,
-                    imageUrl,
-                    timestamp: latestUpdate?.date ?? caseDoc.createdAt,
-                    status: caseDoc.type,
-                };
-            })
-        );
-
-        return stories.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
-    },
-});
-
 // Get stories for a specific user (their activity)
 export const getUserStories = query({
     args: {

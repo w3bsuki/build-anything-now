@@ -14,53 +14,6 @@ export const SERVICE_TYPES = [
     { value: "other", label: "Other Services", icon: "📦", emoji: "🐕" },
 ] as const;
 
-// List all pet services with optional filters
-export const list = query({
-    args: {
-        type: v.optional(v.string()),
-        city: v.optional(v.string()),
-        verified: v.optional(v.boolean()),
-        limit: v.optional(v.number()),
-    },
-    handler: async (ctx, args) => {
-        let services = await ctx.db.query("petServices").collect();
-
-        if (args.type) {
-            services = services.filter(s => s.type === args.type);
-        }
-
-        if (args.city) {
-            services = services.filter(s => 
-                s.city.toLowerCase().includes(args.city!.toLowerCase())
-            );
-        }
-
-        if (args.verified !== undefined) {
-            services = services.filter(s => s.verified === args.verified);
-        }
-
-        // Sort by verified first, then by name
-        services.sort((a, b) => {
-            if (a.verified !== b.verified) return b.verified ? 1 : -1;
-            return a.name.localeCompare(b.name);
-        });
-
-        if (args.limit) {
-            services = services.slice(0, args.limit);
-        }
-
-        return services;
-    },
-});
-
-// Get a single pet service by ID
-export const get = query({
-    args: { id: v.id("petServices") },
-    handler: async (ctx, args) => {
-        return await ctx.db.get(args.id);
-    },
-});
-
 // Search pet services for claim flow (used during onboarding)
 export const searchForClaim = query({
     args: { 
@@ -199,62 +152,5 @@ export const submitClaim = mutation({
         });
 
         return { success: true };
-    },
-});
-
-// Get user's pet service claims
-export const getMyClaims = query({
-    args: {},
-    handler: async (ctx) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) return [];
-
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-            .unique();
-
-        if (!user) return [];
-
-        const claims = await ctx.db
-            .query("petServiceClaims")
-            .withIndex("by_user", (q) => q.eq("userId", user._id))
-            .collect();
-
-        // Enrich with service details
-        const enrichedClaims = await Promise.all(
-            claims.map(async (claim) => {
-                const service = await ctx.db.get(claim.petServiceId);
-                return {
-                    ...claim,
-                    service: service ? { 
-                        name: service.name, 
-                        city: service.city,
-                        type: service.type,
-                    } : null,
-                };
-            })
-        );
-
-        return enrichedClaims;
-    },
-});
-
-// Get stats for directory page
-export const getStats = query({
-    args: {},
-    handler: async (ctx) => {
-        const services = await ctx.db.query("petServices").collect();
-        
-        const byType = services.reduce((acc, s) => {
-            acc[s.type] = (acc[s.type] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>);
-
-        return {
-            total: services.length,
-            verified: services.filter(s => s.verified).length,
-            byType,
-        };
     },
 });

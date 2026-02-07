@@ -11,23 +11,3 @@ export const generateUploadUrl = mutation({
         return await ctx.storage.generateUploadUrl();
     },
 });
-
-// Get image URL from storage ID
-export const getUrl = query({
-    args: { storageId: v.id("_storage") },
-    handler: async (ctx, args) => {
-        return await ctx.storage.getUrl(args.storageId);
-    },
-});
-
-// Get multiple image URLs
-export const getUrls = query({
-    args: { storageIds: v.array(v.id("_storage")) },
-    handler: async (ctx, args) => {
-        const urls: (string | null)[] = [];
-        for (const id of args.storageIds) {
-            urls.push(await ctx.storage.getUrl(id));
-        }
-        return urls;
-    },
-});

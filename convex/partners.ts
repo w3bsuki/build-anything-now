@@ -36,20 +36,6 @@ export const get = query({
     },
 });
 
-// Get featured partners
-export const getFeatured = query({
-    args: { limit: v.optional(v.number()) },
-    handler: async (ctx, args) => {
-        const limit = args.limit ?? 4;
-        const partners = await ctx.db
-            .query("partners")
-            .withIndex("by_featured", (q) => q.eq("featured", true))
-            .collect();
-
-        return partners.slice(0, limit);
-    },
-});
-
 // Get partner stats summary
 export const getStats = query({
     args: {},

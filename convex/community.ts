@@ -29,6 +29,28 @@ type ThreadDoc = Doc<"communityPosts">;
 type CommentDoc = Doc<"communityComments">;
 type QueryLikeCtx = Pick<QueryCtx, "db">;
 type MutationLikeCtx = Pick<MutationCtx, "db">;
+type CommentAuthorView = {
+  id: Id<"users"> | null;
+  name: string;
+  avatar: string | null;
+  city: string | null;
+  badge: "mod" | "clinic" | "partner" | "volunteer" | null;
+};
+type CommentView = {
+  id: Id<"communityComments">;
+  postId: Id<"communityPosts">;
+  parentCommentId: Id<"communityComments"> | null;
+  content: string;
+  isDeleted: boolean;
+  reactionCount: number;
+  replyCount: number;
+  createdAt: number;
+  editedAt: number | null;
+  timeAgo: string;
+  viewerReacted: boolean;
+  author: CommentAuthorView;
+  replies: CommentView[];
+};
 
 function isForumBoard(value: string | undefined | null): value is ForumBoard {
   return value === "rescue" || value === "community";
@@ -485,63 +507,6 @@ export const createThread = mutation({
   },
 });
 
-export const updateThread = mutation({
-  args: {
-    id: v.id("communityPosts"),
-    title: v.optional(v.string()),
-    content: v.optional(v.string()),
-    category: v.optional(v.union(
-      v.literal("urgent_help"),
-      v.literal("case_update"),
-      v.literal("adoption"),
-      v.literal("advice"),
-      v.literal("general"),
-      v.literal("announcements"),
-    )),
-    cityTag: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
-    const post = await ctx.db.get(args.id);
-    ensureThreadAccess(post);
-
-    const isAdmin = user.role === "admin";
-    if (post.userId !== user._id && !isAdmin) {
-      throw new Error("Not authorized to update this thread");
-    }
-
-    if (post.isLocked && !isAdmin) {
-      throw new Error("Thread is locked");
-    }
-
-    const board = normalizeBoard(post);
-    const nextContent = args.content !== undefined ? normalizeContent(args.content) : post.content;
-    const nextTitle = args.title !== undefined ? normalizeTitle(args.title, nextContent) : normalizeTitle(post.title, nextContent);
-    const nextCategory =
-      args.category !== undefined ? normalizeCategoryByBoard(board, args.category) : normalizeCategory(post);
-    const nextCityTag =
-      args.cityTag !== undefined ? sanitizeCityTag(args.cityTag) : sanitizeCityTag(post.cityTag);
-
-    await ctx.db.patch(post._id, {
-      title: nextTitle,
-      content: nextContent,
-      category: nextCategory,
-      cityTag: nextCityTag,
-      editedAt: Date.now(),
-      lastActivityAt: Date.now(),
-    });
-
-    await ctx.db.insert("auditLogs", {
-      actorId: user._id,
-      entityType: "community_post",
-      entityId: String(post._id),
-      action: "community.thread.updated",
-      details: `category=${nextCategory}`,
-      createdAt: Date.now(),
-    });
-  },
-});
-
 export const lockThread = mutation({
   args: {
     id: v.id("communityPosts"),
@@ -591,7 +556,7 @@ export const listComments = query({
       .filter((comment) => !comment.parentCommentId)
       .sort((a, b) => a.createdAt - b.createdAt);
 
-    const formatComment = async (comment: CommentDoc, includeReplies: boolean) => {
+    const formatComment = async (comment: CommentDoc, includeReplies: boolean): Promise<CommentView> => {
       const author = await ctx.db.get(comment.authorId);
       const viewerReacted = await getCommentViewerReacted(ctx, comment._id, viewer?._id ?? null);
       const children = includeReplies
@@ -688,40 +653,6 @@ export const createComment = mutation({
     });
 
     return id;
-  },
-});
-
-export const updateComment = mutation({
-  args: {
-    commentId: v.id("communityComments"),
-    content: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
-    const comment = await ctx.db.get(args.commentId);
-    if (!comment || comment.isDeleted) throw new Error("Reply not found");
-
-    const isAdmin = user.role === "admin";
-    if (comment.authorId !== user._id && !isAdmin) {
-      throw new Error("Not authorized to edit this reply");
-    }
-
-    const content = args.content.trim();
-    if (!content) throw new Error("Reply text is required");
-    if (content.length > 2000) throw new Error("Reply is too long (max 2000 characters)");
-
-    await ctx.db.patch(comment._id, {
-      content,
-      editedAt: Date.now(),
-    });
-
-    await ctx.db.insert("auditLogs", {
-      actorId: user._id,
-      entityType: "community_comment",
-      entityId: String(comment._id),
-      action: "community.comment.updated",
-      createdAt: Date.now(),
-    });
   },
 });
 

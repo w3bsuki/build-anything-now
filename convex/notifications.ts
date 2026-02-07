@@ -95,31 +95,3 @@ export const remove = mutation({
         await ctx.db.delete(args.id);
     },
 });
-
-// Create notification (internal use only - not callable from client)
-export const create = internalMutation({
-    args: {
-        userId: v.id("users"),
-        type: v.union(
-            v.literal("donation_received"),
-            v.literal("case_update"),
-            v.literal("achievement_unlocked"),
-            v.literal("campaign_ended"),
-            v.literal("system")
-        ),
-        title: v.string(),
-        message: v.string(),
-        caseId: v.optional(v.id("cases")),
-    },
-    handler: async (ctx, args) => {
-        return await ctx.db.insert("notifications", {
-            userId: args.userId,
-            type: args.type,
-            title: args.title,
-            message: args.message,
-            caseId: args.caseId,
-            read: false,
-            createdAt: Date.now(),
-        });
-    },
-});

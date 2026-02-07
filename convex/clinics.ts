@@ -109,40 +109,6 @@ export const submitClaim = mutation({
     },
 });
 
-// Get user's clinic claims
-export const getMyClaims = query({
-    args: {},
-    handler: async (ctx) => {
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) return [];
-
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-            .unique();
-
-        if (!user) return [];
-
-        const claims = await ctx.db
-            .query("clinicClaims")
-            .withIndex("by_user", (q) => q.eq("userId", user._id))
-            .collect();
-
-        // Enrich with clinic details
-        const enrichedClaims = await Promise.all(
-            claims.map(async (claim) => {
-                const clinic = await ctx.db.get(claim.clinicId);
-                return {
-                    ...claim,
-                    clinic: clinic ? { name: clinic.name, city: clinic.city } : null,
-                };
-            })
-        );
-
-        return enrichedClaims;
-    },
-});
-
 // Admin queue for clinic claims
 export const listPendingClaims = query({
     args: {},
@@ -244,26 +210,5 @@ export const reviewClaim = mutation({
         });
 
         return { ok: true };
-    },
-});
-
-// Seed clinics from mock data (internal only - not callable from client)
-export const seed = internalMutation({
-    args: {
-        clinics: v.array(v.object({
-            name: v.string(),
-            city: v.string(),
-            address: v.string(),
-            phone: v.string(),
-            is24h: v.boolean(),
-            specializations: v.array(v.string()),
-            verified: v.boolean(),
-        })),
-    },
-    handler: async (ctx, args) => {
-        for (const clinic of args.clinics) {
-            await ctx.db.insert("clinics", clinic);
-        }
-        return { inserted: args.clinics.length };
     },
 });

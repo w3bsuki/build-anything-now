@@ -45,28 +45,6 @@ export const get = query({
   },
 });
 
-// Get trending rescue campaigns (highest progress %)
-export const getTrending = query({
-  args: { limit: v.optional(v.number()) },
-  handler: async (ctx, args) => {
-    const limit = args.limit ?? 3;
-    const campaigns = await ctx.db
-      .query("campaigns")
-      .withIndex("by_status", (q) => q.eq("status", "active"))
-      .collect();
-
-    return campaigns
-      .filter((c) => normalizeCampaignType(c.campaignType) === "rescue")
-      .map((c) => ({
-        ...c,
-        campaignType: normalizeCampaignType(c.campaignType),
-        progress: c.goal > 0 ? (c.current / c.goal) * 100 : 0,
-      }))
-      .sort((a, b) => b.progress - a.progress)
-      .slice(0, limit);
-  },
-});
-
 // Get featured platform initiatives for home/account surfaces
 export const getFeaturedInitiatives = query({
   args: { limit: v.optional(v.number()) },

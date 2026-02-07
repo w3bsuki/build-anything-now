@@ -193,3 +193,15 @@ Template:
 - **Consequences / follow-ups:**
   - Stage 2 will wire `Followed` to follow graph filtering and `Messages` to real conversation list data.
   - Members/activity remain secondary community destinations outside the primary bottom tab set.
+
+### 2026-02-07 — Convex cleanup uses aggressive handler pruning with schema freeze
+- **Status:** decided
+- **Context:** Refactor scope required large backend cleanup, but product routes and data model contracts must remain stable during this pass.
+- **Decision:**
+  - Remove unreferenced Convex handlers (queries/mutations/internal functions) aggressively.
+  - Keep schema tables unchanged unless a table has zero operational references.
+  - Preserve all currently shipped routes, including deck/preview surfaces.
+- **Rationale:** Reduces API attack and maintenance surface now without introducing schema migration risk.
+- **Consequences / follow-ups:**
+  - Regenerate Convex `_generated` API types immediately after handler pruning.
+  - Downstream callers outside this repo must migrate if they relied on removed handlers.
