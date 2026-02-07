@@ -15,15 +15,6 @@
 }
 
 @layer components {
-  .card-hover {
-    @apply transition-shadow duration-200;
-    box-shadow: var(--shadow-xs);
-  }
-
-  .card-hover:hover {
-    box-shadow: var(--shadow-sm);
-  }
-
   .progress-bar-track {
     @apply bg-muted/70 rounded-full overflow-hidden;
   }
@@ -46,14 +37,6 @@
 
   .badge-adopted {
     @apply bg-adopted text-adopted-foreground;
-  }
-
-  .nav-item {
-    @apply flex flex-col items-center gap-0.5 text-muted-foreground transition-colors duration-150;
-  }
-
-  .nav-item-active {
-    @apply text-primary;
   }
 
   .sticky-donate {
@@ -89,12 +72,6 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  .glass-subtle {
-    @apply bg-surface-overlay/80 backdrop-blur-md;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
   .nav-shadow {
     box-shadow: var(--shadow-sm);
   }
@@ -111,15 +88,6 @@
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
   --tracking-normal: var(--letter-spacing);
-  --shadow-2xl: var(--shadow-2xl);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-md: var(--shadow-md);
-  --shadow: var(--shadow);
-  --shadow-sm: var(--shadow-sm);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-2xs: var(--shadow-2xs);
-  --spacing: var(--spacing);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -197,7 +165,6 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --letter-spacing: var(--letter-spacing);
   --shadow-offset-y: var(--shadow-offset-y);
   --shadow-offset-x: var(--shadow-offset-x);
   --shadow-spread: var(--shadow-spread);
