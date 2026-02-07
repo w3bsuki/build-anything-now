@@ -685,14 +685,6 @@ export default function Community() {
   );
 }
 
-function getCategoryLabel(board: ForumBoard, category: ForumCategory) {
-  return CATEGORY_OPTIONS[board].find((entry) => entry.value === category)?.label ?? "All";
-}
-
-function getFirstName(name: string) {
-  return name.trim().split(/\s+/)[0] ?? name;
-}
-
 function getAuthorInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "U";

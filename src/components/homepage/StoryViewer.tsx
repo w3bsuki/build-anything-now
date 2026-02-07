@@ -215,7 +215,7 @@ function StoryTypeBadge({ type }: { type: Story["type"] }) {
 }
 
 // Story actions footer
-function StoryActions({ story, onClose }: { story: Story; onClose: () => void }) {
+function StoryActions({ story: _story, onClose: _onClose }: { story: Story; onClose: () => void }) {
     return (
         <div className="px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-6">

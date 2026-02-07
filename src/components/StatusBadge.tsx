@@ -37,7 +37,7 @@ const statusConfig = {
 };
 
 export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const config = statusConfig[status];
   const Icon = config.icon;
   

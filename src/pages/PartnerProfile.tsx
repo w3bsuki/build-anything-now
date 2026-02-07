@@ -4,7 +4,6 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Mail, Phone, MapPin, Handshake, ExternalLink } from 'lucide-react';
-import { PageHeader } from '@/components/PageHeader';
 import type { Id } from '../../convex/_generated/dataModel';
 
 const PartnerProfile = () => {

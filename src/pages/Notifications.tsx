@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Mock data - will be replaced with Convex data
@@ -90,11 +90,6 @@ const Notifications = () => {
   const handleMarkRead = (id: string) => {
     // TODO: Implement with useMutation(api.notifications.markAsRead)
     console.log('Mark read', id);
-  };
-
-  const handleDelete = (id: string) => {
-    // TODO: Implement with useMutation(api.notifications.remove)
-    console.log('Delete', id);
   };
 
   return (

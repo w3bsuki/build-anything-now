@@ -4,9 +4,7 @@ import {
   ArrowLeft, 
   Heart, 
   PawPrint, 
-  ChevronRight,
   Clock,
-  CheckCircle,
   ExternalLink,
   ListFilter,
   CircleCheck,
@@ -89,9 +87,7 @@ const MyDonations = () => {
   
   // Stats
   const totalAmount = allDonations.reduce((sum, d) => sum + d.amount, 0);
-  const completedCount = allDonations.filter(d => d.status === 'completed').length;
   const animalsHelped = new Set(allDonations.map(d => d.caseName)).size;
-  const successStories = allDonations.filter(d => d.caseStatus === 'adopted').length;
 
   const formatDate = (timestamp: number) => {
     const diff = NOW - timestamp;

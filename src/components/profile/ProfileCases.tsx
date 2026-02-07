@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PawPrint, MapPin } from 'lucide-react';
-import { ProgressBar } from '@/components/ProgressBar';
 import { StatusBadge } from '@/components/StatusBadge';
-import { cn } from '@/lib/utils';
 
 interface Case {
   _id: string;

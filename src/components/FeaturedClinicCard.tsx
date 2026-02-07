@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BadgeCheck, MapPin, Star, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface FeaturedClinicCardProps {
   clinic: {
@@ -177,7 +176,6 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
 
 // Grid card for All Clinics section - beautiful image-first design
 export const ClinicGridCard = ({ clinic }: { clinic: FeaturedClinicCardProps['clinic'] }) => {
-  const { t } = useTranslation();
   const clinicId = clinic._id || clinic.id;
   const fallbackImage = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80';
 
@@ -239,7 +237,6 @@ export const ClinicGridCard = ({ clinic }: { clinic: FeaturedClinicCardProps['cl
 
 // List card for All Clinics section - compact detailed view
 export const ClinicListCard = ({ clinic }: { clinic: FeaturedClinicCardProps['clinic'] }) => {
-  const { t } = useTranslation();
   const clinicId = clinic._id || clinic.id;
   const fallbackImage = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&q=80';
 

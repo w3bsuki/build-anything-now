@@ -1,5 +1,4 @@
-import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { query } from "./_generated/server";
 
 // Achievement definitions
 export const ACHIEVEMENT_DETAILS: Record<string, { title: string; description: string; icon: string }> = {

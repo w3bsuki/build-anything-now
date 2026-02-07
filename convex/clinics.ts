@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 
 // List all clinics with optional city filter

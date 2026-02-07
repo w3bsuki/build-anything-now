@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation, internalMutation } from "./_generated/server";
+import { query } from "./_generated/server";
 import type { Id, Doc } from "./_generated/dataModel";
 
 // Activity types for the story feed

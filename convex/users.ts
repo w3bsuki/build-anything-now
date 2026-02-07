@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation, internalQuery } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 
 // Volunteer capability options for frontend

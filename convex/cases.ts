@@ -4,11 +4,7 @@ import type { QueryCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { requireUser } from "./lib/auth";
 
-const CASE_TYPE_VALUES = ["critical", "urgent", "recovering", "adopted"] as const;
-const CASE_STATUS_VALUES = ["active", "funded", "closed"] as const;
 const UPDATE_TYPE_VALUES = ["medical", "milestone", "update", "success"] as const;
-const EVIDENCE_TYPE_VALUES = ["bill", "lab_result", "clinic_photo", "other"] as const;
-const AUTHOR_ROLE_VALUES = ["owner", "clinic", "moderator"] as const;
 const LIFECYCLE_STAGE_VALUES = [
   "active_treatment",
   "seeking_adoption",
@@ -17,11 +13,10 @@ const LIFECYCLE_STAGE_VALUES = [
   "closed_other",
 ] as const;
 
-type CaseType = (typeof CASE_TYPE_VALUES)[number];
-type CaseStatus = (typeof CASE_STATUS_VALUES)[number];
+type CaseType = "critical" | "urgent" | "recovering" | "adopted";
+type CaseStatus = "active" | "funded" | "closed";
 type UpdateType = (typeof UPDATE_TYPE_VALUES)[number];
-type EvidenceType = (typeof EVIDENCE_TYPE_VALUES)[number];
-type AuthorRole = (typeof AUTHOR_ROLE_VALUES)[number];
+type AuthorRole = "owner" | "clinic" | "moderator";
 type LifecycleStage = (typeof LIFECYCLE_STAGE_VALUES)[number];
 
 type ViewerUser = Pick<Doc<"users">, "_id" | "role">;

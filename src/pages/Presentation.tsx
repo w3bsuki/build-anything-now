@@ -1523,28 +1523,6 @@ function StatCard({ number, label }: { number: string; label: string }) {
   );
 }
 
-function StepCard({
-  step,
-  title,
-  description,
-}: {
-  step: number;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Card className="h-full">
-      <CardHeader className="items-center text-center p-4 md:p-6">
-        <div className="flex size-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
-          {step}
-        </div>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <CardDescription className="text-sm">{description}</CardDescription>
-      </CardHeader>
-    </Card>
-  );
-}
-
 function RevenueCard({
   icon,
   title,

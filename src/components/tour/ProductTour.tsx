@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import Joyride, { CallBackProps, STATUS, EVENTS, Step } from 'react-joyride';
+import Joyride, { CallBackProps, STATUS } from 'react-joyride';
 import { useProductTour } from '@/hooks/useProductTour';
 import { getHomepageTourSteps } from './tourSteps';
 
@@ -11,7 +11,7 @@ export function ProductTour() {
   const { isRunning, handleTourComplete, handleTourSkip } = useProductTour();
 
   const handleCallback = useCallback((data: CallBackProps) => {
-    const { status, type } = data;
+    const { status } = data;
     
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as (typeof STATUS.FINISHED | typeof STATUS.SKIPPED))) {
       if (status === STATUS.SKIPPED) {

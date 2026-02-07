@@ -40,7 +40,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
           text: shareText,
           url: shareUrl,
         });
-      } catch (err) {
+      } catch (_err) {
         // User cancelled or error
       }
     }

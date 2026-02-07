@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
-import type { Doc, Id } from "./_generated/dataModel";
+import type { Doc } from "./_generated/dataModel";
 
 type LandingIntent = "urgent" | "nearby" | "success" | "all";
 

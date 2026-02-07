@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Globe, X, ChevronDown, Check, Sparkles } from 'lucide-react';
@@ -13,15 +13,6 @@ const COUNTRY_LANGUAGE_MAP: Record<string, string> = {
   DE: 'de', // Germany
   AT: 'de', // Austria
   CH: 'de', // Switzerland (German)
-};
-
-const COUNTRY_NAMES: Record<string, Record<string, string>> = {
-  BG: { en: 'Bulgaria', bg: 'България' },
-  UA: { en: 'Ukraine', uk: 'Україна' },
-  RU: { en: 'Russia', ru: 'Россия' },
-  DE: { en: 'Germany', de: 'Deutschland' },
-  AT: { en: 'Austria', de: 'Österreich' },
-  CH: { en: 'Switzerland', de: 'Schweiz' },
 };
 
 const supportedLanguages = ['bg', 'uk', 'ru', 'de', 'en'] as const;

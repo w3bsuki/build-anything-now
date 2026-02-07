@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Plus, Trash2, CheckCircle, Building2 } from 'lucide-react';
+import { ArrowLeft, CreditCard, Plus, Trash2, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 // Mock data - will be replaced with Convex data
@@ -25,13 +24,6 @@ const mockPaymentMethods = [
     isDefault: false,
   },
 ];
-
-const getCardIcon = (type: string, lastFour?: string) => {
-  // Simple card brand detection based on first digit (in real app, use lastFour pattern)
-  if (lastFour?.startsWith('4')) return '💳'; // Visa
-  if (lastFour?.startsWith('5')) return '💳'; // Mastercard
-  return '💳';
-};
 
 const PaymentMethods = () => {
   const { t } = useTranslation();

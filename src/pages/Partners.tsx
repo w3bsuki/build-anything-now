@@ -7,7 +7,7 @@ import { FilterPills } from '@/components/FilterPills';
 import { PartnerCardSkeleton } from '@/components/skeletons/CardSkeleton';
 import { Button } from '@/components/ui/button';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
-import { 
+import {
   Handshake, 
   Heart, 
   ShoppingBag, 
@@ -25,7 +25,6 @@ import {
   Coins
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import type { Partner, Volunteer } from '@/types';
 
 // Mock Pet Sitters Data
