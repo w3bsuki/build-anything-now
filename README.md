@@ -57,8 +57,7 @@ pnpm build
   - Design system: [`docs/design/tailwind-shadcn-remediation-plan.md`](docs/design/tailwind-shadcn-remediation-plan.md)
   - Partners and ops: [`docs/partners/bulgaria-clinic-seeding-plan.md`](docs/partners/bulgaria-clinic-seeding-plan.md), [`docs/partners/claim-verification-ops.md`](docs/partners/claim-verification-ops.md), [`docs/partners/outreach-pipeline.md`](docs/partners/outreach-pipeline.md)
   - Mission initiatives: [`docs/mission/pawtreon-initiatives.md`](docs/mission/pawtreon-initiatives.md)
-  - Investor and archive index: [`docs/README.md`](docs/README.md)
-- Dev workflow: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+  - Investor and docs index: [`docs/README.md`](docs/README.md)
 
 ## Mobile (Capacitor)
 ```bash

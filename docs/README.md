@@ -23,7 +23,3 @@ Supporting planning packs live in `docs/`:
 ## Investor
 - Live interactive decks (in-app): `/presentation` (investor), `/partner` (partners)
 - Investor hub: `docs/investor/README.md`
-
-## Archive
-- Legacy planning docs: `docs/archive/legacy/`
-- Prior GPT audit artifacts: `docs/archive/gpt/`

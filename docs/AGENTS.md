@@ -47,7 +47,6 @@ Use only these packs (unless human approves a structural change):
 - `docs/partners/` - clinics/partners claim and outreach ops
 - `docs/mission/` - platform initiatives (drones/safehouse roadmap)
 - `docs/investor/` - investor-facing narrative assets
-- `docs/archive/` - retired/legacy material (read-only by default)
 
 Do not add planning docs to repo root.
 
@@ -99,7 +98,7 @@ Rules:
    - `*-audit.md`
    - `*-baseline.md`
 3. Place each doc in the closest domain folder; do not create root-level `.md` files.
-4. If content is obsolete, move it to `docs/archive/` instead of leaving stale active docs.
+4. If content is obsolete, remove it (or merge the still-relevant parts into active docs) instead of leaving stale active docs.
 
 ---
 

@@ -10,7 +10,6 @@ import "@fontsource/nunito/600.css";
 import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/800.css";
 import "./index.css";
-import "./fonts.css";
 
 // Environment variables
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
