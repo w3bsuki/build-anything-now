@@ -44,7 +44,7 @@ export function ReportedBadge({
           className={cn(
             'inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-sm',
             isReviewing 
-              ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+              ? 'bg-warning/15 text-warning-foreground'
               : 'bg-muted text-muted-foreground',
             className
           )}

@@ -32,11 +32,11 @@ Template:
 - **Consequences / follow-ups:** Remove old strings, update mobile bundle IDs, and keep future docs/code Pawtreon-only.
 
 ### 2026-01-23 — Canonical docs + OPUS loop
-- **Status:** decided
+- **Status:** superseded on 2026-02-06
 - **Context:** Docs were duplicated, contradictory, and hard to use day-to-day.
-- **Decision:** Keep a small canonical doc set at repo root (`VISION.md`, `PRD.md`, `ROADMAP.md`, `PLAN.md`, `TODO.md`, `STYLE.md`, `TECH-STACK.md`, `TRUST-SAFETY.md`). Keep investor docs in `docs/investor/`. Archive everything else in `docs/archive/legacy/`.
+- **Decision:** This historical decision introduced a now-legacy root doc model that has been replaced.
 - **Rationale:** Single source of truth and a workflow that’s fast to follow.
-- **Consequences / follow-ups:** Use `PLAN.md` for the Codex ↔ OPUS iteration before major changes; avoid reintroducing new “plan” docs outside the canonical set.
+- **Consequences / follow-ups:** Follow the active 2026-02-06 docs topology (7 canonical root docs + supporting docs under `docs/`).
 
 ### 2026-01-23 — Trust UI primitives (verification + reporting)
 - **Status:** decided
@@ -65,23 +65,18 @@ Template:
 - **Rationale:** Trust is the product; identity + money features require a hard baseline against IDOR and PII exposure.
 - **Consequences / follow-ups:** Regenerate Convex bindings after API changes and keep all admin/seed tooling internal or secret-gated.
 ### 2026-01-23 — Adopt spec-driven development workflow
-- **Status:** decided
+- **Status:** superseded on 2026-02-06
 - **Context:** Ad-hoc OPUS execution with Codex review worked for polish, but larger features need more structure to avoid rework and ensure Codex review catches issues early.
 - **Decision:**
-  - Adopt a Kiro-inspired spec-driven workflow for meaningful features (1+ day of work).
-  - Use three-file specs: `requirements.md` (EARS notation), `design.md` (architecture), `tasks.md` (atomic tasks).
-  - Store specs in `.specs/active/` (in-progress) and `.specs/completed/` (shipped).
-  - Keep the lightweight `PLAN.md` flow for small fixes and polish.
+  - This workflow is archived for historical reference.
+  - Active workflow does not use `.specs` paths.
 - **Rationale:**
   - Structured requirements reduce ambiguity and rework.
   - EARS notation makes acceptance criteria testable.
   - Atomic tasks create a clear paper trail.
   - Codex can critique requirements/design before any code is written.
 - **Consequences / follow-ups:**
-  - New canonical doc: `SPEC-DRIVEN.md`
-  - Templates in `.specs/_TEMPLATE/`
-  - Updated `AGENTS.md` workflow section
-  - First spec should be the next P1 feature (e.g., donations end-to-end or moderation queue)
+  - Use canonical root docs and `docs/` supporting packs as defined in 2026-02-06 decisions.
 
 ### 2026-01-29 — UX styling: Keep green, add coral accent, add city filters, add hero case
 - **Status:** decided
@@ -101,3 +96,100 @@ Template:
   - New component: `HeroCaseCard.tsx`
   - Updated `IntentFilterPills.tsx` with city filters
   - Updated `IndexV2.tsx` to display hero case and pass city counts
+
+### 2026-02-06 — Canonical docs topology ratified (7 root docs + supporting packs)
+- **Status:** decided
+- **Context:** Root canonical docs were changed to 7-file governance in `AGENTS.md`, but `README.md` and `docs/README.md` still referenced removed legacy docs.
+- **Decision:**
+  - Canonical root docs are exactly: `PRD.md`, `TASKS.md`, `DESIGN.md`, `RULES.md`, `DECISIONS.md`, `AGENTS.md`, `README.md`.
+  - All expanded planning docs live under `docs/` grouped by domain (`product`, `architecture`, `design`, `partners`, `mission`, `investor`, `archive`).
+- **Rationale:** Preserve a small, strict root control plane while allowing deep planning detail without root sprawl.
+- **Consequences / follow-ups:** Keep root at hard cap; if a new root doc is proposed, merge or replace first.
+
+### 2026-02-06 — Single signup, multi-capability profile model
+- **Status:** decided
+- **Context:** Role-specific signup creates friction and does not match real user behavior (donor + volunteer + org collaborator in one account).
+- **Decision:** Users sign up once, then enable capabilities and verification pathways from account/profile settings; organization claims remain available as an optional onboarding branch.
+- **Rationale:** Faster activation and fewer dead-end onboarding paths.
+- **Consequences / follow-ups:** Keep onboarding lightweight, move durable role/capability controls into account/profile surfaces.
+
+### 2026-02-06 — Drones/safehouse strategy is roadmap funding track, not MVP feature scope
+- **Status:** decided
+- **Context:** Drone scouting and shelter/safehouse are mission-critical long-term initiatives but introduce large operational complexity.
+- **Decision:** Treat drones/safehouse as Pawtreon mission initiatives with roadmap milestones and dedicated fundraising, separate from MVP rescue-case functionality.
+- **Rationale:** Keeps MVP execution focused on trust + money + case lifecycle while preserving investor/user narrative for future expansion.
+- **Consequences / follow-ups:** Expose initiatives as a dedicated product surface, with transparent milestones and use-of-funds updates.
+
+### 2026-02-06 — Mission campaign placement in product UX
+- **Status:** decided
+- **Context:** Need visibility for Pawtreon initiatives without mixing them into regular rescue campaigns.
+- **Decision:** Launch mission campaigns in two surfaces:
+  - featured module on home feed
+  - dedicated section in account/profile hub
+- **Rationale:** High discoverability with clear contextual separation.
+- **Consequences / follow-ups:** Add explicit campaign classification and UI labeling for rescue campaigns vs platform initiatives.
+
+### 2026-02-06 — Bulgaria directory rollout strategy
+- **Status:** decided
+- **Context:** Users need reliable clinic discovery immediately; partner network onboarding is progressive.
+- **Decision:** Seed verified clinic directory first (Sofia, Varna, Plovdiv initial cohort), keep claim/verification flow active, onboard stores/shelters progressively.
+- **Rationale:** Immediate rescue utility plus controlled quality of partner data.
+- **Consequences / follow-ups:** Maintain verification source metadata and claim review SLA in ops docs.
+
+### 2026-02-06 — Spec-driven `.specs` workflow archived for day-to-day execution
+- **Status:** decided
+- **Context:** Prior decision referenced `.specs` and `PLAN.md`, but current repo governance disallows `.specs` and uses root canonical docs + `TASKS.md`.
+- **Decision:** `.specs` is archived and not part of active workflow; planning and execution operate through canonical root docs and supporting packs under `docs/`.
+- **Rationale:** Remove process drift and keep one consistent operating model.
+- **Consequences / follow-ups:** New process docs must not reintroduce `.specs` paths or missing legacy root docs.
+
+### 2026-02-06 — Home IA split: case-first landing + community-social boundary
+- **Status:** decided
+- **Context:** The landing first fold was overloaded (stories + large search + multiple urgency surfaces), and product intent needed a clearer split between rescue execution and community discussion.
+- **Decision:**
+  - Keep `/` as a case-first rescue surface.
+  - Keep `/community` as the social/discussion surface.
+  - Home stories row uses urgent/new case story events only (not generic social posts).
+  - Home first fold uses compact header + urgent stories + compact filter rail; no duplicated urgent strip.
+- **Rationale:** Reduce action overload, improve rescue clarity, and preserve social engagement without mixing intents in one feed.
+- **Consequences / follow-ups:**
+  - Home now relies on a server-driven landing query contract (`home.getLandingFeed`).
+  - Design behavior is codified in `docs/design/ui-patterns-spec.md`.
+
+### 2026-02-06 — Tailwind v4 + shadcn trust-surface alignment scope
+- **Status:** decided
+- **Context:** Style gates were passing but only covered a narrow file set, while trust-critical surfaces still had token drift, legacy visual noise, and inconsistent interaction patterns.
+- **Decision:**
+  - Enforce style rails on scoped product surfaces: Home + Community + Campaigns.
+  - Deprecate and remove unused legacy home UI variants to reduce drift.
+  - Keep `/community` social and `/` case-first, with one header action pattern and one chip/search visual model across scoped surfaces.
+  - Keep Convex-first data flow; no client-heavy filtering migrations.
+- **Rationale:** Trust is the product; consistent, accessible, low-noise rescue surfaces are required for credibility and fast action.
+- **Consequences / follow-ups:**
+  - Expand `styles:gate` scan targets.
+  - Remove fake social proof on trust-critical fundraising views.
+  - Preserve Vite + React + Convex stack with no framework migration.
+
+### 2026-02-06 — Trust-surface style gate policy ratified
+- **Status:** decided
+- **Context:** After scope lock, style rails still needed concrete enforcement rules so regressions are caught in CI and not only in manual review.
+- **Decision:**
+  - `styles:gate` now scans Home + Community + Campaigns pages and their shared header/chip/search/card components.
+  - Palette utilities and gradient utilities are blocked on those scoped trust surfaces.
+  - Arbitrary value classes are blocked by default, with safe-area layout exceptions only.
+  - Icon-only header actions standardize to a minimum `44x44` touch target (`Button size="iconTouch"`).
+- **Rationale:** Keeps trust-critical rescue surfaces visually calm, token-safe, and accessible while still allowing required mobile safe-area layout behavior.
+- **Consequences / follow-ups:** Remaining style debt outside the scoped surfaces stays in backlog and should be migrated to the same rails incrementally.
+
+### 2026-02-07 — Community route gets dedicated mobile forum shell (stage 1)
+- **Status:** decided
+- **Context:** `/community` was sharing the global mobile shell, which overloaded first-fold controls and conflicted with forum-first actions.
+- **Decision:**
+  - Keep global desktop navigation unchanged.
+  - On mobile, `/community*` uses a dedicated community shell with a focused header and forum-specific bottom nav.
+  - Stage 1 tabs are `Feed`, `Followed`, `Messages`, and `New Thread` (compose opens via `/community?compose=1`).
+  - `Followed` and `Messages` ship as explicit preview states in Stage 1 (no dead ends).
+- **Rationale:** Preserves the product IA split (`/` rescue-first, `/community` discussion-first) while reducing interaction clutter on trust-critical mobile surfaces.
+- **Consequences / follow-ups:**
+  - Stage 2 will wire `Followed` to follow graph filtering and `Messages` to real conversation list data.
+  - Members/activity remain secondary community destinations outside the primary bottom tab set.

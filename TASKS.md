@@ -2,111 +2,97 @@
 
 > **Purpose:** Current sprint only. What we're doing NOW.  
 > **Rule:** Archive completed items weekly. Don't accumulate history.  
-> **Last updated:** 2026-01-23
+> **Last updated:** 2026-02-07
 
 ---
 
 ## In Progress
 
-*(none)*
+- [x] **COMMUNITY: Dedicated mobile forum shell (stage 1)**
+  - [x] Global mobile bottom nav is hidden on `/community*`.
+  - [x] Community-specific mobile shell added (header + bottom tabs).
+  - [x] Community bottom tabs are `Feed`, `Followed`, `Messages`, `New Thread`.
+  - [x] `New Thread` from any community tab routes to `/community?compose=1` and opens composer in-place.
+  - [x] Stage-1 preview routes added: `/community/followed`, `/community/messages`.
+  - [x] Community feed reduced mobile control density by moving primary compose action to bottom nav.
+  - AC: `/community` behaves as a forum-first mobile surface without dead-end tab routes.
+
+- [ ] **HOME: Case-first landing refactor + Convex feed contract**
+  - [x] Home first fold simplified (compact header + urgent stories + compact pill rail).
+  - [x] Large inline search removed from first fold; search now opens via header action.
+  - [x] Home feed wired to server-driven contract (`home.getLandingFeed`) with hero + unified list.
+  - [x] Header unread badges switched to real Convex counts (`home.getUnreadCounts`).
+  - [ ] Expand style gate scope from landing surfaces to full trust-critical flows (`case/create/donation/community`) after cleanup batch 2.
+  - AC: No duplicated urgency modules in home first fold and no hardcoded unread badge counts.
+
+- [ ] **DONATIONS: Post-checkout return UX + receipts polish**
+  - Hosted Stripe Checkout creation + webhook completion are implemented.
+  - Remaining: explicit success/cancel return banner and clearer receipt/history UX polish.
+  - AC: Users receive clear post-checkout state and receipt visibility after redirect.
+
+- [ ] **PARTNER OPS: Clinic claim admin queue**
+  - Claim submit/search exists.
+  - Remaining: explicit admin review queue + approval/reject/dispute actions with SLA dashboard.
+  - AC: Admin can process clinic claims end-to-end with traceable logs.
+
+- [ ] **STYLING: Tailwind/shadcn remediation batch 1**
+  - Animal profile, account, campaigns and home mission surfaces were refreshed.
+  - [x] Batch 2: Home + Community + Campaigns trust-surface alignment (token rails, focus/touch baseline, chip/search/header consistency).
+  - [x] Expand style gate scope from narrow landing set to scoped trust surfaces (`home/community/campaigns` + shared components).
+  - [x] Remove unused legacy home variants after alignment to reduce style drift.
+  - Remaining: migrate remaining legacy starter/palette usage across create-case and directory surfaces.
+  - AC: core trust flows use semantic token classes consistently and style gates catch scoped regressions.
 
 ---
 
-## P1 Sprint — MVP ("real money, real trust")
+## Current Sprint — Master Plan Execution (Weeks 1-8)
 
-These must ship before launch. Ordered by dependency/priority:
+### Phase 0 — Governance / Docs Baseline
+- [x] Canonical docs topology aligned (7 root docs + supporting `docs/` packs)
+- [x] Supporting docs packs created:
+  - `docs/product/*`
+  - `docs/architecture/*`
+  - `docs/design/*`
+  - `docs/partners/*`
+  - `docs/mission/*`
+- [x] Decision log updated with locked defaults and superseded process notes.
 
-### Money (Critical Path)
-- [ ] **DONATIONS: Stripe integration**
-  - Stripe account + API keys
-  - `createPaymentIntent` mutation
-  - Webhook handler for payment confirmation
-  - Update case `raised` amount on success
-  - Receipt generation + email (or in-app)
-  - AC: Real €5 donation completes end-to-end
-
-### Trust (Critical Path)
-- [ ] **MODERATION: Report queue (admin)**
-  - Admin-only page listing pending reports
-  - Review UI: see case/user, reason, reporter
-  - Actions: resolve (hide case, warn user) or dismiss
-  - AC: Admin can process reports
-
-- [ ] **VERIFICATION: Community verify flow**
-  - "I can verify this" button for trusted users
-  - Threshold logic (e.g., 3 verifications → community verified)
-  - Badge update on case
-  - AC: Case moves from unverified → community verified
-
-- [ ] **DUPLICATE DETECTION: pHash matching**
-  - Generate pHash on image upload
-  - Check against existing case images
-  - Flag potential duplicates for review
-  - AC: Uploading same image twice triggers warning
-
-### Case Lifecycle
-- [ ] **CASE UPDATES: Rescuer updates**
-  - "Add update" button on case detail (owner only)
-  - Text + optional images
-  - Timeline shows updates chronologically
-  - AC: Owner can post updates, donors see them
-
-- [ ] **CASE OUTCOMES: Close-out flow**
-  - "Close case" with outcome (success/transferred/other)
-  - Final update + receipts/evidence
-  - Case marked closed, no more donations
-  - AC: Case lifecycle is complete
-
-### Distribution
-- [ ] **SHARING: OG meta tags**
-  - SSR share pages OR serverless OG image generation
-  - Title, description, image from case
-  - AC: Sharing case link shows rich preview on FB/Twitter
-
-- [ ] **NOTIFICATIONS: Core alerts**
-  - Case update notifications (for donors/followers)
-  - Donation receipt notifications
-  - In-app notification center (or email fallback)
-  - AC: Donor notified when case they supported gets update
-
-### Security (Pre-Launch)
-- [ ] **SECURITY: Lock down dev endpoints**
-  - `listAll`, `resetOnboarding` → internalMutation only
-  - Audit all queries for PII leakage
-  - AC: No sensitive data in public API responses
+### Phase 1 — Case Lifecycle (Core)
+- [x] Owner/authorized "Add Update" flow on case detail with modal UI.
+- [x] Structured update payload: type + optional evidence type + optional images + clinic attribution.
+- [x] Lifecycle transitions: `active_treatment` -> `seeking_adoption` -> closed outcomes.
+- [x] Donation gating respects lifecycle/trust state on case detail.
 
 ---
 
-## Blocked
-
-- [ ] **CLINIC: Verification workflow**
-  - Waiting on: Partner API spec / clinic onboarding flow
-  - Unblocks: Clinic-verified badge, clinic-authored updates
-
----
-
-## Done (This Sprint)
-
-- [x] **CREATE CASE: Wire publish to Convex** — Photos → storage → mutation → feed
-- [x] Verification badges on case cards + detail
-- [x] Report concern flow (card menu + detail header)
-- [x] i18n fallbacks for critical paths
-- [x] Donation modal flow (preview UX)
-- [x] Create case UI (validation, steps)
-- [x] "List with AI" preview flow
-- [x] Community rules/safety section
+### Phase 2 — Trust + Money
+- [x] Moderation queue backend actions with audit logging (`open`/`reviewing`/`closed` resolution path).
+- [x] Admin moderation page added (`/admin/moderation`).
+- [x] Stripe webhook route and idempotent donation completion path added.
+- [x] Stripe hosted checkout + webhook completion path wired.
+- [ ] Receipt history UI polish (schema fields present, user-facing surfacing still partial).
 
 ---
 
-## P2 Backlog (Post-MVP)
+### Phase 3 — Bulgaria Directory + Partner Ops
+- [x] Clinic seeding strategy documented and seed data expanded.
+- [x] Existing claim submit flow retained with duplicate pending-claim guard.
+- [ ] Claim review/approval tooling for admins (pending).
 
-Not in current sprint, but tracked for planning:
+---
 
-- [ ] FOLLOW — Follow rescuers/clinics, "following" feed tab
-- [ ] RECURRING — Monthly support for rescuers/clinics
-- [ ] EXTERNAL LINKS — FB/IG link cards, source attribution
-- [ ] VOLUNTEER: AVAILABILITY — Opt-in status
-- [ ] VOLUNTEER: DIRECTORY — Approximate location map
-- [ ] VOLUNTEER: TRANSPORT — "Who can help nearby"
-- [ ] CLINIC ONBOARDING — Claim/verify clinic flow
-- [ ] ANALYTICS — Dashboards for cases, donations, verification
+### Phase 4 — Mission Campaign Surfaces
+- [x] Campaign classification added (rescue vs initiative).
+- [x] Home featured initiative module added.
+- [x] Account/profile mission hub section added.
+- [x] Campaigns page initiative filter/section added.
+
+---
+
+## Backlog (Post Current Sprint)
+
+- [ ] Follow graph + following feed
+- [ ] Recurring support model
+- [ ] OG/share SSR surfaces
+- [ ] Notification center + delivery channels
+- [ ] Duplicate detection/pHash

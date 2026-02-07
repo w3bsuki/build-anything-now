@@ -21,6 +21,8 @@ import {
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { ProfileEditDrawer } from '@/components/profile/ProfileEditDrawer';
+import { CampaignCard } from '@/components/CampaignCard';
+import type { Campaign } from '@/types';
 
 const Account = () => {
   const { t } = useTranslation();
@@ -33,9 +35,20 @@ const Account = () => {
   const stats = useQuery(api.donations.getMyStats);
   const unreadNotifications = useQuery(api.notifications.getUnreadCount) ?? 0;
   const achievements = useQuery(api.achievements.getMyAchievements);
+  const featuredInitiativesRaw = useQuery(api.campaigns.getFeaturedInitiatives, { limit: 2 });
 
   const achievementCount = achievements?.length ?? 0;
   const donationStats = stats ?? { totalDonations: 0, totalAmount: 0, animalsHelped: 0 };
+  const featuredInitiatives: Campaign[] = (featuredInitiativesRaw ?? []).map((c) => ({
+    id: c._id,
+    title: c.title,
+    description: c.description,
+    image: c.image ?? 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+    goal: c.goal,
+    current: c.current,
+    unit: c.unit,
+    endDate: c.endDate,
+  }));
 
   // Main menu items
   const menuItems = [
@@ -187,6 +200,25 @@ const Account = () => {
             );
           })}
         </div>
+
+        {featuredInitiatives.length > 0 && (
+          <div className="mt-4 bg-card rounded-xl border border-border overflow-hidden p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">Pawtreon Initiatives</h2>
+                <p className="text-xs text-muted-foreground">Support roadmap missions like drone scouting and safehouse funding.</p>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/campaigns">View all</Link>
+              </Button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {featuredInitiatives.map((campaign) => (
+                <CampaignCard key={campaign.id} campaign={campaign} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Sign Out Button */}
         <SignedIn>

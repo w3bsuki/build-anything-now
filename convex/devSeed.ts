@@ -743,6 +743,10 @@ async function seedCampaignsInternal(
       unit: "EUR",
       endDate: new Date(now + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "active" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
     },
     {
       title: "Mass Vaccination Drive",
@@ -753,6 +757,10 @@ async function seedCampaignsInternal(
       unit: "EUR",
       endDate: new Date(now + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "active" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
     },
     {
       title: "Spay & Neuter Program",
@@ -763,6 +771,10 @@ async function seedCampaignsInternal(
       unit: "surgeries",
       endDate: new Date(now + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "active" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
     },
     {
       title: "Emergency Medical Fund",
@@ -773,6 +785,10 @@ async function seedCampaignsInternal(
       unit: "EUR",
       endDate: new Date(now + 270 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "active" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
     },
     {
       title: "Adoption Center Renovation",
@@ -783,6 +799,10 @@ async function seedCampaignsInternal(
       unit: "EUR",
       endDate: new Date(now - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "completed" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
     },
     {
       title: "Food Bank for Strays",
@@ -793,6 +813,38 @@ async function seedCampaignsInternal(
       unit: "meals",
       endDate: new Date(now + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: "active" as const,
+      campaignType: "rescue" as const,
+      initiativeKey: undefined,
+      initiativeCategory: undefined,
+      featuredInitiative: false,
+    },
+    {
+      title: "Pawtreon Drone Scout Program",
+      description: "Fund pilot drone scouting for missing or injured animals in hard-to-reach areas. This is a platform initiative with milestone-based delivery.",
+      image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800",
+      goal: 25000,
+      current: 4200,
+      unit: "EUR",
+      endDate: new Date(now + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      status: "active" as const,
+      campaignType: "initiative" as const,
+      initiativeKey: "drone_program",
+      initiativeCategory: "drone" as const,
+      featuredInitiative: true,
+    },
+    {
+      title: "Pawtreon Safehouse Launch",
+      description: "Fund the first Pawtreon safehouse to complete the rescue loop from street -> clinic -> adoption readiness.",
+      image: "https://images.unsplash.com/photo-1601758177225-68f5f7f3f0cc?w=800",
+      goal: 40000,
+      current: 6300,
+      unit: "EUR",
+      endDate: new Date(now + 240 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      status: "active" as const,
+      campaignType: "initiative" as const,
+      initiativeKey: "safehouse_launch",
+      initiativeCategory: "safehouse" as const,
+      featuredInitiative: true,
     },
   ];
 
@@ -808,6 +860,10 @@ async function seedCampaignsInternal(
       unit: campaign.unit,
       endDate: campaign.endDate,
       status: campaign.status,
+      campaignType: campaign.campaignType,
+      initiativeKey: campaign.initiativeKey,
+      initiativeCategory: campaign.initiativeCategory,
+      featuredInitiative: campaign.featuredInitiative,
       createdAt: now - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000,
     });
     ids.push(id);
@@ -1022,6 +1078,10 @@ async function seedCommunityPostsInternal(
 ) {
   const postsData = [
     {
+      title: "Luna's adoption success story",
+      board: "rescue" as const,
+      category: "adoption" as const,
+      cityTag: "Sofia",
       content: "Luna found her forever home! 🏠 After 3 months of rehabilitation, she was adopted by a wonderful family in Sofia! She now has a huge backyard to play in and two kids who adore her. Thank you to everyone who donated to her surgery fund!",
       image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
       isPinned: false,
@@ -1031,6 +1091,10 @@ async function seedCommunityPostsInternal(
       hoursAgo: 6,
     },
     {
+      title: "Volunteer spotlight: Maria Petrova",
+      board: "community" as const,
+      category: "announcements" as const,
+      cityTag: "Sofia",
       content: "Volunteer of the Month: Maria Petrova! 🌟 Maria has been volunteering with us for over a year and has helped rescue and rehabilitate more than 50 animals. Her dedication to our cause is truly inspiring. Thank you, Maria! 💜",
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800",
       isPinned: true,
@@ -1040,6 +1104,10 @@ async function seedCommunityPostsInternal(
       hoursAgo: 24,
     },
     {
+      title: "Adoption day this Saturday",
+      board: "community" as const,
+      category: "announcements" as const,
+      cityTag: "Sofia",
       content: "📢 Upcoming Adoption Event - This Saturday! Join us at South Park, Sofia for our monthly adoption event! We'll have 15 dogs and 10 cats looking for loving homes. Free health checks for all adoptees. See you there!",
       image: undefined,
       isPinned: true,
@@ -1049,6 +1117,10 @@ async function seedCommunityPostsInternal(
       hoursAgo: 48,
     },
     {
+      title: "Advice needed for first foster",
+      board: "community" as const,
+      category: "advice" as const,
+      cityTag: "Plovdiv",
       content: "Tips for first-time foster parents? 🤔 I'm about to foster my first rescue dog and would love some advice from experienced foster parents. What should I prepare? Any tips for helping a scared dog adjust to a new environment?",
       image: undefined,
       isPinned: false,
@@ -1058,6 +1130,10 @@ async function seedCommunityPostsInternal(
       hoursAgo: 72,
     },
     {
+      title: "Max's recovery journey",
+      board: "rescue" as const,
+      category: "case_update" as const,
+      cityTag: "Plovdiv",
       content: "From street to sofa - Max's journey 🐕 Max was found starving on the streets of Plovdiv last year. Today, he celebrated his first birthday in his new home with a dog-friendly cake! His transformation is incredible. Never give up on any animal!",
       image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
       isPinned: false,
@@ -1067,6 +1143,10 @@ async function seedCommunityPostsInternal(
       hoursAgo: 120,
     },
     {
+      title: "Community safety rules",
+      board: "community" as const,
+      category: "announcements" as const,
+      cityTag: "Sofia",
       content: "🏠 Community Rules: 1) Be kind and supportive. 2) No spam or self-promotion. 3) Share only verified information. 4) Respect privacy of adopters. 5) Report any animal abuse immediately. Thank you for making this a safe space for all! 💜",
       image: undefined,
       isPinned: true,
@@ -1085,8 +1165,15 @@ async function seedCommunityPostsInternal(
 
     const id = await ctx.db.insert("communityPosts", {
       userId,
+      title: post.title,
       content: post.content,
       image: post.image,
+      board: post.board,
+      category: post.category,
+      cityTag: post.cityTag,
+      lastActivityAt: now - post.hoursAgo * 60 * 60 * 1000,
+      isLocked: false,
+      isDeleted: false,
       isPinned: post.isPinned,
       isRules: post.isRules,
       likes: post.likes,
@@ -1184,6 +1271,36 @@ async function cleanupDemoDataInternal(ctx: any) {
       .collect();
     for (const p of posts) {
       await ctx.db.delete(p._id);
+      deletedCount++;
+    }
+
+    // Community comments
+    const forumComments = await ctx.db
+      .query("communityComments")
+      .withIndex("by_author", (q: any) => q.eq("authorId", userId))
+      .collect();
+    for (const comment of forumComments) {
+      await ctx.db.delete(comment._id);
+      deletedCount++;
+    }
+
+    // Community reactions
+    const forumReactions = await ctx.db
+      .query("communityReactions")
+      .withIndex("by_user_target", (q: any) => q.eq("userId", userId))
+      .collect();
+    for (const reaction of forumReactions) {
+      await ctx.db.delete(reaction._id);
+      deletedCount++;
+    }
+
+    // Community reports
+    const forumReports = await ctx.db
+      .query("communityReports")
+      .withIndex("by_reporter", (q: any) => q.eq("reporterId", userId))
+      .collect();
+    for (const report of forumReports) {
+      await ctx.db.delete(report._id);
       deletedCount++;
     }
 
@@ -1386,3 +1503,5 @@ export const seedBulgarianClinics = mutation({
     };
   },
 });
+
+

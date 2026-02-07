@@ -3,10 +3,8 @@ import { Bell, User, MessageCircle, Search, HeartHandshake } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-// TODO: Replace with real data from Convex
-const unreadNotifications = 5;
-const unreadPosts = 5;
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
 interface MobilePageHeaderProps {
   title: string;
@@ -26,9 +24,12 @@ export function MobilePageHeader({
   children 
 }: MobilePageHeaderProps) {
   const location = useLocation();
+  const unreadCounts = useQuery(api.home.getUnreadCounts, {});
+  const unreadNotifications = unreadCounts?.notifications ?? 0;
+  const unreadPosts = unreadCounts?.community ?? 0;
 
   return (
-    <header className="md:hidden sticky top-0 z-50 bg-background/98 backdrop-blur-lg pt-[env(safe-area-inset-top)]">
+    <header className="md:hidden sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-lg pt-[env(safe-area-inset-top)] border-b border-nav-border/70">
       {/* Title Row */}
       <div className="flex items-center justify-between h-14 px-4">
         {/* Page Title with optional Logo */}
@@ -40,24 +41,21 @@ export function MobilePageHeader({
         </div>
 
         {/* Action Icons - min 44px touch targets */}
-        <div className="flex items-center -mr-1.5">
+        <div className="flex items-center -space-x-1 -mr-1">
           <Button
             variant="iconHeader"
             size="iconTouch"
-            className={cn(
-              "relative",
-              location.pathname === '/community' && "text-primary"
-            )}
+            className="relative"
             asChild
           >
             <NavLink to="/community">
               <MessageCircle className={cn(
-                location.pathname === '/community' ? "text-primary fill-primary/20" : "text-muted-foreground"
+                location.pathname === '/community' ? "text-primary fill-primary/20" : undefined
               )} />
               {unreadPosts > 0 && location.pathname !== '/community' && (
                 <Badge
                   variant="secondary"
-                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
+                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-xs font-semibold leading-none ring-1 ring-background"
                 >
                   {unreadPosts > 9 ? '9+' : unreadPosts}
                 </Badge>
@@ -72,11 +70,11 @@ export function MobilePageHeader({
           >
             <NavLink to="/notifications">
               <Bell className={cn(
-                location.pathname === '/notifications' ? "text-primary" : "text-muted-foreground"
+                location.pathname === '/notifications' ? "text-primary" : undefined
               )} />
               {unreadNotifications > 0 && (
                 <Badge
-                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-[10px] font-semibold ring-2 ring-background"
+                  className="absolute top-1 right-1 size-4 justify-center rounded-full p-0 text-xs font-semibold leading-none ring-1 ring-background"
                 >
                   {unreadNotifications > 9 ? '9+' : unreadNotifications}
                 </Badge>
@@ -90,7 +88,7 @@ export function MobilePageHeader({
           >
             <NavLink to="/account">
               <User className={cn(
-                location.pathname === '/account' ? "text-primary" : "text-muted-foreground"
+                location.pathname === '/account' ? "text-primary" : undefined
               )} />
             </NavLink>
           </Button>
@@ -106,7 +104,7 @@ export function MobilePageHeader({
               <input
                 type="text"
                 placeholder={searchPlaceholder}
-                className="w-full rounded-full bg-muted/80 pl-10 pr-4 py-2 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
+                className="w-full rounded-full border border-search-border bg-search-bg pl-10 pr-4 py-2 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
               />

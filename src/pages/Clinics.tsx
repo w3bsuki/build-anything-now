@@ -97,7 +97,7 @@ const Clinics = () => {
         {(isLoading || featuredClinics.length > 0) && !show24hOnly && (
           <section>
             <div className="flex items-center gap-2 mb-2.5">
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <Star className="w-4 h-4 text-warning fill-warning" />
               <h2 className="text-sm font-semibold text-foreground">
                 {t('clinics.featuredClinics', 'Featured Clinics')}
               </h2>

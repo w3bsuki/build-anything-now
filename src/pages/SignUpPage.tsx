@@ -2,7 +2,7 @@ import { SignUp } from "@clerk/clerk-react";
 
 const SignUpPage = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/10 to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-sunken/40 p-4">
       <SignUp
         appearance={{
           elements: {

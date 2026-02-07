@@ -1,74 +1,75 @@
-import { NavLink, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Home, Newspaper, PenSquare, Users, Activity } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Newspaper, PenSquare, Users, MessageSquare, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-// Community-specific navigation items
 const communityNavItems = [
-  { path: '/', labelKey: 'nav.home', icon: Home },
-  { path: '/community', labelKey: 'community.feed', icon: Newspaper, exact: true },
-  { path: 'create-post', labelKey: 'community.newPost', icon: PenSquare, isCreate: true },
-  { path: '/community/members', labelKey: 'community.members', icon: Users },
-  { path: '/community/activity', labelKey: 'community.activity', icon: Activity },
+  { path: "/community", labelKey: "community.feedTab", icon: Newspaper, exact: true },
+  { path: "/community/followed", labelKey: "community.followedTab", icon: Heart },
+  { path: "create-thread", labelKey: "community.newThread", icon: PenSquare, isCreate: true },
+  { path: "/community/messages", labelKey: "community.messagesTab", icon: MessageSquare },
+  { path: "/community/members", labelKey: "community.groupsTab", icon: Users },
 ];
 
 export function CommunityBottomNav() {
   const { t } = useTranslation();
   const location = useLocation();
-
-  const handleCreatePost = () => {
-    // TODO: Open create post modal/drawer or navigate to create post page
-    console.log('Create post clicked');
-  };
+  const navigate = useNavigate();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/50 pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-end justify-around h-14 px-2">
-        {communityNavItems.map((item) => {
-          // Check if this item is active
-          const isActive = item.exact 
-            ? location.pathname === item.path
-            : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-          const Icon = item.icon;
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.3rem)]">
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="glass-ultra nav-shadow flex h-16 items-center rounded-[1.25rem] border border-nav-border/70 px-1.5">
+          {communityNavItems.map((item) => {
+            const isActive = item.exact
+              ? location.pathname === item.path
+              : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
+            const Icon = item.icon;
 
-          // Special handling for center Create Post button
-          if (item.isCreate) {
+            if (item.isCreate) {
+              return (
+                <button
+                  key={item.path}
+                  type="button"
+                  onClick={() => navigate("/community?compose=1")}
+                  className="inline-flex min-w-0 flex-1 items-center justify-center rounded-xl py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  aria-label={t(item.labelKey, "New Thread")}
+                >
+                  <span className="inline-flex size-11 items-center justify-center rounded-full border border-background bg-primary text-primary-foreground shadow-sm">
+                    <Icon className="size-5" strokeWidth={2.5} />
+                  </span>
+                </button>
+              );
+            }
+
             return (
-              <button
-                key="create-post"
-                onClick={handleCreatePost}
-                className="flex items-center justify-center pb-1.5"
-                aria-label={t(item.labelKey)}
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className="group inline-flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-primary/10 text-primary">
-                  <PenSquare className="h-4.5 w-4.5" strokeWidth={2} />
-                </div>
-              </button>
+                <span
+                  className={cn(
+                    "inline-flex size-8 items-center justify-center rounded-full transition-colors",
+                    isActive
+                      ? "bg-chip-bg text-foreground"
+                      : "text-muted-foreground group-active:bg-muted"
+                  )}
+                >
+                  <Icon className="size-[18px]" strokeWidth={isActive ? 2 : 1.8} />
+                </span>
+                <span
+                  className={cn(
+                    "max-w-full whitespace-nowrap px-0.5 text-[10px] leading-tight transition-colors",
+                    isActive ? "text-foreground font-semibold" : "text-muted-foreground font-medium"
+                  )}
+                >
+                  {t(item.labelKey)}
+                </span>
+              </NavLink>
             );
-          }
-
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className="flex flex-col items-center justify-end gap-0.5 py-1.5 min-w-[56px]"
-            >
-              <Icon 
-                className={cn(
-                  'h-[22px] w-[22px] transition-colors',
-                  isActive ? 'text-foreground' : 'text-muted-foreground'
-                )} 
-                strokeWidth={isActive ? 2 : 1.75} 
-              />
-              <span className={cn(
-                'text-[10px] transition-colors',
-                isActive ? 'text-foreground font-semibold' : 'text-muted-foreground font-medium'
-              )}>
-                {t(item.labelKey)}
-              </span>
-            </NavLink>
-          );
-        })}
+          })}
+        </div>
       </div>
     </nav>
   );

@@ -54,7 +54,7 @@ export function CompactCaseCard({ caseData, className }: CompactCaseCardProps) {
   return (
     <article
       className={cn(
-        'bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 transition-all active:scale-[0.98]',
+        'group rounded-2xl bg-surface-elevated/95 overflow-hidden ring-1 ring-border/45',
         className
       )}
     >
@@ -66,16 +66,17 @@ export function CompactCaseCard({ caseData, className }: CompactCaseCardProps) {
             className="w-full h-full object-cover"
             loading="lazy"
           />
+          <div className="absolute inset-x-0 top-0 h-14 bg-overlay-dim/35 pointer-events-none" />
 
           <div className="absolute top-2 left-2">
             <span
               className={cn(
-                'inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide shadow-sm',
+                'inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold tracking-wide',
                 status.badge
               )}
             >
               {isCritical && (
-                <span className="w-1.5 h-1.5 rounded-full bg-destructive-foreground/90 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-destructive-foreground/90" />
               )}
               {caseData.status === 'critical'
                 ? t('status.critical', 'Critical')
@@ -88,28 +89,28 @@ export function CompactCaseCard({ caseData, className }: CompactCaseCardProps) {
           </div>
         </div>
 
-        <div className="p-2.5">
-          <h3 className="text-[13px] font-semibold text-foreground leading-snug line-clamp-2">
+        <div className="p-3">
+          <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 min-h-10">
             {caseData.title}
           </h3>
 
-          <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="w-3 h-3 shrink-0" />
             <span className="truncate">{caseData.location.city}</span>
             <span className="text-muted-foreground/60">•</span>
             <span className="shrink-0">{timeAgo}</span>
             <span className="text-muted-foreground/60">•</span>
-            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} className="text-[11px]" />
+            <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} className="text-xs" />
           </div>
 
-          <div className="mt-2 space-y-1">
-            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div className="mt-2.5 space-y-1.5 rounded-lg border border-border/45 bg-muted/30 p-2">
+            <div className="h-1.5 bg-background/75 rounded-full overflow-hidden">
               <div
-                className={cn('h-full rounded-full transition-all', status.progress)}
+                className={cn('h-full rounded-full', status.progress)}
                 style={{ width: `${percentage}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">
                 {caseData.fundraising.current.toLocaleString()} / {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}
               </span>
@@ -124,7 +125,7 @@ export function CompactCaseCard({ caseData, className }: CompactCaseCardProps) {
 
 export function CompactCaseCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('bg-card rounded-xl overflow-hidden ring-1 ring-border/30 shadow-sm animate-pulse', className)}>
+    <div className={cn('bg-card rounded-xl overflow-hidden ring-1 ring-border/30 animate-pulse', className)}>
       <div className="aspect-4/3 bg-muted" />
       <div className="p-2.5 space-y-2">
         <div className="h-3.5 bg-muted rounded w-full" />

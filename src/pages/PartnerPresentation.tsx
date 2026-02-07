@@ -187,31 +187,31 @@ export default function PartnerPresentation() {
               icon: '👀',
               title: 'Spot',
               description: 'Someone finds a stray animal in distress',
-              color: 'bg-red-500',
+              color: 'bg-destructive',
             },
             {
               icon: '📱',
               title: 'Open App',
               description: 'Opens Pawtreon, sees nearest partner clinic',
-              color: 'bg-orange-500',
+              color: 'bg-warning',
             },
             {
               icon: '🏥',
               title: 'Deliver',
               description: 'Takes animal to verified partner clinic',
-              color: 'bg-yellow-500',
+              color: 'bg-accent',
             },
             {
               icon: '🤖',
               title: 'AI Case',
               description: 'Clinic creates case in seconds with AI',
-              color: 'bg-green-500',
+              color: 'bg-success',
             },
             {
               icon: '🏠',
               title: 'Adopt',
               description: 'Animal recovers & finds forever home',
-              color: 'bg-blue-500',
+              color: 'bg-primary',
             },
           ];
 
@@ -261,7 +261,7 @@ export default function PartnerPresentation() {
                   {steps.map((step, index) => (
                     <div key={step.title} className="flex flex-1 items-center">
                       <div className="flex flex-col items-center text-center">
-                        <div className={cn("flex size-16 items-center justify-center rounded-full text-3xl shadow-lg", step.color)}>
+                        <div className={cn("flex size-16 items-center justify-center rounded-full text-3xl shadow-sm", step.color)}>
                           {step.icon}
                         </div>
                         <div className="mt-3 font-semibold">{step.title}</div>
@@ -313,9 +313,9 @@ export default function PartnerPresentation() {
               <Card className="overflow-hidden">
                 <CardHeader className="border-b bg-muted/50 p-4">
                   <div className="flex items-center gap-2">
-                    <div className="size-3 rounded-full bg-red-500" />
-                    <div className="size-3 rounded-full bg-yellow-500" />
-                    <div className="size-3 rounded-full bg-green-500" />
+                    <div className="size-3 rounded-full bg-destructive" />
+                    <div className="size-3 rounded-full bg-warning" />
+                    <div className="size-3 rounded-full bg-success" />
                     <span className="ml-2 text-sm text-muted-foreground">Pawtreon Clinic Portal</span>
                   </div>
                 </CardHeader>
@@ -443,10 +443,10 @@ export default function PartnerPresentation() {
               </div>
             </div>
 
-            <Card className="mt-8 border-green-500/50 bg-green-500/5 md:mt-10">
+            <Card className="mt-8 border-success/40 bg-success/5 md:mt-10">
               <CardContent className="p-4 md:p-6">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-green-500 text-white">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-success text-success-foreground">
                     ✓
                   </div>
                   <div>
@@ -636,28 +636,28 @@ export default function PartnerPresentation() {
             <div className="mt-8 grid gap-6 md:mt-10 md:grid-cols-2">
               {/* Map mockup */}
               <Card className="overflow-hidden">
-                <div className="relative h-64 bg-gradient-to-br from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 md:h-80">
+                <div className="relative h-64 bg-surface-overlay/40 md:h-80">
                   {/* Fake map pins */}
                   <div className="absolute left-[20%] top-[30%] flex flex-col items-center">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-white shadow-lg">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                       <Stethoscope className="size-4" />
                     </div>
                     <div className="mt-1 rounded bg-background px-2 py-0.5 text-xs shadow">0.5 km</div>
                   </div>
                   <div className="absolute left-[60%] top-[20%] flex flex-col items-center">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-white shadow-lg">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                       <Stethoscope className="size-4" />
                     </div>
                     <div className="mt-1 rounded bg-background px-2 py-0.5 text-xs shadow">1.2 km</div>
                   </div>
                   <div className="absolute left-[45%] top-[55%] flex flex-col items-center">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-green-500 text-white shadow-lg">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-success text-success-foreground shadow-sm">
                       <Clock className="size-4" />
                     </div>
-                    <div className="mt-1 rounded bg-green-500 px-2 py-0.5 text-xs text-white shadow">24/7</div>
+                    <div className="mt-1 rounded bg-success px-2 py-0.5 text-xs text-success-foreground shadow-sm">24/7</div>
                   </div>
                   <div className="absolute left-[75%] top-[65%] flex flex-col items-center">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-white shadow-lg">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
                       <Stethoscope className="size-4" />
                     </div>
                     <div className="mt-1 rounded bg-background px-2 py-0.5 text-xs shadow">2.8 km</div>
@@ -665,7 +665,7 @@ export default function PartnerPresentation() {
                   
                   {/* User location */}
                   <div className="absolute left-[40%] top-[45%]">
-                    <div className="size-4 rounded-full border-4 border-blue-500 bg-white" />
+                    <div className="size-4 rounded-full border-4 border-primary bg-background" />
                   </div>
                 </div>
                 <CardContent className="p-4">
@@ -700,7 +700,7 @@ export default function PartnerPresentation() {
 
                 <Card>
                   <CardContent className="flex items-start gap-4 p-4">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
                       <Clock className="size-5" />
                     </div>
                     <div>
@@ -769,7 +769,7 @@ export default function PartnerPresentation() {
                 <ArrowRight className="size-5 text-muted-foreground hidden sm:block" />
                 <Badge variant="outline" className="text-base px-4 py-2">❤️ Recovered</Badge>
                 <ArrowRight className="size-5 text-muted-foreground hidden sm:block" />
-                <Badge className="text-base px-4 py-2 bg-green-500">🏠 Adopted!</Badge>
+                <Badge className="text-base px-4 py-2 bg-success text-success-foreground">🏠 Adopted!</Badge>
               </div>
 
               <div className="mt-8 grid gap-4 text-left md:grid-cols-3 md:mt-10">
@@ -801,9 +801,9 @@ export default function PartnerPresentation() {
                 </Card>
               </div>
 
-              <Card className="mt-8 border-green-500/50 bg-green-500/5">
+              <Card className="mt-8 border-success/40 bg-success/5">
                 <CardContent className="p-6">
-                  <div className="text-4xl font-extrabold text-green-500">10,000+</div>
+                  <div className="text-4xl font-extrabold text-success">10,000+</div>
                   <div className="mt-1 text-muted-foreground">Successful adoptions goal by 2027</div>
                 </CardContent>
               </Card>
@@ -1524,7 +1524,7 @@ function TierCard({
         <ul className="space-y-2">
           {features.map((feature) => (
             <li key={feature} className="flex items-center gap-2 text-sm">
-              <BadgeCheck className="size-4 text-green-500" />
+              <BadgeCheck className="size-4 text-success" />
               {feature}
             </li>
           ))}

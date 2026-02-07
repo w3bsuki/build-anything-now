@@ -20,10 +20,9 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
     <>
       {/* Avatar with badge */}
       <div className="relative">
-        {/* Gradient Ring */}
         <div
           className={cn(
-            "rounded-full p-0.5 bg-linear-to-tr from-primary via-primary/80 to-primary/60",
+            "rounded-full p-0.5 border-2 border-primary/45 bg-surface-elevated",
             sizeClasses
           )}
         >
@@ -37,7 +36,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
             ) : (
               <div
                 className={cn(
-                  "rounded-full bg-muted flex items-center justify-center",
+                  "rounded-full bg-muted/85 flex items-center justify-center",
                   innerClasses
                 )}
               >
@@ -104,7 +103,7 @@ export function AddCaseCircle({ size = 'md', className }: AddCaseCircleProps) {
     >
       <div
         className={cn(
-          "rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors",
+          "rounded-full border-2 border-dashed border-primary/45 flex items-center justify-center bg-background/90 hover:bg-primary/10 hover:border-primary/70 transition-colors shadow-xs",
           sizeClasses
         )}
       >

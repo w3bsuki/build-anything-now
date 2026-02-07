@@ -19,23 +19,23 @@ const typeConfig = {
   'food-brand': {
     icon: Utensils,
     labelKey: 'partners.petFood',
-    color: 'text-amber-600 dark:text-amber-500',
-    bgColor: 'bg-amber-500/10',
-    borderColor: 'border-amber-500/20',
+    color: 'text-warning',
+    bgColor: 'bg-warning/10',
+    borderColor: 'border-warning/25',
   },
   veterinary: {
     icon: Stethoscope,
     labelKey: 'partners.veterinary',
-    color: 'text-emerald-600 dark:text-emerald-500',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/20',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/25',
   },
   sponsor: {
     icon: Award,
     labelKey: 'partners.sponsors',
-    color: 'text-violet-600 dark:text-violet-500',
-    bgColor: 'bg-violet-500/10',
-    borderColor: 'border-violet-500/20',
+    color: 'text-accent-foreground',
+    bgColor: 'bg-accent/20',
+    borderColor: 'border-accent/30',
   },
 };
 
@@ -123,12 +123,12 @@ export function PartnerCard({ partner }: PartnerCardProps) {
       <div className="bg-muted/30 px-4 py-2.5 border-t border-border/50">
         <div className="flex items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <Heart className="w-3.5 h-3.5 text-rose-600 dark:text-rose-500 shrink-0" />
+            <Heart className="w-3.5 h-3.5 text-destructive shrink-0" />
             <span className="font-semibold text-foreground">{partner.animalsHelped}</span>
             <span className="text-muted-foreground">{t('partners.helped')}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Coins className="w-3.5 h-3.5 text-amber-600 dark:text-amber-500 shrink-0" />
+            <Coins className="w-3.5 h-3.5 text-warning shrink-0" />
             <span className="font-semibold text-foreground">€{formatCurrency(partner.totalContributed)}</span>
             <span className="text-muted-foreground hidden sm:inline">Contributed</span>
           </div>

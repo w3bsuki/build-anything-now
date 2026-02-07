@@ -203,8 +203,8 @@ const PublicProfile = () => {
       <div className="container max-w-2xl mx-auto px-4">
         {/* Profile Card - Clean card design */}
         <div className="bg-card rounded-xl border border-border/50 overflow-hidden mt-4 shadow-sm">
-          {/* Cover gradient area */}
-          <div className="h-20 md:h-24 bg-linear-to-r from-primary/20 via-primary/10 to-primary/5" />
+          {/* Cover area */}
+          <div className="h-20 md:h-24 bg-surface-overlay/40" />
           
           {/* Profile content */}
           <div className="px-4 pb-4">
@@ -214,8 +214,8 @@ const PublicProfile = () => {
                 {/* Gradient ring for avatar */}
                 <div className={cn(
                   "rounded-full p-[3px]",
-                  profile.role === 'volunteer' 
-                    ? "bg-linear-to-tr from-primary via-primary/90 to-primary/70" 
+                  profile.role === 'volunteer'
+                    ? "bg-primary/30"
                     : "bg-border"
                 )}>
                   <div className="rounded-full bg-background p-[2px]">

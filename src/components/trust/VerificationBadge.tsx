@@ -41,7 +41,7 @@ export function VerificationBadge({
       className={cn(
         'inline-flex items-center gap-1 text-[10px] font-medium',
         status === 'unverified' && 'text-muted-foreground',
-        status === 'community' && 'text-green-600 dark:text-green-500',
+        status === 'community' && 'text-success',
         status === 'clinic' && 'text-primary',
         className
       )}
@@ -79,4 +79,3 @@ export function VerificationBadge({
     </Tooltip>
   );
 }
-

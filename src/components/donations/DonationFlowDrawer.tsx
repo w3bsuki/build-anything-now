@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from 'convex/react';
 import { ArrowLeft, CheckCircle2, CreditCard, Loader2, Plus, Share2, X } from 'lucide-react';
 import {
   Drawer,
@@ -12,6 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { api } from '../../../convex/_generated/api';
+import type { Id } from '../../../convex/_generated/dataModel';
 
 type DonationStep = 'amount' | 'method' | 'confirm' | 'processing' | 'success';
 
@@ -76,6 +79,10 @@ export function DonationFlowDrawer({
   const [cardCvc, setCardCvc] = useState('');
   const [cardName, setCardName] = useState('');
   const [receiptId, setReceiptId] = useState<string | null>(null);
+  const hasStripePublishableKey = Boolean(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
+  const createCheckoutSession = useMutation(api.donations.createCheckoutSession);
+  const confirmPreviewDonation = useMutation(api.donations.confirmPreviewDonation);
 
   const selectedMethod = useMemo(
     () => DEMO_METHODS.find((m) => m.id === selectedMethodId) ?? DEMO_METHODS[0],
@@ -152,9 +159,39 @@ export function DonationFlowDrawer({
 
   const startProcessing = async () => {
     setStep('processing');
-    setReceiptId(makeReceiptId());
-    await new Promise((r) => setTimeout(r, 900));
-    setStep('success');
+    const localReceipt = makeReceiptId();
+    setReceiptId(localReceipt);
+
+    try {
+      const payment = await createCheckoutSession({
+        caseId: caseId as Id<'cases'>,
+        amount: effectiveAmount,
+        currency,
+        anonymous: false,
+        successUrl: `${window.location.origin}/case/${caseId}?donation=success`,
+        cancelUrl: `${window.location.origin}/case/${caseId}?donation=cancelled`,
+      });
+
+      if (payment.mode === 'preview') {
+        await confirmPreviewDonation({ donationId: payment.donationId });
+        setStep('success');
+        return;
+      }
+
+      if (!payment.checkoutUrl) {
+        throw new Error('Missing Stripe checkout URL');
+      }
+
+      window.location.assign(payment.checkoutUrl);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: t('common.error', 'Error'),
+        description: t('donationFlow.createIntentFailed', 'Failed to start donation. Please try again.'),
+        variant: 'destructive',
+      });
+      setStep('confirm');
+    }
   };
 
   return (
@@ -247,7 +284,9 @@ export function DonationFlowDrawer({
                       className="h-10"
                     />
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {t('donationFlow.previewNote', 'Preview checkout — payments are not processed yet.')}
+                      {hasStripePublishableKey
+                        ? t('donationFlow.checkoutRedirectHint', 'You will be redirected to secure Stripe checkout.')
+                        : t('donationFlow.previewNote', 'Preview checkout — payments are not processed yet.')}
                     </p>
                   </div>
                 </div>
@@ -382,7 +421,9 @@ export function DonationFlowDrawer({
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  {t('donationFlow.disclaimer', 'Payments are in preview for the pitch — real checkout ships in MVP.')}
+                  {hasStripePublishableKey
+                    ? t('donationFlow.disclaimerLive', 'Secure checkout is processed by Stripe.')
+                    : t('donationFlow.disclaimer', 'Payments are in preview for the pitch — real checkout ships in MVP.')}
                 </p>
               </div>
             )}
@@ -406,10 +447,10 @@ export function DonationFlowDrawer({
                     <CheckCircle2 className="w-7 h-7 text-success" />
                   </div>
                   <p className="text-lg font-bold text-foreground">{t('donationFlow.thankYou', 'Thank you!')}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t('donationFlow.successBody', 'Your support helps animals get urgent care.')}
-                  </p>
-                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('donationFlow.successBody', 'Your support helps animals get urgent care.')}
+                </p>
+              </div>
 
                 <div className="rounded-xl border border-border/50 p-3 space-y-2">
                   <div className="flex items-center justify-between">

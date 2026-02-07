@@ -4,6 +4,21 @@ export type AnimalSpecies = 'dog' | 'cat' | 'bird' | 'other';
 
 export type CaseVerificationStatus = 'unverified' | 'community' | 'clinic';
 
+export type CaseFundingStatus = 'active' | 'funded' | 'closed';
+
+export type CaseLifecycleStage =
+  | 'active_treatment'
+  | 'seeking_adoption'
+  | 'closed_success'
+  | 'closed_transferred'
+  | 'closed_other';
+
+export type CaseUpdateType = 'medical' | 'milestone' | 'update' | 'success';
+
+export type CaseUpdateEvidenceType = 'bill' | 'lab_result' | 'clinic_photo' | 'other';
+
+export type CaseUpdateAuthorRole = 'owner' | 'clinic' | 'moderator';
+
 export interface AnimalCase {
   id: string;
   title: string;
@@ -11,7 +26,16 @@ export interface AnimalCase {
   story: string;
   images: string[];
   status: AnimalStatus;
+  fundingStatus?: CaseFundingStatus;
+  lifecycleStage?: CaseLifecycleStage;
+  lifecycleUpdatedAt?: string | null;
+  closedAt?: string | null;
+  closedReason?: 'success' | 'transferred' | 'other' | null;
+  closedNotes?: string | null;
   verificationStatus?: CaseVerificationStatus;
+  riskLevel?: 'low' | 'medium' | 'high';
+  riskFlags?: string[];
+  isDonationAllowed?: boolean;
   species: AnimalSpecies;
   location: {
     city: string;
@@ -24,6 +48,9 @@ export interface AnimalCase {
   };
   updates: CaseUpdate[];
   createdAt: string;
+  ownerId?: string;
+  canManageCase?: boolean;
+  clinicId?: string | null;
   author?: {
     id: string;
     name: string;
@@ -36,7 +63,12 @@ export interface CaseUpdate {
   date: string;
   title: string;
   description: string;
-  type: 'medical' | 'milestone' | 'update' | 'success';
+  type: CaseUpdateType;
+  evidenceType?: CaseUpdateEvidenceType | null;
+  clinicId?: string | null;
+  clinicName?: string | null;
+  authorRole?: CaseUpdateAuthorRole;
+  images?: string[];
 }
 
 export interface Campaign {
@@ -126,4 +158,79 @@ export interface PostComment {
   timeAgo: string;
   createdAt: string;
   replies?: PostComment[];
+}
+
+export type ForumBoard = 'rescue' | 'community';
+
+export type ForumCategory =
+  | 'urgent_help'
+  | 'case_update'
+  | 'adoption'
+  | 'advice'
+  | 'general'
+  | 'announcements';
+
+export type ForumSort = 'local_recent' | 'newest' | 'top';
+
+export type ForumAuthorBadge = 'mod' | 'clinic' | 'partner' | 'volunteer' | null;
+
+export interface ForumAuthor {
+  id: string | null;
+  name: string;
+  avatar: string | null;
+  city: string | null;
+  badge: ForumAuthorBadge;
+}
+
+export interface ForumThread {
+  id: string;
+  board: ForumBoard;
+  category: ForumCategory;
+  title: string;
+  content: string;
+  preview: string;
+  image: string | null;
+  cityTag: string | null;
+  caseId: string | null;
+  isPinned: boolean;
+  isLocked: boolean;
+  isDeleted: boolean;
+  reactionCount: number;
+  replyCount: number;
+  createdAt: number;
+  lastActivityAt: number;
+  timeAgo: string;
+  viewerReacted: boolean;
+  author: ForumAuthor;
+}
+
+export interface ForumComment {
+  id: string;
+  postId: string;
+  parentCommentId: string | null;
+  content: string;
+  isDeleted: boolean;
+  reactionCount: number;
+  replyCount: number;
+  createdAt: number;
+  editedAt: number | null;
+  timeAgo: string;
+  viewerReacted: boolean;
+  author: ForumAuthor;
+  replies: ForumComment[];
+}
+
+export interface ForumReactionSummary {
+  targetType: 'post' | 'comment';
+  targetId: string;
+  reactionType: 'upvote';
+  reacted: boolean;
+  count: number;
+}
+
+export interface ForumReportPayload {
+  targetType: 'post' | 'comment';
+  targetId: string;
+  reason: 'spam' | 'harassment' | 'misinformation' | 'scam' | 'animal_welfare' | 'other';
+  details?: string;
 }

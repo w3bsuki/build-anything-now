@@ -3,9 +3,11 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, Megaphone, Plus, MessageCircle, HeartHandshake, Handshake, Stethoscope, Bell, User, Heart, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useQuery } from 'convex/react';
 import { Badge } from '@/components/ui/badge';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { api } from '../../convex/_generated/api';
 
 // Bottom nav: Home, Campaigns, Create (center), Clinics, Partners
 const navItems = [
@@ -23,13 +25,12 @@ const desktopNavItems = [
   { path: '/partners', labelKey: 'nav.partners', labelFallback: 'Partners', icon: Handshake },
 ];
 
-// TODO: Replace with real data from Convex
-const unreadNotifications = 5;
-
 export function Navigation() {
   const { t } = useTranslation();
   const location = useLocation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const unreadCounts = useQuery(api.home.getUnreadCounts, {});
+  const unreadNotifications = unreadCounts?.notifications ?? 0;
 
   // Hide entire navigation on presentation, partner, auth, and onboarding pages (immersive experience)
   if (location.pathname === '/presentation' ||
@@ -45,6 +46,7 @@ export function Navigation() {
     location.pathname.includes('/campaigns/') ||
     location.pathname.includes('/clinics/') ||
     location.pathname.includes('/partners/') ||
+    location.pathname.startsWith('/community') ||
     location.pathname.startsWith('/messages/') ||
     ['/create-case', '/create-case-ai', '/create-adoption', '/donations', '/history', '/achievements', '/payment', '/notifications', '/settings', '/profile/edit'].includes(location.pathname);
 
@@ -133,9 +135,9 @@ export function Navigation() {
       {!hideBottomNav && (
         <nav
           data-tour="navigation"
-          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-nav-surface backdrop-blur-md border-t border-nav-border pb-[env(safe-area-inset-bottom)]"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-2 pb-[calc(env(safe-area-inset-bottom)+0.35rem)]"
         >
-          <div className="flex items-center justify-around h-14 px-2">
+          <div className="glass-ultra nav-shadow flex items-center justify-around h-14 px-2 rounded-2xl border border-nav-border/70">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;

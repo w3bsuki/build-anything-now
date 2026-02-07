@@ -129,6 +129,12 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
   const animalName = getAnimalName(caseData.title);
   const status = statusConfig[caseData.status];
   const isUrgent = caseData.status === 'critical' || caseData.status === 'urgent';
+  const ctaClass = isUrgent
+    ? 'bg-warm-accent hover:bg-warm-accent/90 text-warm-accent-foreground'
+    : 'bg-primary hover:bg-primary/90 text-primary-foreground';
+  const ctaText = isUrgent
+    ? t('actions.helpNow', 'Help Now')
+    : t('actions.supportCase', 'Support Case');
   const shareUrl = `${window.location.origin}/case/${caseData.id}`;
 
   const copyLink = async () => {
@@ -165,13 +171,13 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
     <article
       {...props}
       className={cn(
-        'group bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
+        'group rounded-2xl bg-surface-elevated/95 overflow-hidden ring-1 ring-border/45 hover:ring-border/65 transition-colors duration-200',
         className
       )}
     >
       {/* Poster Header - Instagram style */}
-      <div className="flex items-center gap-3 p-3 border-b border-border/30">
-        <Avatar className="h-9 w-9 ring-2 ring-primary/20">
+      <div className="flex items-center gap-3 p-3.5 border-b border-border/40 bg-card/80">
+        <Avatar className="h-9 w-9 ring-2 ring-primary/25">
           <AvatarImage 
             src={caseData.author?.avatar} 
             alt={caseData.author?.name || 'User'} 
@@ -201,7 +207,7 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
             <button
               type="button"
               aria-label={t('actions.more', 'More')}
-              className="h-8 w-8 rounded-full bg-muted text-foreground transition-all duration-200 hover:bg-muted/80 active:bg-muted/70"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-muted/70 text-foreground transition-colors duration-200 hover:bg-muted active:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <MoreHorizontal className="mx-auto h-4 w-4 text-muted-foreground" />
             </button>
@@ -231,7 +237,7 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
           
           {/* Error fallback */}
           {imageError ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-muted to-muted/50">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/75">
               <PawPrint className="w-10 h-10 text-muted-foreground/30" />
             </div>
           ) : (
@@ -239,7 +245,7 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
               src={caseData.images[0]}
               alt={caseData.title}
               className={cn(
-                "w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]",
+                "w-full h-full object-cover",
                 !imageLoaded && "opacity-0"
               )}
               onLoad={() => setImageLoaded(true)}
@@ -247,37 +253,36 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
             />
           )}
 
-          {/* Top gradient for badge visibility */}
-          <div className="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/50 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-black/20 pointer-events-none" />
 
           {/* Status Badge - top left */}
           <div className="absolute top-2.5 left-2.5">
-            <span className={cn(
-              "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide shadow-sm",
-              status.badge
-            )}>
-              {isUrgent && <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />}
+              <span className={cn(
+                "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold",
+                status.badge
+              )}>
+              {isUrgent && <span className="w-1.5 h-1.5 rounded-full bg-white/80" />}
               {status.label}
             </span>
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="p-3.5">
+        <div className="p-4">
           {/* Title */}
-          <h3 className="font-semibold text-[15px] text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors mb-1.5">
+          <h3 className="text-base font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors mb-1">
             {caseData.title}
           </h3>
 
           {/* Description - subtle */}
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+          <p className="text-sm text-muted-foreground/95 line-clamp-2 leading-relaxed mb-3">
             {caseData.description}
           </p>
 
           {/* Funding Progress - Clean Twitter-style */}
-          <div className="space-y-2 mb-3">
+          <div className="rounded-xl border border-border/45 bg-muted/35 p-2.5 space-y-2 mb-3.5">
             {/* Progress bar - status colored */}
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
+            <div className="h-1.5 bg-background/70 rounded-full overflow-hidden">
               <div 
                 className={cn(
                   "h-full rounded-full transition-all duration-500",
@@ -301,9 +306,9 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
                     {Array.from({ length: Math.min(3, helpersCount) }).map((_, index) => {
                       const src = helperAvatars[index] ?? null;
                       return (
-                        <Avatar key={index} className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background">
+                        <Avatar key={index} className="h-6 w-6 border-2 border-avatar-border-stacked ring-1 ring-background shadow-2xs">
                           {src ? <AvatarImage src={src} alt="" /> : null}
-                          <AvatarFallback className="text-[10px] font-medium">🐾</AvatarFallback>
+                          <AvatarFallback className="text-xs font-medium">🐾</AvatarFallback>
                         </Avatar>
                       );
                     })}
@@ -317,12 +322,12 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
           {/* CTA Button - status colored */}
           <Button 
             className={cn(
-              "w-full h-10 rounded-full font-semibold text-sm transition-all text-white",
-              status.button
+              "w-full h-10 rounded-xl font-semibold text-sm transition-all",
+              ctaClass
             )}
           >
             <Heart className="w-4 h-4 mr-1.5 fill-current" />
-            Help {animalName}
+            {ctaText} {animalName}
             <ChevronRight className="w-4 h-4 ml-1 opacity-60" />
           </Button>
         </div>
@@ -341,7 +346,7 @@ export function TwitterCaseCard({ caseData, className, socialStats, ...props }: 
 // Skeleton for loading state
 export function TwitterCaseCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30', className)}>
+    <div className={cn('bg-card rounded-xl overflow-hidden ring-1 ring-border/30', className)}>
       {/* Poster Header Skeleton */}
       <div className="flex items-center gap-3 p-3 border-b border-border/30">
         <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />

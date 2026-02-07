@@ -262,8 +262,8 @@ const Partners = () => {
                     </p>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-rose-500/10 mb-2">
-                      <Heart className="w-5 h-5 text-rose-600 dark:text-rose-500" />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-destructive/10 mb-2">
+                      <Heart className="w-5 h-5 text-destructive" />
                     </div>
                     <p className="text-2xl font-bold text-foreground leading-none">
                       {partnerStats?.totalAnimalsHelped?.toLocaleString() ?? '1,200'}+
@@ -273,8 +273,8 @@ const Partners = () => {
                     </p>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10 mb-2">
-                      <Coins className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-warning/10 mb-2">
+                      <Coins className="w-5 h-5 text-warning" />
                     </div>
                     <p className="text-2xl font-bold text-foreground leading-none">
                       €{partnerStats?.totalContributed?.toLocaleString() ?? '50,000'}+
@@ -291,23 +291,20 @@ const Partners = () => {
           {/* Become a Partner */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-6 text-center">
-                <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
-                <div className="relative">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
-                    <Heart className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">
-                    {t('partners.makeADifference')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                    {t('partners.joinPartners')}
-                  </p>
-                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20">
-                    <Handshake className="w-4 h-4 mr-2" />
-                    {t('partners.becomePartner')}
-                  </Button>
+              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
+                  <Heart className="w-7 h-7 text-primary" />
                 </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">
+                  {t('partners.makeADifference')}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                  {t('partners.joinPartners')}
+                </p>
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Handshake className="w-4 h-4 mr-2" />
+                  {t('partners.becomePartner')}
+                </Button>
               </div>
             </div>
           </section>
@@ -368,8 +365,8 @@ const Partners = () => {
                     </p>
                   </div>
                   <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-rose-500/10 mb-2">
-                      <Heart className="w-5 h-5 text-rose-600 dark:text-rose-500" />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-destructive/10 mb-2">
+                      <Heart className="w-5 h-5 text-destructive" />
                     </div>
                     <p className="text-2xl font-bold text-foreground leading-none">
                       {totalAnimalsHelped.toLocaleString()}
@@ -397,23 +394,20 @@ const Partners = () => {
           {/* Become a Volunteer */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-xl p-6 text-center">
-                <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
-                <div className="relative">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
-                    <HandHeart className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">
-                    {t('partners.makeADifference')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                    {t('partners.joinVolunteers')}
-                  </p>
-                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20">
-                    <HandHeart className="w-4 h-4 mr-2" />
-                    {t('partners.becomeVolunteer')}
-                  </Button>
+              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
+                  <HandHeart className="w-7 h-7 text-primary" />
                 </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">
+                  {t('partners.makeADifference')}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                  {t('partners.joinVolunteers')}
+                </p>
+                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <HandHeart className="w-4 h-4 mr-2" />
+                  {t('partners.becomeVolunteer')}
+                </Button>
               </div>
             </div>
           </section>
@@ -426,7 +420,7 @@ const Partners = () => {
           <section className="py-4">
             <div className="container mx-auto px-4">
               {/* Info Banner */}
-              <div className="bg-linear-to-r from-accent/10 to-primary/10 rounded-xl p-4 border border-accent/20 mb-4">
+              <div className="bg-surface border border-border/60 rounded-xl p-4 mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Home className="w-5 h-5 text-accent" />
                   <h3 className="font-semibold text-foreground">{t('community.petSittersTitle')}</h3>
@@ -514,23 +508,20 @@ const Partners = () => {
           {/* Become a Sitter */}
           <section className="py-4">
             <div className="container mx-auto px-4">
-              <div className="relative overflow-hidden bg-linear-to-br from-accent/10 via-accent/5 to-transparent border border-accent/20 rounded-xl p-6 text-center">
-                <div className="absolute inset-0 bg-grid-white/5 mask-[linear-gradient(0deg,transparent,black)]" />
-                <div className="relative">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 ring-4 ring-accent/5 mx-auto mb-4">
-                    <Home className="w-7 h-7 text-accent" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">
-                    {t('community.offerSitting')}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                    {t('community.offerSittingDesc')}
-                  </p>
-                  <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg shadow-accent/20">
-                    <Home className="w-4 h-4 mr-2" />
-                    {t('community.becomeSitter')}
-                  </Button>
+              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 ring-4 ring-accent/5 mx-auto mb-4">
+                  <Home className="w-7 h-7 text-accent" />
                 </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">
+                  {t('community.offerSitting')}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
+                  {t('community.offerSittingDesc')}
+                </p>
+                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Home className="w-4 h-4 mr-2" />
+                  {t('community.becomeSitter')}
+                </Button>
               </div>
             </div>
           </section>
@@ -547,7 +538,7 @@ interface VolunteerCardProps {
 
 const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
   <Link to={`/volunteers/${volunteer.id}`} className="block group">
-    <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden h-full">
+    <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-sm transition-all duration-300 overflow-hidden h-full">
       {/* Header */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
@@ -582,7 +573,7 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
                     navigator.clipboard.writeText(`${window.location.origin}/volunteers/${volunteer.id}`);
                   }
                 }}
-                className="text-muted-foreground hover:text-primary transition-colors shrink-0 p-1"
+                className="text-muted-foreground hover:text-primary transition-colors shrink-0 p-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Share2 className="w-4 h-4" />
               </button>
@@ -623,9 +614,9 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-rose-500/5 rounded-lg px-3 py-2">
-            <div className="w-7 h-7 rounded-md bg-rose-500/10 flex items-center justify-center shrink-0">
-              <Heart className="w-3.5 h-3.5 text-rose-600 dark:text-rose-500" />
+          <div className="flex items-center gap-2 bg-destructive/5 rounded-lg px-3 py-2">
+            <div className="w-7 h-7 rounded-md bg-destructive/10 flex items-center justify-center shrink-0">
+              <Heart className="w-3.5 h-3.5 text-destructive" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold text-foreground leading-none">
@@ -665,7 +656,7 @@ const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
 
 // Pet Sitter Card Component
 const PetSitterCard = ({ sitter }: { sitter: typeof mockPetSitters[0] }) => (
-  <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden h-full flex flex-col">
+  <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-sm transition-all duration-300 overflow-hidden h-full flex flex-col">
     {/* Header */}
     <div className="p-4 pb-3">
       <div className="flex items-start gap-3">

@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { 
   Trophy,
   Heart,
   Clock,
   Star,
-  TrendingUp,
   Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -78,11 +76,11 @@ const mockMembers = [
 const getBadgeColor = (badge: string | null) => {
   switch (badge) {
     case 'gold':
-      return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30';
+      return 'border-warning/40 bg-warning/15 text-warning-foreground';
     case 'silver':
-      return 'bg-gray-400/20 text-gray-600 border-gray-400/30';
+      return 'border-border bg-muted text-foreground';
     case 'bronze':
-      return 'bg-orange-500/20 text-orange-600 border-orange-500/30';
+      return 'border-urgent/35 bg-urgent/15 text-urgent';
     default:
       return '';
   }
@@ -102,17 +100,22 @@ const CommunityMembers = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Mobile Header */}
-      <MobilePageHeader
-        title={t('community.members')}
-        showLogo
-        searchPlaceholder={t('community.searchMembers')}
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+    <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
+      <div className="mx-auto w-full max-w-3xl px-4 py-4">
+        <section className="mb-4 space-y-2">
+          <h2 className="text-base font-semibold text-foreground">{t('community.members')}</h2>
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-foreground/50" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={t('community.searchMembers')}
+              className="w-full rounded-full border border-search-border bg-search-bg pl-10 pr-4 py-2 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
+            />
+          </div>
+        </section>
 
-      <div className="container mx-auto px-4 py-4">
         {/* Stats Summary */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-card rounded-xl p-3 text-center border border-border">
@@ -120,7 +123,7 @@ const CommunityMembers = () => {
             <div className="text-xs text-muted-foreground">{t('community.totalMembers')}</div>
           </div>
           <div className="bg-card rounded-xl p-3 text-center border border-border">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-success">
               {mockMembers.reduce((acc, m) => acc + m.animalsHelped, 0)}
             </div>
             <div className="text-xs text-muted-foreground">{t('community.animalsHelped')}</div>
@@ -136,7 +139,7 @@ const CommunityMembers = () => {
         {/* Leaderboard Section */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <Trophy className="w-5 h-5 text-yellow-500" />
+            <Trophy className="w-5 h-5 text-warning" />
             <h2 className="font-semibold text-foreground">{t('community.leaderboard')}</h2>
           </div>
           
@@ -146,16 +149,16 @@ const CommunityMembers = () => {
                 key={member.id}
                 className={cn(
                   'flex items-center gap-3 p-3 bg-card rounded-xl border',
-                  index === 0 && 'border-yellow-500/30 bg-yellow-500/5',
-                  index === 1 && 'border-gray-400/30 bg-gray-400/5',
-                  index === 2 && 'border-orange-500/30 bg-orange-500/5'
+                  index === 0 && 'border-warning/35 bg-warning/10',
+                  index === 1 && 'border-border bg-muted/60',
+                  index === 2 && 'border-urgent/35 bg-urgent/10'
                 )}
               >
                 <div className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold',
-                  index === 0 && 'bg-yellow-500 text-white',
-                  index === 1 && 'bg-gray-400 text-white',
-                  index === 2 && 'bg-orange-500 text-white'
+                  index === 0 && 'bg-warning text-warning-foreground',
+                  index === 1 && 'bg-secondary text-secondary-foreground',
+                  index === 2 && 'bg-urgent text-urgent-foreground'
                 )}>
                   {index + 1}
                 </div>
@@ -209,7 +212,7 @@ const CommunityMembers = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm text-foreground truncate">{member.name}</span>
                     {member.isTopVolunteer && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/10 text-primary rounded-full">
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium text-primary">
                         {t('community.volunteer')}
                       </span>
                     )}

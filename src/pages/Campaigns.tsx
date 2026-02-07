@@ -11,7 +11,7 @@ import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 import type { Campaign } from '@/types';
 
-type CampaignFilter = 'all' | 'trending' | 'completed';
+type CampaignFilter = 'all' | 'trending' | 'completed' | 'initiatives';
 
 const Campaigns = () => {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ const Campaigns = () => {
   const isLoading = rawCampaigns === undefined;
 
   // Transform Convex data to match frontend Campaign type
-  const campaigns: Campaign[] = (rawCampaigns ?? []).map((c) => ({
+  const campaigns: (Campaign & { campaignType: 'rescue' | 'initiative' })[] = (rawCampaigns ?? []).map((c) => ({
     id: c._id,
     title: c.title,
     description: c.description,
@@ -33,16 +33,20 @@ const Campaigns = () => {
     current: c.current,
     unit: c.unit,
     endDate: c.endDate,
+    campaignType: c.campaignType ?? 'rescue',
   }));
 
   const filterOptions = [
     { id: 'all', label: t('campaigns.allCampaigns'), icon: <Megaphone className="w-3.5 h-3.5" /> },
     { id: 'trending', label: t('campaigns.trending'), icon: <TrendingUp className="w-3.5 h-3.5" /> },
+    { id: 'initiatives', label: t('campaigns.initiatives', 'Pawtreon Initiatives'), icon: <Megaphone className="w-3.5 h-3.5" /> },
     { id: 'completed', label: t('campaigns.completed'), icon: <CheckCircle className="w-3.5 h-3.5" /> },
   ];
 
   // Filter campaigns based on status
-  const trendingCampaigns = campaigns.filter((c) => c.current / c.goal >= 0.5 && c.current < c.goal);
+  const rescueCampaigns = campaigns.filter((c) => c.campaignType !== 'initiative');
+  const initiativeCampaigns = campaigns.filter((c) => c.campaignType === 'initiative');
+  const trendingCampaigns = rescueCampaigns.filter((c) => c.current / c.goal >= 0.5 && c.current < c.goal);
   const completedCampaigns = campaigns.filter((c) => c.current >= c.goal);
 
   const getFilteredCampaigns = () => {
@@ -51,6 +55,8 @@ const Campaigns = () => {
         return trendingCampaigns;
       case 'completed':
         return completedCampaigns;
+      case 'initiatives':
+        return initiativeCampaigns;
       default:
         return campaigns;
     }
@@ -86,12 +92,41 @@ const Campaigns = () => {
         </div>
       </div>
 
-      {/* Featured Campaigns - Horizontal Scroll (only when showing all) */}
+      {/* Mission initiatives - highlighted for roadmap funding track */}
+      {(filter === 'all' || filter === 'initiatives') && (isLoading || initiativeCampaigns.length > 0) && (
+        <section className="py-4">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center gap-2 mb-3">
+              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.initiatives', 'Pawtreon Initiatives')}</h2>
+              {!isLoading && <span className="text-xs text-muted-foreground">({initiativeCampaigns.length})</span>}
+            </div>
+          </div>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
+              {isLoading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="w-64 flex-shrink-0">
+                    <CampaignCardSkeleton />
+                  </div>
+                ))
+              ) : (
+                initiativeCampaigns.map((campaign) => (
+                  <div key={campaign.id} className="w-64 flex-shrink-0">
+                    <CampaignCard campaign={campaign} />
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured rescue campaigns - Horizontal Scroll (only when showing all) */}
       {filter === 'all' && (isLoading || trendingCampaigns.length > 0) && (
         <section className="py-4">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
-              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.featured')}</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.featuredRescue', 'Featured Rescue Campaigns')}</h2>
               {!isLoading && <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>}
               <div className="flex items-center gap-2 ml-auto">
                 <Switch
@@ -133,8 +168,8 @@ const Campaigns = () => {
             <h2 className="text-sm font-semibold text-foreground">
               {filter === 'all' ? t('campaigns.allCampaigns') : filter === 'trending' ? t('campaigns.trending') : t('campaigns.completed')}
             </h2>
-            {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
-          </div>
+              {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
+            </div>
           {isLoading ? (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 4 }).map((_, i) => (

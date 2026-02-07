@@ -7,8 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "lint": "eslint . && pnpm -s styles:gate",
+    "preview": "vite preview",
+    "styles:scan:palette": "node scripts/style-scan.mjs palette",
+    "styles:scan:arbitrary": "node scripts/style-scan.mjs arbitrary",
+    "styles:scan:gradients": "node scripts/style-scan.mjs gradients",
+    "styles:scan": "pnpm -s styles:scan:palette && pnpm -s styles:scan:arbitrary && pnpm -s styles:scan:gradients",
+    "styles:gate": "pnpm -s styles:scan"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
@@ -70,9 +75,10 @@
     "react-router-dom": "^7.12.0",
     "recharts": "^3.6.0",
     "sonner": "^2.0.7",
+    "stripe": "^17.7.0",
     "svix": "^1.34.0",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.3.0",
     "vaul": "^1.1.2",
     "zod": "^4.3.5"
   },

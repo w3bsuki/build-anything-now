@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
+import { requireAdmin } from "./lib/auth";
 
 // List all clinics with optional city filter
 export const list = query({
@@ -139,6 +140,110 @@ export const getMyClaims = query({
         );
 
         return enrichedClaims;
+    },
+});
+
+// Admin queue for clinic claims
+export const listPendingClaims = query({
+    args: {},
+    handler: async (ctx) => {
+        await requireAdmin(ctx);
+
+        const claims = await ctx.db
+            .query("clinicClaims")
+            .withIndex("by_status", (q) => q.eq("status", "pending"))
+            .order("desc")
+            .collect();
+
+        return Promise.all(
+            claims.map(async (claim) => {
+                const clinic = await ctx.db.get(claim.clinicId);
+                const claimant = await ctx.db.get(claim.userId);
+
+                return {
+                    ...claim,
+                    clinic: clinic
+                        ? {
+                            id: clinic._id,
+                            name: clinic.name,
+                            city: clinic.city,
+                            address: clinic.address,
+                            verified: clinic.verified,
+                            ownerId: clinic.ownerId,
+                        }
+                        : null,
+                    claimant: claimant
+                        ? {
+                            id: claimant._id,
+                            name: claimant.displayName || claimant.name,
+                            email: claimant.email,
+                            role: claimant.role,
+                        }
+                        : null,
+                };
+            })
+        );
+    },
+});
+
+// Admin claim review action
+export const reviewClaim = mutation({
+    args: {
+        claimId: v.id("clinicClaims"),
+        action: v.union(v.literal("approve"), v.literal("reject")),
+        rejectionReason: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const admin = await requireAdmin(ctx);
+        const claim = await ctx.db.get(args.claimId);
+        if (!claim) throw new Error("Claim not found");
+        if (claim.status !== "pending") throw new Error("Only pending claims can be reviewed");
+
+        const clinic = await ctx.db.get(claim.clinicId);
+        if (!clinic) throw new Error("Clinic not found");
+
+        const now = Date.now();
+
+        if (args.action === "approve") {
+            if (clinic.ownerId && clinic.ownerId !== claim.userId) {
+                throw new Error("Clinic already has a different owner");
+            }
+
+            await ctx.db.patch(claim.clinicId, {
+                ownerId: claim.userId,
+                claimedAt: now,
+                verified: true,
+            });
+
+            const claimant = await ctx.db.get(claim.userId);
+            if (claimant && claimant.role !== "admin" && claimant.role !== "clinic") {
+                await ctx.db.patch(claim.userId, {
+                    role: "clinic",
+                });
+            }
+        }
+
+        await ctx.db.patch(args.claimId, {
+            status: args.action === "approve" ? "approved" : "rejected",
+            reviewedBy: admin._id,
+            reviewedAt: now,
+            rejectionReason: args.action === "reject" ? args.rejectionReason?.trim() || "Not eligible" : undefined,
+        });
+
+        await ctx.db.insert("auditLogs", {
+            actorId: admin._id,
+            entityType: "clinic_claim",
+            entityId: String(args.claimId),
+            action: args.action === "approve" ? "clinic_claim.approved" : "clinic_claim.rejected",
+            details: `clinicId=${String(claim.clinicId)}`,
+            metadataJson: JSON.stringify({
+                claimantId: String(claim.userId),
+                rejectionReason: args.action === "reject" ? args.rejectionReason?.trim() || null : null,
+            }),
+            createdAt: now,
+        });
+
+        return { ok: true };
     },
 });
 

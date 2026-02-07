@@ -52,7 +52,7 @@ const getNotificationIcon = (type: string) => {
     case 'donation_received':
       return { icon: Heart, bg: 'bg-primary/10', color: 'text-primary' };
     case 'case_update':
-      return { icon: AlertCircle, bg: 'bg-blue-500/10', color: 'text-blue-500' };
+      return { icon: AlertCircle, bg: 'bg-primary/10', color: 'text-primary' };
     case 'achievement_unlocked':
       return { icon: Award, bg: 'bg-accent/10', color: 'text-accent-foreground' };
     case 'campaign_ended':

@@ -15,30 +15,30 @@ export const EmergencyBanner = ({ className }: EmergencyBannerProps) => {
       to="/clinics?filter=24h"
       className={cn(
         "group flex items-center gap-3 p-3 rounded-xl",
-        "bg-gradient-to-r from-rose-500/10 via-rose-500/5 to-transparent",
-        "border border-rose-200/60 dark:border-rose-500/20",
-        "hover:border-rose-300 dark:hover:border-rose-500/30",
+        "bg-destructive/10",
+        "border border-destructive/30",
+        "hover:border-destructive/40",
         "hover:shadow-sm transition-all",
         className
       )}
     >
       {/* Icon */}
-      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-rose-500/15 flex items-center justify-center">
-        <AlertCircle className="w-4.5 h-4.5 text-rose-600 dark:text-rose-400" />
+      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-destructive/15 flex items-center justify-center">
+        <AlertCircle className="w-4.5 h-4.5 text-destructive" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-rose-700 dark:text-rose-400 text-sm leading-tight">
+        <h3 className="font-semibold text-destructive text-sm leading-tight">
           {t('clinics.petEmergency', 'Pet Emergency?')}
         </h3>
-        <p className="text-[11px] text-rose-600/80 dark:text-rose-400/70 mt-0.5">
+        <p className="text-[11px] text-destructive/80 mt-0.5">
           {t('clinics.tapToFind247', 'Tap to find 24/7 emergency care')}
         </p>
       </div>
 
       {/* Arrow */}
-      <ChevronRight className="w-5 h-5 text-rose-500/60 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      <ChevronRight className="w-5 h-5 text-destructive/70 group-hover:text-destructive group-hover:translate-x-0.5 transition-all flex-shrink-0" />
     </Link>
   );
 };
@@ -52,26 +52,26 @@ export const EmergencyBannerCompact = ({ className }: EmergencyBannerProps) => {
       href="tel:+359888123456"
       className={cn(
         "flex items-center justify-between gap-2 py-2.5 px-3.5 rounded-xl",
-        "bg-rose-50 dark:bg-rose-500/10",
-        "border border-rose-200/60 dark:border-rose-500/20",
+        "bg-destructive/10",
+        "border border-destructive/30",
         "active:scale-[0.98] transition-transform",
         className
       )}
     >
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-rose-500/15 flex items-center justify-center">
-          <Phone className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+        <div className="w-8 h-8 rounded-full bg-destructive/15 flex items-center justify-center">
+          <Phone className="w-4 h-4 text-destructive" />
         </div>
         <div>
-          <span className="text-sm font-semibold text-rose-700 dark:text-rose-400">
+          <span className="text-sm font-semibold text-destructive">
             {t('clinics.emergencyHotline', 'Emergency Hotline')}
           </span>
-          <span className="text-xs text-rose-600/70 block">
+          <span className="text-xs text-destructive/75 block">
             {t('clinics.available247', 'Available 24/7')}
           </span>
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-rose-500/60 flex-shrink-0" />
+      <ChevronRight className="w-4 h-4 text-destructive/70 flex-shrink-0" />
     </a>
   );
 };

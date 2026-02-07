@@ -89,9 +89,12 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+type TooltipValue = number | string | ReadonlyArray<number | string>;
+type TooltipName = string | number;
+
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
-  RechartsPrimitive.TooltipContentProps<any, any> &
+  RechartsPrimitive.TooltipContentProps<TooltipValue, TooltipName> &
     React.ComponentProps<"div"> & {
       hideLabel?: boolean;
       hideIndicator?: boolean;

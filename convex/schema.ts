@@ -54,6 +54,14 @@ export default defineSchema({
         // Verification status
         verifiedAt: v.optional(v.number()),
         verifiedBy: v.optional(v.id("users")),
+        // Multi-capability account model (single signup, many roles/capabilities)
+        capabilities: v.optional(v.array(v.string())),
+        verificationLevel: v.optional(v.union(
+            v.literal("unverified"),
+            v.literal("community"),
+            v.literal("clinic"),
+            v.literal("partner"),
+        )),
         // Product tour tracking
         productTourCompleted: v.optional(v.boolean()),
         productTourCompletedAt: v.optional(v.number()),
@@ -68,17 +76,31 @@ export default defineSchema({
         userId: v.id("users"),
         caseId: v.optional(v.id("cases")),
         campaignId: v.optional(v.string()), // For campaign donations
+        campaignRefId: v.optional(v.id("campaigns")),
         amount: v.number(),
         currency: v.string(),
         status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed"), v.literal("refunded")),
         paymentMethod: v.optional(v.string()),
+        paymentProvider: v.optional(v.union(v.literal("stripe"), v.literal("manual"))),
+        stripeCheckoutSessionId: v.optional(v.string()),
+        stripePaymentIntentId: v.optional(v.string()),
+        stripeChargeId: v.optional(v.string()),
+        idempotencyKey: v.optional(v.string()),
+        receiptId: v.optional(v.string()),
+        receiptUrl: v.optional(v.string()),
         transactionId: v.optional(v.string()),
         message: v.optional(v.string()),
         anonymous: v.boolean(),
+        completedAt: v.optional(v.number()),
+        failedAt: v.optional(v.number()),
         createdAt: v.number(),
     })
         .index("by_user", ["userId"])
         .index("by_case", ["caseId"])
+        .index("by_campaign_ref", ["campaignRefId"])
+        .index("by_stripe_checkout_session", ["stripeCheckoutSessionId"])
+        .index("by_stripe_payment_intent", ["stripePaymentIntentId"])
+        .index("by_idempotency_key", ["idempotencyKey"])
         .index("by_status", ["status"]),
 
     // User achievements/badges
@@ -229,16 +251,55 @@ export default defineSchema({
             currency: v.string(),
         }),
         status: v.union(v.literal("active"), v.literal("funded"), v.literal("closed")),
+        lifecycleStage: v.optional(v.union(
+            v.literal("active_treatment"),
+            v.literal("seeking_adoption"),
+            v.literal("closed_success"),
+            v.literal("closed_transferred"),
+            v.literal("closed_other"),
+        )),
+        lifecycleUpdatedAt: v.optional(v.number()),
+        closedAt: v.optional(v.number()),
+        closedReason: v.optional(v.union(
+            v.literal("success"),
+            v.literal("transferred"),
+            v.literal("other"),
+        )),
+        closedNotes: v.optional(v.string()),
+        riskLevel: v.optional(v.union(v.literal("low"), v.literal("medium"), v.literal("high"))),
+        riskFlags: v.optional(v.array(v.string())),
         updates: v.array(v.object({
+            id: v.optional(v.string()),
             date: v.number(),
+            type: v.optional(v.union(
+                v.literal("medical"),
+                v.literal("milestone"),
+                v.literal("update"),
+                v.literal("success"),
+            )),
             text: v.string(),
             images: v.optional(v.array(v.id("_storage"))),
+            evidenceType: v.optional(v.union(
+                v.literal("bill"),
+                v.literal("lab_result"),
+                v.literal("clinic_photo"),
+                v.literal("other"),
+            )),
+            clinicId: v.optional(v.id("clinics")),
+            clinicName: v.optional(v.string()),
+            authorRole: v.optional(v.union(
+                v.literal("owner"),
+                v.literal("clinic"),
+                v.literal("moderator"),
+            )),
         })),
         createdAt: v.number(),
     })
         .index("by_user", ["userId"])
         .index("by_type", ["type"])
-        .index("by_status", ["status"]),
+        .index("by_status", ["status"])
+        .index("by_lifecycle_stage", ["lifecycleStage"])
+        .index("by_verification_status", ["verificationStatus"]),
 
     // Adoptions table - separate non-urgent flow
     adoptions: defineTable({
@@ -388,6 +449,10 @@ export default defineSchema({
         title: v.string(),
         description: v.string(),
         image: v.optional(v.string()), // URL for now, could be storage ID
+        campaignType: v.optional(v.union(v.literal("rescue"), v.literal("initiative"))),
+        initiativeKey: v.optional(v.string()),
+        initiativeCategory: v.optional(v.union(v.literal("drone"), v.literal("safehouse"), v.literal("platform"), v.literal("other"))),
+        featuredInitiative: v.optional(v.boolean()),
         goal: v.number(),
         current: v.number(),
         unit: v.string(), // "EUR", "homes", "surgeries", "meals", etc.
@@ -395,7 +460,9 @@ export default defineSchema({
         status: v.union(v.literal("active"), v.literal("completed"), v.literal("cancelled")),
         createdAt: v.number(),
     })
-        .index("by_status", ["status"]),
+        .index("by_status", ["status"])
+        .index("by_campaign_type", ["campaignType"])
+        .index("by_featured_initiative", ["featuredInitiative"]),
 
     // Partners table - organizations that support Pawtreon
     partners: defineTable({
@@ -440,12 +507,27 @@ export default defineSchema({
         .index("by_user", ["userId"])
         .index("by_top", ["isTopVolunteer"]),
 
-    // Community posts
+    // Community forum threads
     communityPosts: defineTable({
         userId: v.id("users"),
+        title: v.optional(v.string()),
         content: v.string(),
         image: v.optional(v.string()), // URL for now
         caseId: v.optional(v.id("cases")),
+        board: v.optional(v.union(v.literal("rescue"), v.literal("community"))),
+        category: v.optional(v.union(
+            v.literal("urgent_help"),
+            v.literal("case_update"),
+            v.literal("adoption"),
+            v.literal("advice"),
+            v.literal("general"),
+            v.literal("announcements"),
+        )),
+        cityTag: v.optional(v.string()),
+        lastActivityAt: v.optional(v.number()),
+        isLocked: v.optional(v.boolean()),
+        isDeleted: v.optional(v.boolean()),
+        editedAt: v.optional(v.number()),
         isPinned: v.boolean(),
         isRules: v.boolean(),
         likes: v.number(),
@@ -454,7 +536,66 @@ export default defineSchema({
     })
         .index("by_user", ["userId"])
         .index("by_created", ["createdAt"])
-        .index("by_pinned", ["isPinned"]),
+        .index("by_pinned", ["isPinned"])
+        .index("by_board_created", ["board", "createdAt"])
+        .index("by_board_activity", ["board", "lastActivityAt"])
+        .index("by_board_category", ["board", "category"])
+        .index("by_board_city", ["board", "cityTag"])
+        .index("by_deleted_created", ["isDeleted", "createdAt"]),
+
+    // Community comments / replies (2 levels: top-level + one nested level)
+    communityComments: defineTable({
+        postId: v.id("communityPosts"),
+        authorId: v.id("users"),
+        parentCommentId: v.optional(v.id("communityComments")),
+        content: v.string(),
+        isDeleted: v.boolean(),
+        reactionCount: v.number(),
+        replyCount: v.number(),
+        createdAt: v.number(),
+        editedAt: v.optional(v.number()),
+    })
+        .index("by_post_created", ["postId", "createdAt"])
+        .index("by_post_parent", ["postId", "parentCommentId"])
+        .index("by_parent", ["parentCommentId"])
+        .index("by_author", ["authorId"]),
+
+    // Community reactions for both threads and comments
+    communityReactions: defineTable({
+        targetType: v.union(v.literal("post"), v.literal("comment")),
+        targetId: v.string(),
+        userId: v.id("users"),
+        reactionType: v.union(v.literal("upvote")),
+        createdAt: v.number(),
+    })
+        .index("by_target", ["targetType", "targetId"])
+        .index("by_user_target", ["userId", "targetType", "targetId"])
+        .index("by_unique_reaction", ["targetType", "targetId", "userId", "reactionType"]),
+
+    // Community moderation reports for threads/comments
+    communityReports: defineTable({
+        targetType: v.union(v.literal("post"), v.literal("comment")),
+        targetId: v.string(),
+        reason: v.union(
+            v.literal("spam"),
+            v.literal("harassment"),
+            v.literal("misinformation"),
+            v.literal("scam"),
+            v.literal("animal_welfare"),
+            v.literal("other"),
+        ),
+        details: v.optional(v.string()),
+        reporterId: v.id("users"),
+        status: v.union(v.literal("open"), v.literal("reviewing"), v.literal("closed"), v.literal("dismissed")),
+        createdAt: v.number(),
+        reviewedAt: v.optional(v.number()),
+        reviewedBy: v.optional(v.id("users")),
+        resolutionNotes: v.optional(v.string()),
+    })
+        .index("by_target", ["targetType", "targetId"])
+        .index("by_status", ["status"])
+        .index("by_reporter", ["reporterId"])
+        .index("by_reviewed_by", ["reviewedBy"]),
 
     // Likes table - tracks user likes on cases
     likes: defineTable({
@@ -494,11 +635,35 @@ export default defineSchema({
         reporterId: v.optional(v.id("users")),
         reporterClerkId: v.optional(v.string()),
         status: v.union(v.literal("open"), v.literal("reviewing"), v.literal("closed")),
+        reviewedBy: v.optional(v.id("users")),
+        reviewedAt: v.optional(v.number()),
+        resolutionAction: v.optional(v.union(
+            v.literal("hide_case"),
+            v.literal("warn_user"),
+            v.literal("dismiss"),
+            v.literal("no_action"),
+        )),
+        resolutionNotes: v.optional(v.string()),
         createdAt: v.number(),
     })
         .index("by_case", ["caseId"])
         .index("by_status", ["status"])
-        .index("by_reporter", ["reporterId"]),
+        .index("by_reporter", ["reporterId"])
+        .index("by_reviewed_by", ["reviewedBy"]),
+
+    // High-risk action audit trail (moderation, verification, lifecycle, money)
+    auditLogs: defineTable({
+        actorId: v.optional(v.id("users")),
+        entityType: v.string(),
+        entityId: v.string(),
+        action: v.string(),
+        details: v.optional(v.string()),
+        metadataJson: v.optional(v.string()),
+        createdAt: v.number(),
+    })
+        .index("by_entity", ["entityType", "entityId"])
+        .index("by_actor", ["actorId"])
+        .index("by_created_at", ["createdAt"]),
 
     // Follows table - social follow relationships
     follows: defineTable({

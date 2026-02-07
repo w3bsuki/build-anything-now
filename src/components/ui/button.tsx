@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -13,13 +13,14 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 [&_svg]:size-4",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground [&_svg]:size-4",
+          "border border-border/60 bg-chip-bg text-foreground hover:bg-muted [&_svg]:size-4",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 [&_svg]:size-4",
         ghost: "hover:bg-accent hover:text-accent-foreground [&_svg]:size-4",
         link: "text-primary underline-offset-4 hover:underline [&_svg]:size-4",
-        donate: "bg-primary text-primary-foreground font-semibold rounded-md hover:brightness-105 shadow-lg [&_svg]:size-4",
-        iconHeader: "rounded-xl hover:bg-muted/60 active:scale-95 transition-all duration-150 [&_svg]:size-6",
+        donate: "bg-primary text-primary-foreground font-semibold rounded-md hover:brightness-105 shadow-xs [&_svg]:size-4",
+        iconHeader:
+          "rounded-xl text-muted-foreground hover:text-foreground hover:bg-interactive-hover active:bg-interactive-active transition-colors shadow-none [&_svg]:size-6",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -27,7 +28,7 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         icon: "size-10",
         iconSm: "size-9",
-        iconTouch: "size-10",
+        iconTouch: "size-11",
       },
     },
     defaultVariants: {

@@ -5,7 +5,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
-import { ArrowLeft, Heart, Calendar, Target, Users, Bookmark } from 'lucide-react';
+import { ArrowLeft, Heart, Calendar, Target, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import type { Id } from '../../convex/_generated/dataModel';
@@ -33,6 +33,7 @@ const CampaignProfile = () => {
     current: rawCampaign.current,
     unit: rawCampaign.unit,
     endDate: rawCampaign.endDate,
+    campaignType: rawCampaign.campaignType ?? 'rescue',
   } : null;
 
   if (isLoading) {
@@ -57,7 +58,6 @@ const CampaignProfile = () => {
   }
 
   const percentage = Math.round((campaign.current / campaign.goal) * 100);
-  const supporters = 127; // This would come from actual data
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
@@ -66,11 +66,12 @@ const CampaignProfile = () => {
         <div className="flex items-center gap-2 h-12 px-4">
           <Link
             to="/campaigns"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-foreground hover:bg-muted active:bg-muted/80 transition-colors shrink-0"
+            className="inline-flex size-11 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted active:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background shrink-0"
+            aria-label={t('actions.back', 'Back')}
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="font-semibold text-[15px] text-foreground truncate flex-1">
+          <h1 className="text-base font-semibold text-foreground truncate flex-1">
             {campaign.title}
           </h1>
           <ShareButton title={campaign.title} text={campaign.description} size="sm" className="bg-transparent hover:bg-muted text-muted-foreground" />
@@ -97,6 +98,11 @@ const CampaignProfile = () => {
             />
             {/* Title overlay */}
             <div className="absolute inset-0 flex flex-col justify-end p-4 bg-foreground/30">
+              <div className="mb-2">
+                <span className="inline-flex items-center rounded-full bg-background/90 text-foreground px-2 py-0.5 text-xs font-medium">
+                  {campaign.campaignType === 'initiative' ? 'Pawtreon Initiative' : 'Rescue Campaign'}
+                </span>
+              </div>
               <h1 className="text-xl font-bold text-white leading-tight">
                 {campaign.title}
               </h1>
@@ -134,10 +140,9 @@ const CampaignProfile = () => {
                 <span className="text-xl font-bold text-foreground">{campaign.current.toLocaleString()}</span>
                 <span className="text-muted-foreground text-sm">/ {campaign.goal.toLocaleString()} {campaign.unit}</span>
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                <Users className="w-3.5 h-3.5" />
-                <span>{supporters} {t('campaignProfile.supporters')}</span>
-              </div>
+              <span className="text-xs text-muted-foreground">
+                {t('campaignProfile.supportersFromVerified', 'Supporter counts appear after verified contributions')}
+              </span>
             </div>
           </div>
 
@@ -152,22 +157,14 @@ const CampaignProfile = () => {
             </p>
           </div>
 
-          {/* Recent Supporters */}
+          {/* Support activity */}
           <div>
             <h2 className="text-base font-semibold text-foreground mb-2">{t('campaignProfile.recentSupporters')}</h2>
-            <div className="space-y-2">
-              {['Ivan P.', 'Maria S.', t('common.anonymous')].map((name, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 bg-card rounded-xl border border-border">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Heart className="w-4 h-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-foreground">{name}</div>
-                    <div className="text-xs text-muted-foreground">{t('campaignProfile.contributed')} {10 + i * 5} {campaign.unit}</div>
-                  </div>
-                  <div className="text-xs text-muted-foreground shrink-0">{i + 1}{t('time.hoursAgo')}</div>
-                </div>
-              ))}
+            <div className="rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
+              {t(
+                'campaignProfile.supporterFeedPending',
+                'Recent supporter activity will appear here once verified donation events are available.'
+              )}
             </div>
           </div>
         </div>
@@ -178,13 +175,15 @@ const CampaignProfile = () => {
         <div>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={() => setIsSaved(!isSaved)}
               className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                "inline-flex size-11 items-center justify-center rounded-xl shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 isSaved
                   ? "bg-primary/10 text-primary"
                   : "bg-muted text-foreground"
               )}
+              aria-label={isSaved ? t('actions.unsave', 'Unsave campaign') : t('actions.save', 'Save campaign')}
             >
               <Bookmark className={cn("w-5 h-5", isSaved && "fill-current")} />
             </button>

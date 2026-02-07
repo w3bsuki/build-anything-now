@@ -17,14 +17,14 @@ export function PageHeader({
   icon: Icon,
   iconBg = "bg-primary",
   iconColor = "text-primary-foreground",
-  gradientFrom = "from-primary/5",
+  gradientFrom,
   className,
 }: PageHeaderProps) {
+  void gradientFrom;
   return (
     <section
       className={cn(
-        "bg-gradient-to-b to-transparent py-6 md:py-8",
-        gradientFrom,
+        "bg-surface-sunken/40 py-6 md:py-8",
         className
       )}
     >

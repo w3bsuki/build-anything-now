@@ -108,7 +108,7 @@ const VolunteerProfile = () => {
 
           {/* Profile Header */}
           <div className="bg-card rounded-2xl border border-border p-6 md:p-8 mb-6 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-primary/5 to-transparent -z-10" />
+            <div className="absolute top-0 left-0 right-0 h-24 bg-surface-sunken/60 -z-10" />
             
             <div className="relative inline-block mb-4">
               <img

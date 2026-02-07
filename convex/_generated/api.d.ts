@@ -16,6 +16,7 @@ import type * as clinics from "../clinics.js";
 import type * as community from "../community.js";
 import type * as devSeed from "../devSeed.js";
 import type * as donations from "../donations.js";
+import type * as home from "../home.js";
 import type * as http from "../http.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as notifications from "../notifications.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   community: typeof community;
   devSeed: typeof devSeed;
   donations: typeof donations;
+  home: typeof home;
   http: typeof http;
   "lib/auth": typeof lib_auth;
   notifications: typeof notifications;

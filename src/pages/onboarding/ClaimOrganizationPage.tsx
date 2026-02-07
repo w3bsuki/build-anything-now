@@ -84,14 +84,14 @@ interface RegisterFormData {
 // ============================================
 
 const BUSINESS_TYPES = [
-  { value: 'clinic', label: 'Veterinary Clinic', icon: Stethoscope, emoji: '🩺', color: 'text-emerald-500' },
-  { value: 'grooming', label: 'Pet Grooming', icon: Scissors, emoji: '✂️', color: 'text-pink-500' },
-  { value: 'training', label: 'Dog Training', icon: GraduationCap, emoji: '🎓', color: 'text-blue-500' },
-  { value: 'pet_store', label: 'Pet Store', icon: Store, emoji: '🛒', color: 'text-orange-500' },
-  { value: 'shelter', label: 'Animal Shelter', icon: Home, emoji: '🏠', color: 'text-purple-500' },
-  { value: 'pet_sitting', label: 'Pet Sitting / Boarding', icon: Hotel, emoji: '🏨', color: 'text-cyan-500' },
-  { value: 'pharmacy', label: 'Pet Pharmacy', icon: Pill, emoji: '💊', color: 'text-red-500' },
-  { value: 'other', label: 'Other Services', icon: Package, emoji: '📦', color: 'text-gray-500' },
+  { value: 'clinic', label: 'Veterinary Clinic', icon: Stethoscope, emoji: '🩺', color: 'text-success' },
+  { value: 'grooming', label: 'Pet Grooming', icon: Scissors, emoji: '✂️', color: 'text-accent' },
+  { value: 'training', label: 'Dog Training', icon: GraduationCap, emoji: '🎓', color: 'text-primary' },
+  { value: 'pet_store', label: 'Pet Store', icon: Store, emoji: '🛒', color: 'text-warning' },
+  { value: 'shelter', label: 'Animal Shelter', icon: Home, emoji: '🏠', color: 'text-destructive' },
+  { value: 'pet_sitting', label: 'Pet Sitting / Boarding', icon: Hotel, emoji: '🏨', color: 'text-primary' },
+  { value: 'pharmacy', label: 'Pet Pharmacy', icon: Pill, emoji: '💊', color: 'text-destructive' },
+  { value: 'other', label: 'Other Services', icon: Package, emoji: '📦', color: 'text-muted-foreground' },
 ] as const;
 
 const ROLES = [
@@ -294,8 +294,8 @@ export default function ClaimOrganizationPage() {
           </Button>
 
           <div className="text-center pt-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-100 dark:bg-blue-900/30 mb-3">
-              <Building2 className="w-7 h-7 text-blue-500" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-3">
+              <Building2 className="w-7 h-7 text-primary" />
             </div>
             <h1 className="text-xl font-bold text-foreground mb-1">
               {t('onboarding.business.typeTitle', 'What type of business?')}
@@ -450,7 +450,7 @@ export default function ClaimOrganizationPage() {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm truncate">{item.name}</span>
                         {item.isClaimed && (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 text-xs px-1.5 py-0">
+                          <Badge variant="secondary" className="bg-success/15 text-success border border-success/30 text-xs px-1.5 py-0">
                             <BadgeCheck className="w-3 h-3 mr-0.5" />
                             {t('onboarding.claim.claimed', 'Claimed')}
                           </Badge>
@@ -525,8 +525,8 @@ export default function ClaimOrganizationPage() {
           <DialogContent className="sm:max-w-md mx-4 rounded-xl">
             {claimSuccess ? (
               <div className="text-center py-6">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <Check className="w-7 h-7 text-green-600 dark:text-green-400" />
+                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-success/15 flex items-center justify-center">
+                  <Check className="w-7 h-7 text-success" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
                   {t('onboarding.claim.successTitle', 'Claim Submitted!')}
@@ -687,8 +687,8 @@ export default function ClaimOrganizationPage() {
         {registerSuccess ? (
           <div className="flex-1 flex items-center justify-center px-4">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/15 flex items-center justify-center">
+                <Check className="w-8 h-8 text-success" />
               </div>
               <h3 className="text-xl font-semibold mb-2">
                 {t('onboarding.register.successTitle', 'Business Registered!')}
@@ -810,8 +810,8 @@ export default function ClaimOrganizationPage() {
                 </div>
 
                 {/* Verification note */}
-                <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/30">
-                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                <div className="p-4 rounded-xl bg-warning/10 border border-warning/30">
+                  <p className="text-sm text-warning">
                     ⚡ {t('onboarding.register.verificationNote', 'Your listing will be reviewed and verified within 24-48 hours.')}
                   </p>
                 </div>

@@ -34,14 +34,19 @@ import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
 import CommunityMembers from "./pages/CommunityMembers";
 import CommunityActivity from "./pages/CommunityActivity";
+import CommunityFollowedPreview from "./pages/community/CommunityFollowedPreview";
+import CommunityMessagesPreview from "./pages/community/CommunityMessagesPreview";
 import VolunteerProfile from "./pages/VolunteerProfile";
 import Presentation from "./pages/Presentation";
 import PartnerPresentation from "./pages/PartnerPresentation";
+import ModerationQueue from "./pages/admin/ModerationQueue";
+import ClinicClaimsQueue from "./pages/admin/ClinicClaimsQueue";
 import NotFound from "./pages/NotFound";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import ClaimOrganizationPage from "./pages/onboarding/ClaimOrganizationPage";
+import { CommunityMobileShellLayout } from "./layouts/CommunityMobileShellLayout";
 
 const queryClient = new QueryClient();
 
@@ -168,13 +173,33 @@ const App = () => (
                 </AuthGuard>
               }
             />
-            <Route path="/community" element={<Community />} />
-            <Route path="/community/members" element={<CommunityMembers />} />
-            <Route path="/community/activity" element={<CommunityActivity />} />
-            <Route path="/community/:postId" element={<CommunityPost />} />
+            <Route path="/community" element={<CommunityMobileShellLayout />}>
+              <Route index element={<Community />} />
+              <Route path="followed" element={<CommunityFollowedPreview />} />
+              <Route path="messages" element={<CommunityMessagesPreview />} />
+              <Route path="members" element={<CommunityMembers />} />
+              <Route path="activity" element={<CommunityActivity />} />
+              <Route path=":postId" element={<CommunityPost />} />
+            </Route>
             <Route path="/volunteers/:id" element={<VolunteerProfile />} />
             <Route path="/presentation" element={<Presentation />} />
             <Route path="/partner" element={<PartnerPresentation />} />
+            <Route
+              path="/admin/moderation"
+              element={
+                <AuthGuard>
+                  <ModerationQueue />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/admin/clinic-claims"
+              element={
+                <AuthGuard>
+                  <ClinicClaimsQueue />
+                </AuthGuard>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </OnboardingRedirect>

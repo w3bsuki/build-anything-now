@@ -1,7 +1,7 @@
 # Pawtreon — Agent Rules
 
 > **Purpose:** How OPUS, Codex, and Human work together.  
-> **Last updated:** 2026-01-23
+> **Last updated:** 2026-02-06
 
 ---
 
@@ -12,12 +12,13 @@
 | `PRD.md` | Product vision + canonical feature checklist |
 | `TASKS.md` | Current sprint (what we do NOW) |
 | `DESIGN.md` | Architecture, stack, data model, patterns |
+| `docs/design/ui-patterns-spec.md` | Canonical UI/UX patterns for case-first surfaces |
 | `RULES.md` | Trust/safety, UX guardrails, constraints |
 | `DECISIONS.md` | Append-only decision log |
 | `AGENTS.md` | This file — workflow contract |
 | `README.md` | Setup/run/build (onboarding only) |
 
-Everything else lives in `docs/` (investor, archive, legal).
+Everything else lives in `docs/` (product, architecture, design, partners, mission, investor, archive, legal).
 
 ---
 
@@ -68,8 +69,9 @@ Same loop, plus:
 1. **Read `PRD.md` first** — it's the product bible
 2. **Check `TASKS.md`** — know what's in progress
 3. **Follow `DESIGN.md`** — use the patterns
-4. **Obey `RULES.md`** — no exceptions for trust/safety
-5. **Log decisions** — append to `DECISIONS.md`
+4. **Follow `docs/design/ui-patterns-spec.md`** for UI/UX and styling constraints
+5. **Obey `RULES.md`** — no exceptions for trust/safety
+6. **Log decisions** — append to `DECISIONS.md`
 
 ### What NOT To Do
 
@@ -106,6 +108,11 @@ When asking for help, prefix to activate the right context:
 ├── AGENTS.md           # This file
 ├── README.md           # Setup/onboarding
 └── docs/
+    ├── product/        # Product deep dives
+    ├── architecture/   # Architecture deep dives
+    ├── design/         # UI/UX specs and audits
+    ├── partners/       # Partner ops
+    ├── mission/        # Mission strategy docs
     ├── investor/       # Pitch materials
     ├── archive/        # Old docs, specs
     └── legal/          # Terms, privacy (future)

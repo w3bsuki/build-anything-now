@@ -1,6 +1,6 @@
 # Pawtreon — Product Requirements Document (PRD)
 
-> **Last updated:** 2026-01-23  
+> **Last updated:** 2026-02-06  
 > **Stage:** Pre-launch (investor pitch preview → MVP launch)  
 > **Canonical name:** Pawtreon
 
@@ -140,14 +140,15 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 - [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage
 - [ ] DONATIONS — Stripe checkout, receipts, history (real)
 - [ ] TRUST: VERIFICATION — Unverified → community → clinic ladder
-- [ ] TRUST: MODERATION — Report queue, admin review, actions
+- [x] TRUST: MODERATION — Report queue, admin review, actions
 - [ ] TRUST: DUPLICATE DETECTION — pHash image matching
-- [ ] CASE UPDATES — Rescuer + clinic updates, evidence attachments
-- [ ] CASE OUTCOMES — Close-out flow, receipts, transparency
+- [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments
+- [x] CASE OUTCOMES — Close-out flow, receipts, transparency
 - [ ] SHARING — OG meta tags, SSR share pages
 - [ ] NOTIFICATIONS — Case updates, donation receipts
 
 ### P2 — Growth
+- [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces
 - [ ] FOLLOW — Follow rescuers/clinics, "following" feed tab
 - [ ] RECURRING — Monthly support for rescuers/clinics
 - [ ] EXTERNAL LINKS — FB/IG link cards, source attribution

@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Webhook } from "svix";
+import Stripe from "stripe";
 
 type ClerkWebhookEvent = {
   type: string;
@@ -15,6 +16,68 @@ type ClerkWebhookEvent = {
 };
 
 const http = httpRouter();
+
+http.route({
+  path: "/stripe-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const stripeSecret = process.env.STRIPE_SECRET_KEY;
+    const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!stripeSecret || !stripeWebhookSecret) {
+      console.error("Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
+      return new Response("Server configuration error", { status: 500 });
+    }
+
+    const signature = request.headers.get("stripe-signature");
+    if (!signature) {
+      return new Response("Missing stripe-signature header", { status: 400 });
+    }
+
+    const payload = await request.text();
+    const stripe = new Stripe(stripeSecret);
+
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(payload, signature, stripeWebhookSecret);
+    } catch (err) {
+      console.error("Stripe webhook verification failed:", err);
+      return new Response("Invalid signature", { status: 400 });
+    }
+
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      await ctx.runMutation(internal.donations.confirmPaymentFromWebhook, {
+        paymentIntentId: paymentIntent.id,
+        chargeId: typeof paymentIntent.latest_charge === "string" ? paymentIntent.latest_charge : undefined,
+        amountReceivedMinor: paymentIntent.amount_received,
+        currency: paymentIntent.currency,
+        eventId: event.id,
+      });
+    }
+
+    if (event.type === "payment_intent.payment_failed") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      await ctx.runMutation(internal.donations.markPaymentFailedFromWebhook, {
+        paymentIntentId: paymentIntent.id,
+        eventId: event.id,
+      });
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await ctx.runMutation(internal.donations.confirmCheckoutSessionFromWebhook, {
+        sessionId: session.id,
+        paymentIntentId: typeof session.payment_intent === "string" ? session.payment_intent : undefined,
+        amountReceivedMinor: session.amount_total ?? undefined,
+        currency: session.currency ?? undefined,
+        eventId: event.id,
+      });
+    }
+
+    return new Response("OK", { status: 200 });
+  }),
+});
 
 http.route({
   path: "/clerk-webhook",

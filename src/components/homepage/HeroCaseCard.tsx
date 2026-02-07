@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MapPin, PawPrint, Clock, Users } from 'lucide-react';
+import { Heart, MapPin, PawPrint, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { cn } from '@/lib/utils';
@@ -26,25 +26,13 @@ function formatTimeAgo(dateString: string): string {
   return `${Math.floor(diffDays / 7)}w`;
 }
 
-// Generate consistent supporter count from case ID
-function getSupporterCount(id: string): number {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = ((hash << 5) - hash) + id.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 35) + 8;
-}
-
 export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
   const { t } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
-  const supporterCount = getSupporterCount(caseData.id);
   const timeAgo = formatTimeAgo(caseData.createdAt);
-  const isCritical = caseData.status === 'critical';
 
   return (
     <article
@@ -55,7 +43,7 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
     >
       <Link to={`/case/${caseData.id}`} className="block">
         {/* Hero Image */}
-        <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="relative aspect-video overflow-hidden">
           {/* Loading skeleton */}
           {!imageLoaded && !imageError && (
             <div className="absolute inset-0 bg-muted flex items-center justify-center">
@@ -64,7 +52,7 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
           )}
           {/* Error fallback */}
           {imageError ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-warm-accent/10 to-warm-accent/5">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/70">
               <PawPrint className="w-16 h-16 text-warm-accent/30" />
             </div>
           ) : (
@@ -80,33 +68,26 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
             />
           )}
 
-          {/* Gradient overlays */}
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute inset-x-0 top-0 h-20 bg-linear-to-b from-black/50 to-transparent" />
-
           {/* Status badge with pulse */}
           <div className="absolute top-4 left-4">
             <StatusBadge
               status={caseData.status}
               size="md"
-              className={cn(
-                "shadow-lg backdrop-blur-md",
-                isCritical && "animate-pulse"
-              )}
+              className="backdrop-blur-md"
             />
           </div>
 
           {/* Featured label */}
           <div className="absolute top-4 right-4">
-            <span className="px-2.5 py-1 rounded-full bg-warm-accent text-warm-accent-foreground text-xs font-semibold shadow-lg">
+            <span className="px-2.5 py-1 rounded-full bg-warm-accent text-warm-accent-foreground text-xs font-semibold">
               {t('home.featured', '🔥 Featured')}
             </span>
           </div>
 
           {/* Bottom content overlay */}
-          <div className="absolute bottom-0 inset-x-0 p-4">
+          <div className="absolute bottom-0 inset-x-0 p-4 bg-overlay-dim/70">
             {/* Title */}
-            <h2 className="text-white text-lg font-bold leading-tight mb-2 line-clamp-2 drop-shadow-md">
+            <h2 className="text-white text-lg font-bold leading-tight mb-2 line-clamp-2">
               {caseData.title}
             </h2>
 
@@ -119,10 +100,6 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
               <div className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{timeAgo}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="w-3.5 h-3.5" />
-                <span>{supporterCount} {t('home.helping', 'helping')}</span>
               </div>
             </div>
 
@@ -162,7 +139,7 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
         <Button
           asChild
           size="lg"
-          className="w-full bg-warm-accent hover:bg-warm-accent/90 text-warm-accent-foreground font-semibold rounded-xl shadow-lg"
+          className="w-full bg-warm-accent hover:bg-warm-accent/90 text-warm-accent-foreground font-semibold rounded-xl"
         >
           <Link to={`/case/${caseData.id}`}>
             <Heart className="w-5 h-5 mr-2 fill-current" />
@@ -178,7 +155,7 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
 export function HeroCaseCardSkeleton() {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-warm-surface ring-1 ring-warm-accent/20 animate-pulse">
-      <div className="aspect-[16/10] bg-muted" />
+      <div className="aspect-video bg-muted" />
       <div className="p-4 pt-0 -mt-2">
         <div className="h-12 bg-muted rounded-xl" />
       </div>

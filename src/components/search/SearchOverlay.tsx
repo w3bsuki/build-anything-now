@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { X, Search, Clock, TrendingUp, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -9,8 +8,10 @@ interface SearchOverlayProps {
   onSearch: (query: string) => void;
 }
 
-// Mock data - replace with real data later
-const recentSearches = [
+const RECENT_SEARCHES_STORAGE_KEY = 'pawtreon:recent-searches';
+const MAX_RECENT_SEARCHES = 6;
+
+const defaultRecentSearches = [
   'injured cat sofia',
   'stray dogs plovdiv',
   '@petlover99',
@@ -32,6 +33,27 @@ const locationFilters = [
 export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    if (typeof window === 'undefined') {
+      return defaultRecentSearches;
+    }
+
+    const stored = window.localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY);
+    if (!stored) {
+      return defaultRecentSearches;
+    }
+
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
+        return parsed.slice(0, MAX_RECENT_SEARCHES);
+      }
+    } catch {
+      window.localStorage.removeItem(RECENT_SEARCHES_STORAGE_KEY);
+    }
+
+    return defaultRecentSearches;
+  });
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClose = useCallback(() => {
@@ -39,10 +61,30 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
     onClose();
   }, [onClose]);
 
+  const persistRecentSearches = useCallback((values: string[]) => {
+    setRecentSearches(values);
+    if (values.length === 0) {
+      window.localStorage.removeItem(RECENT_SEARCHES_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(values));
+  }, []);
+
+  const addRecentSearch = useCallback((term: string) => {
+    const normalized = term.trim();
+    if (!normalized) return;
+
+    setRecentSearches((prev) => {
+      const next = [normalized, ...prev.filter((existing) => existing.toLowerCase() !== normalized.toLowerCase())]
+        .slice(0, MAX_RECENT_SEARCHES);
+      window.localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   // Focus input when overlay opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Small delay to allow animation
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
@@ -61,20 +103,27 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query.trim());
+      const normalized = query.trim();
+      addRecentSearch(normalized);
+      onSearch(normalized);
       handleClose();
     }
   };
 
   const handleQuickSearch = (term: string) => {
+    addRecentSearch(term);
     onSearch(term);
     handleClose();
+  };
+
+  const handleClearRecent = () => {
+    persistRecentSearches([]);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100]">
+    <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-background/95 backdrop-blur-sm"
@@ -82,9 +131,12 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
       />
 
       {/* Content */}
-      <div className="relative h-full flex flex-col animate-in slide-in-from-bottom-4 duration-200">
+      <div className="relative h-full flex flex-col">
         {/* Search Header */}
-        <div className="flex items-center gap-3 p-4 pt-[calc(env(safe-area-inset-top)+16px)]">
+        <div
+          className="flex items-center gap-3 p-4"
+          style={{ paddingTop: 'calc(env(safe-area-inset-top) + 16px)' }}
+        >
           <form onSubmit={handleSubmit} className="flex-1 relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -93,12 +145,14 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('home.searchPlaceholder', 'Search cases, users, locations...')}
-              className="w-full rounded-full bg-muted pl-10 pr-4 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full rounded-full border border-search-border bg-search-bg pl-10 pr-4 py-2.5 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             />
           </form>
           <button
+            type="button"
             onClick={handleClose}
-            className="p-2 rounded-full hover:bg-muted transition-colors"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-border/60 bg-surface text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label={t('actions.close', 'Close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -113,16 +167,21 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
                 <h3 className="text-sm font-semibold text-foreground">
                   {t('search.recent', 'Recent Searches')}
                 </h3>
-                <button className="text-xs text-primary font-medium">
+                <button
+                  type="button"
+                  onClick={handleClearRecent}
+                  className="text-xs text-primary font-medium rounded-md px-2 py-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
                   {t('search.clearAll', 'Clear All')}
                 </button>
               </div>
               <div className="space-y-1">
                 {recentSearches.map((term) => (
                   <button
+                    type="button"
                     key={term}
                     onClick={() => handleQuickSearch(term)}
-                    className="flex items-center gap-3 w-full p-2.5 rounded-lg hover:bg-muted transition-colors text-left"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-lg p-2.5 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                     <span className="text-sm">{term}</span>
@@ -140,11 +199,12 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
             <div className="space-y-1">
               {trendingSearches.map((term) => (
                 <button
+                  type="button"
                   key={term}
                   onClick={() => handleQuickSearch(term)}
-                  className="flex items-center gap-3 w-full p-2.5 rounded-lg hover:bg-muted transition-colors text-left"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-lg p-2.5 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
-                  <TrendingUp className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                  <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
                   <span className="text-sm">{term}</span>
                 </button>
               ))}
@@ -159,9 +219,10 @@ export function SearchOverlay({ isOpen, onClose, onSearch }: SearchOverlayProps)
             <div className="space-y-1">
               {locationFilters.map((loc) => (
                 <button
+                  type="button"
                   key={loc.id}
                   onClick={() => handleQuickSearch(loc.label)}
-                  className="flex items-center gap-3 w-full p-2.5 rounded-lg hover:bg-muted transition-colors text-left"
+                  className="flex min-h-11 w-full items-center gap-3 rounded-lg p-2.5 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <span className="text-sm">{loc.label}</span>

@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MapPin, PawPrint, Users } from 'lucide-react';
+import { Heart, MapPin, PawPrint } from 'lucide-react';
 import { AnimalCase } from '@/types';
 import { StatusBadge } from './StatusBadge';
 import { ShareButton } from './ShareButton';
@@ -13,16 +13,6 @@ import { ReportedBadge } from '@/components/trust/ReportedBadge';
 interface CaseCardProps {
   caseData: AnimalCase;
   className?: string;
-}
-
-// Generate consistent supporter count from case ID
-function getSupporterCount(id: string): number {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = ((hash << 5) - hash) + id.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 35) + 8; // 8-42 supporters
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -66,7 +56,6 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
   const [imageError, setImageError] = useState(false);
   
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
-  const supporterCount = useMemo(() => getSupporterCount(caseData.id), [caseData.id]);
   const status = statusConfig[caseData.status];
   const isCritical = caseData.status === 'critical';
   const timeAgo = formatTimeAgo(caseData.createdAt);
@@ -100,7 +89,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           )}
           {/* Error fallback */}
           {imageError ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/5 to-primary/10">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted/70">
               <PawPrint className="w-14 h-14 text-primary/20" />
             </div>
           ) : (
@@ -108,7 +97,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
               src={caseData.images[0]}
               alt={caseData.title}
               className={cn(
-                "w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]",
+                "w-full h-full object-cover",
                 !imageLoaded && "opacity-0"
               )}
               onLoad={() => setImageLoaded(true)}
@@ -116,11 +105,11 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
             />
           )}
           
-          {/* Top gradient for badge visibility */}
-          <div className="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/50 to-transparent pointer-events-none" />
+          {/* Top overlay for badge visibility */}
+          <div className="absolute inset-x-0 top-0 h-16 bg-overlay-dim/45 pointer-events-none" />
           
-          {/* Bottom gradient for progress visibility */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-black/70 via-black/30 to-transparent pointer-events-none" />
+          {/* Bottom overlay for progress visibility */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-overlay-dim/70 pointer-events-none" />
           
           {/* Status badge with urgency pulse */}
           <div className="absolute top-3 left-3">
@@ -161,10 +150,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
             
             <div className="flex items-center justify-between mt-1.5 text-[10px] text-white/60">
               <span>Goal: {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
-              <div className="flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                <span>{supporterCount} supporters</span>
-              </div>
+              <span>{t('home.supportersPending', 'Supporter counts after verified activity')}</span>
             </div>
           </div>
         </div>

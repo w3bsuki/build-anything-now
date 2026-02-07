@@ -1,408 +1,477 @@
-import { useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useQuery } from 'convex/react';
-import { api } from '../../convex/_generated/api';
-import type { Id } from '../../convex/_generated/dataModel';
-import { ShareButton } from '@/components/ShareButton';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import {
-  ArrowLeft,
-  ThumbsUp,
-  MessageSquare,
-  MoreHorizontal,
-  Flag,
-  Send,
-  Bookmark,
-  ImagePlus,
-  X,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useMemo, useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, Lock, Unlock } from "lucide-react";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
+import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
+import { CommentComposer } from "@/components/community/comment-composer";
+import { CommentThread } from "@/components/community/comment-thread";
+import { ThreadDetailHeader } from "@/components/community/thread-detail-header";
+import { REPORT_REASON_OPTIONS } from "@/components/community/forum-config";
+import { useForumBackendMode } from "@/hooks/useForumBackendMode";
+import type { ForumComment, ForumReportPayload, ForumThread } from "@/types";
 
-const CommunityPostPage = () => {
-  const { t } = useTranslation();
+type LegacyCommunityPost = {
+  _id: string;
+  content: string;
+  image?: string;
+  likes: number;
+  commentsCount: number;
+  createdAt: number;
+  author?: {
+    id?: string | null;
+    name?: string;
+    avatar?: string | null;
+    isVolunteer?: boolean;
+  };
+  timeAgo?: string;
+};
+
+export default function CommunityPost() {
   const { postId } = useParams();
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { toast } = useToast();
+  const backendMode = useForumBackendMode();
+
+  const [composerValue, setComposerValue] = useState("");
   const [replyingTo, setReplyingTo] = useState<{ id: string; name: string } | null>(null);
+  const [submittingComment, setSubmittingComment] = useState(false);
+
   const [reportOpen, setReportOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const commentInputRef = useRef<HTMLInputElement>(null);
+  const [reportTarget, setReportTarget] = useState<Pick<ForumReportPayload, "targetId" | "targetType"> | null>(null);
+  const [reportReason, setReportReason] = useState<ForumReportPayload["reason"]>("spam");
+  const [reportDetails, setReportDetails] = useState("");
+  const [submittingReport, setSubmittingReport] = useState(false);
+  const [togglingLock, setTogglingLock] = useState(false);
 
-  const rulesPostId = 'rules';
-  const rulesPost = {
-    id: rulesPostId,
-    author: {
-      id: 'system',
-      name: t('app.name'),
-      avatar: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200',
-      isVolunteer: false,
-    },
-    content: t('community.rulesBody'),
-    image: undefined as string | undefined,
-    likes: 0,
-    comments: 0,
-    timeAgo: t('community.pinned'),
-    createdAt: new Date().toISOString(),
-  };
-
-  // Fetch post from Convex (skip if it's the rules post)
-  const convexPost = useQuery(
+  const threadId = postId as Id<"communityPosts"> | undefined;
+  const threadV2: ForumThread | null | undefined = useQuery(
+    api.community.getThread,
+    backendMode === "v2" && threadId ? { id: threadId } : "skip"
+  ) as ForumThread | null | undefined;
+  const threadLegacy: LegacyCommunityPost | null | undefined = useQuery(
     api.community.get,
-    postId && postId !== rulesPostId ? { id: postId as Id<"communityPosts"> } : "skip"
-  );
-  
-  const post = postId === rulesPostId ? rulesPost : convexPost;
-  
-  // TODO: Comments are not yet implemented in Convex
-  const comments: never[] = [];
-  const isLoading = postId !== rulesPostId && convexPost === undefined;
+    backendMode === "legacy" && threadId ? { id: threadId } : "skip"
+  ) as LegacyCommunityPost | null | undefined;
+  const commentsV2: ForumComment[] | undefined = useQuery(
+    api.community.listComments,
+    backendMode === "v2" && threadId ? { postId: threadId } : "skip"
+  ) as ForumComment[] | undefined;
+  const currentUser = useQuery(api.users.me);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">{t('common.loading')}</div>
-      </div>
-    );
-  }
+  const createComment = useMutation(api.community.createComment);
+  const deleteComment = useMutation(api.community.deleteComment);
+  const toggleReaction = useMutation(api.community.toggleReaction);
+  const likeLegacyThread = useMutation(api.community.like);
+  const reportContent = useMutation(api.community.reportContent);
+  const lockThread = useMutation(api.community.lockThread);
 
-  if (!post) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">{t('communityPost.postNotFound')}</h1>
-          <Link to="/community" className="text-primary hover:underline">
-            {t('communityPost.backToCommunity')}
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const thread: ForumThread | null | undefined = useMemo(() => {
+    if (backendMode === "v2") return threadV2;
+    if (backendMode === "legacy") {
+      if (threadLegacy === null) return null;
+      if (threadLegacy === undefined) return undefined;
+      return mapLegacyPostToThread(threadLegacy);
+    }
+    return undefined;
+  }, [backendMode, threadLegacy, threadV2]);
+  const comments = backendMode === "v2" ? commentsV2 : [];
 
-  const handleSubmitComment = () => {
-    if (!newComment.trim() && !selectedImage) return;
-    // TODO: Implement comment creation with Convex
-    console.log('Submitting comment:', newComment, selectedImage);
-    setNewComment('');
-    setSelectedImage(null);
-    setReplyingTo(null);
+  const canModerate = backendMode === "v2" && currentUser?.role === "admin";
+
+  const openReport = (targetType: "post" | "comment", targetId: string) => {
+    if (backendMode !== "v2") {
+      toast({
+        title: "Reporting unavailable in compatibility mode",
+        description: "Publish the community v2 Convex functions to enable reporting.",
+      });
+      return;
+    }
+
+    setReportTarget({ targetType, targetId });
+    setReportReason("spam");
+    setReportDetails("");
+    setReportOpen(true);
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleSubmitComment = async () => {
+    if (backendMode !== "v2") {
+      toast({
+        title: "Replies unavailable in compatibility mode",
+        description: "Publish community v2 backend functions to enable replies.",
+      });
+      return;
+    }
+
+    if (!thread) return;
+    if (!composerValue.trim()) return;
+
+    setSubmittingComment(true);
+    try {
+      await createComment({
+        postId: thread.id as Id<"communityPosts">,
+        content: composerValue.trim(),
+        parentCommentId: replyingTo ? (replyingTo.id as Id<"communityComments">) : undefined,
+      });
+
+      setComposerValue("");
+      setReplyingTo(null);
+    } catch (error) {
+      toast({
+        title: "Could not post reply",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setSubmittingComment(false);
     }
   };
 
+  const handleToggleThreadReaction = async (targetThread: ForumThread) => {
+    try {
+      if (backendMode === "v2") {
+        await toggleReaction({
+          targetType: "post",
+          targetId: targetThread.id,
+        });
+      } else {
+        await likeLegacyThread({ id: targetThread.id as Id<"communityPosts"> });
+      }
+    } catch (error) {
+      toast({
+        title: "Could not update reaction",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
+  };
+
+  const handleToggleCommentReaction = async (comment: ForumComment) => {
+    if (backendMode !== "v2") return;
+
+    try {
+      await toggleReaction({
+        targetType: "comment",
+        targetId: comment.id,
+      });
+    } catch (error) {
+      toast({
+        title: "Could not update reaction",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
+  };
+
+  const handleDeleteComment = async (comment: ForumComment) => {
+    if (backendMode !== "v2") return;
+
+    try {
+      await deleteComment({
+        commentId: comment.id as Id<"communityComments">,
+      });
+      if (replyingTo?.id === comment.id) {
+        setReplyingTo(null);
+      }
+    } catch (error) {
+      toast({
+        title: "Could not delete reply",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportTarget || backendMode !== "v2") return;
+
+    setSubmittingReport(true);
+    try {
+      await reportContent({
+        targetType: reportTarget.targetType,
+        targetId: reportTarget.targetId,
+        reason: reportReason,
+        details: reportDetails.trim() || undefined,
+      });
+      setReportOpen(false);
+      toast({ title: "Report submitted. Thank you." });
+    } catch (error) {
+      toast({
+        title: "Could not submit report",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
+
+  const handleToggleLock = async () => {
+    if (!thread || !canModerate || backendMode !== "v2") return;
+
+    setTogglingLock(true);
+    try {
+      await lockThread({
+        id: thread.id as Id<"communityPosts">,
+        locked: !thread.isLocked,
+      });
+      toast({ title: thread.isLocked ? "Thread unlocked" : "Thread locked" });
+    } catch (error) {
+      toast({
+        title: "Could not update lock state",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setTogglingLock(false);
+    }
+  };
+
+  if (!threadId) {
+    return (
+      <div className="min-h-screen bg-background pb-24 md:pt-16">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6">
+          <div className="rounded-2xl border border-border bg-card p-6 text-center">
+            <p className="text-sm text-muted-foreground">Thread not found.</p>
+            <Link
+              to="/community"
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+            >
+              Back to community
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (backendMode === "checking" || thread === undefined) {
+    return (
+      <div className="min-h-screen bg-background pb-24 md:pt-16">
+        <div className="mx-auto w-full max-w-3xl px-4 py-4">
+          <div className="space-y-3">
+            <div className="h-52 animate-pulse rounded-2xl border border-border bg-card" />
+            <div className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
+            <div className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (thread === null) {
+    return (
+      <div className="min-h-screen bg-background pb-24 md:pt-16">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6">
+          <div className="rounded-2xl border border-border bg-card p-6 text-center">
+            <p className="text-sm text-muted-foreground">Thread not found or unavailable.</p>
+            <Link
+              to="/community"
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+            >
+              Back to community
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen pb-32 md:pb-20 md:pt-16 bg-background">
-      {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md md:hidden">
-        <div className="flex items-center gap-3 h-14 px-3">
+    <div className="min-h-screen bg-background pb-44 md:pb-8 md:pt-16">
+      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md md:hidden">
+        <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-3">
           <Link
             to="/community"
-            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-card text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+            aria-label="Back to community"
           >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
+            <ArrowLeft className="size-5" />
           </Link>
-          <div className="flex-1 flex items-center gap-2">
-            <Avatar className="w-7 h-7">
-              <AvatarImage src={post.author.avatar} alt={post.author.name} />
-              <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <span className="font-medium text-sm text-foreground truncate">{post.author.name}</span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-foreground">Thread</p>
           </div>
-          <ShareButton title={`Post by ${post.author.name}`} text={post.content} />
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto">
-        {/* Desktop Back Button */}
-        <div className="hidden md:block px-4 pt-4">
-          <Link
-            to="/community"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t('communityPost.backToCommunity')}
-          </Link>
-        </div>
-
-        {/* Post Card */}
-        <div className="bg-card md:mx-4 md:mt-4 md:rounded-xl md:border md:border-border">
-          {/* Post Content */}
-          <article className="px-4 pt-4">
-            {/* Author - Desktop only (mobile shows in header) */}
-            <div className="hidden md:flex items-center gap-3 mb-4">
-              <Avatar className="w-11 h-11">
-                <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground">{post.author.name}</span>
-                  {post.author.isVolunteer && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full">
-                      Volunteer
-                    </span>
-                  )}
-                </div>
-                <span className="text-sm text-muted-foreground">{post.timeAgo}</span>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    type="button"
-                    className="p-2 hover:bg-muted rounded-full transition-colors"
-                    aria-label={t('community.more', 'More')}
-                  >
-                    <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  <DropdownMenuItem onClick={() => setReportOpen(true)}>
-                    <Flag className="mr-2 h-4 w-4 text-muted-foreground" />
-                    {t('report.reportConcern', 'Report concern')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+      <div className="mx-auto w-full max-w-3xl px-4 py-4">
+        <div className="space-y-3">
+          {backendMode === "legacy" ? (
+            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+              Compatibility mode active: forum replies, reports, and moderation will unlock after publishing community v2 functions.
             </div>
+          ) : null}
 
-            {/* Mobile author info */}
-            <div className="md:hidden mb-3">
-              <span className="text-xs text-muted-foreground">{post.timeAgo}</span>
-            </div>
-
-            {/* Content */}
-            <p
-              className={cn(
-                'text-foreground leading-relaxed text-sm',
-                postId === rulesPostId && 'whitespace-pre-line'
-              )}
+          <div className="hidden md:block">
+            <Link
+              to="/community"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
             >
-              {post.content}
-            </p>
-          </article>
+              <ArrowLeft className="size-4" />
+              Back to community
+            </Link>
+          </div>
 
-          {/* Post Image */}
-          {post.image && (
-            <div className="mt-4">
-              <img
-                src={post.image}
-                alt="Post"
-                className="w-full aspect-video object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+          <ThreadDetailHeader
+            thread={thread}
+            onToggleReaction={handleToggleThreadReaction}
+            onReport={(targetThread) => openReport("post", targetThread.id)}
+          />
+
+          {thread.image ? (
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+              <img src={thread.image} alt={thread.title} className="max-h-[420px] w-full object-cover" />
             </div>
-          )}
+          ) : null}
 
-          {/* Inline Actions */}
-          <div className="px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all',
-                  isLiked
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:bg-muted'
-                )}
+          {thread.caseId ? (
+            <div className="rounded-2xl border border-border bg-card p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Linked case</p>
+              <Link
+                to={`/case/${thread.caseId}`}
+                className="mt-2 inline-flex min-h-11 items-center rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
               >
-                <ThumbsUp className={cn('w-5 h-5', isLiked && 'fill-current')} />
-                <span className="text-sm font-medium">{post.likes + (isLiked ? 1 : 0)}</span>
-              </button>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-muted-foreground hover:bg-muted transition-all">
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-sm font-medium">{comments.length}</span>
-              </button>
+                Open case
+              </Link>
             </div>
-            <button
-              onClick={() => setIsSaved(!isSaved)}
-              className={cn(
-                'p-2 rounded-full transition-all',
-                isSaved
-                  ? 'text-warning bg-warning/10'
-                  : 'text-muted-foreground hover:bg-muted'
-              )}
-            >
-              <Bookmark className={cn('w-5 h-5', isSaved && 'fill-current')} />
-            </button>
-          </div>
-        </div>
+          ) : null}
 
-        {/* Comments Section */}
-        <div className="bg-card md:mx-4 md:rounded-xl md:border md:border-border">
-          <div className="px-4 pt-3 pb-1">
-            <span className="text-xs font-medium text-muted-foreground">{t('communityPost.comments')} ({comments.length})</span>
-          </div>
-          <div className="px-4">
-          {isLoading ? (
-            <div className="space-y-3 py-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex gap-3 animate-pulse">
-                  <div className="w-9 h-9 rounded-full bg-muted shrink-0" />
-                  <div className="flex-1">
-                    <div className="inline-block bg-muted rounded-2xl px-4 py-3 w-3/4">
-                      <div className="h-3 w-20 bg-muted-foreground/10 rounded mb-2" />
-                      <div className="h-3 w-full bg-muted-foreground/10 rounded" />
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {canModerate ? (
+            <div className="rounded-2xl border border-border bg-card p-3">
+              <button
+                type="button"
+                onClick={handleToggleLock}
+                disabled={togglingLock}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground transition-colors active:bg-muted disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+              >
+                {thread.isLocked ? <Unlock className="size-4" /> : <Lock className="size-4" />}
+                {togglingLock ? "Saving..." : thread.isLocked ? "Unlock thread" : "Lock thread"}
+              </button>
             </div>
-          ) : comments.length > 0 ? (
-            <div className="pb-2">
-              {/* TODO: Implement comments when Convex comments are ready */}
-              <div className="py-8 text-center text-muted-foreground">
-                <p className="text-sm">{t('communityPost.noCommentsYet')}</p>
-              </div>
+          ) : null}
+
+          {backendMode === "v2" && comments === undefined ? (
+            <div className="space-y-2">
+              <div className="h-24 animate-pulse rounded-2xl border border-border bg-card" />
+              <div className="h-24 animate-pulse rounded-2xl border border-border bg-card" />
             </div>
+          ) : backendMode === "v2" ? (
+            <CommentThread
+              comments={comments ?? []}
+              canModerate={canModerate}
+              currentUserId={currentUser?._id ?? null}
+              onReply={(comment) => {
+                if (comment.isDeleted) return;
+                setReplyingTo({ id: comment.id, name: comment.author.name });
+              }}
+              onToggleReaction={handleToggleCommentReaction}
+              onReport={(comment) => openReport("comment", comment.id)}
+              onDelete={handleDeleteComment}
+            />
           ) : (
-            <div className="py-8 text-center text-muted-foreground">
-              <p className="text-sm">{t('communityPost.noCommentsYet')}</p>
-            </div>
+            <section className="rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">
+              Replies will appear here after the community v2 backend is published.
+            </section>
           )}
-          </div>
         </div>
       </div>
 
-      {/* Sticky Bottom Comment Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/50">
-        <div className="mx-auto w-full max-w-2xl px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          <div className="rounded-2xl border border-border/70 bg-card shadow-sm overflow-hidden">
-            {/* Reply indicator */}
-            {replyingTo && (
-              <div className="px-4 py-2 bg-muted/50 flex items-center justify-between border-b border-border/50">
-                <span className="text-xs text-muted-foreground">
-                  {t('communityPost.replyTo')} <span className="font-medium text-foreground">{replyingTo.name}</span>
-                </span>
-                <button
-                  onClick={() => setReplyingTo(null)}
-                  className="p-1 hover:bg-muted rounded-full"
-                >
-                  <X className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
-              </div>
-            )}
-
-            {/* Selected image preview */}
-            {selectedImage && (
-              <div className="px-4 py-2 bg-muted/30 border-b border-border/50">
-                <div className="relative inline-block">
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className="h-16 w-auto rounded-lg object-cover"
-                  />
-                  <button
-                    onClick={() => setSelectedImage(null)}
-                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-foreground text-background rounded-full flex items-center justify-center"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Input area */}
-            <div className="px-3 py-2 flex items-center gap-2">
-              <Avatar className="w-8 h-8 shrink-0">
-                <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1 flex items-center gap-1.5 bg-muted/50 rounded-full pl-4 pr-1">
-                <input
-                  ref={commentInputRef}
-                  type="text"
-                  placeholder={replyingTo ? t('communityPost.replyToName', { name: replyingTo.name }) : t('communityPost.writeComment')}
-                  className="flex-1 py-2 text-[16px] leading-normal bg-transparent border-0 focus:outline-none placeholder:text-muted-foreground"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSubmitComment();
-                    }
-                  }}
-                />
-                
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageSelect}
-                />
-                
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-background/50 transition-colors"
-                >
-                  <ImagePlus className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <button
-                onClick={handleSubmitComment}
-                disabled={!newComment.trim() && !selectedImage}
-                className={cn(
-                  'w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0',
-                  newComment.trim() || selectedImage
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground'
-                )}
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
+      {backendMode === "v2" ? (
+        <CommentComposer
+          value={composerValue}
+          isSubmitting={submittingComment}
+          isLocked={thread.isLocked}
+          replyingTo={replyingTo}
+          onChange={setComposerValue}
+          onSubmit={handleSubmitComment}
+          onCancelReply={() => setReplyingTo(null)}
+        />
+      ) : (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
+          <div className="mx-auto max-w-2xl rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
+            Community v2 publish is pending. Replies are temporarily disabled.
           </div>
         </div>
-      </div>
+      )}
 
       <Sheet open={reportOpen} onOpenChange={setReportOpen}>
-        <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] md:mx-auto md:max-w-xl"
+        >
           <SheetHeader className="text-left">
-            <SheetTitle className="flex items-center gap-2">
-              <Flag className="h-5 w-5 text-muted-foreground" />
-              {t('report.reportConcern', 'Report concern')}
-            </SheetTitle>
-            <SheetDescription>
-              {t(
-                'community.reportComingSoon',
-                'Reporting community posts is coming soon. For now, you can report cases from the case page.'
-              )}
-            </SheetDescription>
+            <SheetTitle>Report content</SheetTitle>
+            <SheetDescription>Help us keep the forum safe and trustworthy.</SheetDescription>
           </SheetHeader>
 
-          <div className="mt-4 rounded-xl border border-border/60 bg-card/40 p-3 text-sm text-muted-foreground">
-            <div className="font-semibold text-foreground">{t('community.reportWhyTitle', 'Why this matters')}</div>
-            <div className="mt-1">
-              {t('community.reportWhyBody', 'We use reports to stop scams and keep the community safe.')}
-            </div>
+          <div className="mt-4 space-y-2">
+            {REPORT_REASON_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setReportReason(option.value)}
+                className={`inline-flex min-h-11 w-full items-center rounded-xl border px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong ${
+                  reportReason === option.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground active:bg-muted"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+            <Textarea
+              value={reportDetails}
+              onChange={(event) => setReportDetails(event.target.value)}
+              placeholder="Optional details"
+              className="min-h-24"
+            />
           </div>
 
           <SheetFooter className="mt-4">
-            <Button variant="outline" onClick={() => setReportOpen(false)}>
-              {t('actions.close', 'Close')}
-            </Button>
+            <button
+              type="button"
+              onClick={handleSubmitReport}
+              disabled={submittingReport || reportTarget === null || backendMode !== "v2"}
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+            >
+              {submittingReport ? "Submitting..." : "Submit report"}
+            </button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
     </div>
   );
-};
+}
 
-export default CommunityPostPage;
+function mapLegacyPostToThread(post: LegacyCommunityPost): ForumThread {
+  const content = (post.content || "").trim();
+  const [firstLine, ...rest] = content.split(/\r?\n/);
+  const title = (firstLine || "Community thread").trim().slice(0, 140) || "Community thread";
+  const previewSource = rest.join(" ").trim() || content;
+  const preview = previewSource.replace(/\s+/g, " ").slice(0, 220);
+  const createdAt = typeof post.createdAt === "number" ? post.createdAt : Date.now();
+
+  return {
+    id: post._id,
+    board: "community",
+    category: "general",
+    title,
+    content,
+    preview,
+    image: post.image ?? null,
+    cityTag: null,
+    caseId: null,
+    isPinned: false,
+    isLocked: false,
+    isDeleted: false,
+    reactionCount: post.likes ?? 0,
+    replyCount: post.commentsCount ?? 0,
+    createdAt,
+    lastActivityAt: createdAt,
+    timeAgo: post.timeAgo || "recent",
+    viewerReacted: false,
+    author: {
+      id: post.author?.id ?? null,
+      name: post.author?.name || "Community member",
+      avatar: post.author?.avatar ?? null,
+      city: null,
+      badge: post.author?.isVolunteer ? "volunteer" : null,
+    },
+  };
+}

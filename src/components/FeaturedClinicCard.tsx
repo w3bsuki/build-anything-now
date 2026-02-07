@@ -67,8 +67,8 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-overlay-dim/55" />
           
           {/* 24/7 Badge */}
           {clinic.is24h && (
@@ -103,7 +103,7 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
           {/* Rating */}
           {clinic.rating && (
             <div className="flex items-center gap-1 mt-1.5">
-              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <Star className="w-3 h-3 text-warning fill-warning" />
               <span className="text-[11px] font-semibold text-foreground">{clinic.rating}</span>
               {clinic.reviewCount && (
                 <span className="text-[10px] text-muted-foreground">
@@ -161,7 +161,7 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
         {/* Rating */}
         {clinic.rating && (
           <div className="flex items-center gap-1 mt-1">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            <Star className="w-3.5 h-3.5 text-warning fill-warning" />
             <span className="text-xs font-semibold text-foreground">{clinic.rating}</span>
             {clinic.reviewCount && (
               <span className="text-xs text-muted-foreground">
@@ -194,13 +194,13 @@ export const ClinicGridCard = ({ clinic }: { clinic: FeaturedClinicCardProps['cl
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-overlay-dim/65" />
         
         {/* Rating Badge */}
         {clinic.rating && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          <div className="absolute top-3 right-3 flex items-center gap-1 bg-background/95 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
+            <Star className="w-3.5 h-3.5 text-warning fill-warning" />
             <span className="text-xs font-bold text-foreground">{clinic.rating}</span>
             {clinic.reviewCount && (
               <span className="text-xs text-muted-foreground">({clinic.reviewCount})</span>
@@ -282,7 +282,7 @@ export const ClinicListCard = ({ clinic }: { clinic: FeaturedClinicCardProps['cl
         <div className="flex items-center gap-3 mt-1.5">
           {clinic.rating && (
             <div className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <Star className="w-3.5 h-3.5 text-warning fill-warning" />
               <span className="text-xs font-semibold">{clinic.rating}</span>
               {clinic.reviewCount && (
                 <span className="text-xs text-muted-foreground">({clinic.reviewCount})</span>

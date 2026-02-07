@@ -1,7 +1,7 @@
 # Pawtreon — Design
 
 > **Purpose:** Architecture, stack, data model, patterns, and technical decisions.  
-> **Last updated:** 2026-01-23
+> **Last updated:** 2026-02-06
 
 ---
 
@@ -9,13 +9,13 @@
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React 18 + Vite + TypeScript |
+| Frontend | React 19 + Vite + TypeScript |
 | Backend | Convex (realtime DB + serverless functions) |
 | Auth | Clerk |
 | Mobile | Capacitor (iOS + Android) |
-| UI | shadcn/ui + Tailwind CSS |
+| UI | shadcn/ui + Tailwind CSS v4 |
 | i18n | i18next |
-| Payments | Stripe (planned) |
+| Payments | Stripe (hosted checkout + webhook implemented; receipt UX polish pending) |
 
 ## Architecture Overview
 
@@ -176,6 +176,9 @@ convex/
 
 ## Styling System
 
+Canonical UI patterns spec:
+- `docs/design/ui-patterns-spec.md` (case-first IA, interaction density rules, token/theming gates)
+
 ### Principles
 1. **Token-only colors** — use semantic tokens, not hardcoded hex
 2. **Trust-first look** — calm surfaces, clear hierarchy
@@ -231,18 +234,48 @@ For social sharing (OpenGraph), add a small SSR layer:
 Add sections here when implementing high-risk features (money/auth/schema):
 
 ### Feature: Donations (Stripe)
-*Status: Not started*
+*Status: In progress*
 
-TODO when implementing:
-- Data: payment intents, webhook handling
-- API: `createPaymentIntent`, `handleWebhook`
-- Security: verify webhook signatures, idempotent processing
-- Rollout: test mode first, gradual rollout
+Implemented:
+- Data model fields for Stripe checkout/payment intent linkage and receipts
+- API/flow for hosted checkout session + webhook completion path
+- Idempotent completion and webhook signature verification path
+
+Remaining:
+- Post-checkout success/cancel return UX messaging
+- Receipt/history surfacing polish in account-facing flows
 
 ### Feature: Moderation Queue
-*Status: Not started*
+*Status: In progress*
 
-TODO when implementing:
-- Data: report status flow, admin actions
-- API: `listPendingReports`, `resolveReport`
-- Security: admin-only access, audit log
+Implemented:
+- Data/report status flow with moderation actions and audit trail
+- Admin moderation surface at `/admin/moderation`
+
+Remaining:
+- Ops throughput/SLA dashboard refinements and queue ergonomics
+
+### Feature: Trust UI System Alignment (Tailwind v4 + shadcn)
+*Status: In progress*
+
+Scope:
+- Home (`/`) + Community (`/community*`) + Campaigns (`/campaigns*`) visual system alignment
+- Tailwind v4 token enforcement expansion (`styles:gate` scope and scanners)
+- shadcn boundary cleanup for `components/ui/*` primitives and adapters
+
+Data changes:
+- None (UI-only changes; no Convex schema or persistence contract changes)
+
+API surface:
+- No backend API changes
+- UI primitive behavior change: `Button` `size="iconTouch"` minimum touch target is `44x44`
+
+Abuse/trust risks addressed:
+- Remove fake social proof from trust-critical fundraising surfaces
+- Remove dead UI actions in trust flows (search clear behavior)
+- Reduce visual noise (gradients/heavy shadows) on rescue-critical surfaces to lower ambiguity
+
+Mitigations:
+- Semantic token-only styling in scoped trust surfaces
+- Accessibility baseline on raw interactive controls (`focus-visible` ring, touch target size)
+- Expanded style gates for home/community/campaign surfaces to prevent regression

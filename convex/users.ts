@@ -479,6 +479,7 @@ export const getPublicProfile = query({
             isPublic: user.isPublic ?? true,
             role: user.role,
             userType: user.userType,
+            capabilities: user.capabilities ?? [],
             city: user.city || user.volunteerCity,
             memberSince: new Date(user.createdAt).getFullYear().toString(),
             followerCount: followers.length,
@@ -571,6 +572,39 @@ export const updateProfile = mutation({
     },
 });
 
+// Update account capabilities (single signup -> multi-capability profile)
+export const updateCapabilities = mutation({
+    args: {
+        capabilities: v.array(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        // Keep a safe bounded list of capabilities for profile and matching.
+        const normalized = Array.from(
+            new Set(
+                args.capabilities
+                    .map((cap) => cap.trim().toLowerCase())
+                    .filter((cap) => cap.length > 0)
+            )
+        ).slice(0, 12);
+
+        await ctx.db.patch(user._id, {
+            capabilities: normalized,
+        });
+
+        return { success: true, capabilities: normalized };
+    },
+});
+
 // Get profile by username/ID or "me"
 export const getProfileByIdOrMe = query({
     args: { userId: v.union(v.id("users"), v.literal("me")) },
@@ -634,6 +668,7 @@ export const getProfileByIdOrMe = query({
             isPublic: user.isPublic ?? true,
             role: user.role,
             userType: user.userType,
+            capabilities: user.capabilities ?? [],
             city: user.city || user.volunteerCity,
             memberSince: new Date(user.createdAt).getFullYear().toString(),
             followerCount: followers.length,

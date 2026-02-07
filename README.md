@@ -42,17 +42,22 @@ pnpm build
 ```
 
 ## Docs
-- Core (canonical):
-  - [`VISION.md`](VISION.md)
+### Canonical vs Supporting Docs
+- Canonical root docs (source of truth):
   - [`PRD.md`](PRD.md)
-  - [`ROADMAP.md`](ROADMAP.md)
-  - [`PLAN.md`](PLAN.md)
-  - [`TODO.md`](TODO.md)
-  - [`STYLE.md`](STYLE.md)
-  - [`TECH-STACK.md`](TECH-STACK.md)
-  - [`TRUST-SAFETY.md`](TRUST-SAFETY.md)
+  - [`TASKS.md`](TASKS.md)
+  - [`DESIGN.md`](DESIGN.md)
+  - [`RULES.md`](RULES.md)
   - [`DECISIONS.md`](DECISIONS.md)
-- Investor + archive index: [`docs/README.md`](docs/README.md)
+  - [`AGENTS.md`](AGENTS.md)
+  - [`README.md`](README.md)
+- Supporting planning packs (`docs/`):
+  - Product: [`docs/product/master-plan.md`](docs/product/master-plan.md), [`docs/product/roadmap.md`](docs/product/roadmap.md), [`docs/product/case-lifecycle-spec.md`](docs/product/case-lifecycle-spec.md), [`docs/product/profile-capabilities-spec.md`](docs/product/profile-capabilities-spec.md)
+  - Architecture: [`docs/architecture/techstack-baseline.md`](docs/architecture/techstack-baseline.md), [`docs/architecture/data-model-gap-audit.md`](docs/architecture/data-model-gap-audit.md)
+  - Design system: [`docs/design/tailwind-shadcn-remediation-plan.md`](docs/design/tailwind-shadcn-remediation-plan.md)
+  - Partners and ops: [`docs/partners/bulgaria-clinic-seeding-plan.md`](docs/partners/bulgaria-clinic-seeding-plan.md), [`docs/partners/claim-verification-ops.md`](docs/partners/claim-verification-ops.md), [`docs/partners/outreach-pipeline.md`](docs/partners/outreach-pipeline.md)
+  - Mission initiatives: [`docs/mission/pawtreon-initiatives.md`](docs/mission/pawtreon-initiatives.md)
+  - Investor and archive index: [`docs/README.md`](docs/README.md)
 - Dev workflow: [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ## Mobile (Capacitor)
