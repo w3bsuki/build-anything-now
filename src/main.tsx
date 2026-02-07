@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
-import App from "./App.tsx";
 import "./i18n";
+import App from "./App.tsx";
 import "@fontsource/nunito/400.css";
 import "@fontsource/nunito/500.css";
 import "@fontsource/nunito/600.css";
@@ -19,25 +19,18 @@ if (!clerkPubKey) {
     throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY");
 }
 
-// Initialize Convex client - only if URL is provided
-const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
+if (!convexUrl) {
+    throw new Error("Missing VITE_CONVEX_URL");
+}
 
-// Wrapper component that conditionally uses Convex
+const convex = new ConvexReactClient(convexUrl);
+
 function AppWithProviders() {
-    if (convex) {
-        return (
-            <ClerkProvider publishableKey={clerkPubKey}>
-                <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-                    <App />
-                </ConvexProviderWithClerk>
-            </ClerkProvider>
-        );
-    }
-
-    console.warn("Running without Convex - using mock data. Set VITE_CONVEX_URL to enable backend.");
     return (
         <ClerkProvider publishableKey={clerkPubKey}>
-            <App />
+            <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+                <App />
+            </ConvexProviderWithClerk>
         </ClerkProvider>
     );
 }

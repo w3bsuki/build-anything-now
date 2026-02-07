@@ -1,7 +1,6 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -32,15 +31,7 @@ import CreateAdoption from "./pages/CreateAdoption";
 import Messages from "./pages/Messages";
 import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
-import CommunityMembers from "./pages/CommunityMembers";
-import CommunityActivity from "./pages/CommunityActivity";
-import CommunityFollowedPreview from "./pages/community/CommunityFollowedPreview";
-import CommunityMessagesPreview from "./pages/community/CommunityMessagesPreview";
 import VolunteerProfile from "./pages/VolunteerProfile";
-import Presentation from "./pages/Presentation";
-import PartnerPresentation from "./pages/PartnerPresentation";
-import ModerationQueue from "./pages/admin/ModerationQueue";
-import ClinicClaimsQueue from "./pages/admin/ClinicClaimsQueue";
 import NotFound from "./pages/NotFound";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -48,19 +39,25 @@ import OnboardingPage from "./pages/onboarding/OnboardingPage";
 import ClaimOrganizationPage from "./pages/onboarding/ClaimOrganizationPage";
 import { CommunityMobileShellLayout } from "./layouts/CommunityMobileShellLayout";
 
-const queryClient = new QueryClient();
+const CommunityMembers = lazy(() => import("./pages/CommunityMembers"));
+const CommunityActivity = lazy(() => import("./pages/CommunityActivity"));
+const CommunityFollowedPreview = lazy(() => import("./pages/community/CommunityFollowedPreview"));
+const CommunityMessagesPreview = lazy(() => import("./pages/community/CommunityMessagesPreview"));
+const Presentation = lazy(() => import("./pages/Presentation"));
+const PartnerPresentation = lazy(() => import("./pages/PartnerPresentation"));
+const ModerationQueue = lazy(() => import("./pages/admin/ModerationQueue"));
+const ClinicClaimsQueue = lazy(() => import("./pages/admin/ClinicClaimsQueue"));
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <OnboardingRedirect>
-          <Navigation />
-          <LanguageDetectionBanner />
-          <ProductTour />
+  <TooltipProvider>
+    <Toaster />
+    <BrowserRouter>
+      <ScrollToTop />
+      <OnboardingRedirect>
+        <Navigation />
+        <LanguageDetectionBanner />
+        <ProductTour />
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
           <Routes>
             {/* Onboarding routes - no navigation bar */}
             <Route path="/onboarding" element={<OnboardingPage />} />
@@ -202,10 +199,10 @@ const App = () => (
             />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </OnboardingRedirect>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </Suspense>
+      </OnboardingRedirect>
+    </BrowserRouter>
+  </TooltipProvider>
 );
 
 export default App;
