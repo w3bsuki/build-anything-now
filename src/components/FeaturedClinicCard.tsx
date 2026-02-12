@@ -39,7 +39,7 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
           <img
             src={clinic.image || fallbackImage}
             alt={clinic.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover"
           />
           {clinic.is24h && (
             <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
@@ -56,18 +56,18 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
     return (
       <Link
         to={`/clinics/${clinicId}`}
-        className="flex-shrink-0 w-[160px] rounded-2xl bg-card border border-border/50 overflow-hidden hover:border-border hover:shadow-md transition-all group"
+        className="group flex-shrink-0 w-[160px] overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs transition-all hover:border-border/80 hover:shadow-sm"
       >
         {/* Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden">
           <img
             src={clinic.image || fallbackImage}
             alt={clinic.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover"
           />
           
           {/* Overlay */}
-          <div className="absolute inset-0 bg-overlay-dim/55" />
+          <div className="absolute inset-0 bg-overlay-dim/45" />
           
           {/* 24/7 Badge */}
           {clinic.is24h && (
@@ -87,7 +87,7 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
 
         {/* Content */}
         <div className="p-2.5">
-          <h3 className="font-semibold text-xs text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+          <h3 className="font-display text-xs font-semibold text-foreground line-clamp-1 transition-colors group-hover:text-primary">
             {clinic.name}
           </h3>
 
@@ -120,7 +120,7 @@ export const FeaturedClinicCard = ({ clinic, variant = 'vertical' }: FeaturedCli
   return (
     <Link
       to={`/clinics/${clinicId}`}
-      className="flex-shrink-0 w-[280px] flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-md transition-all group"
+      className="group flex-shrink-0 flex w-[280px] items-center gap-3 rounded-2xl border border-border/60 bg-surface-elevated p-3 shadow-xs transition-all hover:border-border/80 hover:shadow-sm"
     >
       {/* Circular Avatar */}
       <div className="relative flex-shrink-0">
@@ -182,18 +182,18 @@ export const ClinicGridCard = ({ clinic }: { clinic: FeaturedClinicCardProps['cl
   return (
     <Link
       to={`/clinics/${clinicId}`}
-      className="group relative overflow-hidden rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-md transition-all"
+      className="group relative overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs transition-all hover:border-border/80 hover:shadow-sm"
     >
       {/* Image Section */}
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         <img
           src={clinic.image || fallbackImage}
           alt={clinic.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover"
         />
         
         {/* Overlay */}
-        <div className="absolute inset-0 bg-overlay-dim/65" />
+        <div className="absolute inset-0 bg-overlay-dim/55" />
         
         {/* Rating Badge */}
         {clinic.rating && (
@@ -243,7 +243,7 @@ export const ClinicListCard = ({ clinic }: { clinic: FeaturedClinicCardProps['cl
   return (
     <Link
       to={`/clinics/${clinicId}`}
-      className="flex gap-3 p-3 rounded-2xl bg-card border border-border/50 hover:border-border hover:shadow-sm transition-all group"
+      className="group flex gap-3 rounded-2xl border border-border/60 bg-surface-elevated p-3 shadow-xs transition-all hover:border-border/80 hover:shadow-sm"
     >
       {/* Image */}
       <div className="relative flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden">

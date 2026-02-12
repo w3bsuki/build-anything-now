@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ScrollToTop } from "./components/ScrollToTop";
-import { LanguageDetectionBanner } from "./components/LanguageDetectionBanner";
 import { AuthGuard } from "./components/auth/AuthGuard";
 import { OnboardingRedirect } from "./hooks/useOnboardingRedirect";
 import { ProductTour } from "./components/tour/ProductTour";
@@ -55,7 +54,6 @@ const App = () => (
       <ScrollToTop />
       <OnboardingRedirect>
         <Navigation />
-        <LanguageDetectionBanner />
         <ProductTour />
         <Suspense fallback={<div className="min-h-screen bg-background" />}>
           <Routes>
@@ -206,3 +204,4 @@ const App = () => (
 );
 
 export default App;
+

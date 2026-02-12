@@ -1,7 +1,41 @@
 # Pawtreon — Agent Rules
 
 > **Purpose:** How OPUS, Codex, and Human work together.  
-> **Last updated:** 2026-02-06
+> **Last updated:** 2026-02-10
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19 + Vite 7 + TypeScript |
+| Backend | Convex (realtime DB + serverless functions) |
+| Auth | Clerk |
+| Mobile | Capacitor (iOS + Android) |
+| UI | shadcn/ui + Tailwind CSS v4 |
+| i18n | i18next |
+| Payments | Stripe (hosted checkout + webhooks) |
+
+## Quick Commands
+
+```bash
+pnpm dev          # Start Vite dev server
+npx convex dev    # Start Convex backend (run alongside Vite)
+pnpm build        # Production build
+pnpm lint         # ESLint
+pnpm typecheck    # TypeScript check
+pnpm docs:index   # Regenerate feature index from specs + PRD
+pnpm docs:check   # Validate docs headers/template + links
+```
+
+## Critical Gotchas
+
+- Convex requires `npx convex dev` running alongside Vite — both must be up
+- Tailwind v4 config lives in `src/index.css`, NOT `tailwind.config.*`
+- shadcn/ui components live in `src/components/ui/`
+- Convex auto-generated types are in `convex/_generated/` — never edit
+- `refactor/` folder is ephemeral cleanup tooling — delete when refactor completes
 
 ---
 
@@ -18,7 +52,7 @@
 | `AGENTS.md` | This file — workflow contract |
 | `README.md` | Setup/run/build (onboarding only) |
 
-Everything else lives in `docs/` (product, architecture, design, partners, mission, investor, archive, legal).
+Everything else lives in `docs/` (product, features, systems, design, business, missions, partners, investor).
 
 ---
 
@@ -100,22 +134,50 @@ When asking for help, prefix to activate the right context:
 
 ```
 /
-├── PRD.md              # Product + feature checklist
+├── PRD.md              # Product + feature checklist (canonical)
 ├── TASKS.md            # Current sprint
 ├── DESIGN.md           # Architecture + patterns
 ├── RULES.md            # Trust/safety + UX rules
 ├── DECISIONS.md        # Decision log
 ├── AGENTS.md           # This file
 ├── README.md           # Setup/onboarding
+├── src/AGENTS.md       # Frontend agent rules
+├── convex/AGENTS.md    # Backend agent rules
 └── docs/
-    ├── product/        # Product deep dives
-    ├── architecture/   # Architecture deep dives
-    ├── design/         # UI/UX specs and audits
-    ├── partners/       # Partner ops
-    ├── mission/        # Mission strategy docs
-    ├── investor/       # Pitch materials
-    ├── archive/        # Old docs, specs
-    └── legal/          # Terms, privacy (future)
+    ├── features/       # Per-feature specs + INDEX.md (auto-generated)
+    ├── product/        # Roadmap, master plan
+    ├── systems/        # Data model, API, auth, deployment, testing, analytics
+    ├── design/         # UI patterns, theming, mobile, i18n
+    ├── business/       # Revenue, partner types, growth
+    ├── missions/       # Platform initiatives (drones, safehouse)
+    ├── partners/       # Operational partner docs
+    └── investor/       # Pitch materials
 ```
 
 **Hard cap:** 7 root docs. If we need an 8th, we merge something.
+
+---
+
+## Common Tasks (Recipes)
+
+### Add a new page
+1. Create `src/pages/MyPage.tsx`
+2. Add route in `src/App.tsx`
+3. Use an existing layout from `src/layouts/`
+4. Add i18n keys in `public/locales/en/translation.json`
+5. Use `useTranslation()` for all user-facing strings
+
+### Add a Convex function
+1. Add or modify handler in the relevant `convex/*.ts` file
+2. Follow naming: `get*`/`list*` for queries, `create*`/`update*`/`delete*` for mutations
+3. All mutations require auth — use `getAuthUserId()` from `convex/lib/auth.ts`
+4. Run `npx convex dev` to regenerate types
+
+### Add a shadcn/ui component
+1. `pnpm dlx shadcn@latest add <component-name>`
+2. Component appears in `src/components/ui/`
+3. Customize using Tailwind v4 tokens from `src/index.css`
+4. Always use `cn()` from `src/lib/utils.ts` for conditional classes
+
+### TASKS.md Archive Ceremony
+Every Monday, OPUS archives completed sprint items to `docs/archive/sprints/YYYY-WW.md`. TASKS.md retains only: **In Progress**, **Current Sprint**, **Backlog**.

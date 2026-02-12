@@ -139,7 +139,7 @@ export function LanguageDetectionBanner() {
               key={langCode}
               onClick={() => handleLanguageSelect(langCode)}
               className={cn(
-                "w-full px-4 py-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors text-sm",
+                "w-full px-4 py-3 flex items-center justify-between text-left hover:bg-surface-sunken/70 transition-colors text-sm",
                 isActive && "bg-primary/5"
               )}
             >

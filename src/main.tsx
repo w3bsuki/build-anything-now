@@ -9,6 +9,8 @@ import "@fontsource/nunito/500.css";
 import "@fontsource/nunito/600.css";
 import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/800.css";
+import "@fontsource/rubik/600.css";
+import "@fontsource/rubik/700.css";
 import "./index.css";
 
 // Environment variables

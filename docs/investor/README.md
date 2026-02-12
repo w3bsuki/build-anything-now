@@ -1,7 +1,9 @@
-# 🐾 Pawtreon Investor Hub
+# Pawtreon Investor Hub
 
-> **Confidential** - For Investor Review Only  
-> **Last Updated:** January 23, 2026
+> **Owner:** Founders  
+> **Status:** review  
+> **Last updated:** 2026-02-09  
+> **Confidential:** For investor review only
 
 ---
 
@@ -37,20 +39,20 @@
 
 ## Key Highlights
 
-- 🎯 **Problem:** Animal shelters struggle with fundraising & visibility
-- 💡 **Solution:** Unified platform for donations, adoptions & campaigns
-- 📱 **Product:** Web + iOS + Android (React + Capacitor)
-- 🌍 **Market:** $10B+ global pet care market
-- 💰 **Model:** Donor-first (optional “thank you” tips) + sponsorships (pricing under review)
-- 🚀 **Stage:** Pre-launch, 6 weeks to MVP
+- 🎯 **Problem:** Animal rescue is fragmented across Facebook — posts get buried, scammers copy them, donors don't trust them
+- 💡 **Solution:** Trust-first platform with verified clinics, transparent cases, and Stripe-powered donations
+- 📱 **Product:** Web + iOS + Android (React 19 + Vite 7 + Capacitor)
+- 🌍 **Market:** €10B+ global pet care & welfare market
+- 💰 **Model:** 5% transaction fee + shelter subscriptions (€49–€199/mo) + sponsored campaigns + corporate giving
+- 🚀 **Stage:** MVP sprint in progress — ~60% built, auth + payments + moderation shipped
 
 ---
 
 ## Contact
 
-**Founder:** TODO  
-**Email:** TODO  
-**Website:** TODO
+**Founder:** [FILL: Founder full name]  
+**Email:** [FILL: Contact email]  
+**Website:** [FILL: Website URL]
 
 ---
 

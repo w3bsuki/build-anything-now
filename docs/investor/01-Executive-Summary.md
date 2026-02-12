@@ -1,44 +1,47 @@
 # Executive Summary
 
-> One-page overview for busy investors
-> Note: Monetization details are under review; fee/subscription numbers may change. See `docs/strategy/monetization.md`.
+> **Owner:** Founders  
+> **Status:** review  
+> **Last updated:** 2026-02-09  
+> One-page overview for busy investors  
+> Revenue model finalized — see `docs/business/monetization-spec.md` for full details.
 
 ---
 
 ## The Opportunity
 
-**Pawtreon** is building the definitive platform for animal welfare — connecting rescuers, verified partners/clinics, donors, and adopters in one seamless experience.
+**Pawtreon** is building the definitive platform for animal welfare — connecting rescuers, verified partners/clinics, donors, and adopters in one seamless experience. When someone finds an injured animal, Pawtreon makes the **best next action obvious and fundable within minutes**.
 
 ---
 
 ## The Problem
 
-- **$2B+** donated to animal welfare annually, but donations are fragmented
-- Shelters lack modern tools for fundraising and visibility
-- Donors can't easily find verified, trustworthy causes
-- Adoption processes are outdated and friction-heavy
+- **€2B+** donated to animal welfare annually, but donations are fragmented across Facebook, GoFundMe, bank transfers
+- Rescue posts get buried in social media noise — scammers copy them, donors don't trust them
+- Clinics and shelters lack modern tools for verification, updates, and fundraising
+- Donors can't easily find verified, trustworthy causes or track their impact
 
 ---
 
 ## Our Solution
 
-A **mobile-first platform** that:
-1. **Aggregates** animal rescue cases from verified shelters
-2. **Enables** one-tap donations with full transparency
-3. **Simplifies** pet adoption with digital applications
-4. **Connects** sponsors with high-impact campaigns
+A **trust-first, mobile-first platform** that:
+1. **Aggregates** animal rescue cases with verified clinic partnerships and evidence-based updates
+2. **Enables** Stripe-powered donations with full transparency (receipts, progress, outcomes)
+3. **Builds trust** through a verification ladder (unverified → community → clinic → partner)
+4. **Connects** sponsors and corporate partners with high-impact, measurable campaigns
 
 ---
 
 ## Product
 
-| Platform | Status |
-|----------|--------|
-| Web App | ✅ In Development |
-| iOS App | ✅ In Development |
-| Android App | ✅ In Development |
+| Platform | Technology | Status |
+|----------|------------|--------|
+| 🌐 Web | React 19 + Vite 7 + TypeScript | ✅ In Development |
+| 📱 iOS | Capacitor | ✅ Configured |
+| 🤖 Android | Capacitor | ✅ Configured |
 
-**Tech Stack:** React, TypeScript, Convex (backend), Capacitor (mobile), Stripe (payments)
+**Tech Stack:** React 19, TypeScript, Convex (realtime backend), Tailwind CSS v4 + shadcn/ui, Clerk (auth), Stripe (payments), Capacitor (mobile), i18next (5 languages)
 
 ---
 
@@ -46,10 +49,12 @@ A **mobile-first platform** that:
 
 | Revenue Stream | Description |
 |----------------|-------------|
-| **Transaction Fees** | 5% on donations |
-| **Premium Shelters** | $49-199/mo for advanced features |
-| **Sponsored Campaigns** | Brands sponsor rescue cases |
-| **Corporate Giving** | B2B donation matching programs |
+| **Transaction Fees** | 5% on all donations |
+| **Shelter Subscriptions** | €49–€199/mo for analytics, priority support, reduced fees |
+| **Sponsored Campaigns** | €500–€50K/yr for brand CSR visibility |
+| **Corporate Giving** | Employee matching programs, branded campaigns (Year 2+) |
+
+All core features remain free — monetization layers on top without gatekeeping rescue outcomes.
 
 ---
 
@@ -57,37 +62,40 @@ A **mobile-first platform** that:
 
 | Metric | Value |
 |--------|-------|
-| **TAM** | $10B (Global pet care donations) |
-| **SAM** | $2B (Online animal welfare donations) |
-| **SOM** | $50M (Year 5 target) |
+| **TAM** | €10B (Global pet care & welfare donations) |
+| **SAM** | €2B (Online animal welfare donations) |
+| **SOM** | €50M (Year 5 target) |
 
 ---
 
 ## Traction
 
-- 🏗️ **Product:** 35% complete, 6 weeks to MVP
-- 📝 **Waitlist:** [X users]
-- 🤝 **Partners:** [X shelters in pipeline]
-- 🌍 **Markets:** Bulgaria (launch), expanding to EU
+- 🏗️ **Product:** ~60% complete, MVP sprint week 7 of 8
+- ✅ **Shipped:** Auth, case lifecycle, Stripe checkout, moderation + audit logging, community forum, mission initiatives, structured updates with evidence, i18n (5 languages)
+- 🔜 **In Progress:** Receipt UX polish, clinic claim admin queue
+- 📝 **Waitlist:** [FILL: waitlist count]
+- 🤝 **Partners:** [FILL: shelter/clinic pipeline count]
+- 🌍 **Markets:** Bulgaria (launch — Sofia, Varna, Plovdiv), expanding to EU
 
 ---
 
 ## The Ask
 
-**Raising:** $[X]  
+**Raising:** [FILL: raise amount — e.g., €150,000]  
 **Use of Funds:**
-- 50% Product Development
-- 30% Marketing & User Acquisition
-- 20% Operations
+- 50% Product Development (complete MVP, scale platform)
+- 30% Marketing & User Acquisition (Bulgaria launch, shelter onboarding)
+- 20% Operations (legal, compliance, partner ops)
 
 ---
 
 ## Why Now?
 
-1. **Post-COVID pet adoption surge** created awareness
-2. **Gen Z/Millennial donors** expect mobile-first experiences
-3. **No dominant player** in animal welfare tech
+1. **Post-COVID pet adoption surge** created lasting awareness
+2. **Gen Z/Millennial donors** expect mobile-first, transparent giving experiences
+3. **No dominant player** in animal welfare tech — market is fragmented
 4. **ESG/CSR trend** driving corporate animal welfare spending
+5. **Bulgaria launch market** — high stray population, active rescue community, EU infrastructure
 
 ---
 
@@ -95,18 +103,9 @@ A **mobile-first platform** that:
 
 | Role | Name | Background |
 |------|------|------------|
-| **Founder/CEO** | TODO | TODO |
-| **CTO** | TODO | TODO |
-| **Advisor** | TODO | TODO |
+| **Founder/CEO** | [FILL: Full name] | [FILL: Years experience, industry, key achievement] |
+| **CTO** | [FILL: Name or "Hiring post-seed"] | [FILL: Background if applicable] |
+| **Advisor** | [FILL: Name] | [FILL: Area of expertise, relevant connection] |
 
----
-
-## Contact
-
-📧 TODO  
-🌐 TODO  
-📱 Demo available upon request
-
----
-
-*Confidential - January 2026*
+📧 [FILL: Contact email]  
+🌐 [FILL: Website URL]

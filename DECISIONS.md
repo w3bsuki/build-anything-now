@@ -205,3 +205,183 @@ Template:
 - **Consequences / follow-ups:**
   - Regenerate Convex `_generated` API types immediately after handler pruning.
   - Downstream callers outside this repo must migrate if they relied on removed handlers.
+
+### 2026-02-08 — petServices and clinics tables remain separate
+- **Status:** decided
+- **Context:** Schema audit found that `petServices` and `clinics` tables overlap in structure (name, city, address, phone, verified, claims flow). Merging was considered.
+- **Decision:** Keep `petServices` and `clinics` as separate tables.
+- **Rationale:**
+  - Different trust requirements: clinics verify medical cases and provide clinical evidence; pet services do not.
+  - Different discovery patterns: clinics are found during rescue urgency; pet services are browsed casually.
+  - Merging would add type-checking complexity and risk breaking clinic verification trust signals.
+  - Separate tables allow independent evolution (e.g., clinics may get emergency protocols, pet services may get booking).
+- **Consequences / follow-ups:** Document relationship in `data-model-spec.md`. Revisit if marketplace feature (Phase 4) requires a unified directory.
+
+### 2026-02-08 — Vitest selected as test framework
+- **Status:** decided
+- **Context:** Project has 0% test coverage with no test framework installed. Need to choose between Vitest and Jest.
+- **Decision:** Use Vitest with `@testing-library/react`, `convex-test`, and Playwright (for E2E, Phase 2).
+- **Rationale:**
+  - Native Vite integration — same build pipeline, shared config, zero-config TypeScript.
+  - Native ESM support (project uses `"type": "module"`).
+  - Jest-compatible API for easy migration if needed.
+  - SWC-powered transforms match the `@vitejs/plugin-react-swc` setup.
+- **Consequences / follow-ups:** Add `vitest`, `@testing-library/react`, `convex-test` to devDependencies. Create `vitest.config.ts`. Start with critical path tests (donations, auth helpers, case CRUD).
+
+### 2026-02-08 — PostHog selected for product analytics
+- **Status:** decided
+- **Context:** Project has zero analytics tracking. Need GDPR-compliant solution for EU (Bulgaria) launch.
+- **Decision:** Use PostHog (Cloud EU instance) for product analytics, event tracking, funnels, and session replay.
+- **Rationale:**
+  - EU hosting available (GDPR compliance for Bulgaria launch).
+  - Open source with self-host option if scale/cost requires migration.
+  - Generous free tier (1M events/month) covers MVP needs.
+  - Built-in feature flags, session replay, and funnel analysis reduce toolchain complexity.
+  - `respect_dnt: true` and no-PII event design align with trust-first product values.
+- **Consequences / follow-ups:** Add `posthog-js` dependency. Add `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` env vars. Implement cookie consent banner before Bulgaria launch.
+
+### 2026-02-08 — TypeScript strict mode roadmap: progressive enablement
+- **Status:** decided
+- **Context:** `tsconfig.app.json` has `strict: false`, `noImplicitAny: false`, `strictNullChecks: false`. This reduces type safety but was inherited from initial scaffolding.
+- **Decision:** Progressively enable strict checks file-by-file rather than flipping `strict: true` globally.
+- **Rationale:**
+  - Global `strict: true` would produce hundreds of errors across 100+ files, blocking all other work.
+  - File-by-file migration via `// @ts-strict` comments or per-directory overrides lets us prioritize critical paths (auth helpers, donation flow, case mutations).
+  - Build tooling (`tsconfig.node.json`) already has `strict: true`, proving the pattern works.
+- **Consequences / follow-ups:** Start with `convex/lib/auth.ts` and `convex/donations.ts`. Track progress in refactor tasks. Target `strict: true` globally after 80% of files pass.
+
+### 2026-02-08 — Phase 5 system specs completed (docs-v2/systems/)
+- **Status:** decided
+- **Context:** Master plan items #22-#27 required 6 system/architecture spec documents covering data model, API reference, auth/security, deployment, testing, and analytics.
+- **Decision:** All 6 specs written and finalized in `docs-v2/systems/`:
+  - `data-model-spec.md` — 27 tables, relationships, gap audit resolution
+  - `api-reference.md` — 84+ functions across 19 files, HTTP endpoints
+  - `auth-security-spec.md` — Clerk auth, authorization model, GDPR gaps
+  - `deployment-spec.md` — Vercel + Convex + Capacitor, env vars, CI/CD design
+  - `testing-spec.md` — Vitest strategy, coverage targets, test data approach
+  - `analytics-spec.md` — PostHog, 32 events, KPI framework, dashboards
+- **Rationale:** Comprehensive system documentation enables onboarding, auditing, and implementation planning.
+- **Consequences / follow-ups:** Master plan items #22-#27 marked `[x]`. Absorb and archive `docs/architecture/data-model-gap-audit.md` and `docs/architecture/techstack-baseline.md` when `docs-v2` is promoted to `docs`.
+
+### 2026-02-09 — docs-v2/ promoted to docs/ (documentation migration complete)
+- **Status:** decided
+- **Context:** Two parallel docs folders existed: `docs/` (original, 28 markdown files, 2,711 lines, 23 audit PNGs) and `docs-v2/` (spec-driven rewrite, 49 markdown files, 11,016 lines, 0 PNGs). Audit confirmed docs-v2 is superior on every axis: structure, depth, consistency, AI comprehension, and implementation readiness.
+- **Decision:** Delete `docs/`, rename `docs-v2/` to `docs/`. Migrate `docs/AGENTS.md` governance rules and `docs/partners/` (3 operational docs) into the new `docs/` before deletion. Update all references in root docs (AGENTS.md, README.md, TASKS.md, DESIGN.md) and internal cross-references.
+- **Rationale:**
+  - docs-v2 has 14 complete feature specs vs 2 partial ones in docs.
+  - docs-v2 has 6 system specs (data model, API, auth, deployment, testing, analytics) vs 2 gap-audits in docs.
+  - Every spec follows a consistent template (Purpose, User Stories, Functional Reqs, Data Model, API, UI, Edge Cases).
+  - Zero PNG noise — all audit screenshots were absorbed into specs and deleted.
+  - An AI agent can implement features directly from docs-v2 specs without reverse-engineering source code.
+- **Consequences / follow-ups:** Single `docs/` folder is now canonical. 53 markdown files, 8 domain folders. No migration table needed — all content absorbed. Future docs follow `docs/AGENTS.md` spec template.
+
+### 2026-02-10 — Docs overhaul v2: spec-driven architecture with bidirectional traceability
+- **Status:** decided
+- **Context:** After docs-v2 promotion, the documentation was comprehensive but lacked: (1) bidirectional cross-links between PRD checklist and feature specs, (2) auto-generated feature registry, (3) acceptance criteria on specs, (4) EARS notation for high-risk specs, (5) component catalog and accessibility baseline in design system spec, (6) specs for 4 backend files (activity, home, petServices, social), (7) status lifecycle governance.
+- **Decision:** Execute 6-phase docs overhaul:
+  - Phase 1: Consolidate PRD (merge duplicate, adopt 3-state checklist)
+  - Phase 2: Heal docs (fix broken refs, enforce headers, clean orphans)
+  - Phase 3: Strengthen AGENTS.md (add stack/recipes, create src/convex AGENTS, Copilot instructions)
+  - Phase 4: Manifest + cross-links (auto-generated INDEX.md, PRD↔spec bidirectional links, link-check script)
+  - Phase 5: Spec quality (design system extension, EARS for 3 high-risk specs, acceptance criteria for ALL 18 specs, 4 new specs)
+  - Phase 6: Governance (status lifecycle rules, DECISIONS.md entries, final validation)
+- **Rationale:** Researched Kiro (EARS notation, steering), OpenSpec (artifact-guided), GitHub Spec Kit (constitution→implement). Adopted best practices: EARS scoped to money/trust only (3 specs), script-generated INDEX.md (not hand-maintained), acceptance criteria as standard section 9, design system merged into ui-patterns-spec.md (not separate file).
+- **Consequences / follow-ups:**
+  - 18 feature specs (from 14), all with 10-section structure including Acceptance Criteria
+  - `scripts/gen-feature-index.mjs` auto-generates `docs/features/INDEX.md`
+  - `scripts/check-doc-links.mjs` validates all cross-references (zero broken links)
+  - EARS requirements on 3 high-risk specs: donations (12 rules), admin-moderation (10 rules), onboarding (9 rules)
+  - PRD feature checklist items link to their specs; specs link back to PRD items via `> **PRD Ref:**`
+  - Status lifecycle defined: draft→review→final, with escape hatch for final docs
+  - Codex reviewer conditionally approved plan with 9 required scoping changes (all adopted)
+
+### 2026-02-10 — EARS notation scoped to money/trust specs only
+- **Status:** decided
+- **Context:** EARS (Easy Approach to Requirements Syntax) provides unambiguous When/If/While/Shall requirements. Could apply to all specs, but adds overhead.
+- **Decision:** Apply EARS notation only to 3 high-risk specs: donations-spec.md (12 rules), admin-moderation-spec.md (10 rules), onboarding-spec.md (9 rules). Other specs use standard functional requirements.
+- **Rationale:** Codex review: "EARS is high-ceremony. For a 3-person team, it's overhead on low-risk specs. Scope to money (donations), trust (moderation), and security (auth) where precision prevents real damage."
+- **Consequences / follow-ups:** If additional specs become high-risk (e.g., recurring payments), add EARS section to those specs at that time.
+
+### 2026-02-10 — Feature INDEX.md is script-generated, never hand-maintained
+- **Status:** decided
+- **Context:** Feature registry (INDEX.md) could be maintained by hand or generated from spec file headers.
+- **Decision:** Auto-generate via `node scripts/gen-feature-index.mjs`. Extracts title, status, owner, last-updated, PRD ref from each `*-spec.md` file header. Run after adding/updating specs.
+- **Rationale:** Codex review: "Don't hand-maintain INDEX.md — it will drift. Script-generate from file headers."
+- **Consequences / follow-ups:** INDEX.md is not manually edited. Implementation-status derivation details were tightened in the 2026-02-09 PRD-SSOT decision.
+
+### 2026-02-10 — Design system content merged into ui-patterns-spec.md (not separate file)
+- **Status:** decided
+- **Context:** Plan originally proposed a separate `design-system-spec.md`. Existing `ui-patterns-spec.md` (446 lines, status: final) already covers layout, components, typography, and anti-patterns.
+- **Decision:** Extend `ui-patterns-spec.md` with Component Catalog table (22 shadcn primitives with usage rules) and Accessibility Baseline section (WCAG 2.1 AA). No separate file.
+- **Rationale:** Codex review: "You already have a 446-line ui-patterns-spec. A separate design-system-spec creates a split-brain. Merge."
+- **Consequences / follow-ups:** ui-patterns-spec.md is now ~530 lines. Remains the single design reference alongside theming-tokens-spec.md (tokens/colors).
+
+### 2026-02-10 — settings.ts and storage.ts too small for own specs
+- **Status:** decided
+- **Context:** `settings.ts` (53 lines, 1 mutation) and `storage.ts` (12 lines, 1 mutation) exist without feature specs.
+- **Decision:** `settings.ts` documented as appendix in profiles-spec.md. `storage.ts` is a utility wrapper — no spec needed (documented in code).
+- **Rationale:** 12-line files don't warrant 100+ line spec files. Document in adjacent specs.
+- **Consequences / follow-ups:** None.
+
+### 2026-02-09 — Feature implementation status locked to PRD; docs index and checks automated
+- **Status:** decided
+- **Context:** `docs/features/INDEX.md` could drift from actual shipped work because it previously relied on hardcoded mappings and spec document status. This created incorrect answers for daily questions like "how many features are built?".
+- **Decision:**
+  - `PRD.md` checklist is the canonical implementation status source.
+  - `docs/features/INDEX.md` is generated from spec headers plus PRD checklist links (`node scripts/gen-feature-index.mjs`).
+  - Added docs quality gate commands:
+    - `pnpm docs:index`
+    - `pnpm docs:validate`
+    - `pnpm docs:check`
+  - Added `scripts/validate-docs.mjs` to enforce docs headers/status values and required feature-spec sections.
+- **Rationale:** A single status authority and automated checks prevent drift and make daily product-state queries deterministic.
+- **Consequences / follow-ups:**
+  - When PRD checklist links or feature headers change, regenerate INDEX.
+  - Feature spec `Status` now explicitly represents document maturity (`draft/review/final`), not shipped state.
+
+### 2026-02-10 — SSOT design system architecture + partners-first stores/services IA
+- **Status:** decided
+- **Context:** Tailwind v4 + shadcn installation was correct, but trust-critical surfaces still had styling drift from repeated wrappers, ad-hoc controls, and mock content in `/partners`.
+- **Decision:**
+  - Adopt SSOT layout primitives for trust surfaces:
+    - `PageShell`
+    - `PageSection`
+    - `SectionHeader`
+    - `StickySegmentRail`
+    - `StickyActionBar`
+    - `StatsGrid`
+  - Keep `src/index.css` as the single CSS entrypoint and token source.
+  - Refactor `/partners` to data-driven segments (`partners`, `volunteers`, `stores_services`) with segment state in query params.
+  - Keep stores/services inside `/partners` IA for this phase; no standalone `/stores` route.
+  - Keep stores/services referral-only in this phase (no native marketplace cart/checkout).
+- **Rationale:** Reduces trust-surface inconsistency without overengineering, removes fake social proof risk, and keeps monetization scope aligned with current trust-first product maturity.
+- **Consequences / follow-ups:**
+  - Added `petServices.list` and `petServices.get` public queries for partners-integrated directory surfaces.
+  - Continue phased migration of remaining non-critical routes to SSOT wrappers.
+  - Revisit standalone stores route and native commerce only after recurring + trust primitives are stable.
+
+### 2026-02-10 — Remove rigid system lock language from active planning docs
+- **Status:** decided
+- **Context:** Active docs used "locked assumptions/defaults" language that implied immutable system choices and reduced planning flexibility.
+- **Decision:**
+  - Treat roadmap/task defaults as adjustable guidance, not hard locks.
+  - Remove lock wording from active planning docs where it is not a safety or compliance requirement.
+  - Keep trust/safety and accessibility requirements enforced through `RULES.md` and quality gates.
+- **Rationale:** Product and visual direction need fast iteration; rigid wording should not block valid changes.
+- **Consequences / follow-ups:**
+- `docs/product/roadmap.md` and `TASKS.md` now use non-lock phrasing.
+- Existing historical decision entries remain for audit trail but are interpreted as superseded where this entry applies.
+
+### 2026-02-12 — Remove client IP-based language detection banner
+- **Status:** decided
+- **Context:** `LanguageDetectionBanner` performs a client-side IP geolocation fetch (`ipapi.co`) to suggest a locale. This adds a third-party dependency, can fail via CORS/network, and is unnecessary for Bulgaria/EU launch where data minimization matters.
+- **Decision:** Remove/disable IP-based language detection in the shipped app. Locale selection relies on i18next detection (`localStorage → querystring → navigator`) and the Settings language picker.
+- **Rationale:** Improves reliability, reduces privacy surface area, and aligns with the i18n spec guidance to avoid fragile geo-detection.
+- **Consequences / follow-ups:** Ensure Settings persists `language` in `userSettings` and keeps `i18nextLng` in sync.
+
+### 2026-02-12 — Rate limit abuse-prone case reports
+- **Status:** decided
+- **Context:** Trust surfaces require “report everywhere” but report endpoints are abuse-prone. Admin/moderation spec includes an explicit quota rule (EARS M-07).
+- **Decision:** Require an authenticated identity to create a case report and enforce a per-identity daily quota (default: 10 reports/UTC day), stored server-side in Convex.
+- **Rationale:** Prevents spam storms, preserves moderation throughput, and keeps the reporting system credible.
+- **Consequences / follow-ups:** Add a lightweight rate-limit table and enforce it inside `reports.create`. Provide a user-friendly error when the quota is exceeded.

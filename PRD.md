@@ -1,162 +1,229 @@
 # Pawtreon — Product Requirements Document (PRD)
 
-> **Last updated:** 2026-02-06  
-> **Stage:** Pre-launch (investor pitch preview → MVP launch)  
-> **Canonical name:** Pawtreon
+> **Owner:** Product (Human) + OPUS  
+> **Status:** final  
+> **Last updated:** 2026-02-12
+
+---
 
 ## One‑liner
+
 **Pawtreon** is a trust-first, mobile-first fundraising + community app for animals in need — built like an **Instagram feed** for discovery and updates, with **Patreon-like recurring support** for rescuers and partners.
 
 ## Mission
+
 Help animals get emergency care **faster** by making it easy to:
-1) create credible cases in minutes, 2) fund them safely, 3) verify and update transparently, 4) coordinate help locally.
 
-## The problem
-- Rescue posts are fragmented across Facebook/Instagram; urgent cases get lost.
-- Donor trust is low because scams and reposts are common.
-- Clinics and rescuers lack a simple workflow for verification, updates, and accountability.
-- Generic crowdfunding isn’t built for “on-the-street rescue” reality.
+1. Create credible cases in minutes
+2. Fund them safely
+3. Verify and update transparently
+4. Coordinate help locally
 
-## Product principles (non‑negotiable)
-1. **Trust before growth**: verification + evidence + reporting are first-class.
-2. **Mobile-first speed**: “found animal → case drafted” should take minutes.
-3. **Human-in-the-loop**: AI can assist, but never publishes or diagnoses automatically.
-4. **Transparency wins**: updates + receipts + outcomes are the product.
-5. **Social consolidation**: social links are inputs; Pawtreon becomes system-of-record.
+## The Problem
 
-## Users & roles (multi-role profiles)
-Users can hold multiple roles (badges), not a single “type”:
-- **Finder / Good Samaritan**: finds an animal, needs quick help.
-- **Rescuer / Volunteer**: creates cases, coordinates help, posts updates.
-- **Donor**: wants fast donation + proof + outcomes.
-- **Clinic / Partner**: verifies cases and posts medical updates; enables trust.
-- **Shelter / Organization**: ongoing cases, campaigns, and adoption workflows.
-- **Pet shop / Store**: provides supplies, drop-off points, sponsorship, and local distribution.
-- **Sponsor / Brand**: funds campaigns, matches donations, provides resources.
-- **Moderator / Admin**: reviews reports, manages fraud, enforces policy.
+- Rescue posts are fragmented across Facebook/Instagram; urgent cases get lost in algorithmic feeds.
+- Donor trust is low because scams and reposts are common — no verification, no receipts, no accountability.
+- Clinics and rescuers lack a simple workflow for verification, updates, and transparent progress tracking.
+- Generic crowdfunding (GoFundMe, etc.) isn't built for the "on-the-street rescue" reality — no urgency tiers, no clinic verification, no local coordination.
+- Volunteers willing to help (transport, fostering) have no reliable way to find nearby cases or signal availability.
 
-## Core objects (data model level)
-- **Case**: a fundraising + rescue record (photos, story, location, goal, status).
-- **Update**: timestamped progress + evidence (clinic-verified where possible).
-- **Donation**: payment + receipt + attribution; supports anonymous donors.
-- **Profile**: user identity + badges + impact stats.
-- **Organization**: clinics/shelters/partners (verification capabilities).
-- **External source**: a social link (FB/IG/etc) attached to a case/post as evidence.
-- **Report**: scam/abuse/duplicate flags for human review.
+## Product Principles (Non‑Negotiable)
 
-## Core loops (what makes Pawtreon a “living” social product)
-### 1) Rescue loop (creator loop)
-See animal → create case → verification → updates → outcome → credibility increases.
+1. **Trust before growth**: verification + evidence + reporting are first-class citizens. Every surface that touches money or credibility must earn trust before optimizing for reach.
+2. **Mobile-first speed**: "found animal → case drafted" should take minutes, not hours. The creation flow must work one-handed on a phone in the street.
+3. **Human-in-the-loop**: AI can assist (draft extraction, triage hints), but never publishes or diagnoses automatically. A human reviews and approves every case and every AI suggestion.
+4. **Transparency wins**: updates + receipts + outcomes are the product. Donors see where money goes. Supporters see treatment progress. Everyone sees the outcome.
+5. **Social consolidation**: social links are inputs; Pawtreon becomes system-of-record. Facebook/Instagram posts can be referenced, but Pawtreon owns the verified, structured version of the rescue story.
 
-### 2) Donor loop (trust loop)
-Discover case in feed → trust signals → donate/subscribe → follow updates → share → repeat.
+---
 
-### 3) Network loop (social consolidation)
-Social post link → link card / attribution → community verification → native updates in Pawtreon.
+## Users & Roles (Multi-Capability Profiles)
 
-## MVP scope (Phase 1: “real money, real trust”)
-### Must ship (core)
-- **Home feed** that feels social (fast + “alive”) and prioritizes urgent cases.
-- **Case page**: story, progress, updates timeline, trust indicators, donate CTA.
-- **Create case (manual)**: photos + location + goal + story + submit/publish.
-- **Donations end-to-end**: checkout, receipts, donation history.
+Users sign up once and can hold multiple capabilities (not a single "type"). Capabilities are acquired through onboarding choices, profile settings, and verification pathways.
+
+| Role | Who They Are | What They Can Do |
+|------|-------------|-----------------|
+| **Finder / Good Samaritan** | Spots an animal in distress, needs quick help | Create a case, attach photos/location, request help from nearby volunteers |
+| **Rescuer** | Active rescue community member, creates and manages cases | Create cases, post structured updates with evidence, manage case lifecycle through treatment → adoption → closure |
+| **Donor** | Wants fast donation + proof + outcomes | Browse feed, donate to cases/campaigns, track donation history, receive receipts, follow case updates |
+| **Volunteer** | Transport, fostering, events, social media help | Set availability status, appear in volunteer directory, respond to transport requests, track hours and impact |
+| **Professional** | Individual vet, groomer, trainer | Claim professional profile, provide verified case updates, appear in service directory |
+| **Business / Organization** | Clinic, pet store, shelter, hotel | Claim org profile, verify cases with clinical evidence, manage team members, appear in partner directory |
+| **Sponsor / Brand** | Corporate giving, campaign matching | Fund campaigns, match donations, get visibility on sponsored surfaces |
+| **Moderator / Admin** | Ops, trust, review | Process moderation queue, approve/reject clinic claims, manage verification status, audit logs |
+
+---
+
+## Core Objects (Data Model Level)
+
+| Object | Purpose |
+|--------|---------|
+| **Case** | Fundraising + rescue record: photos, story, location, goal, status, urgency, verification level |
+| **Update** | Timestamped progress + evidence on a case: type (medical/milestone/update/success), clinic attribution, photos |
+| **Donation** | Payment + receipt + attribution: amount, currency, Stripe IDs, anonymous flag, message |
+| **Profile (User)** | User identity + capabilities + badges + impact stats + verification status |
+| **Organization** | Clinics/shelters/partners: verification capabilities, claim status, team members |
+| **Campaign** | Fundraising container: rescue campaigns (tied to cases) or initiative campaigns (platform missions like drone program, safehouse) |
+| **Community Post** | Forum content: title, body, images, case link, city tag, category (urgent_help/case_update/adoption/advice/general/announcements) |
+| **Clinic / Pet Service** | Directory entries: name, city, address, phone, 24h flag, specializations, verified status |
+| **Volunteer** | Volunteer profile: capabilities, availability status, city, stats (animals helped, hours, adoptions) |
+| **Achievement** | Badge/gamification: category (donation/verification/volunteer/special), unlock conditions, awarded-by |
+| **Notification** | In-app/push/email alerts: type (donation_received/case_update/achievement_unlocked/campaign_ended/system), read status |
+| **Report** | Scam/abuse/duplicate flags for human review: reason, status, resolution, audit trail |
+| **External Source** | Social link (FB/IG/etc.) attached to a case/post as evidence |
+| **Message** | 1:1 direct message between users (post-MVP) |
+
+---
+
+## Core Loops
+
+### 1) Rescue Loop (Creator Loop)
+See animal → create case → verification → updates with evidence → outcome → credibility increases → more trust for next case.
+
+### 2) Donor Loop (Trust Loop)
+Discover case in feed → trust signals (verification badge, clinic attribution, update history) → donate → follow updates → see outcome + receipt → share → repeat with confidence.
+
+### 3) Network Loop (Social Consolidation)
+Social post link → link card / attribution → community verification → native updates in Pawtreon → Pawtreon becomes system-of-record.
+
+### 4) Volunteer Loop (Coordination)
+Set availability → receive transport/foster request → help animal → earn impact stats + badges → recognition → continued engagement.
+
+---
+
+## MVP Scope (Phase 1: "Real Money, Real Trust")
+
+### Must Ship (Core)
+- **Home feed** that feels social (fast + "alive") and prioritizes urgent cases
+- **Case page**: story, progress, updates timeline, trust indicators, donate CTA
+- **Create case (manual)**: photos + location + goal + story + submit/publish
+- **Donations end-to-end**: Stripe hosted checkout, receipts, donation history
 - **Trust signals v1**:
-  - verification status ladder (unverified → community verified → clinic verified)
-  - reports flow + basic moderation queue (manual ops is fine initially)
-- **Sharing**:
-  - share links and a clean in-app share UX
-  - plan for SSR OpenGraph share pages (can be separate project; no full rewrite)
+  - Verification status ladder (unverified → community verified → clinic verified)
+  - Reports flow + moderation queue (manual ops is fine initially)
+- **Sharing**: share links and clean in-app share UX; plan for SSR OpenGraph share pages
 
-### Should ship (high ROI)
-- **Community**: rules/pinned post, credible content formats, reporting entry points.
-- **Profiles**: public profile, impact stats, role badges (editable later).
-- **Notifications**: case updates and donation receipts.
+### Should Ship (High ROI)
+- **Community**: rules/pinned post, credible content formats, reporting entry points
+- **Profiles**: public profile, impact stats, role badges (editable later)
+- **Notifications**: case updates and donation receipts
 
-## Growth surface (Phase 2: “distribution + retention”)
-- **External link cards** for FB/IG posts (safe default) and source attribution.
-- **Follow**: follow rescuers/clinics; “following” feed tab.
-- **Recurring support**:
-  - recurring donations to cases/campaigns
-  - Patreon-like “support this rescuer/clinic monthly” (after trust primitives).
+---
+
+## Growth Surface (Phase 2: "Distribution + Retention")
+
+- **External link cards** for FB/IG posts (safe default) and source attribution
+- **Follow**: follow rescuers/clinics; "following" feed tab
+- **Recurring support**: recurring donations to cases/campaigns; Patreon-like "support this rescuer/clinic monthly" (after trust primitives)
 - **Volunteer coordination (privacy-safe)**:
-  - live availability status (`available` / `busy` / `offline`) with user-controlled visibility
-  - map/directory view (approximate location by default; never show precise home location)
-  - transport requests and “who can help nearby” surfaces (after trust primitives)
-- **SEO/OG**: SSR share pages + OG images for virality.
+  - Live availability status (`available` / `busy` / `offline`) with user-controlled visibility
+  - Map/directory view (approximate location by default; never show precise home location)
+  - Transport requests and "who can help nearby" surfaces (after trust primitives)
+- **SEO/OG**: SSR share pages + OG images for virality
+- **Clinic onboarding**: claim/verify clinic flow with admin review queue
 
-## AI acceleration (Phase 3: “speed + scam resistance”)
-### AI-assisted case creation (“List with AI”)
-Photo(s) → structured draft (species/urgency/title/story) → user review → publish.
+---
 
-### “Need help now” assistant (safety constrained)
-Non-diagnostic triage + checklists + escalation to real clinics/resources.
+## AI Acceleration (Phase 3: "Speed + Scam Resistance")
 
-### AI fraud signals (never sole authority)
-Duplicate detection, pattern scoring, suspicious text/image signals → flags for review.
+### AI-Assisted Case Creation ("List with AI")
+Photo(s) → structured draft (species/urgency/title/story) → user review → publish. Never auto-publishes.
 
-## Non-goals (for now)
-- Drone scouting / livestream operations (moonshot; only after trust + ops are strong).
-- Full shelter CRM suite.
-- Chat-first “everything is messaging” product (we can add messaging later).
+### "Need Help Now" Assistant (Safety Constrained)
+Non-diagnostic triage + checklists + escalation to real clinics/resources. No dosing, no invasive procedures, no diagnoses.
 
-## Success metrics (early)
-- Time-to-case-created (target: < 3 minutes for a basic draft).
-- Conversion: case view → donate.
-- Repeat donor rate (D30/D90).
-- Verification rate (cases that become community/clinic verified).
-- Report resolution time + false positive rate.
-- Share rate per case + downstream installs/opens.
+### AI Fraud Signals (Never Sole Authority)
+Duplicate detection, pattern scoring, suspicious text/image signals → flags for human review only.
 
-## Risks & mitigations
-- **Scams / reposts** → verification ladder, external source attribution, reporting, risk scoring.
-- **Medical liability** → disclaimers, safe prompts, no dosing/invasive instructions, escalation UX.
-- **Clinic adoption** → minimal workflow, clear benefit (trust + less inbound chaos), partner incentives.
+---
 
-## Open decisions (needs a crisp “yes/no”)
-- Donation gating rules for unverified/high-risk cases.
-- Recurring support model (case-based vs creator-based vs both).
-- Moderation ops: SLA and who is “on-call” for urgent reports.
+## Non-Goals (For Now)
+
+- Drone scouting / livestream operations (moonshot; only after trust + ops are strong — treated as mission initiative with dedicated funding)
+- Full shelter CRM suite
+- Chat-first "everything is messaging" product (messaging will be added as a feature, not as the core paradigm)
+- Framework migration away from Vite + React SPA
+
+---
+
+## Success Metrics (Early)
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Time-to-case-created | < 3 minutes for basic draft | Timestamp: page load → publish |
+| Case view → donate conversion | Track, no target yet | Funnel analytics |
+| Repeat donor rate | Track D30/D90 | Cohort analysis |
+| Verification rate | Cases that become community/clinic verified | Status transitions |
+| Report resolution time | < 24h first response | Moderation queue metrics |
+| False positive rate (reports) | Track, minimize | Resolution outcomes |
+| Share rate per case | Track downstream installs/opens | Share events + attribution |
+| Claim approval cycle time | 24h first response, 72h resolution | Claim queue metrics |
+| Time to first case update | Track after publish | Update timestamps |
+
+---
+
+## Risks & Mitigations
+
+| Risk | Mitigation |
+|------|-----------|
+| **Scams / reposts** | Verification ladder, external source attribution, reporting, risk scoring, audit logging |
+| **Medical liability** | Disclaimers, safe prompts, no dosing/invasive instructions, escalation UX, "contact vet NOW" for emergencies |
+| **Clinic adoption** | Minimal workflow, clear benefit (trust + less inbound chaos), partner incentives, seeded directory |
+| **Donor fatigue** | Transparent outcomes, impact stats, success story surfacing, receipts |
+| **Platform abuse** | Rate limiting, content policies, moderation queue, block/report primitives |
+| **Data privacy (EU/GDPR)** | No PII in public APIs, city-level location only, opt-in availability, data export readiness |
+
+---
+
+## Open Decisions
+
+| Decision | Status | Notes |
+|----------|--------|-------|
+| Donation gating rules for unverified/high-risk cases | Partially decided | Soft-gated with warning (per RULES.md verification ladder); exact thresholds TBD |
+| Recurring support model (case-based vs creator-based vs both) | Open | Need to decide before P2 recurring work |
+| Moderation ops SLA and on-call | Open | Queue exists, SLA targets defined (24h/72h), ops staffing TBD |
+| petServices vs clinics table merge | Decided | Kept separate — different trust requirements and discovery patterns (DECISIONS.md 2026-02-08) |
 
 ---
 
 ## Feature Checklist (Canonical)
 
-> **This is the single source of truth for what's built.**  
+> **This is the single source of truth for what's built.**
 > Mark `[x]` only when the feature is real (no dead CTAs, no broken routes).
 
 ### P0 — Foundation (Done)
-- [x] AUTH — Clerk authentication
-- [x] HOME FEED — Instagram-like case discovery
-- [x] CASE PAGE — Story, updates timeline, trust indicators, donate CTA
-- [x] CASE CARDS — Verification badges, report menu
-- [x] CREATE CASE UI — Photos, location, goal, story (UI only)
-- [x] LIST WITH AI — Preview flow (photo → draft → review)
-- [x] DONATION MODAL — Amount → method → confirm → success (preview)
-- [x] COMMUNITY — Rules/safety section, report entry points
-- [x] PROFILES — Basic profile page, role display
-- [x] I18N — Multi-language support, fallbacks
+- [x] AUTH — Clerk authentication → [spec](docs/features/onboarding-spec.md)
+- [x] HOME FEED — Instagram-like case discovery → [spec](docs/features/search-discovery-spec.md)
+- [x] CASE PAGE — Story, updates timeline, trust indicators, donate CTA → [spec](docs/features/cases-spec.md)
+- [x] CASE CARDS — Verification badges, report menu → [spec](docs/features/cases-spec.md)
+- [x] CREATE CASE UI — Photos, location, goal, story (UI only) → [spec](docs/features/cases-spec.md)
+- [x] LIST WITH AI — Preview flow (photo → draft → review) → [spec](docs/features/cases-spec.md)
+- [x] DONATION MODAL — Amount → method → confirm → success (preview) → [spec](docs/features/donations-spec.md)
+- [x] COMMUNITY — Rules/safety section, report entry points → [spec](docs/features/community-spec.md)
+- [x] PROFILES — Basic profile page, role display → [spec](docs/features/profiles-spec.md)
+- [x] I18N — Multi-language support, fallbacks → [spec](docs/design/i18n-spec.md)
 
-### P1 — MVP ("real money, real trust")
-- [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage
-- [ ] DONATIONS — Stripe checkout, receipts, history (real)
-- [ ] TRUST: VERIFICATION — Unverified → community → clinic ladder
-- [x] TRUST: MODERATION — Report queue, admin review, actions
-- [ ] TRUST: DUPLICATE DETECTION — pHash image matching
-- [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments
-- [x] CASE OUTCOMES — Close-out flow, receipts, transparency
+### P1 — MVP ("Real Money, Real Trust")
+- [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage → [spec](docs/features/cases-spec.md)
+- [x] DONATIONS — Stripe hosted checkout + webhook completion + post-checkout return banner + receipt links → [spec](docs/features/donations-spec.md)
+- [ ] TRUST: VERIFICATION — Unverified → community → clinic ladder (UI exists, promotion flow pending) → [spec](docs/features/cases-spec.md)
+- [x] TRUST: MODERATION — Report queue, admin review, actions, audit logging → [spec](docs/features/admin-moderation-spec.md)
+- [ ] TRUST: DUPLICATE DETECTION — pHash image matching → [spec](docs/features/admin-moderation-spec.md)
+- [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments, structured update types → [spec](docs/features/cases-spec.md)
+- [x] CASE OUTCOMES — Close-out flow, lifecycle transitions (active_treatment → seeking_adoption → closed) → [spec](docs/features/cases-spec.md)
 - [ ] SHARING — OG meta tags, SSR share pages
-- [ ] NOTIFICATIONS — Case updates, donation receipts
+- [ ] NOTIFICATIONS — Case updates, donation receipts → [spec](docs/features/notifications-spec.md)
 
 ### P2 — Growth
-- [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces
+- [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces → [spec](docs/features/campaigns-spec.md)
 - [ ] FOLLOW — Follow rescuers/clinics, "following" feed tab
-- [ ] RECURRING — Monthly support for rescuers/clinics
+- [ ] RECURRING — Monthly support for rescuers/clinics → [spec](docs/features/donations-spec.md)
 - [ ] EXTERNAL LINKS — FB/IG link cards, source attribution
-- [ ] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline)
-- [ ] VOLUNTEER: DIRECTORY — Approximate location map
-- [ ] VOLUNTEER: TRANSPORT — "Who can help nearby" requests
-- [ ] CLINIC ONBOARDING — Claim/verify clinic flow
-- [ ] ANALYTICS — Cases, donations, verification dashboards
+- [ ] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline) → [spec](docs/features/volunteers-spec.md)
+- [ ] VOLUNTEER: DIRECTORY — Approximate location map → [spec](docs/features/volunteers-spec.md)
+- [ ] VOLUNTEER: TRANSPORT — "Who can help nearby" requests → [spec](docs/features/volunteers-spec.md)
+- [~] CLINIC ONBOARDING — Claim submit flow exists with duplicate guard; admin review queue pending → [spec](docs/features/clinics-spec.md)
+- [ ] ANALYTICS — Cases, donations, verification dashboards → [spec](docs/systems/analytics-spec.md)
 
 ### P3 — AI Acceleration
 - [ ] AI CASE CREATION — Server-side extraction, confidence hints
@@ -164,18 +231,25 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 - [ ] NEED HELP NOW — Non-diagnostic triage, emergency escalation
 
 ### Future (Not Now)
-- [ ] DRONE SCOUTING — Livestream operations (moonshot)
+- [ ] DRONE SCOUTING — Livestream operations (moonshot, mission initiative) → [spec](docs/missions/drone-program-spec.md)
 - [ ] SHELTER CRM — Full management suite
-- [ ] MESSAGING — In-app chat system
+- [ ] MESSAGING — In-app chat system → [spec](docs/features/messaging-spec.md)
+
+> **Legend:** `[x]` = shipped, `[~]` = partially done, `[ ]` = not started
 
 ---
 
 ## Related Docs
 
-| Doc | Purpose |
-|-----|---------|
-| `TASKS.md` | Current sprint |
-| `DESIGN.md` | Architecture + patterns |
-| `RULES.md` | Trust/safety + UX rules |
-| `DECISIONS.md` | Decision log |
-| `AGENTS.md` | Workflow contract |
+| Doc | Purpose | Path |
+|-----|---------|------|
+| Current sprint | What we're doing NOW | `TASKS.md` |
+| Architecture + patterns | Stack, data model, conventions | `DESIGN.md` |
+| Trust/safety + UX rules | Non-negotiable constraints | `RULES.md` |
+| Decision log | Why we decided what | `DECISIONS.md` |
+| Workflow contract | Agent roles + process | `AGENTS.md` |
+| Product roadmap | Phased delivery timeline | `docs/product/roadmap.md` |
+| Product thesis | North star + scope | `docs/product/master-plan.md` |
+| Feature specs | Per-feature specs | `docs/features/` |
+
+

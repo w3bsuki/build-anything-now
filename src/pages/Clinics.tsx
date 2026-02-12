@@ -4,6 +4,10 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
 import { FilterPills } from '@/components/FilterPills';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
+import { SectionHeader } from '@/components/layout/SectionHeader';
+import { StickySegmentRail } from '@/components/layout/StickySegmentRail';
 import { FeaturedClinicCard, ClinicGridCard, ClinicListCard } from '@/components/FeaturedClinicCard';
 import { EmergencyBanner } from '@/components/EmergencyBanner';
 import { ClinicCardSkeleton } from '@/components/skeletons/CardSkeleton';
@@ -52,7 +56,7 @@ const Clinics = () => {
   }, [clinics, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
+    <PageShell>
       {/* Mobile Header with Search */}
       <MobilePageHeader
         title={t('nav.clinics', 'Vet Clinics')}
@@ -70,35 +74,35 @@ const Clinics = () => {
       </MobilePageHeader>
 
       {/* Desktop Search + Filters */}
-      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-3 border-b border-border/40">
-        <div className="container mx-auto px-4">
-          <FilterPills
-            options={cityFilters}
-            selected={cityFilter}
-            onSelect={setCityFilter}
-          />
-        </div>
-      </div>
+      <StickySegmentRail className="py-3">
+        <FilterPills
+          options={cityFilters}
+          selected={cityFilter}
+          onSelect={setCityFilter}
+        />
+      </StickySegmentRail>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-3 space-y-4">
+      <PageSection className="py-3" contentClassName="space-y-4">
 
         {/* === FEATURED CLINICS SECTION === */}
         {(isLoading || featuredClinics.length > 0) && !show24hOnly && (
           <section>
-            <div className="flex items-center gap-2 mb-2.5">
-              <Star className="w-4 h-4 text-warning fill-warning" />
-              <h2 className="text-sm font-semibold text-foreground">
-                {t('clinics.featuredClinics', 'Featured Clinics')}
-              </h2>
-            </div>
+            <SectionHeader
+              title={
+                <span className="inline-flex items-center gap-2">
+                  <Star className="w-4 h-4 text-warning fill-warning" />
+                  {t('clinics.featuredClinics', 'Featured Clinics')}
+                </span>
+              }
+            />
 
             {/* Horizontal scroll container - vertical cards */}
             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
               {isLoading ? (
                 <>
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex-shrink-0 w-[160px] h-[200px] rounded-2xl bg-muted animate-pulse" />
+                    <div key={i} className="h-[200px] w-[160px] flex-shrink-0 animate-pulse rounded-2xl bg-surface-sunken" />
                   ))}
                 </>
               ) : (
@@ -120,73 +124,69 @@ const Clinics = () => {
         {/* === ALL CLINICS SECTION === */}
         <section>
           {/* Section Header with View Toggle */}
-          <div className="flex items-center justify-between mb-2.5">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-muted-foreground" />
-              <h2 className="text-sm font-semibold text-foreground">
+          <SectionHeader
+            title={
+              <span className="inline-flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-muted-foreground" />
                 {show24hOnly
                   ? t('clinics.24hClinics', '24/7 Clinics')
                   : t('clinics.allClinics', 'All Clinics')}
-              </h2>
-              {!isLoading && (
-                <span className="text-xs text-muted-foreground">
-                  ({allClinics.length})
-                </span>
-              )}
-            </div>
-
-            {/* View Mode + Quick Filters */}
-            <div className="flex items-center gap-1.5">
-              {/* 24/7 Toggle */}
-              <Button
-                variant={show24hOnly ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setShow24hOnly(!show24hOnly)}
-                className={cn(
-                  "h-8 px-2.5 rounded-lg text-xs font-medium gap-1.5",
-                  show24hOnly
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                24/7
-              </Button>
-
-              {/* Divider */}
-              <div className="w-px h-5 bg-border mx-1" />
-
-              {/* View Mode Toggle */}
-              <div className="flex bg-muted/60 rounded-lg p-0.5">
+              </span>
+            }
+            count={!isLoading ? allClinics.length : undefined}
+            action={
+              <div className="flex items-center gap-1.5">
+                {/* 24/7 Toggle */}
                 <Button
-                  variant="ghost"
+                  variant={show24hOnly ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setShow24hOnly(!show24hOnly)}
                   className={cn(
-                    "h-7 w-7 p-0 rounded-md",
-                    viewMode === 'grid'
-                      ? "bg-background shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    "h-8 px-2.5 rounded-lg text-xs font-medium gap-1.5",
+                    show24hOnly
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border/60 bg-surface-sunken/80 text-muted-foreground hover:bg-surface-sunken hover:text-foreground"
                   )}
                 >
-                  <LayoutGrid className="w-4 h-4" />
+                  <Clock className="w-3.5 h-3.5" />
+                  24/7
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                  className={cn(
-                    "h-7 w-7 p-0 rounded-md",
-                    viewMode === 'list'
-                      ? "bg-background shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-                  )}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+
+                {/* Divider */}
+                <div className="w-px h-5 bg-border mx-1" />
+
+                {/* View Mode Toggle */}
+                <div className="flex rounded-lg border border-border/60 bg-surface-sunken/80 p-0.5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className={cn(
+                      "h-7 w-7 p-0 rounded-md",
+                      viewMode === 'grid'
+                        ? "bg-surface shadow-xs text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    )}
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className={cn(
+                      "h-7 w-7 p-0 rounded-md",
+                      viewMode === 'list'
+                        ? "bg-surface shadow-xs text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    )}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
+            }
+          />
 
           {/* Clinics Grid/List */}
           {isLoading ? (
@@ -214,8 +214,8 @@ const Clinics = () => {
               </div>
             )
           ) : (
-            <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-4">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated py-12 text-center shadow-xs">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-sunken">
                 <Building2 className="w-8 h-8 text-muted-foreground/60" />
               </div>
               <p className="text-muted-foreground text-sm">
@@ -227,8 +227,8 @@ const Clinics = () => {
             </div>
           )}
         </section>
-      </div>
-    </div>
+      </PageSection>
+    </PageShell>
   );
 };
 

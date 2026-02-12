@@ -13,8 +13,14 @@
     "styles:scan:palette": "node scripts/style-scan.mjs palette",
     "styles:scan:arbitrary": "node scripts/style-scan.mjs arbitrary",
     "styles:scan:gradients": "node scripts/style-scan.mjs gradients",
-    "styles:scan": "pnpm -s styles:scan:palette && pnpm -s styles:scan:arbitrary && pnpm -s styles:scan:gradients",
-    "styles:gate": "pnpm -s styles:scan"
+    "styles:scan:inline": "node scripts/style-scan.mjs inline",
+    "styles:scan:status": "node scripts/style-scan.mjs status",
+    "styles:scan:motion": "node scripts/style-scan.mjs motion",
+    "styles:scan": "pnpm -s styles:scan:palette && pnpm -s styles:scan:arbitrary && pnpm -s styles:scan:gradients && pnpm -s styles:scan:inline && pnpm -s styles:scan:status && pnpm -s styles:scan:motion",
+    "styles:gate": "pnpm -s styles:scan",
+    "docs:index": "node scripts/gen-feature-index.mjs",
+    "docs:validate": "node scripts/validate-docs.mjs",
+    "docs:check": "pnpm -s docs:validate && node scripts/check-doc-links.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
@@ -23,6 +29,7 @@
     "@capacitor/ios": "^8.0.0",
     "@clerk/clerk-react": "^5.59.3",
     "@fontsource/nunito": "^5.2.7",
+    "@fontsource/rubik": "^5.2.6",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",

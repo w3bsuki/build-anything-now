@@ -1,38 +1,39 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'convex/react';
 import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { HomeHeaderV2 } from '@/components/homepage/HomeHeaderV2';
-import { IntentFilterPills, type CityFilter, type FilterTab } from '@/components/homepage/IntentFilterPills';
+import { HomeFiltersDrawer } from '@/components/homepage/HomeFiltersDrawer';
+import { IntentFilterPills, type CityFilter, type HomeIntent } from '@/components/homepage/IntentFilterPills';
 import { HeroCircles, type UrgentStoryCircleItem } from '@/components/homepage/HeroCircles';
-import { TwitterCaseCard } from '@/components/homepage/TwitterCaseCard';
-import { CompactCaseCard, CompactCaseCardSkeleton } from '@/components/homepage/CompactCaseCard';
-import { CaseCardSkeleton } from '@/components/skeletons/CardSkeleton';
+import { HomeCaseCard, HomeCaseCardSkeleton } from '@/components/homepage/HomeCaseCard';
 import { SearchOverlay } from '@/components/search/SearchOverlay';
 import { CampaignCard } from '@/components/CampaignCard';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
+import { SectionHeader } from '@/components/layout/SectionHeader';
+import { StickySegmentRail } from '@/components/layout/StickySegmentRail';
+import { useUserLocation } from '@/hooks/useUserLocation';
 import type { AnimalCase, Campaign } from '@/types';
 import { api } from '../../convex/_generated/api';
 
-type LandingIntent = 'urgent' | 'nearby' | 'success' | 'all';
-
 const PAGE_SIZE = 12;
+const DEFAULT_RADIUS_KM = 25;
 
-function mapFilterToIntent(filter: FilterTab): LandingIntent {
-  if (filter === 'urgent') return 'urgent';
-  if (filter === 'nearby') return 'nearby';
-  if (filter === 'success') return 'success';
-  return 'all';
-}
-
-function mapFilterToCity(filter: FilterTab): CityFilter | undefined {
-  if (filter === 'sofia' || filter === 'varna' || filter === 'plovdiv') return filter;
-  return undefined;
-}
+const cityFallbackLabels: Record<CityFilter, string> = {
+  sofia: 'Sofia',
+  varna: 'Varna',
+  plovdiv: 'Plovdiv',
+};
 
 const IndexV2 = () => {
   const { t, i18n } = useTranslation();
-  const [intentFilter, setIntentFilter] = useState<FilterTab>('urgent');
+  const [intent, setIntent] = useState<HomeIntent>('urgent');
+  const [city, setCity] = useState<CityFilter | undefined>(undefined);
+  const [radiusKm, setRadiusKm] = useState(DEFAULT_RADIUS_KM);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -53,8 +54,11 @@ const IndexV2 = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const city = mapFilterToCity(intentFilter);
-  const intent = mapFilterToIntent(intentFilter);
+  const { status: locationStatus, location, requestLocation } = useUserLocation();
+  const hasLocation = locationStatus === 'granted' && Boolean(location);
+  const near = intent === 'nearby' && hasLocation
+    ? { lat: location!.lat, lng: location!.lng, radiusKm }
+    : undefined;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 250);
@@ -66,12 +70,13 @@ const IndexV2 = () => {
     setNextCursor(null);
     setHasMore(false);
     setIsLoadingMore(false);
-  }, [intentFilter, debouncedSearch, i18n.language]);
+  }, [intent, city, radiusKm, locationStatus, location?.lat, location?.lng, debouncedSearch, i18n.language]);
 
   const initialFeed = useQuery(api.home.getLandingFeed, {
     locale: i18n.language,
     intent,
     city,
+    near,
     search: debouncedSearch || undefined,
     limit: PAGE_SIZE,
   });
@@ -83,6 +88,7 @@ const IndexV2 = () => {
         locale: i18n.language,
         intent,
         city,
+        near,
         search: debouncedSearch || undefined,
         cursor: loadCursor,
         limit: PAGE_SIZE,
@@ -155,16 +161,38 @@ const IndexV2 = () => {
     return () => observer.disconnect();
   }, [feedLoading, hasMore, loadMore]);
 
-  const displayCases = useMemo(() => {
+  const caseCards = useMemo(() => {
     return heroCase ? [heroCase, ...allCases] : allCases;
   }, [heroCase, allCases]);
 
-  const [horizontalCases, restCases] = useMemo(() => {
-    return [displayCases.slice(0, 6), displayCases.slice(6)];
-  }, [displayCases]);
+  const showDistance = intent === 'nearby' && hasLocation;
+  const needsLocation = intent === 'nearby' && !hasLocation;
+  const showStories = feedLoading || stories.length > 0;
+  const hasActiveMore = Boolean(city) || (showDistance && radiusKm !== DEFAULT_RADIUS_KM);
+  const caseContext = intent === 'adoption' ? 'adoption' : 'feed';
 
-  const handleIntentSelect = useCallback((nextFilter: FilterTab) => {
-    setIntentFilter(nextFilter);
+  const handleIntentChange = useCallback((nextIntent: HomeIntent) => {
+    setIntent(nextIntent);
+    if (nextIntent === 'nearby' && locationStatus !== 'granted' && locationStatus !== 'requesting') {
+      void requestLocation();
+    }
+  }, [locationStatus, requestLocation]);
+
+  const handleCityChange = useCallback((nextCity: CityFilter | undefined) => {
+    setCity(nextCity);
+    setIsMoreOpen(false);
+
+    // Near requires permission; city is the fallback for people who decline location.
+    if (intent === 'nearby' && !hasLocation) {
+      setIntent('urgent');
+    }
+  }, [hasLocation, intent]);
+
+  const handleClearFilters = useCallback(() => {
+    setIntent('urgent');
+    setCity(undefined);
+    setRadiusKm(DEFAULT_RADIUS_KM);
+    setIsMoreOpen(false);
   }, []);
 
   const handleSearch = useCallback((query: string) => {
@@ -176,39 +204,63 @@ const IndexV2 = () => {
     setDebouncedSearch('');
   }, []);
 
+  const cityLabel = useMemo(() => {
+    if (!city) return undefined;
+    return t(`cities.${city}`, cityFallbackLabels[city]);
+  }, [city, t]);
+
   const sectionTitle = useMemo(() => {
-    switch (intentFilter) {
-      case 'urgent':
-        return t('home.casesNeedingHelp', 'Cases Needing Help');
-      case 'nearby':
-        return t('home.nearYou', 'Near You');
-      case 'sofia':
-        return t('home.casesInCity', 'Cases in {{city}}', { city: 'София' });
-      case 'varna':
-        return t('home.casesInCity', 'Cases in {{city}}', { city: 'Варна' });
-      case 'plovdiv':
-        return t('home.casesInCity', 'Cases in {{city}}', { city: 'Пловдив' });
-      case 'success':
-        return t('home.successStories', 'Success Stories');
-      default:
-        return t('home.allCases', 'All Cases');
+    if (intent === 'nearby') {
+      return t('home.nearYou', 'Near You');
     }
-  }, [intentFilter, t]);
+
+    if (intent === 'adoption') {
+      return cityLabel
+        ? t('home.adoptionInCity', 'Adoption in {{city}}', { city: cityLabel })
+        : t('home.adoption', 'Adoption');
+    }
+
+    return cityLabel
+      ? t('home.casesInCity', 'Cases in {{city}}', { city: cityLabel })
+      : t('home.casesNeedingHelp', 'Cases Needing Help');
+  }, [cityLabel, intent, t]);
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+    <PageShell>
       <HomeHeaderV2
         onOpenSearch={() => setIsSearchOpen(true)}
         unreadNotifications={unreadNotifications}
-        topContent={<HeroCircles stories={stories} isLoading={feedLoading && stories.length === 0} />}
+        topContent={showStories ? <HeroCircles stories={stories} isLoading={feedLoading && stories.length === 0} /> : undefined}
       >
         <IntentFilterPills
-          selected={intentFilter}
-          onSelect={handleIntentSelect}
-          cityCounts={cityCounts}
-          className="px-0"
+          intent={intent}
+          onIntentChange={handleIntentChange}
+          hasActiveMore={hasActiveMore}
+          onOpenMore={() => setIsMoreOpen(true)}
         />
       </HomeHeaderV2>
+
+      <StickySegmentRail className="py-3">
+        <IntentFilterPills
+          contained={false}
+          intent={intent}
+          onIntentChange={handleIntentChange}
+          hasActiveMore={hasActiveMore}
+          onOpenMore={() => setIsMoreOpen(true)}
+        />
+      </StickySegmentRail>
+
+      <HomeFiltersDrawer
+        open={isMoreOpen}
+        onOpenChange={setIsMoreOpen}
+        city={city}
+        onCityChange={handleCityChange}
+        cityCounts={cityCounts}
+        radiusKm={radiusKm}
+        onRadiusChange={setRadiusKm}
+        showDistance={showDistance}
+        onClear={handleClearFilters}
+      />
 
       <SearchOverlay
         isOpen={isSearchOpen}
@@ -216,109 +268,124 @@ const IndexV2 = () => {
         onSearch={handleSearch}
       />
 
-      <section className="py-4">
-        <div className="container mx-auto px-4 max-w-3xl">
-          {debouncedSearch ? (
-            <div className="mb-3 rounded-xl border border-border/65 bg-card/80 px-3 py-2 flex items-center justify-between gap-2">
-              <p className="text-sm text-muted-foreground">
-                {t('home.searchResultsFor', 'Results for "{{query}}"', { query: debouncedSearch })}
-              </p>
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="rounded-md px-2 py-1 text-xs font-semibold text-primary transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {t('actions.clear', 'Clear')}
-              </button>
-            </div>
-          ) : null}
+      <PageSection className="pt-3">
+        {debouncedSearch ? (
+          <div className="mb-3.5 flex items-center justify-between gap-2 rounded-2xl border border-border/65 bg-surface-elevated px-3 py-2 shadow-xs">
+            <p className="text-sm text-muted-foreground">
+              {t('home.searchResultsFor', 'Results for "{{query}}"', { query: debouncedSearch })}
+            </p>
+            <Button type="button" variant="ghost" className="h-7 px-2 text-xs font-semibold" onClick={clearSearch}>
+              {t('actions.clear', 'Clear')}
+            </Button>
+          </div>
+        ) : null}
 
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold text-foreground">{sectionTitle}</h2>
-              {!feedLoading && (
-                <span className="text-xs text-muted-foreground">
-                  ({displayCases.length})
-                </span>
-              )}
+        <SectionHeader title={sectionTitle} count={feedLoading ? undefined : caseCards.length} />
+
+        {needsLocation ? (
+          <div className="mb-5 rounded-2xl border border-border/60 bg-surface-elevated p-4 shadow-xs">
+            <p className="text-sm font-semibold text-foreground">
+              {t('home.enableLocationTitle', 'Enable location to see nearby cases')}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t('home.enableLocationBody', 'We only use your approximate location to filter this feed.')}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                className="h-11 rounded-xl text-base"
+                onClick={() => requestLocation()}
+                disabled={locationStatus === 'requesting'}
+              >
+                {locationStatus === 'requesting'
+                  ? t('home.requestingLocation', 'Requesting...')
+                  : t('home.enableLocationCta', 'Enable location')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 rounded-xl text-base"
+                onClick={() => setIsMoreOpen(true)}
+              >
+                {t('home.chooseCity', 'Choose city')}
+              </Button>
             </div>
           </div>
+        ) : null}
 
-          {feedLoading ? (
-            <div className="space-y-4">
-              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
-                <div className="flex gap-3 pb-1" style={{ width: 'max-content' }}>
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <CompactCaseCardSkeleton key={`compact-skeleton-${index}`} className="w-56 shrink-0" />
-                  ))}
+        {feedLoading ? (
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <HomeCaseCardSkeleton key={`case-skeleton-${index}`} variant="compact" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+            {caseCards.map((caseData, index) => (
+              <Fragment key={caseData.id}>
+                {featuredInitiative && caseCards.length > 0 && index === 2 ? (
+                  <section className="col-span-2 rounded-2xl border border-border/65 bg-surface-elevated p-3 lg:col-span-3">
+                    <div className="mb-2 flex items-center gap-2">
+                      <h3 className="font-display text-sm font-semibold text-foreground">
+                        {t('campaigns.initiatives', 'Pawtreon Initiatives')}
+                      </h3>
+                    </div>
+                    <CampaignCard campaign={featuredInitiative} />
+                  </section>
+                ) : null}
+
+                <HomeCaseCard
+                  caseData={caseData}
+                  context={caseContext}
+                  variant="compact"
+                  {...(heroCase && index === 0 ? { 'data-tour': 'case-card' } : undefined)}
+                />
+              </Fragment>
+            ))}
+
+            {featuredInitiative && caseCards.length > 0 && caseCards.length <= 2 ? (
+              <section className="col-span-2 rounded-2xl border border-border/65 bg-surface-elevated p-3 lg:col-span-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <h3 className="font-display text-sm font-semibold text-foreground">
+                    {t('campaigns.initiatives', 'Pawtreon Initiatives')}
+                  </h3>
                 </div>
+                <CampaignCard campaign={featuredInitiative} />
+              </section>
+            ) : null}
+
+            {caseCards.length === 0 && !needsLocation ? (
+              <div className="col-span-2 rounded-2xl border border-border/60 bg-surface-elevated p-6 text-center lg:col-span-3">
+                <p className="text-sm text-muted-foreground">
+                  {debouncedSearch
+                    ? t('home.noSearchResults', 'No cases found for "{{query}}"', { query: debouncedSearch })
+                    : t('home.noMatches', 'No cases match this filter')}
+                </p>
               </div>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <CaseCardSkeleton key={`case-skeleton-${index}`} />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {horizontalCases.length > 0 ? (
-                <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
-                  <div className="flex gap-3 pb-1" style={{ width: 'max-content' }}>
-                    {horizontalCases.map((caseData, index) => (
-                      <div key={caseData.id} className="w-56 shrink-0" {...(index === 0 ? { 'data-tour': 'case-card' } : {})}>
-                        <CompactCaseCard caseData={caseData} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
+            ) : null}
+          </div>
+        )}
 
-              {featuredInitiative ? (
-                <section className="rounded-2xl border border-border/60 bg-card/70 p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-sm font-semibold text-foreground">
-                      {t('campaigns.initiatives', 'Pawtreon Initiatives')}
-                    </h3>
-                  </div>
-                  <CampaignCard campaign={featuredInitiative} />
-                </section>
-              ) : null}
+        {hasMore && !feedLoading && allCases.length > 0 ? (
+          <div ref={loadMoreRef} className="flex justify-center py-8">
+            {isLoadingMore ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm">{t('common.loadingMore', 'Loading more...')}</span>
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground">{t('common.scrollToLoad', 'Scroll to load more')}</span>
+            )}
+          </div>
+        ) : null}
 
-              {restCases.map((caseData) => (
-                <TwitterCaseCard key={caseData.id} caseData={caseData} />
-              ))}
-
-              {displayCases.length === 0 ? (
-                <div className="rounded-2xl border border-border/60 bg-card/70 p-6 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    {debouncedSearch
-                      ? t('home.noSearchResults', 'No cases found for "{{query}}"', { query: debouncedSearch })
-                      : t('home.noMatches', 'No cases match this filter')}
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          )}
-
-          {hasMore && !feedLoading && allCases.length > 0 ? (
-            <div ref={loadMoreRef} className="flex justify-center py-8">
-              {isLoadingMore ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">{t('common.loadingMore', 'Loading more...')}</span>
-                </div>
-              ) : (
-                <span className="text-xs text-muted-foreground">{t('common.scrollToLoad', 'Scroll to load more')}</span>
-              )}
-            </div>
-          ) : null}
-
-          {!hasMore && !feedLoading && allCases.length > 0 ? (
-            <div className="text-center py-8 text-muted-foreground text-sm">
-              {t('home.endOfList', "You've seen all cases")}
-            </div>
-          ) : null}
-        </div>
-      </section>
-    </div>
+        {!hasMore && !feedLoading && allCases.length > 0 ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            {t('home.endOfList', "You've seen all cases")}
+          </div>
+        ) : null}
+      </PageSection>
+    </PageShell>
   );
 };
 

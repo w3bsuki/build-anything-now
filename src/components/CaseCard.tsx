@@ -6,6 +6,7 @@ import { AnimalCase } from '@/types';
 import { StatusBadge } from './StatusBadge';
 import { ShareButton } from './ShareButton';
 import { cn } from '@/lib/utils';
+import { getStatusTone } from '@/lib/statusTone';
 import { Button } from '@/components/ui/button';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ReportedBadge } from '@/components/trust/ReportedBadge';
@@ -30,40 +31,20 @@ function formatTimeAgo(dateString: string): string {
   return `${Math.floor(diffDays / 30)}mo ago`;
 }
 
-// Status config using design tokens
-const statusConfig = {
-  critical: { 
-    progress: 'bg-destructive',
-    button: 'bg-destructive hover:bg-destructive/90',
-  },
-  urgent: { 
-    progress: 'bg-destructive',
-    button: 'bg-destructive hover:bg-destructive/90',
-  },
-  recovering: { 
-    progress: 'bg-recovering',
-    button: 'bg-recovering hover:bg-recovering/90',
-  },
-  adopted: { 
-    progress: 'bg-adopted',
-    button: 'bg-adopted hover:bg-adopted/90',
-  },
-};
-
 export function CaseCard({ caseData, className }: CaseCardProps) {
   const { t } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
-  const status = statusConfig[caseData.status];
+  const statusTone = getStatusTone(caseData.status);
   const isCritical = caseData.status === 'critical';
   const timeAgo = formatTimeAgo(caseData.createdAt);
   
   return (
     <article
       className={cn(
-        'group relative bg-card rounded-xl overflow-hidden shadow-sm ring-1 ring-border/30 hover:ring-border/50 hover:shadow-md transition-all duration-200',
+        'group relative overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs transition-all duration-200 hover:border-border/80 hover:shadow-sm',
         className
       )}
     >
@@ -80,7 +61,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
 
       <Link to={`/case/${caseData.id}`} className="block">
         {/* Image with overlays */}
-        <div className="relative aspect-4/3 overflow-hidden bg-muted">
+        <div className="relative aspect-4/3 overflow-hidden bg-surface-sunken">
           {/* Loading skeleton */}
           {!imageLoaded && !imageError && (
             <div className="absolute inset-0 bg-muted flex items-center justify-center">
@@ -113,12 +94,12 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           
           {/* Status badge with urgency pulse */}
           <div className="absolute top-3 left-3">
-            <StatusBadge 
+            <StatusBadge
               status={caseData.status} 
               size="sm" 
               className={cn(
                 "shadow-sm backdrop-blur-md",
-                isCritical && "relative after:content-[''] after:absolute after:-right-1 after:top-1/2 after:-translate-y-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-destructive-foreground/90 after:animate-pulse"
+                isCritical && "relative after:absolute after:-right-1 after:top-1/2 after:h-1.5 after:w-1.5 after:-translate-y-1/2 after:animate-pulse after:rounded-full after:bg-destructive-foreground/90 after:content-['']"
               )} 
             />
           </div>
@@ -142,7 +123,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
               <div 
                 className={cn(
                   "h-full rounded-full transition-all duration-500",
-                  status.progress
+                  statusTone.progress
                 )}
                 style={{ width: `${percentage}%` }}
               />
@@ -178,8 +159,8 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
         <Button 
           asChild 
           className={cn(
-            "w-full h-10 rounded-lg font-semibold text-sm transition-all text-white",
-            status.button
+            "h-10 w-full rounded-xl text-sm font-semibold transition-colors",
+            statusTone.cta
           )}
         >
           <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>

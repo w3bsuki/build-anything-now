@@ -1,11 +1,16 @@
-# Traction & Metrics
+# Traction & Metrics
+
+> **Owner:** Founders
+> **Status:** review
+> **Last updated:** 2026-02-09
 
 ---
 
 ## Current Status
 
-> **Stage:** Pre-Launch / Development  
-> **Product Readiness:** ~35%
+> **Stage:** Pre-Launch / Late Development  
+> **Product Readiness:** ~60%  
+> **Sprint Position:** Week 7 of 8 (MVP sprint)
 
 ---
 
@@ -15,23 +20,34 @@
 
 | Metric | Value |
 |--------|-------|
-| Total Lines of Code | ~15,000 |
-| React Components | 50+ |
-| Backend Functions | 20+ |
-| Supported Languages | 5 |
-| Test Coverage | 0% (pre-launch) |
+| Total Lines of Code | [FILL: Run `find src convex -name '*.ts' -o -name '*.tsx' | xargs wc -l` for current count] |
+| React Components | 60+ |
+| Convex Backend Functions | 20+ function files (cases, donations, users, clinics, campaigns, community, volunteers, reports, settings, notifications, achievements, activity, home, social, storage, translate, partners, paymentMethods) |
+| Supported Languages | 5 (EN, BG, UK, RU, DE) |
+| Test Coverage | 0% (testing strategy specced, Vitest framework selected) |
+| Full Spec Docs Written | 34 specs across features, systems, design, business, missions |
 
 ### Feature Completion
 
 | Feature | Status | Completion |
 |---------|--------|------------|
-| UI Components | ✅ Built | 70% |
-| Page Layouts | ✅ Built | 80% |
-| Backend Schema | ✅ Defined | 90% |
-| API Endpoints | 🟡 Partial | 40% |
-| Authentication | 🔴 Pending | 10% |
-| Payments | 🔴 Pending | 0% |
-| Mobile Apps | 🟡 Configured | 20% |
+| Authentication (Clerk) | ✅ Complete | 100% |
+| Home Feed (case-first) | ✅ Complete | 100% |
+| Case Lifecycle + Updates | ✅ Complete | 100% |
+| Create Case (wired to Convex) | ✅ Complete | 100% |
+| Community Forum | ✅ Complete | 100% |
+| Moderation + Audit Logging | ✅ Complete | 100% |
+| Mission Initiatives | ✅ Complete | 100% |
+| Profiles + Capabilities | ✅ Complete | 100% |
+| I18n (5 languages) | ✅ Complete | 100% |
+| UI Components (shadcn/ui) | ✅ Complete | 90% |
+| Donations (Stripe checkout) | 🟡 In Progress | 80% |
+| Clinic Directory + Claim | 🟡 In Progress | 60% |
+| Campaigns | 🟡 In Progress | 70% |
+| Mobile Apps (Capacitor) | 🟡 Configured | 30% |
+| Adoption Flow | 🔴 Backlog | 10% |
+| Notifications | 🔴 Not Started | 0% |
+| Volunteer System | 🔴 Not Started | 0% |
 
 ---
 
@@ -41,64 +57,63 @@
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Email Waitlist | 500 | TODO |
-| Social Followers | 1,000 | TODO |
-| Shelter Interest | 20 | TODO |
-
-*Fill in actual numbers*
+| Email Waitlist | 500 | [FILL: current waitlist count] |
+| Social Followers | 1,000 | [FILL: current social followers (IG/FB/TikTok)] |
+| Shelter Interest | 20 | [FILL: number of shelters/clinics expressing interest] |
 
 ---
 
-### Shelter Pipeline
+### Shelter / Clinic Pipeline
 
-| Shelter | Location | Status | Notes |
+| Partner | Location | Status | Notes |
 |---------|----------|--------|-------|
-| TODO Shelter | Sofia, BG | Interested | Initial call done |
-| TODO Shelter | Plovdiv, BG | Interested | Awaiting demo |
-| TODO Shelter | Varna, BG | Lead | Outreach sent |
-| ... | ... | ... | ... |
+| [FILL: Clinic/Shelter name] | Sofia, BG | [FILL: status] | [FILL: notes] |
+| [FILL: Clinic/Shelter name] | Plovdiv, BG | [FILL: status] | [FILL: notes] |
+| [FILL: Clinic/Shelter name] | Varna, BG | [FILL: status] | [FILL: notes] |
+
+*Add real partner pipeline data as outreach progresses*
 
 ---
 
-## Launch Targets (Month 1-2)
+## Launch Targets (Month 1–2)
 
 ### User Metrics
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Registered Users | 500 | TODO |
-| Monthly Active Users | 200 | TODO |
-| Returning Users (D7) | 30% | TODO |
-| Returning Users (D30) | 15% | TODO |
+| Registered Users | 500 | [FILL: post-launch] |
+| Monthly Active Users | 200 | [FILL: post-launch] |
+| Returning Users (D7) | 30% | [FILL: post-launch] |
+| Returning Users (D30) | 15% | [FILL: post-launch] |
 
 ### Donation Metrics
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Total Donations | €10,000 | TODO |
-| Number of Donations | 200 | TODO |
-| Average Donation | €50 | TODO |
-| Recurring Donors | 20 | TODO |
+| Total Donations | €10,000 | [FILL: post-launch] |
+| Number of Donations | 200 | [FILL: post-launch] |
+| Average Donation | €50 | [FILL: post-launch] |
+| Recurring Donors | 20 | [FILL: post-launch] |
 
 ### Shelter Metrics
 
 | Metric | Target | Tracking |
 |--------|--------|----------|
-| Registered Shelters | 20 | TODO |
-| Active Shelters | 10 | TODO |
-| Cases Created | 50 | TODO |
-| Campaigns Created | 5 | TODO |
+| Registered Clinics/Shelters | 20 | [FILL: post-launch] |
+| Active Clinics/Shelters | 10 | [FILL: post-launch] |
+| Cases Created | 50 | [FILL: post-launch] |
+| Campaigns Created | 5 | [FILL: post-launch] |
 
 ---
 
-## Growth Targets (Month 3-6)
+## Growth Targets (Month 3–6)
 
 | Metric | Month 3 | Month 4 | Month 5 | Month 6 |
 |--------|---------|---------|---------|---------|
 | **Users** | 1,000 | 2,000 | 3,500 | 5,000 |
 | **MAU** | 400 | 800 | 1,400 | 2,000 |
 | **Donations** | €30K | €60K | €100K | €200K |
-| **Shelters** | 30 | 40 | 50 | 75 |
+| **Clinics/Shelters** | 30 | 40 | 50 | 75 |
 | **Paid Subs** | 0 | 5 | 10 | 20 |
 
 ---
@@ -120,6 +135,7 @@
 | **DAU/MAU** | Daily Active / Monthly Active | > 20% |
 | **Session Duration** | Avg time in app | > 3 min |
 | **Sessions/User** | Sessions / Users per week | > 2 |
+| **Time-to-Case-Created** | Start → published case | < 3 min |
 
 ### Conversion
 
@@ -127,6 +143,7 @@
 |-----|---------|--------|
 | **Visitor → User** | Signups / Visitors | > 10% |
 | **User → Donor** | Donors / Users | > 15% |
+| **Case View → Donate** | Donations / Case Views | > 5% |
 | **One-time → Recurring** | Recurring / Total Donors | > 10% |
 
 ### Revenue
@@ -145,7 +162,16 @@
 | **D1 Retention** | Users returning Day 1 | > 40% |
 | **D7 Retention** | Users returning Day 7 | > 25% |
 | **D30 Retention** | Users returning Day 30 | > 15% |
+| **Repeat Donor Rate (D30)** | Donors donating again in 30 days | > 10% |
 | **Churn Rate** | Lost Users / Total Users | < 10%/mo |
+
+### Trust & Safety
+
+| KPI | Formula | Target |
+|-----|---------|--------|
+| **Verification Rate** | Verified cases / Total cases | > 30% |
+| **Report Resolution Time** | Median time to resolve reports | < 24h |
+| **Share Rate** | Cases shared / Cases viewed | > 5% |
 
 ---
 
@@ -165,20 +191,30 @@
 
 ### Validation Signals
 
-- [ ] Shelter partners expressing strong interest
-- [ ] Donor feedback on prototype
-- [ ] Press/media coverage
-- [ ] Industry expert endorsements
-- [ ] Successful beta test
+- [x] Full tech stack selected and validated (React 19, Convex, Clerk, Stripe)
+- [x] Database schema designed (23+ tables)
+- [x] UI component library built (shadcn/ui + Tailwind v4)
+- [x] Multi-language support implemented (5 languages)
+- [x] Auth fully integrated (Clerk multi-provider)
+- [x] Payment processing implemented (Stripe hosted checkout + webhook)
+- [x] Case lifecycle complete (create, update, close with evidence)
+- [x] Moderation + audit logging shipped
+- [x] Community forum shipped
+- [x] Mission initiatives shipped
+- [x] 34 comprehensive spec documents written (features, systems, design, business)
+- [ ] Shelter partners expressing strong interest — [FILL: status]
+- [ ] Donor feedback on live product — [FILL: post-launch]
+- [ ] Press/media coverage — [FILL: status]
+- [ ] Successful beta test — [FILL: post-launch]
 
 ### Partnerships in Pipeline
 
 | Partner Type | Status | Details |
 |--------------|--------|---------|
-| Animal Welfare NGO | TODO | TODO |
-| Vet Clinic Chain | TODO | TODO |
-| Pet Food Brand | TODO | TODO |
-| Corporate CSR Partner | TODO | TODO |
+| Animal Welfare NGO | [FILL: status] | [FILL: name, city, notes] |
+| Vet Clinic | [FILL: status] | [FILL: name, city, notes] |
+| Pet Food Brand | [FILL: status] | [FILL: name, notes] |
+| Corporate CSR Partner | [FILL: status] | [FILL: name, notes] |
 
 ---
 
@@ -187,65 +223,28 @@
 ### Technical Milestones ✅
 
 - [x] Tech stack selected and validated
-- [x] Database schema designed
-- [x] UI component library built
-- [x] Multi-language support implemented
-- [x] Mobile app configuration complete
-- [ ] Authentication integrated
-- [ ] Payment processing live
+- [x] Database schema designed (23+ Convex tables)
+- [x] UI component library built (60+ components)
+- [x] Multi-language support implemented (5 languages)
+- [x] Mobile app configuration complete (Capacitor iOS + Android)
+- [x] Authentication integrated (Clerk — email, Google, Apple, Facebook)
+- [x] Payment processing implemented (Stripe hosted checkout + webhook)
+- [x] Case creation wired to Convex with photo storage
+- [x] Case lifecycle transitions enforced
+- [x] Structured updates with evidence (medical, milestone, success)
+- [x] Community forum with mobile shell + moderation
+- [x] Moderation queue + admin review + audit logging
+- [x] Mission initiative campaigns with classification
+- [ ] Receipt UX polish (in progress)
+- [ ] Clinic claim admin queue (in progress)
+- [ ] Native app store builds
 - [ ] Production deployment
 
 ### Business Milestones
 
-- [ ] First shelter partner signed
-- [ ] First donation processed
-- [ ] First €1,000 in donations
-- [ ] First €10,000 in donations
-- [ ] First paying customer (shelter)
-- [ ] First sponsor deal
-
----
-
-## Dashboard Preview
-
-*What we'll track post-launch:*
-
-```
-┌─────────────────────────────────────────────────┐
-│  📊 Pawtreon Dashboard - January 2026           │
-├─────────────────────────────────────────────────┤
-│                                                 │
-│  Users        Donations     Shelters   Cases    │
-│  ┌────────┐   ┌────────┐   ┌───────┐  ┌──────┐ │
-│  │  524   │   │ €8,420 │   │  12   │  │  34  │ │
-│  │  +23%  │   │  +45%  │   │  +2   │  │ +8   │ │
-│  └────────┘   └────────┘   └───────┘  └──────┘ │
-│                                                 │
-│  Conversion Funnel                              │
-│  Visitors → Users → Donors → Recurring          │
-│  10,000  →  524   →  78    →    12              │
-│           5.2%      14.9%      15.4%            │
-│                                                 │
-│  Top Cases by Donations                         │
-│  1. Luna's Surgery - €2,450 (goal: €3,000)     │
-│  2. Max's Recovery - €1,200 (goal: €1,500)     │
-│  3. Shelter Heating - €890 (goal: €2,000)      │
-│                                                 │
-└─────────────────────────────────────────────────┘
-```
-
----
-
-## Data Collection Plan
-
-| Data Point | Tool | When |
-|------------|------|------|
-| User signups | Convex | Real-time |
-| Donations | Stripe | Real-time |
-| Page views | Analytics | Daily |
-| Feature usage | PostHog | Daily |
-| Errors | Sentry | Real-time |
-| Feedback | In-app | Ongoing |
+- [ ] First shelter partner signed — [FILL: status]
+- [ ] First donation processed — [FILL: post-launch]
+- [ ] First paid subscription — [FILL: post-launch]
 
 ---
 

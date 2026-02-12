@@ -23,11 +23,13 @@ export function HomeHeaderV2({
 
   return (
     <>
-      <header className="md:hidden sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-xl pt-[env(safe-area-inset-top)] border-b border-nav-border/70">
-        <div className="flex items-center justify-between h-14 px-4">
-          <NavLink to="/" className="flex items-center gap-2">
-            <HeartHandshake className="size-5 text-primary" strokeWidth={2} />
-            <span className="font-bold text-lg tracking-tight text-foreground">Pawtreon</span>
+      <header className="md:hidden sticky top-0 z-50 border-b border-nav-border/80 bg-nav-surface pt-[env(safe-area-inset-top)]">
+        <div className="flex h-14 items-center justify-between px-4">
+          <NavLink to="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 ring-1 ring-primary/30">
+              <HeartHandshake className="size-4 text-primary" strokeWidth={2.3} />
+            </div>
+            <span className="font-display text-lg font-bold tracking-tight text-foreground">Pawtreon</span>
           </NavLink>
 
           <div className="flex items-center -space-x-1 -mr-1">
@@ -78,9 +80,9 @@ export function HomeHeaderV2({
       </header>
 
       {topContent ? (
-        <section className="md:hidden border-b border-nav-border/60 bg-nav-surface/90 backdrop-blur-md">
+        <section className="md:hidden border-b border-nav-border/70 bg-nav-surface">
           <div className="px-4 pt-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-foreground/75">
               {t('home.urgentUpdates', 'Urgent Updates')}
             </p>
           </div>
@@ -88,7 +90,7 @@ export function HomeHeaderV2({
         </section>
       ) : null}
 
-      <div className="md:hidden sticky top-[calc(env(safe-area-inset-top)+56px)] z-40 bg-nav-surface/95 backdrop-blur-xl border-b border-nav-border/60 px-4 py-2">
+      <div className="md:hidden sticky top-[calc(env(safe-area-inset-top)+56px)] z-40 border-b border-nav-border/75 bg-nav-surface px-4 py-2">
         {children}
       </div>
     </>

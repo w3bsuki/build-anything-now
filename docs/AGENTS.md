@@ -1,8 +1,9 @@
 # Pawtreon Docs Agent Contract (`docs/`)
 
-> Purpose: Keep documentation decision-complete, consistent, and usable by humans and coding agents.  
-> Scope: Applies to all files under `docs/`.  
-> Last updated: 2026-02-06
+> **Owner:** OPUS + Human  
+> **Status:** final  
+> **Last updated:** 2026-02-10  
+> **Scope:** Applies to all files under `docs/`.
 
 ---
 
@@ -15,10 +16,6 @@
    - Repo root `AGENTS.md`
    - This `docs/AGENTS.md`
 4. Keep this file focused on writing workflow, not product policy duplication.
-
-Reference guidance:
-- OpenAI AGENTS guide: `https://openai.github.io/codex/guides/agents/`
-- AGENTS.md format notes: `https://agents.md/`
 
 ---
 
@@ -36,17 +33,27 @@ Canonical root docs are the only control plane:
 Everything in `docs/` is supporting depth.  
 Rule: never create a second source of truth in `docs/` that contradicts a canonical root doc.
 
+Feature status ownership:
+- Implementation state (`[x]`, `[~]`, `[ ]`) is canonical in `PRD.md`.
+- `docs/features/INDEX.md` is a generated mirror for visibility, not an authoritative status source.
+- Spec `Status` (`draft/review/final`) tracks document maturity only.
+
 ---
 
 ## 3) Docs Map and Ownership
 
 Use only these packs (unless human approves a structural change):
-- `docs/product/` - vision details, roadmap, behavior specs
-- `docs/architecture/` - stack baseline, data-model audits
-- `docs/design/` - UI audits, styling remediation plans
-- `docs/partners/` - clinics/partners claim and outreach ops
-- `docs/mission/` - platform initiatives (drones/safehouse roadmap)
-- `docs/investor/` - investor-facing narrative assets
+
+| Folder | Purpose |
+|--------|---------|
+| `docs/product/` | Product strategy, roadmap, and master plan (root `PRD.md` stays canonical) |
+| `docs/features/` | Per-feature specs (profiles, cases, donations, etc.) |
+| `docs/systems/` | Architecture, data model, API reference, auth, deployment, testing, analytics |
+| `docs/design/` | UI/UX patterns, theming tokens, mobile-native, i18n |
+| `docs/business/` | Revenue model, partner types, growth strategy |
+| `docs/missions/` | Platform initiative specs (drones, safehouse, marketplace, insurance) |
+| `docs/partners/` | Operational partner docs (seeding, claims, outreach) |
+| `docs/investor/` | Investor-facing narrative assets |
 
 Do not add planning docs to repo root.
 
@@ -55,31 +62,45 @@ Do not add planning docs to repo root.
 ## 4) Required Header for New Docs
 
 Every new planning/spec/audit doc must start with:
-- Title (`# ...`)
-- `Owner`
-- `Update cadence`
-- `Last updated` (YYYY-MM-DD)
 
-Example:
 ```md
-# Example Doc
-- Owner: Product
-- Update cadence: Weekly
-- Last updated: 2026-02-06
+# [Title]
+
+> **Owner:** [who maintains this]
+> **Status:** draft | review | final
+> **Last updated:** YYYY-MM-DD
+> **PRD Ref:** [checklist item(s), if applicable]
 ```
+
+### Status Lifecycle
+
+| Status | Meaning | Allowed Edits |
+|--------|---------|---------------|
+| `draft` | Work in progress, incomplete | Any edits allowed |
+| `review` | Under Codex/Human review | Only review-driven fixes |
+| `final` | Approved and locked | Corrections only (typos, broken links, date updates). Content changes require re-opening to `draft` with DECISIONS.md entry. |
+
+**Escape hatch:** A `final` doc can be reopened to `draft` when:
+1. The underlying code/schema changes in a way that invalidates the spec.
+2. A DECISIONS.md entry documents why the spec is being reopened.
+3. The spec is re-promoted to `final` after updates are reviewed.
 
 ---
 
-## 5) Writing Standard (Decision-Complete)
+## 5) Spec Template (Decision-Complete)
 
-For implementation-facing docs, include these sections:
-1. `Summary`
-2. `Scope` (in/out)
-3. `Interfaces / Data / API impact` (when relevant)
-4. `States / Flows / Edge cases` (when relevant)
-5. `Acceptance criteria` (testable)
-6. `Risks + mitigations`
-7. `Open items` (only if truly unresolved)
+Every feature spec follows this 10-section structure:
+
+1. **Purpose** — Why this feature exists. One paragraph.
+2. **User Stories** — As a [role], I want to [action] so that [outcome].
+3. **Functional Requirements** — Numbered list of what the feature MUST do.
+4. **Data Model** — Tables, fields, indexes, relationships (reference schema.ts).
+5. **API Surface** — Convex queries, mutations, actions needed.
+6. **UI Surfaces** — Pages, components, routes involved.
+7. **Edge Cases & Abuse** — What can go wrong. How we handle it.
+8. **Non-Functional Requirements** — Performance, security, accessibility, i18n.
+9. **Acceptance Criteria** — Testable pass/fail assertions. Use `- [ ]` checkboxes.
+10. **Open Questions** — Unresolved decisions (link to DECISIONS.md when resolved).
 
 Rules:
 - Prefer concrete bullets over long narrative.
@@ -93,56 +114,25 @@ Rules:
 
 1. Use lowercase kebab-case file names.
 2. Use meaningful suffixes:
-   - `*-plan.md`
-   - `*-spec.md`
-   - `*-audit.md`
-   - `*-baseline.md`
+   - `*-spec.md` — feature or system spec
+   - `*-plan.md` — operational plan
+   - `*-audit.md` — audit findings
 3. Place each doc in the closest domain folder; do not create root-level `.md` files.
-4. If content is obsolete, remove it (or merge the still-relevant parts into active docs) instead of leaving stale active docs.
 
 ---
 
-## 7) Update Workflow (Required)
+## 7) Visual Audit Artifacts
 
-When changing product behavior:
-1. Update canonical source first (`PRD.md`, `DESIGN.md`, `RULES.md`, `TASKS.md` as needed).
-2. Sync supporting docs under `docs/`.
-3. If a durable decision is made, append to `DECISIONS.md`.
-4. If a doc is superseded, mark it clearly and point to the replacement.
+1. Store screenshots only when actively referenced by an open audit doc.
+2. Delete screenshots once the audit findings are absorbed into specs.
+3. No PNG accumulation — keep `docs/` clean and text-first.
 
 ---
 
-## 8) Quality Gate Before Merging Docs
+## 8) Post-Edit Checklist
 
-Checklist:
-- [ ] No contradiction with root canonical docs.
-- [ ] All linked paths exist.
-- [ ] Dates updated.
-- [ ] Acceptance criteria are testable.
-- [ ] No archived process reintroduced (`.specs`, removed root docs, etc.).
-
-Optional but recommended:
-- [ ] Add or update screenshot artifacts for UI audits in `docs/design/`.
-
----
-
-## 9) Visual Audit Convention
-
-For UI audits:
-1. Store images in `docs/design/`.
-2. Store write-up as `docs/design/<surface>-visual-audit.md`.
-3. Include:
-   - route list
-   - viewport coverage (desktop/mobile)
-   - severity-ranked findings
-   - concrete fix queue
-4. Prefer evidence from runtime logs plus screenshot artifacts.
-
----
-
-## 10) What Not To Do
-
-- Do not duplicate canonical checklists from `PRD.md` inside random supporting docs.
-- Do not add speculative features as "committed" scope without updating `PRD.md`.
-- Do not keep stale investor/ops claims in active docs once product reality changes.
-- Do not expand root doc count beyond the hard cap.
+After updating any doc:
+1. Verify no contradictions with root canonical docs.
+2. Regenerate `docs/features/INDEX.md` when feature specs or PRD checklist links change (`pnpm docs:index`).
+3. Run docs validation (`pnpm docs:check`) and fix any failures.
+4. Update `Last updated` date in header.

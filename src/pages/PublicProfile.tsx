@@ -94,7 +94,7 @@ const PublicProfile = () => {
     return (
       <div className="min-h-screen pb-20 md:pb-8 md:pt-16 bg-background">
         {/* Mobile Header */}
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border md:hidden">
+        <header className="sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70 md:hidden">
           <div className="flex items-center gap-3 h-14 px-4">
             <button
               onClick={() => navigate(-1)}
@@ -150,7 +150,7 @@ const PublicProfile = () => {
   return (
     <div className={cn("min-h-screen bg-background", bottomPadding)}>
       {/* Mobile Header - Twitter style with avatar */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border md:hidden">
+      <header className="sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70 md:hidden">
         <div className="flex items-center gap-3 h-14 px-4">
           <button
             onClick={() => navigate(-1)}
@@ -202,7 +202,7 @@ const PublicProfile = () => {
 
       <div className="container max-w-2xl mx-auto px-4">
         {/* Profile Card - Clean card design */}
-        <div className="bg-card rounded-xl border border-border/50 overflow-hidden mt-4 shadow-sm">
+        <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden mt-4 shadow-sm">
           {/* Cover area */}
           <div className="h-20 md:h-24 bg-surface-overlay/40" />
           
@@ -321,7 +321,7 @@ const PublicProfile = () => {
         {/* Tabs - Responsive: icons only on mobile, icons + text on larger screens */}
         <Tabs defaultValue="cases" className="mt-4">
           <TabsList className={cn(
-            "w-full h-12 p-1 bg-card rounded-xl border border-border/50 grid overflow-hidden gap-1",
+            "w-full h-12 p-1 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs grid overflow-hidden gap-1",
             profile.isOwnProfile ? "grid-cols-4" : "grid-cols-3"
           )}>
             <TabsTrigger 
@@ -363,7 +363,7 @@ const PublicProfile = () => {
             {userCases && userCases.length > 0 ? (
               <ProfileCases cases={userCases} />
             ) : (
-              <div className="bg-card rounded-xl border border-border/50 p-8 text-center">
+              <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-8 text-center">
                 <PawPrint className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                 <h3 className="text-base font-semibold text-foreground mb-1">{t('profile.noCases')}</h3>
                 <p className="text-sm text-muted-foreground">{t('profile.noCasesDesc')}</p>
@@ -372,7 +372,7 @@ const PublicProfile = () => {
           </TabsContent>
 
           <TabsContent value="impact" className="mt-4">
-            <div className="bg-card rounded-xl border border-border/50 p-4">
+            <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-4">
               {/* Main stat */}
               <div className="text-center pb-4 border-b border-border mb-4">
                 <div className="text-3xl font-bold text-primary">
@@ -404,7 +404,7 @@ const PublicProfile = () => {
           </TabsContent>
 
           <TabsContent value="badges" className="mt-4">
-            <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
               <ProfileBadges badges={profile.badges ?? []} />
             </div>
           </TabsContent>
@@ -413,7 +413,7 @@ const PublicProfile = () => {
             {savedCases && savedCases.length > 0 ? (
               <ProfileCases cases={savedCases} />
             ) : (
-              <div className="bg-card rounded-xl border border-border/50 p-8 text-center">
+              <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-8 text-center">
                 <Bookmark className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                 <h3 className="text-base font-semibold text-foreground mb-1">{t('profile.noSavedCases')}</h3>
                 <p className="text-sm text-muted-foreground">{t('profile.noSavedCasesDesc')}</p>

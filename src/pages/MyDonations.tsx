@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  ArrowLeft, 
-  Heart, 
-  PawPrint, 
+import type { TFunction } from 'i18next';
+import {
+  ArrowLeft,
+  Heart,
+  PawPrint,
   Clock,
   ExternalLink,
   ListFilter,
@@ -11,116 +12,125 @@ import {
   Hourglass,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useQuery } from 'convex/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-// Mock data - will be replaced with Convex data
-const mockDonations = [
-  {
-    id: '1',
-    caseName: 'Luna - Emergency Surgery',
-    caseImage: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop',
-    amount: 50,
-    currency: 'EUR',
-    status: 'completed' as const,
-    createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
-    caseStatus: 'recovering' as const,
-    caseProgress: 78,
-    caseGoal: 1500,
-  },
-  {
-    id: '2',
-    caseName: 'Max - Street Rescue',
-    caseImage: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&h=200&fit=crop',
-    amount: 30,
-    currency: 'EUR',
-    status: 'completed' as const,
-    createdAt: Date.now() - 7 * 24 * 60 * 60 * 1000,
-    caseStatus: 'adopted' as const,
-    caseProgress: 100,
-    caseGoal: 800,
-  },
-  {
-    id: '3',
-    caseName: 'Bella - Medical Treatment',
-    caseImage: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=200&h=200&fit=crop',
-    amount: 25,
-    currency: 'EUR',
-    status: 'completed' as const,
-    createdAt: Date.now() - 14 * 24 * 60 * 60 * 1000,
-    caseStatus: 'urgent' as const,
-    caseProgress: 45,
-    caseGoal: 2000,
-  },
-  {
-    id: '4',
-    caseName: 'Charlie - Leg Surgery',
-    caseImage: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop',
-    amount: 75,
-    currency: 'EUR',
-    status: 'pending' as const,
-    createdAt: Date.now() - 1 * 24 * 60 * 60 * 1000,
-    caseStatus: 'critical' as const,
-    caseProgress: 32,
-    caseGoal: 3500,
-  },
-];
-
-const NOW = Date.now();
+import { api } from '../../convex/_generated/api';
 
 type DonationFilter = 'all' | 'completed' | 'pending';
 
+type DonationStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+
+type DonationRow = {
+  _id: string;
+  caseId?: string | null;
+  campaignRefId?: string | null;
+  caseName?: string | null;
+  caseImage?: string | null;
+  amount: number;
+  currency: string;
+  status: DonationStatus;
+  receiptId?: string | null;
+  receiptUrl?: string | null;
+  createdAt: number;
+};
+
+function formatMoney(amount: number, currency: string) {
+  const safeCurrency = currency || 'EUR';
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: safeCurrency,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch {
+    return `${amount} ${safeCurrency}`;
+  }
+}
+
+function statusLabel(
+  status: DonationStatus,
+  t: TFunction<'translation'>,
+) {
+  switch (status) {
+    case 'completed':
+      return t('status.completed', 'Completed');
+    case 'pending':
+      return t('donationHistory.pending', 'Pending');
+    case 'failed':
+      return t('status.failed', 'Failed');
+    case 'refunded':
+      return t('status.refunded', 'Refunded');
+    default:
+      return status;
+  }
+}
+
+function statusBadgeClass(status: DonationStatus) {
+  switch (status) {
+    case 'completed':
+      return 'bg-success/10 text-success border-success/20';
+    case 'pending':
+      return 'bg-warning/10 text-warning border-warning/20';
+    case 'failed':
+      return 'bg-destructive/10 text-destructive border-destructive/20';
+    case 'refunded':
+      return 'bg-muted text-muted-foreground border-border/40';
+    default:
+      return 'bg-muted text-muted-foreground border-border/40';
+  }
+}
+
+function statusDotClass(status: DonationStatus) {
+  switch (status) {
+    case 'completed':
+      return 'bg-success';
+    case 'failed':
+      return 'bg-destructive';
+    case 'refunded':
+      return 'bg-muted-foreground';
+    case 'pending':
+      return 'bg-warning';
+    default:
+      return 'bg-warning';
+  }
+}
+
 const MyDonations = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<DonationFilter>('all');
-  
-  // TODO: Replace with useQuery(api.donations.getMyDonations)
-  const allDonations = mockDonations;
-  
-  // Filter donations
-  const donations = allDonations.filter(d => 
-    filter === 'all' || d.status === filter
-  );
-  
-  // Stats
-  const totalAmount = allDonations.reduce((sum, d) => sum + d.amount, 0);
-  const animalsHelped = new Set(allDonations.map(d => d.caseName)).size;
 
-  const formatDate = (timestamp: number) => {
-    const diff = NOW - timestamp;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) return t('time.today');
-    if (days === 1) return t('time.yesterday');
-    if (days < 7) return t('time.daysAgo', { count: days });
-    
-    return new Date(timestamp).toLocaleDateString('en-US', {
+  const allDonationsRaw = useQuery(api.donations.getMyDonations);
+  const isLoading = allDonationsRaw === undefined;
+  const allDonations = (allDonationsRaw ?? []) as DonationRow[];
+
+  const donations = allDonations.filter((donation) =>
+    filter === 'all' ? true : donation.status === filter,
+  );
+
+  const completedDonations = allDonations.filter((donation) => donation.status === 'completed');
+  const completedCurrencies = new Set(completedDonations.map((donation) => donation.currency).filter(Boolean));
+  const totalAmount = completedDonations.reduce((sum, donation) => sum + donation.amount, 0);
+  const totalCurrency = completedCurrencies.size === 1 ? Array.from(completedCurrencies)[0] : null;
+  const animalsHelped = new Set(completedDonations.map((donation) => donation.caseId).filter(Boolean)).size;
+
+  const formatDate = (timestamp: number) =>
+    new Date(timestamp).toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
     });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'critical': return 'bg-destructive text-destructive-foreground';
-      case 'urgent': return 'bg-urgent text-urgent-foreground';
-      case 'recovering': return 'bg-recovering text-recovering-foreground';
-      case 'adopted': return 'bg-adopted text-adopted-foreground';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
 
   return (
     <div className="min-h-screen pb-24 md:pb-8 md:pt-16 bg-background">
-      {/* Header */}
-      <div className="sticky top-0 md:top-14 z-40 bg-card/95 backdrop-blur-md border-b border-border">
+      <div className="sticky top-0 md:top-14 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/account"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-surface-sunken hover:bg-surface-sunken/90 transition-colors"
             aria-label={t('common.back')}
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -133,7 +143,7 @@ const MyDonations = () => {
           </div>
           <Link
             to="/history"
-            className="h-9 px-3 flex items-center gap-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors text-sm font-medium text-foreground"
+            className="h-9 px-3 flex items-center gap-1.5 rounded-full bg-surface-sunken hover:bg-surface-sunken/90 transition-colors text-sm font-medium text-foreground"
           >
             <Clock className="w-4 h-4" />
             <span className="hidden sm:inline">{t('common.history')}</span>
@@ -141,7 +151,6 @@ const MyDonations = () => {
         </div>
       </div>
 
-      {/* Filter Tabs - Top */}
       <section className="py-3">
         <div className="container mx-auto px-4">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as DonationFilter)} className="w-full">
@@ -156,42 +165,43 @@ const MyDonations = () => {
               </TabsTrigger>
               <TabsTrigger value="pending" className="h-8 gap-1.5 text-xs font-medium data-[state=active]:bg-card">
                 <Hourglass className="w-4 h-4" />
-                <span className="hidden sm:inline">{t('donationHistory.pending')}</span>
+                <span className="hidden sm:inline">{t('donationHistory.pending', 'Pending')}</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </section>
 
-      {/* Compact Stats - Two columns on mobile */}
       <section className="pb-3">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 gap-2">
-            {/* Total Amount - Primary */}
-            <div className="bg-card rounded-xl border border-border p-3">
+            <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-3">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Heart className="h-4 w-4 text-primary" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-lg font-bold text-foreground leading-none">
-                    {totalAmount.toLocaleString()}
+                    {isLoading ? '—' : totalCurrency ? formatMoney(totalAmount, totalCurrency) : '—'}
                   </p>
-                  <p className="text-[10px] text-muted-foreground">EUR {t('myDonations.contributed', 'contributed')}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {isLoading
+                      ? t('common.loading', 'Loading…')
+                      : totalCurrency
+                        ? t('myDonations.contributed', 'contributed')
+                        : t('myDonations.multipleCurrencies', 'Multiple currencies')}
+                  </p>
                 </div>
               </div>
             </div>
-            
-            {/* Donations Count */}
-            <div className="bg-card rounded-xl border border-border p-3">
+
+            <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-3">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
                   <PawPrint className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg font-bold text-foreground leading-none">
-                    {animalsHelped}
-                  </p>
+                  <p className="text-lg font-bold text-foreground leading-none">{isLoading ? '—' : animalsHelped}</p>
                   <p className="text-[10px] text-muted-foreground">{t('myDonations.animalsHelped', 'animals helped')}</p>
                 </div>
               </div>
@@ -200,105 +210,144 @@ const MyDonations = () => {
         </div>
       </section>
 
-      {/* Donations List */}
       <section className="pb-2">
         <div className="container mx-auto px-4">
-          
-          {donations.length > 0 ? (
+          {isLoading ? (
+            <div className="text-sm text-muted-foreground">{t('common.loading', 'Loading…')}</div>
+          ) : donations.length > 0 ? (
             <div className="space-y-2">
-              {donations.map((donation) => (
-                <Link
-                  key={donation.id}
-                  to={`/case/${donation.id}`}
-                  className="block bg-card rounded-xl border border-border hover:border-primary/30 active:bg-muted/50 transition-all"
-                >
+              {donations.map((donation) => {
+                const targetHref = donation.caseId
+                  ? `/case/${donation.caseId}`
+                  : donation.campaignRefId
+                    ? `/campaigns/${donation.campaignRefId}`
+                    : null;
+
+                const title =
+                  donation.caseName ??
+                  (donation.campaignRefId
+                    ? t('myDonations.campaignDonation', 'Campaign donation')
+                    : t('myDonations.donation', 'Donation'));
+
+                const status = statusLabel(donation.status, t);
+
+                const card = (
                   <div className="p-3">
-                    {/* Main row: Image, info, amount */}
                     <div className="flex items-center gap-3">
-                      {/* Case image with payment status indicator */}
                       <div className="relative shrink-0">
-                        <img
-                          src={donation.caseImage}
-                          alt={donation.caseName}
-                          className="w-14 h-14 rounded-xl object-cover"
+                        {donation.caseImage ? (
+                          <img
+                            src={donation.caseImage}
+                            alt={title}
+                            className="w-14 h-14 rounded-xl object-cover"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
+                            <PawPrint className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                        )}
+
+                        <div
+                          className={cn(
+                            'absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card',
+                            statusDotClass(donation.status),
+                          )}
                         />
-                        {/* Payment status dot */}
-                        <div className={cn(
-                          "absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card",
-                          donation.status === 'completed' ? "bg-success" : "bg-warning"
-                        )} />
                       </div>
-                      
-                      {/* Info */}
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="font-semibold text-sm text-foreground truncate">
-                              {donation.caseName}
-                            </p>
+                            <p className="font-semibold text-sm text-foreground truncate">{title}</p>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              <Badge 
-                                variant="secondary" 
+                              <Badge
+                                variant="secondary"
                                 className={cn(
-                                  "text-[10px] px-1.5 py-0 h-4 font-medium",
-                                  getStatusColor(donation.caseStatus)
+                                  'text-[10px] px-1.5 py-0.5 h-5 font-medium border',
+                                  statusBadgeClass(donation.status),
                                 )}
                               >
-                                {donation.caseStatus}
+                                {status}
                               </Badge>
-                              <span className="text-[10px] text-muted-foreground">
-                                {formatDate(donation.createdAt)}
-                              </span>
+                              <span className="text-[10px] text-muted-foreground">{formatDate(donation.createdAt)}</span>
                             </div>
+                            {donation.receiptId ? (
+                              <p className="mt-1 text-[11px] text-muted-foreground">
+                                {t('donationHistory.receipt', 'Receipt')}: <span className="font-mono">{donation.receiptId}</span>
+                              </p>
+                            ) : null}
+                            {donation.receiptUrl ? (
+                              <button
+                                type="button"
+                                className="mt-1 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (!donation.receiptUrl) return;
+                                  window.open(donation.receiptUrl, '_blank', 'noopener,noreferrer');
+                                }}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                {t('donations.openReceipt', 'Open receipt')}
+                              </button>
+                            ) : null}
                           </div>
-                          
-                          {/* Amount with currency */}
+
                           <div className="text-right shrink-0">
                             <p className="text-base font-bold text-foreground leading-none">
-                              {donation.amount} <span className="text-xs font-normal text-muted-foreground">{donation.currency}</span>
-                            </p>
-                            <p className={cn(
-                              "text-[10px] mt-0.5",
-                              donation.status === 'completed' ? "text-success" : "text-warning"
-                            )}>
-                              {donation.status === 'completed' ? '✓ Paid' : '⏳ Pending'}
+                              {formatMoney(donation.amount, donation.currency)}
                             </p>
                           </div>
-                        </div>
-                        
-                        {/* Progress bar - minimal */}
-                        <div className="mt-2 flex items-center gap-2">
-                          <Progress 
-                            value={donation.caseProgress} 
-                            className="h-1.5 flex-1"
-                          />
-                          <span className="text-[10px] font-medium text-muted-foreground shrink-0">
-                            {donation.caseProgress}%
-                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                </Link>
-              ))}
+                );
+
+                if (!targetHref) {
+                  return (
+                    <div
+                      key={donation._id}
+                      className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs"
+                    >
+                      {card}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={donation._id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => navigate(targetHref)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(targetHref);
+                      }
+                    }}
+                    className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs hover:border-primary/30 active:bg-surface-sunken/90 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 ring-offset-background"
+                  >
+                    {card}
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            /* Empty State */
             <div className="text-center py-16">
               <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Heart className="w-10 h-10 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-1">
-                {filter !== 'all' 
+                {filter !== 'all'
                   ? t('myDonations.noFilteredDonations', 'No {{filter}} donations', { filter })
-                  : t('myDonations.noDonations', 'No donations yet')
-                }
+                  : t('myDonations.noDonations', 'No donations yet')}
               </h3>
               <p className="text-muted-foreground text-sm max-w-xs mx-auto mb-6">
                 {filter !== 'all'
                   ? t('myDonations.tryDifferentFilter', 'Try a different filter or make a new donation')
-                  : t('myDonations.donationsWillAppear', 'Your donations will appear here once you start helping animals in need')
-                }
+                  : t('myDonations.donationsWillAppear', 'Your donations will appear here once you start helping animals in need')}
               </p>
               <Button asChild className="rounded-xl">
                 <Link to="/">
@@ -308,15 +357,10 @@ const MyDonations = () => {
               </Button>
             </div>
           )}
-          
-          {/* View Full History CTA */}
-          {donations.length > 0 && (
+
+          {donations.length > 0 && !isLoading ? (
             <div className="mt-6">
-              <Button
-                variant="outline"
-                asChild
-                className="w-full h-12 rounded-xl border-border hover:bg-muted"
-              >
+              <Button variant="outline" asChild className="w-full h-12 rounded-xl border-border hover:bg-muted">
                 <Link to="/history">
                   <Clock className="w-4 h-4 mr-2" />
                   {t('myDonations.viewFullHistory', 'View full transaction history')}
@@ -324,7 +368,7 @@ const MyDonations = () => {
                 </Link>
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
     </div>
@@ -332,3 +376,6 @@ const MyDonations = () => {
 };
 
 export default MyDonations;
+
+
+

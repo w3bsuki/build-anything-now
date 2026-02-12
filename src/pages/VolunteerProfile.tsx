@@ -107,7 +107,7 @@ const VolunteerProfile = () => {
           </Link>
 
           {/* Profile Header */}
-          <div className="bg-card rounded-2xl border border-border p-6 md:p-8 mb-6 text-center relative overflow-hidden">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6 md:p-8 mb-6 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-24 bg-surface-sunken/60 -z-10" />
             
             <div className="relative inline-block mb-4">
@@ -193,7 +193,7 @@ const VolunteerProfile = () => {
 
           {/* Badges Section */}
           {volunteer.badges.length > 0 && (
-            <div className="bg-card rounded-2xl border border-border p-6 mb-6">
+            <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6 mb-6">
               <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
                 <Award className="w-5 h-5 text-warning" />
                 {t('volunteerProfile.badgesAchievements')}
@@ -251,7 +251,7 @@ const VolunteerProfile = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-card rounded-2xl border border-border p-6 mb-6">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6 mb-6">
             <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
               <PawPrint className="w-5 h-5 text-primary" />
               {t('volunteerProfile.casesHelped')}
@@ -264,7 +264,7 @@ const VolunteerProfile = () => {
           </div>
 
           {/* Contact Section */}
-          <div className="bg-card rounded-2xl border border-border p-6">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6">
             <h2 className="font-semibold text-lg text-foreground mb-4">{t('volunteerProfile.connect')}</h2>
             <div className="space-y-4">
               <div className="flex items-start gap-3">

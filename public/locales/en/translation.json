@@ -39,7 +39,48 @@
     "back": "Back",
     "submitting": "Submitting...",
     "reportAnimal": "Report Animal",
-    "listForAdoption": "List for Adoption"
+    "listForAdoption": "List for Adoption",
+    "clear": "Clear",
+    "more": "More",
+    "helpNow": "Help now",
+    "helpNowWithName": "Help {{name}} now",
+    "supportCase": "Support case",
+    "supportCaseWithName": "Support {{name}}",
+    "adopt": "Adopt",
+    "adoptWithName": "Adopt {{name}}"
+  },
+  "common": {
+    "anonymous": "Anonymous",
+    "them": "them",
+    "of": "of",
+    "copied": "Copied",
+    "linkCopied": "Link copied to clipboard",
+    "copyThisLink": "Copy this link:",
+    "noHelpersYet": "No helpers yet",
+    "loadingMore": "Loading more...",
+    "scrollToLoad": "Scroll to load more",
+    "optional": "Optional"
+  },
+  "filters": {
+    "title": "Filters",
+    "urgent": "Urgent",
+    "nearMe": "Near",
+    "adopt": "Adopt",
+    "more": "Filters",
+    "city": "City",
+    "allCities": "All cities",
+    "distance": "Distance",
+    "utilities": "Utilities",
+    "clear": "Clear filters"
+  },
+  "cities": {
+    "sofia": "Sofia",
+    "varna": "Varna",
+    "plovdiv": "Plovdiv"
+  },
+  "report": {
+    "reportConcern": "Report concern",
+    "signInToReport": "Sign in to report"
   },
   "contentTranslation": {
     "translatePrompt": "This case was posted in another language.",
@@ -73,16 +114,35 @@
   },
   "home": {
     "searchPlaceholder": "Search rescue cases...",
+    "urgentUpdates": "Urgent Updates",
     "urgentCases": "Urgent Cases",
     "otherCases": "Other Cases",
     "allCases": "All Cases",
+    "casesNeedingHelp": "Cases Needing Help",
+    "casesInCity": "Cases in {{city}}",
+    "nearYou": "Near You",
+    "adoption": "Adoption",
+    "adoptionInCity": "Adoption in {{city}}",
+    "searchResultsFor": "Results for \"{{query}}\"",
+    "noSearchResults": "No cases found for \"{{query}}\"",
     "noMatches": "No cases match your filters",
+    "enableLocationTitle": "Enable location to see nearby cases",
+    "enableLocationBody": "We only use your approximate location to filter this feed.",
+    "requestingLocation": "Requesting...",
+    "enableLocationCta": "Enable location",
+    "chooseCity": "Choose city",
+    "goalOf": "Goal:",
+    "endOfList": "You've seen all cases",
+    "helpersHelping": "{{count}} helping",
+    "helpersHelping_one": "{{count}} helping",
+    "helpersHelping_other": "{{count}} helping",
     "nearbyOnly": "Nearby",
     "activeCampaigns": "Active Campaigns",
     "campaignsSubtitle": "Help us reach our goals"
   },
   "campaigns": {
     "searchPlaceholder": "Search campaigns...",
+    "initiatives": "Pawtreon Initiatives",
     "featured": "Featured",
     "allCampaigns": "All Campaigns",
     "trending": "Trending",
@@ -228,7 +288,7 @@
     "title": "Profile",
     "guestUser": "Guest User",
     "signInPrompt": "Sign in to track your donations",
-    "donations": "Donations",
+  "donations": "Donations",
     "contributed": "Contributed",
     "animalsHelped": "Animals Helped",
     "myDonations": "My Donations",
@@ -555,6 +615,7 @@
   },
   "createAdoption": {
     "listForAdoption": "List for Adoption",
+    "comingSoonBody": "Adoption listings are not available yet. For now, create a rescue case so the community can donate and help.",
     "animalType": "Animal Type",
     "dog": "Dog",
     "cat": "Cat",
@@ -595,6 +656,19 @@
     "transactionId": "Transaction ID",
     "noTransactions": "No transactions found",
     "historyWillAppear": "Your donation history will appear here"
+  },
+  "donations": {
+    "openReceipt": "Open receipt",
+    "closed": "Donations closed",
+    "gatedNote": "Donations are currently disabled for this case.",
+    "return": {
+      "successTitle": "Thanks for your support",
+      "successBody": "We're confirming your payment. Your donation will appear in your history shortly.",
+      "cancelTitle": "Checkout cancelled",
+      "cancelBody": "No payment was made. You can try again anytime.",
+      "viewHistory": "View my donations",
+      "tryAgain": "Try again"
+    }
   },
   "cities": {
     "sofia": "Sofia",
@@ -928,8 +1002,9 @@
     "navigation": "Explore campaigns, partner clinics, and shelters working with us.",
     "profile": "Access your profile, donation history, and achievements here.",
     "complete": "You're all set! Start exploring and helping animals today. 🐾💝"
-  },
-  "common": {
-    "optional": "Optional"
   }
 }
+
+
+
+

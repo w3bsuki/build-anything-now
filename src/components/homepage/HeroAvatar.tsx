@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface HeroAvatarProps {
@@ -13,8 +14,8 @@ interface HeroAvatarProps {
 }
 
 export function HeroAvatar({ id, name, avatar, count, size = 'md', className, onClick }: HeroAvatarProps) {
-  const sizeClasses = size === 'sm' ? 'size-14' : 'size-16';
-  const innerClasses = size === 'sm' ? 'size-12' : 'size-14';
+  const sizeClasses = size === 'sm' ? 'size-12' : 'size-14';
+  const innerClasses = size === 'sm' ? 'size-10' : 'size-12';
 
   const content = (
     <>
@@ -22,11 +23,11 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
       <div className="relative">
         <div
           className={cn(
-            "rounded-full p-0.5 border-2 border-primary/45 bg-surface-elevated",
+            "rounded-full border-2 border-primary/85 bg-surface p-0.5 ring-1 ring-background/90",
             sizeClasses
           )}
         >
-          <div className="rounded-full bg-background p-0.5 size-full">
+          <div className="size-full rounded-full bg-surface p-0.5">
             {avatar ? (
               <img
                 src={avatar}
@@ -36,7 +37,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
             ) : (
               <div
                 className={cn(
-                  "rounded-full bg-muted/85 flex items-center justify-center",
+                  "flex items-center justify-center rounded-full bg-surface-sunken",
                   innerClasses
                 )}
               >
@@ -50,8 +51,8 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
 
         {/* Trophy Badge - positioned at bottom right */}
         {count > 0 && (
-          <div className="absolute -bottom-0.5 -right-0.5 bg-background rounded-full p-[2px]">
-            <div className="bg-primary text-primary-foreground text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+          <div className="absolute -bottom-0.5 -right-0.5 rounded-full bg-surface p-0.5">
+            <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-bold leading-none text-primary-foreground">
               {count}
             </div>
           </div>
@@ -59,7 +60,7 @@ export function HeroAvatar({ id, name, avatar, count, size = 'md', className, on
       </div>
 
       {/* Name */}
-      <span className="text-[11px] text-muted-foreground truncate max-w-16">
+      <span className="max-w-16 truncate text-xs font-medium leading-none text-foreground/88">
         {name}
       </span>
     </>
@@ -94,7 +95,8 @@ interface AddCaseCircleProps {
 }
 
 export function AddCaseCircle({ size = 'md', className }: AddCaseCircleProps) {
-  const sizeClasses = size === 'sm' ? 'size-14' : 'size-16';
+  const { t } = useTranslation();
+  const sizeClasses = size === 'sm' ? 'size-12' : 'size-14';
 
   return (
     <Link
@@ -103,13 +105,13 @@ export function AddCaseCircle({ size = 'md', className }: AddCaseCircleProps) {
     >
       <div
         className={cn(
-          "rounded-full border-2 border-dashed border-primary/45 flex items-center justify-center bg-background/90 hover:bg-primary/10 hover:border-primary/70 transition-colors shadow-xs",
+          "flex items-center justify-center rounded-full border-2 border-dashed border-primary/85 bg-surface ring-1 ring-background/90 transition-colors hover:border-primary hover:bg-primary/10",
           sizeClasses
         )}
       >
-        <Plus className="size-6 text-primary" />
+        <Plus className="size-5 text-primary" />
       </div>
-      <span className="text-[11px] text-muted-foreground">Add</span>
+      <span className="text-xs leading-none text-foreground/80">{t('actions.create', 'Create')}</span>
     </Link>
   );
 }

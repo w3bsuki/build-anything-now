@@ -227,7 +227,7 @@ export default function CommunityPost() {
     return (
       <div className="min-h-screen bg-background pb-24 md:pt-16">
         <div className="mx-auto w-full max-w-3xl px-4 py-6">
-          <div className="rounded-2xl border border-border bg-card p-6 text-center">
+          <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-6 text-center">
             <p className="text-sm text-muted-foreground">Thread not found.</p>
             <Link
               to="/community"
@@ -246,9 +246,9 @@ export default function CommunityPost() {
       <div className="min-h-screen bg-background pb-24 md:pt-16">
         <div className="mx-auto w-full max-w-3xl px-4 py-4">
           <div className="space-y-3">
-            <div className="h-52 animate-pulse rounded-2xl border border-border bg-card" />
-            <div className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
-            <div className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
+            <div className="h-52 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
+            <div className="h-28 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
+            <div className="h-28 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
           </div>
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function CommunityPost() {
     return (
       <div className="min-h-screen bg-background pb-24 md:pt-16">
         <div className="mx-auto w-full max-w-3xl px-4 py-6">
-          <div className="rounded-2xl border border-border bg-card p-6 text-center">
+          <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-6 text-center">
             <p className="text-sm text-muted-foreground">Thread not found or unavailable.</p>
             <Link
               to="/community"
@@ -293,7 +293,7 @@ export default function CommunityPost() {
       <div className="mx-auto w-full max-w-3xl px-4 py-4">
         <div className="space-y-3">
           {backendMode === "legacy" ? (
-            <div className="rounded-2xl border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs px-3 py-2 text-xs text-muted-foreground">
               Compatibility mode active: forum replies, reports, and moderation will unlock after publishing community v2 functions.
             </div>
           ) : null}
@@ -301,7 +301,7 @@ export default function CommunityPost() {
           <div className="hidden md:block">
             <Link
               to="/community"
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
+              className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-border/60 bg-surface-elevated shadow-xs px-3 text-sm font-semibold text-foreground active:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong"
             >
               <ArrowLeft className="size-4" />
               Back to community
@@ -315,13 +315,13 @@ export default function CommunityPost() {
           />
 
           {thread.image ? (
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs">
               <img src={thread.image} alt={thread.title} className="max-h-[420px] w-full object-cover" />
             </div>
           ) : null}
 
           {thread.caseId ? (
-            <div className="rounded-2xl border border-border bg-card p-3">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Linked case</p>
               <Link
                 to={`/case/${thread.caseId}`}
@@ -333,7 +333,7 @@ export default function CommunityPost() {
           ) : null}
 
           {canModerate ? (
-            <div className="rounded-2xl border border-border bg-card p-3">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-3">
               <button
                 type="button"
                 onClick={handleToggleLock}
@@ -348,8 +348,8 @@ export default function CommunityPost() {
 
           {backendMode === "v2" && comments === undefined ? (
             <div className="space-y-2">
-              <div className="h-24 animate-pulse rounded-2xl border border-border bg-card" />
-              <div className="h-24 animate-pulse rounded-2xl border border-border bg-card" />
+              <div className="h-24 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
+              <div className="h-24 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
             </div>
           ) : backendMode === "v2" ? (
             <CommentThread
@@ -365,7 +365,7 @@ export default function CommunityPost() {
               onDelete={handleDeleteComment}
             />
           ) : (
-            <section className="rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">
+            <section className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 text-sm text-muted-foreground">
               Replies will appear here after the community v2 backend is published.
             </section>
           )}
@@ -384,7 +384,7 @@ export default function CommunityPost() {
         />
       ) : (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
-          <div className="mx-auto max-w-2xl rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
+          <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-surface-elevated shadow-xs px-3 py-2 text-sm text-muted-foreground">
             Community v2 publish is pending. Replies are temporarily disabled.
           </div>
         </div>

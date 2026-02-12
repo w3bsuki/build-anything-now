@@ -53,15 +53,15 @@ export function Navigation() {
   return (
     <>
       {/* Desktop Navigation */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md">
+      <header className="fixed left-0 right-0 top-0 z-50 hidden border-b border-nav-border/80 bg-nav-surface/95 backdrop-blur-xl md:block">
         <div className="container mx-auto px-4">
           <nav className="flex items-center justify-between h-14">
             {/* Logo */}
             <NavLink to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
                 <HeartHandshake className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-lg text-foreground">Pawtreon</span>
+              <span className="font-display text-lg font-bold text-foreground">Pawtreon</span>
             </NavLink>
 
             {/* Nav Links */}
@@ -75,10 +75,10 @@ export function Navigation() {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors duration-150',
+                      'flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-colors duration-150',
                       isActive
-                        ? 'text-foreground font-bold bg-accent'
-                        : 'text-muted-foreground font-medium hover:bg-accent/50 hover:text-foreground'
+                        ? 'bg-chip-bg-active text-primary-foreground shadow-sm ring-1 ring-primary/30'
+                        : 'text-muted-foreground font-medium hover:bg-surface-sunken hover:text-foreground'
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -92,7 +92,7 @@ export function Navigation() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setIsCreateOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+                className="flex items-center gap-2 rounded-lg bg-warm-accent px-4 py-2 text-sm font-semibold text-warm-accent-foreground shadow-sm ring-1 ring-warm-accent/35 transition-colors hover:bg-warm-accent/90"
               >
                 <Plus className="size-4" strokeWidth={2.5} />
                 <span>{t('actions.create', 'Create')}</span>
@@ -137,7 +137,7 @@ export function Navigation() {
           data-tour="navigation"
           className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-2 pb-[calc(env(safe-area-inset-bottom)+0.35rem)]"
         >
-          <div className="glass-ultra nav-shadow flex items-center justify-around h-14 px-2 rounded-2xl border border-nav-border/70">
+          <div className="glass-ultra nav-shadow flex h-[60px] items-center justify-around rounded-[1.35rem] border border-nav-border/85 px-2 shadow-sm">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -149,9 +149,9 @@ export function Navigation() {
                   <button
                     key={item.path}
                     onClick={() => setIsCreateOpen(true)}
-                    className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
+                    className="flex min-w-[58px] flex-col items-center justify-center gap-0.5 py-1.5"
                   >
-                    <div className="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground border-2 border-background shadow-sm">
+                    <div className="flex size-11 items-center justify-center rounded-full border-2 border-background bg-warm-accent text-warm-accent-foreground shadow-sm ring-1 ring-warm-accent/35">
                       <Icon className="size-5" strokeWidth={2.5} />
                     </div>
                   </button>
@@ -162,18 +162,21 @@ export function Navigation() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className="flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-[56px]"
+                  className={cn(
+                    "flex min-w-[58px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 transition-colors",
+                    isActive ? "bg-primary/14 ring-1 ring-primary/20" : "",
+                  )}
                 >
                   <Icon
                     className={cn(
                       'h-[22px] w-[22px] transition-colors',
-                      isActive ? 'text-foreground' : 'text-muted-foreground'
+                      isActive ? 'text-primary' : 'text-muted-foreground'
                     )}
                     strokeWidth={isActive ? 2 : 1.75}
                   />
                   <span className={cn(
                     'text-[10px] transition-colors',
-                    isActive ? 'text-foreground font-semibold' : 'text-muted-foreground font-medium'
+                    isActive ? 'font-semibold text-primary' : 'font-medium text-muted-foreground'
                   )}>
                     {t(item.labelKey, item.labelFallback)}
                   </span>
@@ -232,20 +235,23 @@ export function Navigation() {
                 <p className="text-sm text-muted-foreground">{t('create.listWithAiDesc', 'Demo: photo → draft → review (publishing gated)')}</p>
               </div>
             </Link>
-
-            <Link
-              to="/create-adoption"
-              onClick={() => setIsCreateOpen(false)}
-              className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl hover:bg-accent/20 transition-colors active:opacity-90"
+            <div
+              className="flex items-center gap-4 p-4 bg-accent/10 rounded-xl opacity-60 cursor-not-allowed"
+              aria-disabled="true"
             >
               <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shrink-0">
                 <Heart className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">{t('actions.listForAdoption', 'List for adoption')}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-foreground">{t('actions.listForAdoption', 'List for adoption')}</p>
+                  <span className="rounded-full bg-foreground/10 px-2 py-0.5 text-[11px] font-semibold text-foreground/80">
+                    {t('common.comingSoon', 'Coming soon')}
+                  </span>
+                </div>
                 <p className="text-sm text-muted-foreground">{t('create.adoptionDesc', 'Help an animal find a home')}</p>
               </div>
-            </Link>
+            </div>
           </div>
 
           <DrawerFooter className="pt-4 px-4">
@@ -260,3 +266,4 @@ export function Navigation() {
     </>
   );
 }
+

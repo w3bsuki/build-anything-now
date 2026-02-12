@@ -97,7 +97,7 @@ const CreateCaseAi = () => {
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border md:hidden">
+      <header className="sticky top-0 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70 md:hidden">
         <div className="flex items-center gap-3 h-14 px-3">
           <button
             onClick={() => navigate(-1)}
@@ -138,7 +138,7 @@ const CreateCaseAi = () => {
 
           {isReady ? (
             <>
-              <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4">
                 <p className="font-semibold text-foreground">
                   {t('createAi.readyTitle', 'Draft ready')}
                 </p>
@@ -150,7 +150,7 @@ const CreateCaseAi = () => {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+              <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 space-y-3">
                 <p className="font-semibold text-foreground">{t('createAi.draft', 'Draft')}</p>
                 {previewUrl ? (
                   <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted/30">
@@ -181,7 +181,7 @@ const CreateCaseAi = () => {
             <>
 
           {/* Photo */}
-          <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+          <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 space-y-3">
             <div className="flex items-center justify-between">
               <p className="font-semibold text-foreground">{t('createAi.photo', 'Photo')}</p>
               <Label
@@ -238,7 +238,7 @@ const CreateCaseAi = () => {
           </div>
 
           {/* Draft */}
-          <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
+          <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 space-y-4">
             <p className="font-semibold text-foreground">{t('createAi.draft', 'Draft')}</p>
 
             <div className="grid grid-cols-3 gap-2">

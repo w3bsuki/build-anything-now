@@ -30,7 +30,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
   return (
     <article
       className={cn(
-        'group relative rounded-2xl bg-card overflow-hidden ring-1 ring-border/40 transition-colors duration-200 hover:ring-border/60',
+        'group relative overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs transition-colors duration-200 hover:border-border/80',
         className
       )}
     >
@@ -47,16 +47,16 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
 
       <Link to={`/campaigns/${campaign.id}`} className="block">
         {/* Image with overlays */}
-        <div className="relative aspect-4/3 overflow-hidden bg-muted">
+        <div className="relative aspect-4/3 overflow-hidden bg-surface-sunken">
           {/* Loading skeleton */}
           {!imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-muted flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-surface-sunken">
               <PawPrint className="w-10 h-10 text-muted-foreground/20 animate-pulse" />
             </div>
           )}
           {/* Error fallback */}
           {imageError ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-muted/75">
+            <div className="absolute inset-0 flex items-center justify-center bg-surface-sunken/80">
               <PawPrint className="w-14 h-14 text-primary/20" />
             </div>
           ) : (
@@ -83,10 +83,10 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
             <div className="absolute top-3 left-3">
               <div className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors",
-                isEnding 
+                isEnding
                   ? "bg-destructive/90 text-destructive-foreground" 
                   : isUrgent 
-                    ? "bg-warning/90 text-warning-foreground"
+                    ? "bg-urgent/90 text-urgent-foreground"
                     : "bg-overlay-dim/75 text-white"
               )}>
                 <Clock className="w-3.5 h-3.5" />
@@ -144,7 +144,7 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
 
         {/* Content */}
         <div className="p-3.5 pb-2">
-          <h3 className="font-bold text-base text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+          <h3 className="font-display text-base font-bold leading-snug text-foreground line-clamp-2 transition-colors group-hover:text-primary">
             {campaign.title}
           </h3>
 
@@ -158,10 +158,10 @@ export function CampaignCard({ campaign, className }: CampaignCardProps) {
       <div className="px-3.5 pb-3.5 pt-1">
         <Button 
           asChild 
-          variant="default" 
+          variant={isEnding ? "destructive" : "donate"}
           className={cn(
             "w-full h-11 rounded-xl text-sm font-bold transition-colors",
-            isEnding && "bg-destructive hover:bg-destructive/90"
+            isEnding && "text-destructive-foreground"
           )}
         >
           <Link to={`/campaigns/${campaign.id}`} aria-label={t('campaigns.contributeTo', { title: campaign.title })}>

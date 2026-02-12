@@ -30,7 +30,7 @@ export function CommentThread({
 
   if (empty) {
     return (
-      <section className="rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">
+      <section className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 text-sm text-muted-foreground">
         No replies yet. Be the first to help.
       </section>
     );
@@ -44,7 +44,7 @@ export function CommentThread({
         const hiddenCount = Math.max(0, comment.replies.length - visibleReplies.length);
 
         return (
-          <article key={comment.id} className="rounded-2xl border border-border bg-card p-3">
+          <article key={comment.id} className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-3">
             <CommentRow
               comment={comment}
               canModerate={canModerate}

@@ -194,6 +194,14 @@ export default defineSchema({
         updatedAt: v.number(),
     })
         .index("by_clerk_day", ["clerkId", "day"]),
+    // Rate limiting for abuse-prone case reports (trust & safety)
+    reportRateLimits: defineTable({
+        clerkId: v.string(),
+        day: v.number(),
+        count: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_clerk_day", ["clerkId", "day"]),
 
     // Cases table - main animal reports with fundraising
     cases: defineTable({
@@ -696,3 +704,4 @@ export default defineSchema({
         .index("by_receiver", ["receiverId"])
         .index("by_conversation", ["senderId", "receiverId"]),
 });
+

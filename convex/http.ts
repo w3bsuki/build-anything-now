@@ -47,9 +47,26 @@ http.route({
 
     if (event.type === "payment_intent.succeeded") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
+
+      const latestCharge = paymentIntent.latest_charge;
+      const chargeId = typeof latestCharge === "string" ? latestCharge : latestCharge?.id;
+      let receiptUrl: string | undefined;
+
+      if (typeof latestCharge === "string" && latestCharge) {
+        try {
+          const charge = await stripe.charges.retrieve(latestCharge);
+          receiptUrl = charge.receipt_url ?? undefined;
+        } catch (err) {
+          console.warn("Could not retrieve Charge for receipt:", err);
+        }
+      } else if (latestCharge && typeof latestCharge !== "string") {
+        receiptUrl = latestCharge.receipt_url ?? undefined;
+      }
+
       await ctx.runMutation(internal.donations.confirmPaymentFromWebhook, {
         paymentIntentId: paymentIntent.id,
-        chargeId: typeof paymentIntent.latest_charge === "string" ? paymentIntent.latest_charge : undefined,
+        chargeId,
+        receiptUrl,
         amountReceivedMinor: paymentIntent.amount_received,
         currency: paymentIntent.currency,
         eventId: event.id,
@@ -66,9 +83,34 @@ http.route({
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
+      const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : undefined;
+
+      let chargeId: string | undefined;
+      let receiptUrl: string | undefined;
+
+      if (paymentIntentId) {
+        try {
+          const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+            expand: ["latest_charge"],
+          });
+
+          const latestCharge = paymentIntent.latest_charge;
+          if (typeof latestCharge === "string") {
+            chargeId = latestCharge;
+          } else if (latestCharge && typeof latestCharge !== "string") {
+            chargeId = latestCharge.id;
+            receiptUrl = latestCharge.receipt_url ?? undefined;
+          }
+        } catch (err) {
+          console.warn("Could not retrieve PaymentIntent for receipt:", err);
+        }
+      }
+
       await ctx.runMutation(internal.donations.confirmCheckoutSessionFromWebhook, {
         sessionId: session.id,
-        paymentIntentId: typeof session.payment_intent === "string" ? session.payment_intent : undefined,
+        paymentIntentId,
+        chargeId,
+        receiptUrl,
         amountReceivedMinor: session.amount_total ?? undefined,
         currency: session.currency ?? undefined,
         eventId: event.id,
@@ -134,3 +176,6 @@ http.route({
 });
 
 export default http;
+
+
+

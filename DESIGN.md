@@ -1,7 +1,7 @@
 # Pawtreon — Design
 
 > **Purpose:** Architecture, stack, data model, patterns, and technical decisions.  
-> **Last updated:** 2026-02-06
+> **Last updated:** 2026-02-10
 
 ---
 
@@ -178,6 +178,18 @@ convex/
 
 Canonical UI patterns spec:
 - `docs/design/ui-patterns-spec.md` (case-first IA, interaction density rules, token/theming gates)
+- `docs/design/theming-tokens-spec.md` (design tokens, color palette, forbidden patterns)
+
+SSOT styling files and boundaries:
+- `src/index.css` is the single Tailwind v4 + token entrypoint (no `globals.css`).
+- `src/components/ui/*` are shadcn primitives and stay app-agnostic.
+- SSOT layout primitives live in `src/components/layout/`:
+  - `PageShell`
+  - `PageSection`
+  - `SectionHeader`
+  - `StickySegmentRail`
+- Trust CTA wrapper lives in `src/components/trust/StickyActionBar.tsx`.
+- Shared metric wrapper lives in `src/components/common/StatsGrid.tsx`.
 
 ### Principles
 1. **Token-only colors** — use semantic tokens, not hardcoded hex
@@ -196,6 +208,11 @@ Canonical UI patterns spec:
 - Page padding: `px-4`
 - Section gaps: `space-y-4` (dense), `space-y-6` (standard)
 - Card padding: `p-3` (compact), `p-4` (standard)
+- Prefer SSOT wrappers over repeated page-level utility composition:
+  - `PageShell` for app-level spacing and nav clearance
+  - `PageSection` for content width and section rhythm
+  - `SectionHeader` for title/count/action consistency
+  - `StickySegmentRail` for desktop sticky filters/segments
 
 ### Typography
 - Font: `Nunito`
@@ -242,8 +259,31 @@ Implemented:
 - Idempotent completion and webhook signature verification path
 
 Remaining:
-- Post-checkout success/cancel return UX messaging
-- Receipt/history surfacing polish in account-facing flows
+- Post-checkout success/cancel return UX messaging on case detail (no lost state after redirect)
+- Receipt/history surfacing polish in account-facing flows (donations list/history is real data, not mock)
+- Populate `receiptUrl` from Stripe charge metadata (when available) for user-facing receipts
+
+### Feature: Notifications (In-app)
+*Status: In progress*
+
+Scope:
+- Replace mock notification center UI with Convex-driven data and real-time unread counts.
+- Add minimal notification triggers for core trust loops (donation received, case update, clinic claim reviewed).
+
+Data changes:
+- None (schema already contains `notifications` and `userSettings`).
+
+API surface:
+- Add internal notification creator mutations (not client-callable).
+- Wire donation completion and case update operations to create notifications.
+
+Abuse/trust risks addressed:
+- Remove mock/fake notification content from account surfaces.
+- Ensure notification content contains no third-party PII.
+
+Mitigations:
+- Keep notification payloads generic (no donor email/phone).
+- Defer batching/throttling to a follow-up once baseline delivery is correct.
 
 ### Feature: Moderation Queue
 *Status: In progress*
@@ -255,12 +295,27 @@ Implemented:
 Remaining:
 - Ops throughput/SLA dashboard refinements and queue ergonomics
 
+### Feature: Launch Trust Hardening (Rate Limits + i18n)
+*Status: In progress*
+
+Scope:
+- Add rate limiting for abuse-prone reporting endpoints (per RULES.md and admin-moderation EARS M-07).
+- Remove/disable client-side IP geolocation language detection banner for production (rely on i18next detection).
+- Ensure donation gating is consistent across UI, Convex case contract, and donations checkout creation.
+
+Data changes:
+- Add a lightweight report rate limit table (per-user-per-day) for case reports.
+
+API surface:
+- Report creation rejects when daily quota is exceeded.
+- No new public PII is introduced.
+
 ### Feature: Trust UI System Alignment (Tailwind v4 + shadcn)
 *Status: In progress*
 
 Scope:
 - Home (`/`) + Community (`/community*`) + Campaigns (`/campaigns*`) visual system alignment
-- Tailwind v4 token enforcement expansion (`styles:gate` scope and scanners)
+- Tailwind v4 token enforcement expansion (`styles:gate` now scans app surfaces in `src/`, excluding `src/components/ui/*`)
 - shadcn boundary cleanup for `components/ui/*` primitives and adapters
 
 Data changes:
@@ -279,6 +334,32 @@ Mitigations:
 - Semantic token-only styling in scoped trust surfaces
 - Accessibility baseline on raw interactive controls (`focus-visible` ring, touch target size)
 - Expanded style gates for home/community/campaign surfaces to prevent regression
+
+### Feature: SSOT Design System + Partners Services Integration
+*Status: In progress*
+
+Scope:
+- Introduce shared layout primitives for trust-critical pages.
+- Migrate key trust routes (`/`, `/case/:id`, `/create-case`, `/campaigns`, `/clinics`) to SSOT wrappers.
+- Refactor `/partners` into data-driven segments:
+  - `partners`
+  - `volunteers`
+  - `stores_services`
+- Keep stores/services inside `/partners` and maintain referral-only model (no native checkout/cart in this phase).
+
+Data changes:
+- None (schema unchanged).
+
+API surface:
+- Added `petServices.list` and `petServices.get` public queries for partners-integrated services surfaces.
+
+Abuse/trust risks addressed:
+- Remove mock/fake store-sitter content from `/partners`.
+- Remove dead/ambiguous UI actions in trust-adjacent directory surfaces.
+
+Mitigations:
+- Data-driven counts and empty states.
+- Token-first UI wrappers to reduce styling drift and inconsistent trust affordances.
 
 ### Feature: Convex API Pruning + Security Hardening
 *Status: In progress*

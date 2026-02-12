@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'convex/react';
+import { useAuth } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 import { Flag, Loader2 } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -34,6 +36,8 @@ export function ReportConcernSheet({
   caseTitle?: string;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isLoaded, isSignedIn } = useAuth();
   const createReport = useMutation(api.reports.create);
   const [reason, setReason] = useState<ReportReason>('suspected_scam');
   const [details, setDetails] = useState('');
@@ -134,13 +138,25 @@ export function ReportConcernSheet({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             {t('actions.cancel', 'Cancel')}
           </Button>
-          <Button onClick={submit} disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {t('report.submit', 'Submit report')}
-          </Button>
+          {isLoaded && !isSignedIn ? (
+            <Button
+              onClick={() => {
+                onOpenChange(false);
+                navigate('/sign-in');
+              }}
+            >
+              {t('report.signInToReport', 'Sign in to report')}
+            </Button>
+          ) : (
+            <Button onClick={submit} disabled={isSubmitting || !isLoaded}>
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {t('report.submit', 'Submit report')}
+            </Button>
+          )}
         </SheetFooter>
       </SheetContent>
     </Sheet>
   );
 }
+
 

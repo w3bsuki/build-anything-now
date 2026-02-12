@@ -71,7 +71,6 @@ The codebase was partially scaffolded by Lovable.dev and has accumulated stale f
 - `.playwright-mcp/` folder
 - `test-results/` folder
 - `app/` folder (deprecated CSS)
-- `docs/archive/` (old GPT/legacy docs)
 - `src/App.css` (Vite starter boilerplate)
 - `src/fonts.css` (duplicate font declaration)
 - `src/pages/demo/` (empty)

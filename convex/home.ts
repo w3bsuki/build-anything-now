@@ -3,7 +3,13 @@ import { query } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 
-type LandingIntent = "urgent" | "nearby" | "success" | "all";
+type LandingIntent = "urgent" | "nearby" | "success" | "adoption" | "all";
+
+type NearArgs = {
+  lat: number;
+  lng: number;
+  radiusKm: number;
+};
 
 const CITY_ALIASES: Record<"sofia" | "varna" | "plovdiv", string[]> = {
   sofia: ["sofia", "софия", "софія"],
@@ -72,6 +78,46 @@ function matchCity(caseDoc: Doc<"cases">, city: string | undefined) {
   const aliases = CITY_ALIASES[cityKey as keyof typeof CITY_ALIASES] ?? [cityKey];
   const value = caseDoc.location.city.toLowerCase();
   return aliases.some((alias) => value.includes(alias));
+}
+
+function clamp(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(Math.max(value, min), max);
+}
+
+function haversineDistanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const radiusEarthKm = 6371;
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+
+  const sinDLat = Math.sin(dLat / 2);
+  const sinDLng = Math.sin(dLng / 2);
+
+  const h = (sinDLat * sinDLat) + (Math.cos(lat1) * Math.cos(lat2) * sinDLng * sinDLng);
+  return 2 * radiusEarthKm * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+function matchNear(caseDoc: Doc<"cases">, near: NearArgs | undefined) {
+  if (!near) return false;
+  const coordinates = caseDoc.location.coordinates;
+  if (!coordinates) return false;
+
+  const a = {
+    lat: clamp(near.lat, -90, 90),
+    lng: clamp(near.lng, -180, 180),
+  };
+  const b = {
+    lat: clamp(coordinates.lat, -90, 90),
+    lng: clamp(coordinates.lng, -180, 180),
+  };
+
+  const radiusKm = clamp(near.radiusKm, 1, 200);
+  const distanceKm = haversineDistanceKm(a, b);
+  return distanceKm <= radiusKm;
 }
 
 function matchSearch(caseDoc: Doc<"cases">, localized: { title: string; description: string; story?: string }, search: string | undefined) {
@@ -216,9 +262,16 @@ async function getUrgentStories(ctx: QueryCtx, locale: string, limit: number) {
 export const getLandingFeed = query({
   args: {
     locale: v.string(),
-    intent: v.optional(v.union(v.literal("urgent"), v.literal("nearby"), v.literal("success"), v.literal("all"))),
+    intent: v.optional(v.union(
+      v.literal("urgent"),
+      v.literal("nearby"),
+      v.literal("adoption"),
+      v.literal("success"),
+      v.literal("all"),
+    )),
     city: v.optional(v.string()),
     search: v.optional(v.string()),
+    near: v.optional(v.object({ lat: v.number(), lng: v.number(), radiusKm: v.number() })),
     cursor: v.optional(v.number()),
     limit: v.optional(v.number()),
   },
@@ -226,6 +279,13 @@ export const getLandingFeed = query({
     const locale = args.locale;
     const intent: LandingIntent = args.intent ?? "urgent";
     const limit = Math.min(Math.max(args.limit ?? 12, 1), 30);
+    const near = args.near
+      ? {
+        lat: args.near.lat,
+        lng: args.near.lng,
+        radiusKm: args.near.radiusKm,
+      }
+      : undefined;
 
     // Fetch broad datasets once and perform view-specific shaping server-side.
     const [allCasesRaw, featuredInitiativesRaw, stories, unreadCounts] = await Promise.all([
@@ -243,6 +303,11 @@ export const getLandingFeed = query({
       if (args.cursor && caseDoc.createdAt >= args.cursor) return false;
 
       if (intent === "urgent" && !URGENT_TYPES.has(caseDoc.type)) return false;
+      if (intent === "nearby" && !matchNear(caseDoc, near)) return false;
+      if (intent === "adoption") {
+        if (caseDoc.status === "closed") return false;
+        if (normalizeLifecycleStage(caseDoc.lifecycleStage) !== "seeking_adoption") return false;
+      }
       if (intent === "success" && !SUCCESS_TYPES.has(caseDoc.type)) return false;
       if (!matchCity(caseDoc, args.city)) return false;
 

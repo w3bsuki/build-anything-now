@@ -38,7 +38,7 @@ export const EmergencyBanner = ({ className }: EmergencyBannerProps) => {
       </div>
 
       {/* Arrow */}
-      <ChevronRight className="w-5 h-5 text-destructive/70 group-hover:text-destructive group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      <ChevronRight className="w-5 h-5 text-destructive/70 group-hover:text-destructive transition-colors flex-shrink-0" />
     </Link>
   );
 };
@@ -54,7 +54,7 @@ export const EmergencyBannerCompact = ({ className }: EmergencyBannerProps) => {
         "flex items-center justify-between gap-2 py-2.5 px-3.5 rounded-xl",
         "bg-destructive/10",
         "border border-destructive/30",
-        "active:scale-[0.98] transition-transform",
+        "transition-colors active:bg-destructive/15",
         className
       )}
     >

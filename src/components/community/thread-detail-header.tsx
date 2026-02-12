@@ -10,7 +10,7 @@ interface ThreadDetailHeaderProps {
 
 export function ThreadDetailHeader({ thread, onToggleReaction, onReport }: ThreadDetailHeaderProps) {
   return (
-    <section className="rounded-2xl border border-border bg-card p-4">
+    <section className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

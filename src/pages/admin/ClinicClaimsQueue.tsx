@@ -76,7 +76,7 @@ export default function ClinicClaimsQueue() {
         ) : (
           <div className="space-y-3">
             {claims.map((claim) => (
-              <div key={claim._id} className="rounded-xl border border-border bg-card p-4 space-y-3">
+              <div key={claim._id} className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-foreground">{claim.clinic?.name ?? 'Unknown clinic'}</p>

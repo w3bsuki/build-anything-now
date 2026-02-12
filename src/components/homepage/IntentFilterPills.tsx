@@ -1,141 +1,93 @@
-import { Building2, ChevronDown, Heart, MapPin, Siren } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
-export type FilterTab = 'urgent' | 'nearby' | 'sofia' | 'varna' | 'plovdiv' | 'success';
+export type HomeIntent = 'urgent' | 'nearby' | 'adoption';
+
 export const BULGARIAN_CITIES = ['sofia', 'varna', 'plovdiv'] as const;
 export type CityFilter = typeof BULGARIAN_CITIES[number];
 
 interface IntentFilterPillsProps {
-  selected: FilterTab;
-  onSelect: (id: FilterTab) => void;
-  cityCounts?: Record<CityFilter, number>;
+  intent: HomeIntent;
+  onIntentChange: (intent: HomeIntent) => void;
+  hasActiveMore?: boolean;
+  onOpenMore: () => void;
+  contained?: boolean;
   className?: string;
 }
 
-const cityLabels: Record<CityFilter, string> = {
-  sofia: 'София',
-  varna: 'Варна',
-  plovdiv: 'Пловдив',
-};
+function SegmentedButton({
+  selected,
+  onClick,
+  label,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex h-11 items-center justify-center gap-1 rounded-xl px-2 text-sm font-semibold transition-colors sm:px-3',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        selected
+          ? 'bg-surface-elevated text-foreground'
+          : 'text-muted-foreground hover:bg-interactive-hover hover:text-foreground active:bg-interactive-active',
+      )}
+    >
+      <span className="min-w-0 truncate leading-none">{label}</span>
+    </button>
+  );
+}
 
-const primaryTabs: Array<{ id: FilterTab; label: string; icon: React.ReactNode; activeClass: string }> = [
-  {
-    id: 'urgent',
-    label: 'Urgent',
-    icon: <Siren className="w-3.5 h-3.5" />,
-    activeClass: 'bg-warm-accent text-warm-accent-foreground shadow-xs',
-  },
-  {
-    id: 'nearby',
-    label: 'Near Me',
-    icon: <MapPin className="w-3.5 h-3.5" />,
-    activeClass: 'bg-chip-bg-active text-primary-foreground shadow-xs',
-  },
-  {
-    id: 'sofia',
-    label: cityLabels.sofia,
-    icon: <Building2 className="w-3.5 h-3.5" />,
-    activeClass: 'bg-chip-bg-active text-primary-foreground shadow-xs',
-  },
-];
-
-const extraTabs: Array<{ id: FilterTab; icon: React.ReactNode }> = [
-  { id: 'varna', icon: <Building2 className="w-3.5 h-3.5" /> },
-  { id: 'plovdiv', icon: <Building2 className="w-3.5 h-3.5" /> },
-  { id: 'success', icon: <Heart className="w-3.5 h-3.5" /> },
-];
-
-export function IntentFilterPills({ selected, onSelect, cityCounts, className }: IntentFilterPillsProps) {
+export function IntentFilterPills({
+  intent,
+  onIntentChange,
+  hasActiveMore = false,
+  onOpenMore,
+  contained = true,
+  className,
+}: IntentFilterPillsProps) {
   const { t } = useTranslation();
 
-  const isPrimarySelected = primaryTabs.some((tab) => tab.id === selected);
-  const moreLabel =
-    selected === 'success'
-      ? t('filters.success', 'Success')
-      : selected === 'varna'
-        ? cityLabels.varna
-        : selected === 'plovdiv'
-          ? cityLabels.plovdiv
-          : t('common.more', 'More');
-
   return (
-    <div className={cn('', className)}>
-      <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-        {primaryTabs.map((tab) => {
-          const isSelected = selected === tab.id;
-          const label =
-            tab.id === 'sofia' && cityCounts?.sofia
-              ? `${cityLabels.sofia} (${cityCounts.sofia})`
-              : tab.id === 'urgent'
-                ? t('filters.urgent', tab.label)
-                : tab.id === 'nearby'
-                  ? t('filters.nearMe', tab.label)
-                  : tab.label;
+    <div className={cn(contained ? 'rounded-2xl border border-border/65 bg-surface-sunken p-1' : undefined, className)}>
+      <div className="flex items-center gap-1.5">
+        <div className="grid flex-1 grid-cols-3 gap-1.5">
+          <SegmentedButton
+            selected={intent === 'urgent'}
+            onClick={() => onIntentChange('urgent')}
+            label={t('filters.urgent', 'Urgent')}
+          />
+          <SegmentedButton
+            selected={intent === 'nearby'}
+            onClick={() => onIntentChange('nearby')}
+            label={t('filters.nearMe', 'Near')}
+          />
+          <SegmentedButton
+            selected={intent === 'adoption'}
+            onClick={() => onIntentChange('adoption')}
+            label={t('filters.adopt', 'Adopt')}
+          />
+        </div>
 
-          return (
-            <button
-              type="button"
-              key={tab.id}
-              onClick={() => onSelect(tab.id)}
-              className={cn(
-                'inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                isSelected
-                  ? tab.activeClass
-                  : 'bg-chip-bg text-foreground hover:bg-muted'
-              )}
-            >
-              {tab.icon}
-              {label}
-            </button>
-          );
-        })}
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className={cn(
-                'inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                !isPrimarySelected
-                  ? 'bg-chip-bg-active text-primary-foreground shadow-xs'
-                  : 'bg-chip-bg text-foreground hover:bg-muted'
-              )}
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-              {moreLabel}
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {extraTabs.map((tab) => {
-              const isSelected = selected === tab.id;
-              const label =
-                tab.id === 'success'
-                  ? t('filters.success', 'Success')
-                  : `${cityLabels[tab.id as CityFilter]}${cityCounts?.[tab.id as CityFilter] ? ` (${cityCounts[tab.id as CityFilter]})` : ''}`;
-
-              return (
-                <DropdownMenuItem
-                  key={tab.id}
-                  onClick={() => onSelect(tab.id)}
-                  className={cn(
-                    'flex items-center gap-2',
-                    isSelected && 'bg-accent text-foreground'
-                  )}
-                >
-                  {tab.icon}
-                  {label}
-                </DropdownMenuItem>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <button
+          type="button"
+          onClick={onOpenMore}
+          aria-label={t('filters.more', 'More filters')}
+          className={cn(
+            'relative inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-colors',
+            'hover:bg-interactive-hover hover:text-foreground active:bg-interactive-active',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          )}
+        >
+          <SlidersHorizontal className="size-5" />
+          {hasActiveMore ? (
+            <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" aria-hidden />
+          ) : null}
+        </button>
       </div>
     </div>
   );

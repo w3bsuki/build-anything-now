@@ -1,200 +1,72 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, HeartHandshake } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Camera, Heart, PawPrint, Cat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
 
 const CreateAdoption = () => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
-    const animalTypes = [
-        { id: 'dog', label: t('createAdoption.dog'), icon: PawPrint },
-        { id: 'cat', label: t('createAdoption.cat'), icon: Cat },
-        { id: 'other', label: t('createAdoption.other'), icon: Heart },
-    ];
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        animalType: '',
-        name: '',
-        age: '',
-        description: '',
-        city: '',
-        neighborhood: '',
-        vaccinated: false,
-        neutered: false,
-        images: [] as File[],
-    });
-
-    const updateForm = (field: string, value: string | boolean | File[]) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleSubmit = async () => {
-        // TODO: Implement Convex mutation
-        console.log('Submitting adoption:', formData);
-        navigate('/');
-    };
-
-    return (
-        <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
-            {/* Header */}
-            <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border">
-                <div className="flex items-center gap-3 h-14 px-3 container mx-auto">
-                    <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors">
-                        <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <h1 className="font-semibold text-foreground">{t('createAdoption.listForAdoption')}</h1>
-                </div>
-            </div>
-
-            <div className="container mx-auto px-4 py-6">
-                <div className="bg-card rounded-xl border border-border p-5 space-y-6">
-                    {/* Animal Type */}
-                    <div>
-                        <Label className="text-base font-semibold mb-3 block">{t('createAdoption.animalType')}</Label>
-                        <div className="flex gap-2">
-                            {animalTypes.map((type) => {
-                                const Icon = type.icon;
-                                return (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => updateForm('animalType', type.id)}
-                                        className={cn(
-                                            "flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border transition-colors",
-                                            formData.animalType === type.id
-                                                ? "border-primary bg-primary/5"
-                                                : "border-border hover:bg-muted"
-                                        )}
-                                    >
-                                        <Icon className="w-6 h-6" />
-                                        <span className="text-sm font-medium">{type.label}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Basic Info */}
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="name">{t('createAdoption.name')}</Label>
-                            <Input
-                                id="name"
-                                placeholder={t('createAdoption.namePlaceholder')}
-                                value={formData.name}
-                                onChange={(e) => updateForm('name', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="age">{t('createAdoption.age')}</Label>
-                            <Input
-                                id="age"
-                                placeholder={t('createAdoption.agePlaceholder')}
-                                value={formData.age}
-                                onChange={(e) => updateForm('age', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="description">{t('createAdoption.description')}</Label>
-                            <textarea
-                                id="description"
-                                className="w-full min-h-28 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
-                                placeholder={t('createAdoption.descriptionPlaceholder')}
-                                value={formData.description}
-                                onChange={(e) => updateForm('description', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Location */}
-                    <div className="space-y-4">
-                        <div>
-                            <Label htmlFor="city">{t('createAdoption.city')}</Label>
-                            <Input
-                                id="city"
-                                placeholder={t('createAdoption.cityPlaceholder')}
-                                value={formData.city}
-                                onChange={(e) => updateForm('city', e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="neighborhood">{t('createAdoption.neighborhood')}</Label>
-                            <Input
-                                id="neighborhood"
-                                placeholder={t('createAdoption.neighborhoodPlaceholder')}
-                                value={formData.neighborhood}
-                                onChange={(e) => updateForm('neighborhood', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Health Info */}
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="vaccinated">{t('createAdoption.vaccinated')}</Label>
-                            <Switch
-                                id="vaccinated"
-                                checked={formData.vaccinated}
-                                onCheckedChange={(checked) => updateForm('vaccinated', checked)}
-                            />
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="neutered">{t('createAdoption.neutered')}</Label>
-                            <Switch
-                                id="neutered"
-                                checked={formData.neutered}
-                                onCheckedChange={(checked) => updateForm('neutered', checked)}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Images */}
-                    <div>
-                        <Label className="text-base font-semibold block mb-3">{t('createAdoption.photos')}</Label>
-                        <div className="border-2 border-dashed border-border rounded-xl p-6 text-center">
-                            <Camera className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground mb-3">{t('createAdoption.addPhotos')}</p>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                className="hidden"
-                                id="adoption-image-upload"
-                                onChange={(e) => {
-                                    const files = Array.from(e.target.files || []);
-                                    updateForm('images', [...formData.images, ...files]);
-                                }}
-                            />
-                            <label htmlFor="adoption-image-upload">
-                                <Button variant="outline" className="cursor-pointer" asChild>
-                                    <span>{t('createAdoption.chooseImages')}</span>
-                                </Button>
-                            </label>
-                        </div>
-                        {formData.images.length > 0 && (
-                            <div className="flex gap-2 flex-wrap mt-3">
-                                {formData.images.map((file, idx) => (
-                                    <div key={idx} className="w-16 h-16 rounded-lg bg-muted overflow-hidden">
-                                        <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Submit Button */}
-                <Button onClick={handleSubmit} variant="donate" className="w-full mt-6">
-                    <Heart className="w-4 h-4 mr-2" />
-                    {t('createAdoption.submit')}
-                </Button>
-            </div>
+  return (
+    <PageShell>
+      <div className="sticky top-0 z-40 border-b border-nav-border/70 bg-nav-surface/95 backdrop-blur-md md:hidden">
+        <div className="flex items-center gap-3 h-14 px-3">
+          <Button
+            variant="outline"
+            size="iconSm"
+            className="rounded-xl"
+            onClick={() => navigate(-1)}
+            aria-label={t('actions.back', 'Back')}
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="font-medium text-sm text-foreground truncate">
+            {t('actions.listForAdoption', 'List for adoption')}
+          </h1>
         </div>
-    );
+      </div>
+
+      <PageSection className="py-6">
+        <div className="max-w-xl mx-auto">
+          <div className="hidden md:flex mb-4">
+            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-4 h-4" />
+              {t('actions.back', 'Back')}
+            </Button>
+          </div>
+
+          <div className="rounded-2xl border border-border/60 bg-surface-elevated p-5 shadow-xs">
+            <p className="text-xs font-semibold text-muted-foreground">
+              {t('common.comingSoon', 'Coming soon')}
+            </p>
+            <h1 className="mt-2 font-display text-2xl font-bold text-foreground">
+              {t('actions.listForAdoption', 'List for adoption')}
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t(
+                'createAdoption.comingSoonBody',
+                'Adoption listings are not available yet. For now, create a rescue case so the community can donate and help.',
+              )}
+            </p>
+
+            <div className="mt-5 flex flex-col sm:flex-row gap-2">
+              <Button className="rounded-xl" asChild>
+                <Link to="/create-case">
+                  <HeartHandshake className="w-4 h-4" />
+                  {t('actions.reportAnimal', 'Create case')}
+                </Link>
+              </Button>
+              <Button variant="outline" className="rounded-xl" asChild>
+                <Link to="/">{t('common.goHome', 'Go to Home')}</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </PageSection>
+    </PageShell>
+  );
 };
 
 export default CreateAdoption;

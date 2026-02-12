@@ -31,7 +31,7 @@ export function ProfileCases({ cases, emptyMessage }: ProfileCasesProps) {
 
   if (!cases || cases.length === 0) {
     return (
-      <div className="bg-card rounded-xl border border-border p-8 text-center">
+      <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-8 text-center">
         <PawPrint className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="font-semibold text-foreground mb-2">{t('profile.noCases')}</h3>
         <p className="text-sm text-muted-foreground">{emptyMessage || t('profile.noCasesDesc')}</p>
@@ -48,7 +48,7 @@ export function ProfileCases({ cases, emptyMessage }: ProfileCasesProps) {
           <Link
             key={caseItem._id}
             to={`/case/${caseItem._id}`}
-            className="block bg-card rounded-xl border border-border overflow-hidden hover:border-primary/30 hover:shadow-sm transition-all active:scale-[0.99]"
+            className="block bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden hover:border-primary/30 hover:shadow-sm transition-colors active:bg-interactive-active"
           >
             <div className="flex gap-3 p-3">
               {/* Image - Always show, with placeholder if missing */}

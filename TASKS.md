@@ -2,7 +2,7 @@
 
 > **Purpose:** Current sprint only. What we're doing NOW.  
 > **Rule:** Archive completed items weekly. Don't accumulate history.  
-> **Last updated:** 2026-02-07
+> **Last updated:** 2026-02-12
 
 ---
 
@@ -25,9 +25,9 @@
   - [ ] Expand style gate scope from landing surfaces to full trust-critical flows (`case/create/donation/community`) after cleanup batch 2.
   - AC: No duplicated urgency modules in home first fold and no hardcoded unread badge counts.
 
-- [ ] **DONATIONS: Post-checkout return UX + receipts polish**
-  - Hosted Stripe Checkout creation + webhook completion are implemented.
-  - Remaining: explicit success/cancel return banner and clearer receipt/history UX polish.
+- [x] **DONATIONS: Post-checkout return UX + receipts polish**
+  - [x] Case page shows explicit success/cancel return banner.
+  - [x] Stripe receipt URL stored on completion (webhook) and surfaced in history.
   - AC: Users receive clear post-checkout state and receipt visibility after redirect.
 
 - [ ] **PARTNER OPS: Clinic claim admin queue**
@@ -40,22 +40,27 @@
   - [x] Batch 2: Home + Community + Campaigns trust-surface alignment (token rails, focus/touch baseline, chip/search/header consistency).
   - [x] Expand style gate scope from narrow landing set to scoped trust surfaces (`home/community/campaigns` + shared components).
   - [x] Remove unused legacy home variants after alignment to reduce style drift.
-  - Remaining: migrate remaining legacy starter/palette usage across create-case and directory surfaces.
-  - AC: core trust flows use semantic token classes consistently and style gates catch scoped regressions.
+  - [x] Added SSOT layout primitives (`PageShell`, `PageSection`, `SectionHeader`, `StickySegmentRail`, `StickyActionBar`, `StatsGrid`).
+  - [x] Migrated trust-critical pages to shared wrappers (`/`, `/case/:id`, `/create-case`, `/campaigns`, `/clinics`).
+  - [x] Refactored `/partners` into data-driven segments with stores/services inside partners IA.
+  - Remaining: run full visual QA matrix and complete residual token drift cleanup on non-critical routes.
+  - AC: core trust flows use semantic token classes consistently, no mock trust content in partners/services, and style gates catch regressions.
 
 ---
 
 ## Current Sprint — Master Plan Execution (Weeks 1-8)
 
 ### Phase 0 — Governance / Docs Baseline
-- [x] Canonical docs topology aligned (7 root docs + supporting `docs/` packs)
+- [x] Canonical docs topology aligned (7 root docs + supporting `docs/` specs)
 - [x] Supporting docs packs created:
   - `docs/product/*`
-  - `docs/architecture/*`
+  - `docs/features/*`
+  - `docs/systems/*`
   - `docs/design/*`
+  - `docs/business/*`
+  - `docs/missions/*`
   - `docs/partners/*`
-  - `docs/mission/*`
-- [x] Decision log updated with locked defaults and superseded process notes.
+- [x] Decision log updated with defaults and superseded process notes.
 
 ### Phase 1 — Case Lifecycle (Core)
 - [x] Owner/authorized "Add Update" flow on case detail with modal UI.
@@ -96,3 +101,4 @@
 - [ ] OG/share SSR surfaces
 - [ ] Notification center + delivery channels
 - [ ] Duplicate detection/pHash
+

@@ -1,67 +1,73 @@
-# Team
+# Team
+
+> **Owner:** Founders
+> **Status:** review
+> **Last updated:** 2026-02-09
 
 ---
 
 ## Founding Team
 
-### [Founder Name] — CEO & Co-Founder
+### [FILL: Founder Full Name] — Founder & CEO
 
 **Background:**
-- [X] years in [Industry]
-- Previous: [Company/Role]
-- Education: [Degree, University]
+- [FILL: X years in relevant industry — e.g., "8 years in software engineering" or "5 years in animal welfare operations"]
+- Previous: [FILL: Most relevant prior company/role — e.g., "Senior Engineer at XYZ" or "Operations Lead at ABC Shelter"]
+- Education: [FILL: Degree, University]
 
 **Relevant Experience:**
-- [Achievement 1]
-- [Achievement 2]
-- [Achievement 3]
+- [FILL: Key achievement #1 — e.g., "Built and shipped mobile apps used by 50K+ users"]
+- [FILL: Key achievement #2 — e.g., "Managed rescue operations for 200+ animals"]
+- [FILL: Key achievement #3 — e.g., "Led technical team of 5 at previous startup"]
 
 **Why This Problem:**
-> "[Personal connection to animal welfare / motivation]"
+> "[FILL: Personal connection to animal welfare — why you started Pawtreon. 2-3 sentences that show genuine motivation. This is one of the most important parts of the pitch.]"
 
-📧 [email]  
-🔗 [LinkedIn]
+📧 [FILL: email]  
+🔗 [FILL: LinkedIn URL]
 
 ---
 
-### [Co-Founder Name] — CTO & Co-Founder (if applicable)
+### [FILL: CTO Name — or note "Hiring post-seed"] — CTO / Technical Co-Founder
 
 **Background:**
-- [X] years in software engineering
-- Previous: [Company/Role]
-- Education: [Degree, University]
+- [FILL: X years in software engineering]
+- Previous: [FILL: Company/Role]
+- Education: [FILL: Degree, University]
 
 **Technical Expertise:**
-- [Skill 1]
-- [Skill 2]
-- [Skill 3]
+- [FILL: Core skill #1 — e.g., "React/TypeScript full-stack development"]
+- [FILL: Core skill #2 — e.g., "Real-time systems, serverless architecture"]
+- [FILL: Core skill #3 — e.g., "Mobile app development (iOS/Android)"]
 
-📧 [email]  
-🔗 [LinkedIn]
+📧 [FILL: email]  
+🔗 [FILL: LinkedIn URL]
+
+*If solo founder: Note that the product has been built with an AI-augmented development workflow (see "Why This Team Wins" section) and a CTO hire is planned post-seed.*
 
 ---
 
 ## Advisory Board
 
-### [Advisor Name] — [Area of Expertise]
+### [FILL: Advisor Name] — [FILL: Area of Expertise — e.g., "Animal Welfare Operations"]
 
 **Background:**
-- [Current Role]
-- [Relevant Experience]
+- [FILL: Current Role — e.g., "Director at Bulgarian Animal Welfare Foundation"]
+- [FILL: Relevant experience — e.g., "15 years in shelter management"]
 
 **How They Help:**
-- [Contribution area]
+- [FILL: Contribution — e.g., "Shelter partnership introductions, operational validation"]
 
 ---
 
-### [Advisor Name] — [Area of Expertise]
+### [FILL: Advisor Name] — [FILL: Area of Expertise — e.g., "Fintech / Payments"]
 
 **Background:**
-- [Current Role]
-- [Relevant Experience]
+- [FILL: Current Role]
+- [FILL: Relevant experience]
 
 **How They Help:**
-- [Contribution area]
+- [FILL: Contribution — e.g., "Payment compliance, Stripe integration review"]
 
 ---
 
@@ -69,29 +75,32 @@
 
 | Strength | Evidence |
 |----------|----------|
-| **Technical** | Full-stack capability, shipped products |
-| **Domain** | Personal connection to animal welfare |
-| **Execution** | [Previous wins] |
-| **Network** | Connections to shelters, partners |
+| **Technical** | Product built to ~60% with modern stack (React 19, Convex, Stripe, Clerk) |
+| **AI-Augmented** | Using AI agents (OPUS/Codex) for accelerated development — 34 specs + full product in 7 weeks |
+| **Domain** | Personal connection to animal welfare, understanding of rescue community pain points |
+| **Execution** | 8-week sprint: auth, payments, case lifecycle, moderation, community, initiatives — all shipped |
+| **Documentation** | 34 comprehensive spec documents covering every feature, system, and business decision |
 
 ---
 
 ## Why This Team Wins
 
-### 1. Technical Capability
-- Built the product to 35% completion with lean resources
-- Modern tech stack (React, TypeScript, Convex)
-- Cross-platform expertise (web + mobile)
+### 1. Technical Capability + AI Augmentation
+- Built ~60% of the product in 7 weeks with AI-augmented development workflow
+- Modern tech stack (React 19, TypeScript, Convex, Stripe, Clerk)
+- Cross-platform expertise (web + iOS + Android via Capacitor)
+- 34 spec documents = every feature, system, and pattern is documented before implementation
+- This isn't just "using ChatGPT" — it's a structured agent workflow with review gates
 
 ### 2. Domain Passion
 - Personal investment in animal welfare
-- Understanding of shelter pain points
-- Connections in the community
+- Understanding of rescue community pain points (Facebook fragmentation, trust gaps)
+- Connections in the Bulgarian rescue community
 
-### 3. Startup Experience
-- [Previous startup experience if applicable]
-- [Relevant industry experience]
-- [Track record of execution]
+### 3. Lean Execution
+- [FILL: Previous startup or shipping experience if applicable]
+- Full product spec suite written in parallel with development
+- Trust-first approach makes every feature decision through the lens of animal outcomes
 
 ---
 
@@ -101,37 +110,31 @@
 |-------|----------------|
 | **Animal-First** | Every decision considers animal welfare impact |
 | **Transparency** | Open with donors, shelters, and each other |
-| **Speed** | Ship fast, iterate based on feedback |
-| **Quality** | Don't compromise on user experience |
-| **Impact** | Measure success by animals helped |
+| **Speed** | Ship fast with AI augmentation, iterate based on feedback |
+| **Quality** | Don't compromise on trust — moderation + audit logging from day one |
+| **Impact** | Measure success by animals helped, not vanity metrics |
 
 ---
 
 ## Hiring Plan
 
-### Current Team: [X] people
+### Current Team: [FILL: current team size — e.g., "1 (founder + AI agents)"]
 
-### Phase 1: MVP (Current)
-| Role | Status |
-|------|--------|
-| Founder/Full-Stack | ✅ Active |
-| [Additional roles] | [Status] |
-
-### Phase 2: Post-Funding (+3-6 months)
+### Phase 1: Post-Funding (+3–6 months)
 | Role | Priority | Budget |
 |------|----------|--------|
-| Senior Full-Stack Developer | 🔴 Critical | €60-80K |
-| Product Designer | 🟡 High | €50-70K |
-| Marketing Lead | 🟡 High | €50-70K |
-| Customer Success | 🟢 Medium | €40-50K |
+| Senior Full-Stack Developer | 🔴 Critical | €60–80K |
+| Product Designer | 🟡 High | €50–70K |
+| Marketing Lead | 🟡 High | €50–70K |
+| Customer Success / Community | 🟢 Medium | €40–50K |
 
-### Phase 3: Scale (+12 months)
+### Phase 2: Scale (+12 months)
 | Role | Priority |
 |------|----------|
 | Mobile Developer | High |
 | Data Analyst | Medium |
-| Sales (B2B) | High |
-| Operations | Medium |
+| Sales (B2B — shelter partnerships) | High |
+| Operations (partner onboarding) | Medium |
 
 ---
 
@@ -162,28 +165,27 @@
 
 | Gap | Risk | Mitigation |
 |-----|------|------------|
-| No dedicated designer | Medium | Founder handles design, contract help |
-| No marketing expertise | Medium | Hire post-funding, founder leads initially |
-| No sales experience | Low (for now) | Focus on product-led growth first |
-| Single point of failure | High | Document everything, hire quickly |
+| Solo founder (if applicable) | High | AI-augmented workflow, hire #1 developer immediately post-funding |
+| No dedicated designer | Medium | Founder handles design with shadcn/ui system, contract help for polish |
+| No marketing expertise | Medium | Hire post-funding, founder leads community-driven launch initially |
+| No sales experience | Low (for now) | Focus on product-led growth + manual shelter onboarding first |
 
 ---
 
 ## Founder Commitment
 
-- **Full-time:** Yes / No
-- **Vested:** [Vesting schedule]
-- **Runway:** [X months personal runway]
-- **Relocated:** Yes / No / N/A
+- **Full-time:** [FILL: Yes / No — if no, when transitioning full-time]
+- **Vesting:** [FILL: Vesting schedule — e.g., "4-year with 1-year cliff"]
+- **Runway:** [FILL: X months personal runway]
 
 ---
 
 ## References
 
 Available upon request:
-- [Reference 1 - Professional]
-- [Reference 2 - Industry]
-- [Reference 3 - Previous investor/partner]
+- [FILL: Reference 1 — Professional, e.g., "Former CTO at XYZ, can speak to technical ability"]
+- [FILL: Reference 2 — Industry, e.g., "Director at Bulgarian Animal Rescue Network"]
+- [FILL: Reference 3 — Previous investor/partner if applicable]
 
 ---
 

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart, MapPin, PawPrint, Clock } from 'lucide-react';
+import { Clock, Heart, MapPin, PawPrint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getStatusTone } from '@/lib/statusTone';
 import { cn } from '@/lib/utils';
 import type { AnimalCase } from '@/types';
 
@@ -12,137 +14,154 @@ interface HeroCaseCardProps {
   className?: string;
 }
 
-function formatTimeAgo(dateString: string): string {
-  const now = new Date();
+function formatRelativeTime(dateString: string, locale: string): string {
   const date = new Date(dateString);
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const diffSeconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style: 'short' });
 
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
-  return `${Math.floor(diffDays / 7)}w`;
+  const absSeconds = Math.abs(diffSeconds);
+  if (absSeconds < 60) return rtf.format(diffSeconds, 'second');
+
+  const diffMinutes = Math.round(diffSeconds / 60);
+  if (Math.abs(diffMinutes) < 60) return rtf.format(diffMinutes, 'minute');
+
+  const diffHours = Math.round(diffMinutes / 60);
+  if (Math.abs(diffHours) < 24) return rtf.format(diffHours, 'hour');
+
+  const diffDays = Math.round(diffHours / 24);
+  if (Math.abs(diffDays) < 7) return rtf.format(diffDays, 'day');
+
+  const diffWeeks = Math.round(diffDays / 7);
+  if (Math.abs(diffWeeks) < 5) return rtf.format(diffWeeks, 'week');
+
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date);
 }
 
 export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
-  const timeAgo = formatTimeAgo(caseData.createdAt);
+  const statusTone = getStatusTone(caseData.status);
+  const percentage = caseData.fundraising.goal > 0
+    ? Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100)
+    : 0;
+
+  const timeAgo = useMemo(() => formatRelativeTime(caseData.createdAt, i18n.language), [caseData.createdAt, i18n.language]);
+  const authorName = caseData.author?.name ?? t('common.anonymous', 'Anonymous');
+  const authorInitials = caseData.author?.name
+    ? caseData.author.name
+      .split(' ')
+      .map((name) => name[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase()
+    : 'U';
 
   return (
     <article
       className={cn(
-        'relative overflow-hidden rounded-2xl bg-warm-surface ring-1 ring-warm-accent/20',
-        className
+        'overflow-hidden rounded-2xl border border-border/70 bg-surface-elevated shadow-xs',
+        'focus-within:ring-2 focus-within:ring-focus-ring-strong focus-within:ring-offset-2 focus-within:ring-offset-background',
+        className,
       )}
     >
       <Link to={`/case/${caseData.id}`} className="block">
-        {/* Hero Image */}
-        <div className="relative aspect-video overflow-hidden">
-          {/* Loading skeleton */}
-          {!imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-muted flex items-center justify-center">
-              <PawPrint className="w-12 h-12 text-muted-foreground/20 animate-pulse" />
+        <div className="relative aspect-video overflow-hidden bg-surface-sunken">
+          {!imageLoaded && !imageError ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-surface-sunken">
+              <PawPrint className="h-12 w-12 animate-pulse text-muted-foreground/20" />
             </div>
-          )}
-          {/* Error fallback */}
+          ) : null}
+
           {imageError ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-muted/70">
-              <PawPrint className="w-16 h-16 text-warm-accent/30" />
+            <div className="absolute inset-0 flex items-center justify-center bg-surface-sunken/80">
+              <PawPrint className="h-16 w-16 text-muted-foreground/30" />
             </div>
           ) : (
             <img
               src={caseData.images[0]}
               alt={caseData.title}
-              className={cn(
-                "w-full h-full object-cover",
-                !imageLoaded && "opacity-0"
-              )}
+              className={cn('h-full w-full object-cover', !imageLoaded && 'opacity-0')}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
             />
           )}
 
-          {/* Status badge with pulse */}
-          <div className="absolute top-4 left-4">
-            <StatusBadge
-              status={caseData.status}
-              size="md"
-              className="backdrop-blur-md"
-            />
+          <div className="absolute left-3 top-3">
+            <StatusBadge status={caseData.status} size="md" className="shadow-2xs" />
+          </div>
+        </div>
+
+        <div className="space-y-3 p-4">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 bg-avatar-bg ring-1 ring-avatar-border">
+              <AvatarImage src={caseData.author?.avatar ?? undefined} alt={authorName} />
+              <AvatarFallback className="bg-avatar-bg text-xs font-semibold text-avatar-placeholder">
+                {authorInitials}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-foreground">{authorName}</p>
+              <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3 shrink-0" />
+                <span className="truncate">{caseData.location.city}</span>
+                <span className="text-muted-foreground/60" aria-hidden>
+                  •
+                </span>
+                <Clock className="h-3 w-3 shrink-0" />
+                <span className="shrink-0">{timeAgo}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Featured label */}
-          <div className="absolute top-4 right-4">
-            <span className="px-2.5 py-1 rounded-full bg-warm-accent text-warm-accent-foreground text-xs font-semibold">
-              {t('home.featured', '🔥 Featured')}
-            </span>
-          </div>
-
-          {/* Bottom content overlay */}
-          <div className="absolute bottom-0 inset-x-0 p-4 bg-overlay-dim/70">
-            {/* Title */}
-            <h2 className="text-white text-lg font-bold leading-tight mb-2 line-clamp-2">
+          <div>
+            <h2 className="line-clamp-2 font-display text-xl font-semibold leading-tight text-foreground">
               {caseData.title}
             </h2>
+            <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground/95">
+              {caseData.description}
+            </p>
+          </div>
 
-            {/* Meta row */}
-            <div className="flex items-center gap-3 text-white/80 text-xs mb-3">
-              <div className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" />
-                <span>{caseData.location.city}</span>
+          <div className="space-y-2 rounded-xl border border-border/55 bg-surface-sunken p-3">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t('campaigns.raised', 'Raised')}
+                </span>
+                <div className="text-lg font-bold text-foreground">
+                  {caseData.fundraising.current.toLocaleString()}
+                  <span className="ml-1 text-sm font-medium text-muted-foreground">
+                    {caseData.fundraising.currency}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{timeAgo}</span>
+              <div className="text-right">
+                <span className="text-2xl font-black text-foreground">{Math.round(percentage)}%</span>
               </div>
             </div>
 
-            {/* Progress section */}
-            <div className="space-y-2">
-              <div className="flex items-end justify-between">
-                <div>
-                  <span className="text-white/60 text-xs uppercase tracking-wide">{t('home.raised', 'Raised')}</span>
-                  <div className="text-white text-xl font-bold">
-                    {caseData.fundraising.current.toLocaleString()} 
-                    <span className="text-sm font-medium opacity-80 ml-1">{caseData.fundraising.currency}</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-white text-3xl font-black">{Math.round(percentage)}%</span>
-                </div>
-              </div>
+            <div className="h-2 overflow-hidden rounded-full bg-surface/80 ring-1 ring-border/35">
+              <div className={cn('h-full rounded-full', statusTone.progress)} style={{ width: `${percentage}%` }} />
+            </div>
 
-              {/* Progress bar */}
-              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-warm-accent rounded-full transition-all duration-500"
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-
-              <div className="text-white/60 text-xs">
-                {t('home.goalOf', 'Goal:')} {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}
-              </div>
+            <div className="text-xs text-muted-foreground">
+              {t('home.goalOf', 'Goal:')} {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}
             </div>
           </div>
         </div>
       </Link>
 
-      {/* CTA Button - outside link to prevent nested links */}
-      <div className="p-4 pt-0 -mt-2 relative z-10">
+      <div className="px-4 pb-4">
         <Button
           asChild
           size="lg"
-          className="w-full bg-warm-accent hover:bg-warm-accent/90 text-warm-accent-foreground font-semibold rounded-xl"
+          className={cn('w-full rounded-xl font-semibold', statusTone.cta)}
         >
           <Link to={`/case/${caseData.id}`}>
-            <Heart className="w-5 h-5 mr-2 fill-current" />
+            <Heart className="mr-2 h-5 w-5 fill-current" />
             {t('actions.donateNow', 'Donate Now')}
           </Link>
         </Button>
@@ -151,14 +170,24 @@ export function HeroCaseCard({ caseData, className }: HeroCaseCardProps) {
   );
 }
 
-// Skeleton for loading state
 export function HeroCaseCardSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-warm-surface ring-1 ring-warm-accent/20 animate-pulse">
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs animate-pulse">
       <div className="aspect-video bg-muted" />
-      <div className="p-4 pt-0 -mt-2">
-        <div className="h-12 bg-muted rounded-xl" />
+      <div className="space-y-3 p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-muted" />
+          <div className="flex-1">
+            <div className="mb-1 h-4 w-28 rounded bg-muted" />
+            <div className="h-3 w-40 rounded bg-muted" />
+          </div>
+        </div>
+        <div className="h-6 w-4/5 rounded bg-muted" />
+        <div className="h-4 w-full rounded bg-muted" />
+        <div className="h-28 rounded-xl bg-muted/50" />
+        <div className="h-12 rounded-xl bg-muted" />
       </div>
     </div>
   );
 }
+

@@ -452,6 +452,32 @@ export const addUpdate = mutation({
     ];
 
     await ctx.db.patch(args.caseId, { updates, lifecycleUpdatedAt: now });
+    const completedDonations = await ctx.db
+      .query("donations")
+      .withIndex("by_case", (q) => q.eq("caseId", args.caseId))
+      .filter((q) => q.eq(q.field("status"), "completed"))
+      .collect();
+
+    const donorIds = Array.from(new Set(completedDonations.map((d) => d.userId))).filter(
+      (donorId) => donorId !== user._id,
+    );
+
+
+    const caseLocale = (caseData.language ?? "").trim().toLowerCase();
+    const isBg = caseLocale.startsWith("bg");
+    const title = isBg ? "Обновление по случая" : "Case update";
+    const message = isBg ? `Ново обновление за ${caseData.title}` : `New update on ${caseData.title}`;
+    for (const donorId of donorIds.slice(0, 200)) {
+      await ctx.db.insert("notifications", {
+        userId: donorId,
+        type: "case_update",
+        title,
+        message,
+        caseId: args.caseId,
+        read: false,
+        createdAt: now,
+      });
+    }
 
     await ctx.db.insert("auditLogs", {
       actorId: user._id,
@@ -550,3 +576,6 @@ export const updateLifecycleStage = mutation({
     });
   },
 });
+
+
+

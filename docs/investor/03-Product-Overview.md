@@ -1,4 +1,8 @@
-# Product Overview
+# Product Overview
+
+> **Owner:** Founders
+> **Status:** review
+> **Last updated:** 2026-02-09
 
 ---
 
@@ -8,104 +12,92 @@
 
 | Platform | Technology | Status |
 |----------|------------|--------|
-| 🌐 Web | React + Vite | In Development |
-| 📱 iOS | Capacitor | In Development |
-| 🤖 Android | Capacitor | In Development |
+| 🌐 Web | React 19 + Vite 7 + TypeScript | ✅ In Development |
+| 📱 iOS | Capacitor | ✅ Configured |
+| 🤖 Android | Capacitor | ✅ Configured |
 
 ---
 
 ## Core Features
 
-### 1. 🆘 Emergency Cases
+### 1. 🆘 Emergency Cases (Shipped ✅)
 
 **Browse and donate to urgent animal rescue cases**
 
-- Real-time case feed with photos & stories
-- Progress bars showing funding goals
-- Filter by urgency, location, animal type
-- One-tap donations
-- Case updates & outcomes
+- Real-time case feed (Instagram-like, case-first discovery)
+- Case cards with verification badges, urgency indicators, funding progress
+- Full case lifecycle: `active_treatment` → `seeking_adoption` → `closed_success` / `closed_transferred` / `closed_other`
+- Structured updates with evidence (medical bills, lab results, clinic photos)
+- One-tap Stripe-powered donations
+- Report menu + moderation queue + audit logging
 
 **User Flow:**
 ```
-Browse Cases → View Details → Donate → Track Progress → See Outcome
+Browse Feed → View Case → Donate (Stripe) → Track Updates → See Outcome
 ```
 
 ---
 
-### 2. 📢 Campaigns
+### 2. 📢 Campaigns & Initiatives (Shipped ✅)
 
 **Support larger fundraising initiatives**
 
-- Shelter-wide campaigns (e.g., "Winter Heating Fund")
-- Time-limited campaigns with goals
-- Donor leaderboards
-- Social sharing tools
-- Campaign updates
+- **Rescue campaigns** — tied to specific cases or groups (short-term emergency funding)
+- **Initiative campaigns** — platform-level missions (drone program, safehouse — long-term, milestone-based)
+- Initiative classification: drone, safehouse, platform, other
+- Featured initiatives on home feed (after rescue content, never above it)
+- Campaign progress tracking with transparency requirements
 
 **Examples:**
-- "Build a New Shelter Wing" - €50,000 goal
-- "Emergency Medical Fund" - Monthly recurring
-- "Holiday Adoption Drive" - Seasonal campaign
+- "Emergency Surgery Fund for Luna" — €2,000 goal
+- "Drone Rescue Program" — platform initiative
+- "Safehouse & Adoption Center" — milestone-based campaign
 
 ---
 
-### 3. 🐕 Pet Adoption
+### 3. 🏥 Clinic Directory (In Development 🟡)
 
-**Find your perfect companion**
+**Find verified pet-friendly services**
 
-- Searchable pet database
-- Smart filters (size, age, breed, temperament)
-- Detailed pet profiles with photos/videos
-- Digital adoption application
-- Application status tracking
-- Direct shelter communication
-
-**Filters Available:**
-- Species (dog, cat, other)
-- Age range
-- Size
-- Good with kids/pets
-- Location/distance
-- Special needs
+- Clinic directory with search, filter by city/24h/specialization
+- Clinic profiles with details, services, hours, contact
+- Claim flow: submit claim → duplicate guard → admin review → verified badge
+- Claimed clinics can verify cases and post clinic updates
+- Bulgaria seed data (Sofia, Varna, Plovdiv)
 
 ---
 
-### 4. 🏥 Clinic Directory
+### 4. 🤝 Community Forum (Shipped ✅)
 
-**Find pet-friendly services**
+**Mobile-first community with dedicated bottom nav**
 
-- Verified vet clinics & pet services
-- Ratings & reviews
-- Services offered
-- Operating hours
-- Direct contact
-- Map integration
-
----
-
-### 5. 🤝 Sponsors & Partners
-
-**Corporate giving made easy**
-
-- Sponsor profiles & impact stories
-- Partnership tiers
-- Co-branded campaigns
-- CSR reporting tools
-- Employee giving programs
+- Two boards: rescue (case-linked, urgent) and community (general discussion)
+- Post categories: urgent_help, case_update, adoption, advice, general, announcements
+- 2-level threading, upvote reactions
+- Moderation: report flow → admin review → resolution actions
+- Content policies enforced
 
 ---
 
-### 6. 👤 User Dashboard
+### 5. 👤 User Profiles & Capabilities (Shipped ✅)
 
-**Track your impact**
+**Single-account, multi-capability model**
 
-- Donation history
-- Total impact metrics
-- Supported cases & outcomes
-- Saved pets (watchlist)
-- Adoption applications
-- Achievement badges
+- Profile types: Finder, Rescuer, Donor, Volunteer, Professional, Business, Sponsor, Admin
+- Verification ladder: unverified → community → clinic → partner
+- Public profile: impact stats, badges, linked cases
+- Privacy defaults: city-level location, no PII in public APIs
+
+---
+
+### 6. 🏢 Mission Initiatives (Shipped ✅)
+
+**Platform-level programs beyond individual rescue**
+
+- Drone Support Program (faster detection of injured animals)
+- Safehouse & Adoption Center (temporary housing until adoption)
+- Dedicated campaign surfaces with milestone tracking
+- Transparent operational cost reporting
 
 ---
 
@@ -115,43 +107,44 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 
 | Feature | Description |
 |---------|-------------|
-| Browse & Donate | Find cases, donate instantly |
-| Track Impact | See where money went |
-| Recurring Giving | Set up monthly donations |
-| Tax Receipts | Automatic receipt generation |
-| Social Sharing | Share cases to social media |
+| Browse & Donate | Find cases, donate via Stripe instantly |
+| Track Impact | See where money went with evidence-based updates |
+| Recurring Giving | Monthly support for rescuers/clinics (future) |
+| Receipts | Post-checkout receipt with case attribution |
+| Social Sharing | Share cases to social media (coming soon) |
 
-### 🏠 Shelters (B2B)
+### 🏠 Rescuers & Clinics (B2B)
 
 | Feature | Description |
 |---------|-------------|
-| Case Management | Create & update rescue cases |
-| Campaign Builder | Launch fundraising campaigns |
-| Pet Listings | Manage adoptable animals |
-| Donor Analytics | See who's donating & trends |
-| Payout Management | Withdraw funds to bank |
+| Case Management | Create cases, post structured updates with evidence |
+| Campaign Builder | Launch rescue or initiative campaigns |
+| Verification | Claim clinic profile → admin review → verified badge |
+| Donor Transparency | Incoming donation summaries, transparent accounting |
+| Trust Signals | Verification badges on all surfaces |
 
 ### 🏢 Sponsors (B2B)
 
 | Feature | Description |
 |---------|-------------|
-| Sponsored Cases | Fund specific rescues |
-| Brand Visibility | Logo on campaigns |
-| Impact Reports | CSR reporting data |
-| Employee Programs | Company-wide giving |
+| Sponsored Campaigns | Fund specific rescues or initiatives |
+| Brand Visibility | Logo on campaigns, CSR reporting |
+| Impact Reports | Measurable animal welfare outcomes |
+| Employee Programs | Company-wide giving (Year 2+) |
 
 ---
 
 ## Screenshots
 
-> *[Add screenshots here]*
+> [FILL: Add screenshots of Home Feed, Case Detail, Donation Flow, Community, Clinic Directory]
 
-### Home Screen
+### Home Screen (Case-First Feed)
 ```
 ┌─────────────────────────────┐
 │  🐾 Pawtreon               │
 ├─────────────────────────────┤
-│  [Search...]               │
+│  [🔍 Search...]  [Filters] │
+│  [Urgent] [Near me] [City] │
 ├─────────────────────────────┤
 │  🔥 Urgent Cases           │
 │  ┌─────┐ ┌─────┐ ┌─────┐  │
@@ -159,16 +152,18 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 │  │Luna │ │Max  │ │Bella│  │
 │  │€450 │ │€200 │ │€800 │  │
 │  │[===]│ │[== ]│ │[=  ]│  │
+│  │ ✅  │ │ ⚠️  │ │ ✅  │  │
 │  └─────┘ └─────┘ └─────┘  │
+│  (✅ = verified, ⚠️ = pending)│
 ├─────────────────────────────┤
-│  📢 Active Campaigns       │
+│  📢 Initiative Campaigns   │
 │  ┌───────────────────────┐ │
-│  │ Winter Shelter Fund   │ │
-│  │ €12,450 / €20,000    │ │
-│  │ [================   ] │ │
+│  │ 🚁 Drone Program     │ │
+│  │ €2,450 / €10,000     │ │
+│  │ [======           ]   │ │
 │  └───────────────────────┘ │
 ├─────────────────────────────┤
-│  🏠  📢  🐕  🏥  👤       │
+│  🏠  📢  ➕  💬  👤       │
 └─────────────────────────────┘
 ```
 
@@ -179,8 +174,8 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 ```
 ┌──────────────────────────────────────────────┐
 │                   FRONTEND                    │
-│  React + TypeScript + Tailwind + shadcn/ui   │
-│         Capacitor (iOS + Android)            │
+│  React 19 + TypeScript + Tailwind v4         │
+│  shadcn/ui + Capacitor (iOS + Android)       │
 └──────────────────────┬───────────────────────┘
                        │
                        ▼
@@ -193,8 +188,9 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
           ┌────────────┼────────────┐
           ▼            ▼            ▼
      ┌────────┐  ┌──────────┐  ┌────────┐
-     │ Clerk  │  │  Stripe  │  │ Resend │
-     │ (Auth) │  │(Payments)│  │(Email) │
+     │ Clerk  │  │  Stripe  │  │ i18next│
+     │ (Auth) │  │(Payments)│  │ (i18n) │
+     │   ✅   │  │    ✅    │  │   ✅   │
      └────────┘  └──────────┘  └────────┘
 ```
 
@@ -204,30 +200,33 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 
 | Layer | Technology | Why |
 |-------|------------|-----|
-| **Frontend** | React 18 + TypeScript | Industry standard, large talent pool |
-| **Styling** | Tailwind CSS + shadcn/ui | Rapid development, consistent design |
-| **Backend** | Convex | Real-time, serverless, type-safe |
-| **Auth** | Clerk | Secure, feature-rich, easy integration |
-| **Payments** | Stripe | Global, trusted, low fees |
-| **Mobile** | Capacitor | One codebase, native apps |
-| **i18n** | i18next | Multi-language support |
-| **Build** | Vite | Fast development experience |
+| **Frontend** | React 19 + TypeScript | Latest React with concurrent features |
+| **Styling** | Tailwind CSS v4 + shadcn/ui | CSS-first config, consistent design system |
+| **Backend** | Convex | Real-time, serverless, fully type-safe |
+| **Auth** | Clerk | Secure, multi-provider (email, Google, Apple, Facebook) |
+| **Payments** | Stripe | Global, trusted, hosted checkout |
+| **Mobile** | Capacitor | One codebase → native iOS + Android |
+| **i18n** | i18next | 5 languages from day one |
+| **Build** | Vite 7 | Sub-second HMR, optimized builds |
+| **Font** | Nunito (400–800) | Friendly, readable across weights |
 
 ---
 
 ## Internationalization
 
 **Supported Languages:**
-- 🇬🇧 English
-- 🇧🇬 Bulgarian
+- 🇬🇧 English (default)
+- 🇧🇬 Bulgarian (launch market)
 - 🇩🇪 German
 - 🇷🇺 Russian
 - 🇺🇦 Ukrainian
 
 **Locale Features:**
-- Currency formatting
-- Date formatting
-- RTL support (future)
+- Currency formatting (EUR primary)
+- Date formatting per locale
+- Machine translation for user-generated content (rate-limited)
+- Fallback chain: requested → EN
+- RTL support (future: Arabic, Hebrew)
 
 ---
 
@@ -235,23 +234,33 @@ Browse Cases → View Details → Donate → Track Progress → See Outcome
 
 | Feature | Status | Completion |
 |---------|--------|------------|
-| UI Components | 🟡 In Progress | 70% |
-| Cases & Donations | 🟡 In Progress | 40% |
-| Campaigns | 🟡 In Progress | 30% |
-| Adoption Flow | 🔴 Not Started | 10% |
-| Payments (Stripe) | 🔴 Not Started | 0% |
-| Authentication | 🔴 Not Started | 0% |
-| Mobile Apps | 🟡 Configured | 20% |
+| Authentication (Clerk) | ✅ Complete | 100% |
+| Home Feed (case-first) | ✅ Complete | 100% |
+| Case Lifecycle + Updates | ✅ Complete | 100% |
+| Community Forum | ✅ Complete | 100% |
+| Moderation + Audit Logging | ✅ Complete | 100% |
+| Mission Initiatives | ✅ Complete | 100% |
+| Profiles + Capabilities | ✅ Complete | 100% |
+| I18n (5 languages) | ✅ Complete | 100% |
+| UI Components (shadcn/ui) | ✅ Complete | 90% |
+| Create Case (wired to Convex) | ✅ Complete | 100% |
+| Donations (Stripe checkout) | 🟡 In Progress | 80% |
+| Clinic Directory + Claim | 🟡 In Progress | 60% |
+| Campaigns | 🟡 In Progress | 70% |
+| Adoption Flow | 🔴 Backlog | 10% |
+| Mobile Apps (Capacitor) | 🟡 Configured | 30% |
+| Notifications | 🔴 Not Started | 0% |
+| Volunteer System | 🔴 Not Started | 0% |
 
-**Overall: ~35% Complete**
+**Overall: ~60% Complete** — Auth, payments, case lifecycle, moderation, community, and initiatives are shipped. Remaining work: receipt UX polish, clinic claim admin queue, notifications, volunteer system, and mobile app store builds.
 
 ---
 
 ## Demo
 
-📱 **Live Demo:** [Coming Soon]
+📱 **Live Demo:** [FILL: Demo URL when available]
 
-🎥 **Video Walkthrough:** [Coming Soon]
+🎥 **Video Walkthrough:** [FILL: Video link when recorded]
 
 ---
 

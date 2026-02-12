@@ -1,12 +1,15 @@
 # Business Model & Monetization
 
-> Note: Monetization is under active review. Numbers in this document (e.g., platform fee %) are placeholders until `docs/strategy/monetization.md` is finalized.
+> **Owner:** Founders  
+> **Status:** review  
+> **Last updated:** 2026-02-09  
+> Revenue model finalized — see `docs/business/monetization-spec.md` for full implementation details, data model additions, and open questions.
 
 ---
 
 ## Revenue Model Overview
 
-Pawtreon generates revenue through **four primary streams**:
+Pawtreon generates revenue through **four primary streams**, designed to align platform growth with animal welfare outcomes. All core features remain free — monetization layers on top without gatekeeping rescue outcomes.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -16,13 +19,13 @@ Pawtreon generates revenue through **four primary streams**:
 │  ┌──────────────┐    ┌──────────────────────┐   │
 │  │ Transaction  │    │  Shelter             │   │
 │  │ Fees         │    │  Subscriptions       │   │
-│  │ (5%)         │    │  ($49-199/mo)        │   │
+│  │ (5%)         │    │  (€49-199/mo)        │   │
 │  └──────────────┘    └──────────────────────┘   │
 │                                                  │
 │  ┌──────────────┐    ┌──────────────────────┐   │
 │  │ Sponsored    │    │  Corporate           │   │
 │  │ Campaigns    │    │  Programs            │   │
-│  │ ($500-5K)    │    │  (Custom)            │   │
+│  │ (€500-50K)   │    │  (Year 2+)           │   │
 │  └──────────────┘    └──────────────────────┘   │
 │                                                  │
 └─────────────────────────────────────────────────┘
@@ -33,17 +36,21 @@ Pawtreon generates revenue through **four primary streams**:
 ## Revenue Stream #1: Transaction Fees
 
 ### How It Works
-- **5% fee** on all donations processed through the platform
-- Donor pays: €10 → Shelter receives: €9.50 (after payment processor fees)
-- Transparent fee disclosure at checkout
+- **5% fee** on all donations processed through Stripe
+- Donor pays full amount → Fee deducted before crediting case/campaign
+- Example: Donor gives €100 → Case receives €95 → Pawtreon retains €5
+- **Stripe's own processing fee (~2.9% + €0.25) is separate** — paid by the platform from the 5% margin
+- Transparent fee disclosure at checkout: receipts include gross donation, platform fee, and net amount
+
+> **Implementation note:** Stripe hosted checkout and webhook handling are implemented. Fee deduction logic (`platformFeeAmount` field) is designed but not yet live in production — currently the full donation amount is credited to cases. This will be activated before launch.
 
 ### Pricing Rationale
 | Platform | Fee |
 |----------|-----|
-| GoFundMe | 2.9% + $0.30 |
-| Facebook | 0% (but poor tools) |
+| GoFundMe | 2.9% + €0.30 |
+| Facebook | 0% (but poor tools, no verification) |
 | JustGiving | 5% |
-| **Pawtreon** | **5%** |
+| **Pawtreon** | **5%** (includes platform + Stripe fees) |
 
 ### Revenue Projection
 
@@ -115,7 +122,7 @@ Brands pay to sponsor specific rescue cases or campaigns, getting:
 - Pet food brands (Royal Canin, Pedigree, Whiskas)
 - Pet insurance companies
 - Vet clinic chains
-- Pet retail (Petco, Fressnapf)
+- Pet retail (Fressnapf, Zooplus)
 - General CSR-focused brands
 
 ### Revenue Projection

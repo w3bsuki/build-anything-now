@@ -267,7 +267,7 @@ export function DonationFlowDrawer({
                           'h-10 rounded-xl border text-sm font-semibold transition-colors',
                           customAmount.trim().length === 0 && amount === p
                             ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border bg-card hover:bg-muted/50 text-foreground'
+                            : 'border-border bg-card hover:bg-surface-sunken/70 text-foreground'
                         )}
                       >
                         {formatMoney(p, currency)}

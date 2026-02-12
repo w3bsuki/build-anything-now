@@ -9,18 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 [&_svg]:size-4",
+        default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 [&_svg]:size-4",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 [&_svg]:size-4",
         outline:
-          "border border-border/60 bg-chip-bg text-foreground hover:bg-muted [&_svg]:size-4",
+          "border border-border/70 bg-surface text-foreground hover:bg-surface-sunken [&_svg]:size-4",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 [&_svg]:size-4",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/90 [&_svg]:size-4",
         ghost: "hover:bg-accent hover:text-accent-foreground [&_svg]:size-4",
         link: "text-primary underline-offset-4 hover:underline [&_svg]:size-4",
-        donate: "bg-primary text-primary-foreground font-semibold rounded-md hover:brightness-105 shadow-xs [&_svg]:size-4",
+        donate: "bg-warm-accent text-warm-accent-foreground font-semibold rounded-md shadow-sm hover:bg-warm-accent/90 [&_svg]:size-4",
         iconHeader:
-          "rounded-xl text-muted-foreground hover:text-foreground hover:bg-interactive-hover active:bg-interactive-active transition-colors shadow-none [&_svg]:size-6",
+          "rounded-xl border border-border/60 bg-surface/80 text-muted-foreground hover:text-foreground hover:bg-interactive-hover active:bg-interactive-active transition-colors shadow-none [&_svg]:size-6",
       },
       size: {
         default: "h-10 px-4 py-2",

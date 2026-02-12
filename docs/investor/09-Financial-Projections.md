@@ -1,6 +1,9 @@
 # Financial Projections
 
-> Note: This model depends on monetization assumptions that are under review. Treat line items like “Transaction Fees” as placeholders until `docs/strategy/monetization.md` is finalized.
+> **Owner:** Founders  
+> **Status:** review  
+> **Last updated:** 2026-02-09  
+> Revenue model finalized — see `docs/business/monetization-spec.md` for implementation details, Stripe fee handling, and open questions.
 
 ---
 
@@ -12,7 +15,7 @@
 | **Expenses** | €150K | €400K | €800K | €1.5M | €3M |
 | **Net Income** | -€113K | -€195K | €192K | €1.26M | €3.33M |
 | **Users** | 5K | 25K | 100K | 300K | 750K |
-| **Shelters** | 50 | 200 | 500 | 1K | 2K |
+| **Clinics/Shelters** | 50 | 200 | 500 | 1K | 2K |
 
 ---
 
@@ -38,7 +41,7 @@
 | Corporate | €0 | €5K | €7K | €8K | €20K |
 | **Total** | €26K | €42K | €60K | €77K | **€205K** |
 
-### Year 3-5
+### Year 3–5
 
 | Stream | Year 3 | Year 4 | Year 5 |
 |--------|--------|--------|--------|
@@ -57,8 +60,8 @@
 | Category | Amount | % | Notes |
 |----------|--------|---|-------|
 | **Personnel** | €80K | 53% | Founder salary + 1 contractor |
-| **Infrastructure** | €15K | 10% | Hosting, services, tools |
-| **Marketing** | €30K | 20% | Launch campaigns, ads |
+| **Infrastructure** | €15K | 10% | Hosting (Vercel + Convex), services, tools |
+| **Marketing** | €30K | 20% | Bulgaria launch campaigns, ads |
 | **Operations** | €15K | 10% | Legal, accounting, misc |
 | **Contingency** | €10K | 7% | Buffer |
 
@@ -66,13 +69,13 @@
 
 | Category | Amount | % | Notes |
 |----------|--------|---|-------|
-| **Personnel** | €250K | 63% | Team of 4-5 |
+| **Personnel** | €250K | 63% | Team of 4–5 |
 | **Infrastructure** | €30K | 8% | Scaled services |
-| **Marketing** | €80K | 20% | Growth campaigns |
+| **Marketing** | €80K | 20% | Growth campaigns, EU expansion |
 | **Operations** | €30K | 7% | Expanded ops |
 | **Contingency** | €10K | 2% | Buffer |
 
-### Year 3-5
+### Year 3–5
 
 | Category | Year 3 | Year 4 | Year 5 |
 |----------|--------|--------|--------|
@@ -183,7 +186,7 @@ Revenue vs Expenses (€K)
 ### Runway
 - **With €150K:** 18 months to profitability
 - **Break-even:** Month 24
-- **Next Round:** Series A at Month 18-24 (if scaling aggressively)
+- **Next Round:** Series A at Month 18–24 (if scaling aggressively)
 
 ---
 
@@ -192,20 +195,20 @@ Revenue vs Expenses (€K)
 | Milestone | Funding | Timeline | Goal |
 |-----------|---------|----------|------|
 | **Pre-Seed** | €50K | Now | MVP launch |
-| **Seed** | €150K | Month 6 | Market validation |
-| **Series A** | €1-2M | Month 24 | European expansion |
-| **Series B** | €5-10M | Month 48 | Global scale |
+| **Seed** | €150K | Month 3–6 | Market validation, Bulgaria traction |
+| **Series A** | €1–2M | Month 24 | European expansion |
+| **Series B** | €5–10M | Month 48 | Global scale |
 
 ---
 
 ## Valuation Rationale
 
-### Current Stage: Pre-Revenue
+### Current Stage: Pre-Revenue, Product ~60% Built
 
 | Method | Valuation |
 |--------|-----------|
-| Comparable seed rounds | €500K - €1M |
-| Revenue multiple (projected Y2) | €1M - €2M |
+| Comparable seed rounds | €500K – €1M |
+| Revenue multiple (projected Y2) | €1M – €2M |
 | **Proposed Pre-Money** | **€750K** |
 
 ### Seed Round Terms (Example)
@@ -217,6 +220,8 @@ Revenue vs Expenses (€K)
 | Post-money valuation | €900K |
 | Investor ownership | 16.7% |
 | Instrument | SAFE / Convertible Note |
+
+> **Note:** Valuation comparables are early-stage estimates. [FILL: Verify and update comparable companies with current data if available.]
 
 ---
 
@@ -253,11 +258,14 @@ Revenue vs Expenses (€K)
 | Assumption | Value | Rationale |
 |------------|-------|-----------|
 | Avg donation size | €50 | Industry benchmark |
-| Transaction fee | 5% | Competitive rate |
+| Transaction fee | 5% | Competitive rate (matches JustGiving) |
+| Stripe processing fee | 2.9% + €0.25 | Standard Stripe rate, paid from 5% margin |
 | Shelter conversion to paid | 20% | Conservative SaaS benchmark |
 | Monthly churn (paid) | 5% | B2B SaaS average |
 | CAC payback | 12 months | Target for sustainability |
 | Viral coefficient | 0.3 | Conservative organic growth |
+
+> **Implementation note:** The 5% platform fee is designed but not yet deducted in production. Currently, Stripe checkout and webhook handling are implemented and the full donation amount is credited to cases. Fee deduction will be activated before launch.
 
 ---
 
@@ -265,12 +273,12 @@ Revenue vs Expenses (€K)
 
 | Scenario | Timeline | Valuation | Multiple |
 |----------|----------|-----------|----------|
-| **Acqui-hire** | Year 2 | €2-5M | 2-5x |
-| **Strategic Acquisition** | Year 4 | €20-50M | 3-5x revenue |
-| **PE/Growth Equity** | Year 5 | €50-100M | 8-15x revenue |
-| **IPO** | Year 7+ | €200M+ | 10-20x revenue |
+| **Acqui-hire** | Year 2 | €2–5M | 2–5x |
+| **Strategic Acquisition** | Year 4 | €20–50M | 3–5x revenue |
+| **PE/Growth Equity** | Year 5 | €50–100M | 8–15x revenue |
+| **IPO** | Year 7+ | €200M+ | 10–20x revenue |
 
-**Most Likely Exit:** Strategic acquisition by pet industry player (Chewy, Petco, pet insurance company) at Year 4-5.
+**Most Likely Exit:** Strategic acquisition by pet industry player (Chewy, Fressnapf, pet insurance company) at Year 4–5.
 
 ---
 

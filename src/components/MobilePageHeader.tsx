@@ -81,15 +81,17 @@ export function MobilePageHeader({
 
   return (
     <>
-      <header className="md:hidden sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-lg pt-[env(safe-area-inset-top)] border-b border-nav-border/70">
+      <header className="md:hidden sticky top-0 z-50 border-b border-nav-border/80 bg-nav-surface/96 pt-[env(safe-area-inset-top)] backdrop-blur-xl shadow-2xs">
         {/* Title Row */}
         <div className="flex items-center justify-between h-14 px-4">
           {/* Page Title with optional Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {showLogo && (
-              <HeartHandshake className="size-5 text-primary" strokeWidth={2} />
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/12 ring-1 ring-primary/25">
+                <HeartHandshake className="size-4 text-primary" strokeWidth={2.2} />
+              </div>
             )}
-            <h1 className="font-bold text-lg tracking-tight text-foreground">{title}</h1>
+            <h1 className="font-display text-lg font-bold tracking-tight text-foreground">{title}</h1>
           </div>
 
           {/* Action Icons - min 44px touch targets */}
@@ -149,18 +151,21 @@ export function MobilePageHeader({
   
         {/* Search + Filters Area */}
         {(searchPlaceholder || children) && (
-          <div className={cn(
-            "px-4 pt-1 pb-2",
-            showIconSearch ? "flex items-center gap-2" : "space-y-2",
-          )}>
+          <div className="px-4 pb-2.5 pt-1.5">
+            <div
+              className={cn(
+                "rounded-2xl border border-border/65 bg-surface-overlay px-2.5 py-2 shadow-xs",
+                showIconSearch ? "flex items-center gap-2" : "space-y-2",
+              )}
+            >
             {showInlineSearch && (
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/50" />
                 <input
                   ref={inlineSearchRef}
                   type="text"
                   placeholder={searchPlaceholder}
-                  className="w-full rounded-full border border-search-border bg-search-bg pl-10 pr-4 py-2 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
+                  className="h-10 w-full rounded-full border border-search-border/90 bg-search-bg px-4 py-2 pl-10 text-base font-medium text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background md:text-sm"
                   value={searchValue}
                   onFocus={() => {
                     setIsInlineSearchFocused(true);
@@ -177,8 +182,8 @@ export function MobilePageHeader({
                 variant="iconHeader"
                 size="iconTouch"
                 className={cn(
-                  "relative shrink-0 rounded-full border border-search-border bg-search-bg",
-                  hasActiveSearch && "border-primary/35 bg-primary/10 text-primary"
+                  "relative h-10 w-10 shrink-0 rounded-full border border-search-border/90 bg-search-bg",
+                  hasActiveSearch && "border-primary/45 bg-primary/12 text-primary"
                 )}
                 onClick={() => setSearchSheetOpen(true)}
                 aria-label={searchPlaceholder}
@@ -195,6 +200,7 @@ export function MobilePageHeader({
                 {children}
               </div>
             ) : null}
+            </div>
           </div>
         )}
       </header>
@@ -207,12 +213,12 @@ export function MobilePageHeader({
               <SheetDescription>Search and filter this list.</SheetDescription>
             </SheetHeader>
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/50" />
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/50" />
               <input
                 type="text"
                 placeholder={searchPlaceholder}
                 autoFocus
-                className="w-full rounded-full border border-search-border bg-search-bg pl-10 pr-10 py-2.5 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="w-full rounded-full border border-search-border bg-search-bg py-2.5 pl-10 pr-10 text-base font-normal text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 value={searchDraft}
                 onChange={(e) => {
                   setSearchDraft(e.target.value);

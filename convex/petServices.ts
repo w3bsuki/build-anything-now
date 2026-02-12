@@ -14,6 +14,85 @@ export const SERVICE_TYPES = [
     { value: "other", label: "Other Services", icon: "📦", emoji: "🐕" },
 ] as const;
 
+// Public directory listing for partner-integrated services surfaces.
+export const list = query({
+    args: {
+        type: v.optional(v.union(
+            v.literal("clinic"),
+            v.literal("grooming"),
+            v.literal("training"),
+            v.literal("pet_store"),
+            v.literal("shelter"),
+            v.literal("pet_sitting"),
+            v.literal("pet_hotel"),
+            v.literal("pharmacy"),
+            v.literal("other"),
+        )),
+        city: v.optional(v.string()),
+        search: v.optional(v.string()),
+        verifiedOnly: v.optional(v.boolean()),
+        excludeClinics: v.optional(v.boolean()),
+        limit: v.optional(v.number()),
+    },
+    handler: async (ctx, args) => {
+        let services = await ctx.db.query("petServices").collect();
+
+        if (args.excludeClinics) {
+            services = services.filter((service) => service.type !== "clinic");
+        }
+
+        if (args.type) {
+            services = services.filter((service) => service.type === args.type);
+        }
+
+        if (args.city) {
+            const city = args.city.trim().toLowerCase();
+            services = services.filter((service) => service.city.trim().toLowerCase() === city);
+        }
+
+        if (args.verifiedOnly) {
+            services = services.filter((service) => service.verified);
+        }
+
+        if (args.search?.trim()) {
+            const query = args.search.trim().toLowerCase();
+            services = services.filter((service) =>
+                service.name.toLowerCase().includes(query) ||
+                service.city.toLowerCase().includes(query) ||
+                service.address.toLowerCase().includes(query) ||
+                service.services.some((entry) => entry.toLowerCase().includes(query))
+            );
+        }
+
+        const take = Math.max(1, Math.min(args.limit ?? 60, 120));
+
+        return services
+            .sort((a, b) => {
+                if (a.verified !== b.verified) return a.verified ? -1 : 1;
+                if (!!a.ownerId !== !!b.ownerId) return a.ownerId ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            })
+            .slice(0, take)
+            .map((service) => ({
+                ...service,
+                isClaimed: !!service.ownerId,
+            }));
+    },
+});
+
+export const get = query({
+    args: { id: v.id("petServices") },
+    handler: async (ctx, args) => {
+        const service = await ctx.db.get(args.id);
+        if (!service) return null;
+
+        return {
+            ...service,
+            isClaimed: !!service.ownerId,
+        };
+    },
+});
+
 // Search pet services for claim flow (used during onboarding)
 export const searchForClaim = query({
     args: { 

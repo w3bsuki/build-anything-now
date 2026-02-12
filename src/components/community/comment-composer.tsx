@@ -23,7 +23,7 @@ export function CommentComposer({
   if (isLocked) {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
-        <div className="mx-auto max-w-2xl rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-surface-elevated shadow-xs px-3 py-2 text-sm text-muted-foreground">
           This thread is locked. New replies are disabled.
         </div>
       </div>
@@ -32,7 +32,7 @@ export function CommentComposer({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
-      <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-card p-2">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-2">
         {replyingTo ? (
           <div className="mb-2 flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
             <span>

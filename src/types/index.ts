@@ -96,6 +96,26 @@ export interface Partner {
   featured?: boolean;
 }
 
+export type DirectorySegment = 'partners' | 'volunteers' | 'stores_services';
+
+export interface StoreServiceCardViewModel {
+  id: string;
+  name: string;
+  type: 'pet_store' | 'grooming' | 'training' | 'shelter' | 'pet_sitting' | 'pet_hotel' | 'pharmacy' | 'other';
+  city: string;
+  address: string;
+  phone: string;
+  website?: string;
+  description?: string;
+  services: string[];
+  verified: boolean;
+  isClaimed: boolean;
+  ownerId?: string;
+  rating?: number;
+  reviewCount?: number;
+  is24h?: boolean;
+}
+
 export interface Clinic {
   id: string;
   name: string;

@@ -201,7 +201,7 @@ const CommunityMembers = () => {
             {filteredMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center gap-3 p-3 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors"
+                className="flex items-center gap-3 p-3 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs hover:border-primary/30 transition-colors"
               >
                 <img
                   src={member.avatar}

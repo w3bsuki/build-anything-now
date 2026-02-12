@@ -39,7 +39,7 @@ function OptionCard({ icon, title, description, selected, onSelect }: OptionCard
         // State styling using design tokens only
         selected 
           ? "border-primary bg-primary/5 ring-1 ring-primary/20" 
-          : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
+          : "border-border bg-card hover:border-primary/40 hover:bg-surface-sunken/70"
       )}
     >
       <div className="flex items-center gap-4 p-4">

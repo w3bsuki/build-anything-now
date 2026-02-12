@@ -82,7 +82,7 @@ const PartnerProfile = () => {
                     </Link>
 
                     {/* Profile Header */}
-                    <div className="bg-card rounded-2xl border border-border p-6 md:p-8 mb-6 text-center relative overflow-hidden">
+                    <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6 md:p-8 mb-6 text-center relative overflow-hidden">
                         <div className="absolute top-0 left-0 right-0 h-24 bg-surface-sunken/60 -z-10" />
 
                         <div className="w-24 h-24 rounded-2xl overflow-hidden mx-auto mb-4 bg-background shadow-lg border-2 border-background">
@@ -141,7 +141,7 @@ const PartnerProfile = () => {
                     </div>
 
                     {/* Contact Info (Mock) */}
-                    <div className="bg-card rounded-2xl border border-border p-6">
+                    <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6">
                         <h2 className="font-semibold text-lg text-foreground mb-4">{t('clinicProfile.contactInformation')}</h2>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">

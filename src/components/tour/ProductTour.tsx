@@ -41,11 +41,11 @@ export function ProductTour() {
       }}
       styles={{
         options: {
-          primaryColor: 'hsl(142.1, 76.2%, 36.3%)',
-          textColor: 'hsl(240, 10%, 3.9%)',
-          backgroundColor: 'hsl(0, 0%, 100%)',
-          arrowColor: 'hsl(0, 0%, 100%)',
-          overlayColor: 'rgba(0, 0, 0, 0.5)',
+          primaryColor: 'var(--primary)',
+          textColor: 'var(--foreground)',
+          backgroundColor: 'var(--card)',
+          arrowColor: 'var(--card)',
+          overlayColor: 'var(--overlay-dim)',
           zIndex: 10000,
         },
         spotlight: {
@@ -67,18 +67,18 @@ export function ProductTour() {
           padding: '10px 0',
         },
         buttonNext: {
-          backgroundColor: 'hsl(142.1, 76.2%, 36.3%)',
+          backgroundColor: 'var(--primary)',
           borderRadius: 12,
           padding: '8px 16px',
           fontSize: 14,
           fontWeight: 500,
         },
         buttonBack: {
-          color: 'hsl(240, 5.9%, 10%)',
+          color: 'var(--foreground)',
           marginRight: 8,
         },
         buttonSkip: {
-          color: 'hsl(240, 3.8%, 46.1%)',
+          color: 'var(--muted-foreground)',
         },
         buttonClose: {
           display: 'none',

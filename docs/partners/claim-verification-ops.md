@@ -1,38 +1,44 @@
 # Claim Verification Operations
 
-- Owner: Trust & Safety Ops
-- Update cadence: Weekly during partner onboarding
-- Last updated: 2026-02-06
+> **Owner:** Trust & Safety Ops
+> **Status:** final
+> **Last updated:** 2026-02-06
+
+---
 
 ## Objective
+
 Ensure organization claim approvals are fast, fair, and auditable.
 
 ## Claim Lifecycle
-- `pending` -> `approved`
-- `pending` -> `rejected`
+
+- `pending` → `approved`
+- `pending` → `rejected`
 
 ## SLA Targets
-- First response: 24h
-- Resolution target: 72h
-- Priority fast-track (critical clinic cases): 12h
+
+| Metric | Target |
+|--------|--------|
+| First response | 24h |
+| Resolution target | 72h |
+| Priority fast-track (critical clinic cases) | 12h |
 
 ## Approval Criteria
+
 - Claimant has verifiable relationship to organization.
 - Contact details match public or direct-confirmed records.
 - No conflicting active owner claim.
 
 ## Rejection Criteria
+
 - Insufficient proof of affiliation.
 - Fraud indicators or contradictory ownership claims.
 - Non-responsive claimant after follow-up window.
 
 ## Audit Logging
-For each decision, store:
-- reviewer user id
-- timestamp
-- action (`approved`/`rejected`)
-- reason code and notes
 
-## Appeals
-- One appeal window per rejected claim (7 days).
-- Escalate unresolved disputes to human decider.
+For each decision, store:
+- Reviewer user ID
+- Timestamp
+- Action (`approved` / `rejected`)
+- Reason code and notes

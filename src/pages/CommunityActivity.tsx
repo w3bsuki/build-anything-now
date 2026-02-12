@@ -119,7 +119,7 @@ const CommunityActivity = () => {
                 {todayItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start gap-3 p-3 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors"
+                    className="flex items-start gap-3 p-3 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs hover:border-primary/30 transition-colors"
                   >
                     <div className="relative">
                       <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
@@ -154,7 +154,7 @@ const CommunityActivity = () => {
                   {olderItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-start gap-3 p-3 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors"
+                      className="flex items-start gap-3 p-3 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs hover:border-primary/30 transition-colors"
                     >
                       <div className="relative">
                         <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">

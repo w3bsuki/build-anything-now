@@ -110,7 +110,7 @@ const ClinicProfile = () => {
           </Link>
 
           {/* Clinic Header */}
-          <div className="bg-card rounded-xl border border-border p-5 mb-5">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-5 mb-5">
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -145,7 +145,7 @@ const ClinicProfile = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="bg-card rounded-xl border border-border p-5 mb-5">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-5 mb-5">
             <h2 className="text-lg font-semibold text-foreground mb-4">{t('clinicProfile.contactInformation')}</h2>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -203,7 +203,7 @@ const ClinicProfile = () => {
           </div>
 
           {/* Specializations */}
-          <div className="bg-card rounded-xl border border-border p-5 mb-5">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-5 mb-5">
             <div className="flex items-center gap-2 mb-4">
               <Stethoscope className="w-5 h-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">{t('clinicProfile.specializations')}</h2>
@@ -227,7 +227,7 @@ const ClinicProfile = () => {
           </div>
 
           {/* Map Placeholder */}
-          <div className="bg-card rounded-xl border border-border overflow-hidden mb-5">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden mb-5">
             <div className="aspect-video bg-muted flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -237,7 +237,7 @@ const ClinicProfile = () => {
           </div>
 
           {/* Reviews Placeholder */}
-          <div className="bg-card rounded-xl border border-border p-5">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-5">
             <h2 className="text-lg font-semibold text-foreground mb-4">{t('clinicProfile.reviews')}</h2>
             <div className="text-center py-8 text-muted-foreground">
               <p className="text-sm">{t('clinicProfile.noReviews')}</p>

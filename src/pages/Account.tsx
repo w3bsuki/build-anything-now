@@ -62,7 +62,7 @@ const Account = () => {
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16 bg-background">
       {/* Contextual Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border md:hidden">
+      <header className="sticky top-0 z-50 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70 md:hidden">
         <div className="flex items-center gap-3 h-14 px-4 pt-[env(safe-area-inset-top)]">
           <button
             onClick={() => navigate(-1)}
@@ -77,7 +77,7 @@ const Account = () => {
 
       <div className="container mx-auto px-4 py-4">
         {/* Compact Profile Card - Twitter style */}
-        <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
           {/* User Info Row */}
           <div className="p-4 flex items-center gap-3">
             <SignedIn>
@@ -170,7 +170,7 @@ const Account = () => {
         </div>
 
         {/* Menu Card */}
-        <div className="mt-4 bg-card rounded-xl border border-border overflow-hidden">
+        <div className="mt-4 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             const isLast = index === menuItems.length - 1;
@@ -180,7 +180,7 @@ const Account = () => {
                 key={item.labelKey}
                 to={item.path}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-3.5 hover:bg-muted/50 active:bg-muted transition-colors',
+                  'flex items-center gap-3 px-4 py-3.5 hover:bg-surface-sunken/70 active:bg-muted transition-colors',
                   !isLast && 'border-b border-border'
                 )}
               >
@@ -202,7 +202,7 @@ const Account = () => {
         </div>
 
         {featuredInitiatives.length > 0 && (
-          <div className="mt-4 bg-card rounded-xl border border-border overflow-hidden p-4">
+          <div className="mt-4 bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-sm font-semibold text-foreground">Pawtreon Initiatives</h2>

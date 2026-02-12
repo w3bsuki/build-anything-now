@@ -263,6 +263,7 @@ export const confirmPaymentFromWebhook = internalMutation({
   args: {
     paymentIntentId: v.string(),
     chargeId: v.optional(v.string()),
+    receiptUrl: v.optional(v.string()),
     amountReceivedMinor: v.optional(v.number()),
     currency: v.optional(v.string()),
     eventId: v.optional(v.string()),
@@ -277,22 +278,72 @@ export const confirmPaymentFromWebhook = internalMutation({
       return { ok: false, reason: "donation_not_found" as const };
     }
 
+    const now = Date.now();
+
     if (donation.status === "completed") {
+      const patch: {
+        receiptId?: string;
+        stripeChargeId?: string;
+        transactionId?: string;
+        receiptUrl?: string;
+      } = {};
+
+      if (!donation.receiptId) {
+        patch.receiptId = makeReceiptId();
+      }
+      if (!donation.stripeChargeId && args.chargeId) {
+        patch.stripeChargeId = args.chargeId;
+      }
+      if (!donation.transactionId && args.chargeId) {
+        patch.transactionId = args.chargeId;
+      }
+      if (!donation.receiptUrl && args.receiptUrl) {
+        patch.receiptUrl = args.receiptUrl;
+      }
+
+      if (Object.keys(patch).length > 0) {
+        await ctx.db.patch(donation._id, patch);
+      }
+
       return { ok: true, reason: "already_completed" as const };
     }
 
-    const now = Date.now();
     const amount = args.amountReceivedMinor !== undefined ? args.amountReceivedMinor / 100 : donation.amount;
+    const currency = args.currency?.toUpperCase() ?? donation.currency;
 
-    await ctx.db.patch(donation._id, {
+    const patch: {
+      status: "completed";
+      amount: number;
+      currency: string;
+      stripeChargeId?: string;
+      transactionId?: string;
+      completedAt: number;
+      receiptId: string;
+      receiptUrl?: string;
+    } = {
       status: "completed",
       amount,
-      currency: args.currency?.toUpperCase() ?? donation.currency,
-      stripeChargeId: args.chargeId,
-      transactionId: args.chargeId ?? donation.transactionId,
+      currency,
       completedAt: now,
       receiptId: donation.receiptId ?? makeReceiptId(),
-    });
+    };
+
+    if (args.chargeId) {
+      patch.stripeChargeId = args.chargeId;
+    }
+
+    const transactionId = args.chargeId ?? donation.transactionId;
+    if (transactionId) {
+      patch.transactionId = transactionId;
+    }
+
+    if (!donation.receiptUrl && args.receiptUrl) {
+      patch.receiptUrl = args.receiptUrl;
+    }
+
+    await ctx.db.patch(donation._id, patch);
+
+    const roundedAmount = Number(amount.toFixed(2));
 
     if (donation.caseId) {
       const caseDoc = await ctx.db.get(donation.caseId);
@@ -300,10 +351,35 @@ export const confirmPaymentFromWebhook = internalMutation({
         await ctx.db.patch(donation.caseId, {
           fundraising: {
             ...caseDoc.fundraising,
-            current: Number((caseDoc.fundraising.current + amount).toFixed(2)),
+            current: Number((caseDoc.fundraising.current + roundedAmount).toFixed(2)),
           },
-          status: caseDoc.fundraising.current + amount >= caseDoc.fundraising.goal ? "funded" : caseDoc.status,
+          status: caseDoc.fundraising.current + roundedAmount >= caseDoc.fundraising.goal ? "funded" : caseDoc.status,
         });
+
+        if (caseDoc.userId !== donation.userId) {
+          const settings = await ctx.db
+            .query("userSettings")
+            .withIndex("by_user", (q) => q.eq("userId", caseDoc.userId))
+            .unique();
+
+          const lang = (settings?.language ?? "en").toLowerCase();
+          const isBg = lang.startsWith("bg");
+
+          const title = isBg ? "Получено дарение" : "Donation received";
+          const message = isBg
+            ? `Получихте дарение от ${roundedAmount} ${currency} за ${caseDoc.title}`
+            : `${roundedAmount} ${currency} received for ${caseDoc.title}`;
+
+          await ctx.db.insert("notifications", {
+            userId: caseDoc.userId,
+            type: "donation_received",
+            title,
+            message,
+            caseId: donation.caseId,
+            read: false,
+            createdAt: now,
+          });
+        }
       }
     }
 
@@ -326,6 +402,7 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
     sessionId: v.string(),
     paymentIntentId: v.optional(v.string()),
     chargeId: v.optional(v.string()),
+    receiptUrl: v.optional(v.string()),
     amountReceivedMinor: v.optional(v.number()),
     currency: v.optional(v.string()),
     eventId: v.optional(v.string()),
@@ -340,24 +417,91 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
       return { ok: false, reason: "donation_not_found" as const };
     }
 
+    const now = Date.now();
+
     if (donation.status === "completed") {
+      const patch: {
+        receiptId?: string;
+        stripePaymentIntentId?: string;
+        stripeChargeId?: string;
+        transactionId?: string;
+        receiptUrl?: string;
+      } = {};
+
+      if (!donation.receiptId) {
+        patch.receiptId = makeReceiptId();
+      }
+
+      if (!donation.stripePaymentIntentId && args.paymentIntentId) {
+        patch.stripePaymentIntentId = args.paymentIntentId;
+      }
+
+      if (!donation.stripeChargeId && args.chargeId) {
+        patch.stripeChargeId = args.chargeId;
+      }
+
+      if (!donation.transactionId) {
+        const transactionId = args.paymentIntentId ?? args.chargeId;
+        if (transactionId) {
+          patch.transactionId = transactionId;
+        }
+      }
+
+      if (!donation.receiptUrl && args.receiptUrl) {
+        patch.receiptUrl = args.receiptUrl;
+      }
+
+      if (Object.keys(patch).length > 0) {
+        await ctx.db.patch(donation._id, patch);
+      }
+
       return { ok: true, reason: "already_completed" as const };
     }
 
-    const now = Date.now();
     const amount = args.amountReceivedMinor !== undefined ? args.amountReceivedMinor / 100 : donation.amount;
+    const currency = args.currency?.toUpperCase() ?? donation.currency;
+    const roundedAmount = Number(amount.toFixed(2));
 
-    await ctx.db.patch(donation._id, {
+    const patch: {
+      status: "completed";
+      amount: number;
+      currency: string;
+      stripeCheckoutSessionId: string;
+      stripePaymentIntentId?: string;
+      stripeChargeId?: string;
+      transactionId?: string;
+      completedAt: number;
+      receiptId: string;
+      receiptUrl?: string;
+    } = {
       status: "completed",
       amount,
-      currency: args.currency?.toUpperCase() ?? donation.currency,
+      currency,
       stripeCheckoutSessionId: args.sessionId,
-      stripePaymentIntentId: args.paymentIntentId ?? donation.stripePaymentIntentId,
-      stripeChargeId: args.chargeId,
-      transactionId: args.paymentIntentId ?? args.chargeId ?? donation.transactionId,
       completedAt: now,
       receiptId: donation.receiptId ?? makeReceiptId(),
-    });
+    };
+
+    if (args.paymentIntentId) {
+      patch.stripePaymentIntentId = args.paymentIntentId;
+    } else if (donation.stripePaymentIntentId) {
+      patch.stripePaymentIntentId = donation.stripePaymentIntentId;
+    }
+
+    if (args.chargeId) {
+      patch.stripeChargeId = args.chargeId;
+    }
+
+    const transactionId = args.paymentIntentId ?? args.chargeId ?? donation.transactionId;
+    if (transactionId) {
+      patch.transactionId = transactionId;
+    }
+
+    if (!donation.receiptUrl && args.receiptUrl) {
+      patch.receiptUrl = args.receiptUrl;
+    }
+
+    await ctx.db.patch(donation._id, patch);
 
     if (donation.caseId) {
       const caseDoc = await ctx.db.get(donation.caseId);
@@ -365,10 +509,35 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
         await ctx.db.patch(donation.caseId, {
           fundraising: {
             ...caseDoc.fundraising,
-            current: Number((caseDoc.fundraising.current + amount).toFixed(2)),
+            current: Number((caseDoc.fundraising.current + roundedAmount).toFixed(2)),
           },
-          status: caseDoc.fundraising.current + amount >= caseDoc.fundraising.goal ? "funded" : caseDoc.status,
+          status: caseDoc.fundraising.current + roundedAmount >= caseDoc.fundraising.goal ? "funded" : caseDoc.status,
         });
+
+        if (caseDoc.userId !== donation.userId) {
+          const settings = await ctx.db
+            .query("userSettings")
+            .withIndex("by_user", (q) => q.eq("userId", caseDoc.userId))
+            .unique();
+
+          const lang = (settings?.language ?? "en").toLowerCase();
+          const isBg = lang.startsWith("bg");
+
+          const title = isBg ? "Получено дарение" : "Donation received";
+          const message = isBg
+            ? `Получихте дарение от ${roundedAmount} ${currency} за ${caseDoc.title}`
+            : `${roundedAmount} ${currency} received for ${caseDoc.title}`;
+
+          await ctx.db.insert("notifications", {
+            userId: caseDoc.userId,
+            type: "donation_received",
+            title,
+            message,
+            caseId: donation.caseId,
+            read: false,
+            createdAt: now,
+          });
+        }
       }
     }
 
@@ -474,3 +643,5 @@ export const confirmPreviewDonation = mutation({
     return { ok: true, reason: "completed" as const };
   },
 });
+
+

@@ -5,6 +5,10 @@ import { ArrowLeft, ArrowRight, Camera, MapPin, Building2, AlertTriangle, Heart,
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/use-toast';
 import { useMutation } from 'convex/react';
@@ -211,9 +215,9 @@ const CreateCase = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background pb-24 md:pb-8 md:pt-16">
+        <PageShell>
             {/* Header */}
-            <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-border">
+            <div className="sticky top-0 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70">
                 <div className="flex items-center gap-3 h-14 px-3 container mx-auto">
                     <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center active:bg-muted/80 transition-colors">
                         <ArrowLeft className="w-5 h-5" />
@@ -224,9 +228,9 @@ const CreateCase = () => {
 
             {/* Progress Steps */}
             {isSubmitted ? (
-                <div className="container mx-auto px-4 py-6">
+                <PageSection className="py-6">
                     <div className="max-w-lg mx-auto space-y-4">
-                        <div className="rounded-2xl border border-border bg-card p-4">
+                        <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4">
                             <div className="flex items-start gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                                     <Check className="w-5 h-5 text-primary" />
@@ -245,7 +249,7 @@ const CreateCase = () => {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl border border-border bg-card p-4">
+                        <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4">
                             <p className="font-semibold text-foreground mb-2">{t('createCase.summary', 'Summary')}</p>
                             <div className="text-sm text-muted-foreground space-y-1">
                                 <p><strong>{t('createCase.type', 'Type')}:</strong> {formData.type || t('createCase.notSelected', 'Not selected')}</p>
@@ -278,9 +282,9 @@ const CreateCase = () => {
                             )}
                         </div>
                     </div>
-                </div>
+                </PageSection>
             ) : (
-            <div className="container mx-auto px-4 py-4">
+            <PageSection>
                 <div className="flex items-center justify-between mb-6">
                     {steps.map((step, index) => {
                         const Icon = step.icon;
@@ -309,7 +313,7 @@ const CreateCase = () => {
                 </div>
 
                 {/* Step Content */}
-                <div className="bg-card rounded-xl border border-border p-5">
+                <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-5">
                     {/* Step 1: Type & Category */}
                     {currentStep === 1 && (
                         <div className="space-y-6">
@@ -406,9 +410,9 @@ const CreateCase = () => {
                             </div>
                             <div>
                                 <Label htmlFor="description">{t('createCase.shortDescription')}</Label>
-                                <textarea
+                                <Textarea
                                     id="description"
-                                    className="w-full min-h-20 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
+                                    className="min-h-20"
                                     placeholder={t('createCase.shortDescPlaceholder', 'Brief description of the situation...')}
                                     value={formData.description}
                                     onChange={(e) => updateForm('description', e.target.value)}
@@ -416,9 +420,9 @@ const CreateCase = () => {
                             </div>
                             <div>
                                 <Label htmlFor="story">{t('createCase.fullStory')}</Label>
-                                <textarea
+                                <Textarea
                                     id="story"
-                                    className="w-full min-h-32 px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
+                                    className="min-h-32"
                                     placeholder={t('createCase.storyPlaceholder', 'Tell the full story of how the animal was found...')}
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
@@ -483,15 +487,19 @@ const CreateCase = () => {
                                         onChange={(e) => updateForm('fundraisingGoal', e.target.value)}
                                         className="flex-1"
                                     />
-                                    <select
+                                    <Select
                                         value={formData.currency}
-                                        onChange={(e) => updateForm('currency', e.target.value)}
-                                        className="px-3 py-2 rounded-lg border border-input bg-background text-base md:text-sm"
+                                        onValueChange={(value) => updateForm('currency', value)}
                                     >
-                                        <option value="EUR">EUR</option>
-                                        <option value="BGN">BGN</option>
-                                        <option value="USD">USD</option>
-                                    </select>
+                                        <SelectTrigger className="w-[96px]">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="EUR">EUR</SelectItem>
+                                            <SelectItem value="BGN">BGN</SelectItem>
+                                            <SelectItem value="USD">USD</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
 
@@ -538,9 +546,9 @@ const CreateCase = () => {
                         </Button>
                     )}
                 </div>
-            </div>
+            </PageSection>
             )}
-        </div>
+        </PageShell>
     );
 };
 

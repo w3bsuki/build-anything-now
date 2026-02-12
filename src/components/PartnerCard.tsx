@@ -52,7 +52,7 @@ export function PartnerCard({ partner }: PartnerCardProps) {
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-md transition-all overflow-hidden group">
+    <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs hover:border-primary/30 hover:shadow-md transition-all overflow-hidden group">
       {/* Header */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">

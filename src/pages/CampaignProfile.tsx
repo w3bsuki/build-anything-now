@@ -62,7 +62,7 @@ const CampaignProfile = () => {
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
       {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50 md:hidden">
+      <div className="sticky top-0 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70 md:hidden">
         <div className="flex items-center gap-2 h-12 px-4">
           <Link
             to="/campaigns"
@@ -116,7 +116,7 @@ const CampaignProfile = () => {
           </div>
 
           {/* Progress Card - Compact */}
-          <div className="bg-card rounded-xl border border-border p-4">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-4">
             {/* Header row */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
@@ -160,7 +160,7 @@ const CampaignProfile = () => {
           {/* Support activity */}
           <div>
             <h2 className="text-base font-semibold text-foreground mb-2">{t('campaignProfile.recentSupporters')}</h2>
-            <div className="rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-3 text-sm text-muted-foreground">
               {t(
                 'campaignProfile.supporterFeedPending',
                 'Recent supporter activity will appear here once verified donation events are available.'

@@ -1,5 +1,5 @@
-import { useParams, Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from 'convex/react';
 import { ImageGallery } from '@/components/ImageGallery';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import { CommentsSheet } from '@/components/homepage/CommentsSheet';
 import { DonationFlowDrawer } from '@/components/donations/DonationFlowDrawer';
-import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw, X, CircleCheck, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
@@ -19,7 +19,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
+import { StickyActionBar } from '@/components/trust/StickyActionBar';
 
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
@@ -68,6 +72,21 @@ const AnimalProfile = () => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [donationReturn, setDonationReturn] = useState<'success' | 'cancelled' | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const value = params.get('donation');
+    if (value !== 'success' && value !== 'cancelled') return;
+
+    setDonationReturn(value);
+    params.delete('donation');
+    const next = params.toString();
+    navigate({ pathname: location.pathname, search: next ? '?' + next : '' }, { replace: true });
+  }, [location.pathname, location.search, navigate]);
+
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [updateText, setUpdateText] = useState('');
@@ -201,22 +220,22 @@ const AnimalProfile = () => {
 
   if (caseData === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <PageShell className="flex items-center justify-center" withDesktopTopOffset={false} withBottomNavOffset={false}>
         <div className="text-center text-muted-foreground text-sm">{t('common.loading')}</div>
-      </div>
+      </PageShell>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <PageShell className="flex items-center justify-center" withDesktopTopOffset={false} withBottomNavOffset={false}>
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-2">{t('common.caseNotFound')}</h1>
           <Link to="/" className="text-primary hover:underline">
             {t('common.goBackHome')}
           </Link>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -232,12 +251,12 @@ const AnimalProfile = () => {
   const lifecycleLabel = lifecycleLabels[caseData.lifecycleStage] ?? 'Active Treatment';
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      <div className="sticky top-0 z-40 bg-card/95 backdrop-blur-md md:hidden">
+    <PageShell>
+      <div className="sticky top-0 z-40 border-b border-nav-border/70 bg-nav-surface/95 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-3 h-14 px-3">
           <Link
             to="/"
-            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center active:bg-muted transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-surface-sunken/85 transition-colors active:bg-surface-sunken"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
@@ -250,14 +269,14 @@ const AnimalProfile = () => {
               'w-9 h-9 rounded-xl flex items-center justify-center transition-colors active:opacity-90',
               isSaved
                 ? 'bg-primary/10 text-primary'
-                : 'bg-muted/80 text-foreground'
+                : 'border border-border/60 bg-surface-sunken/85 text-foreground'
             )}
           >
             <Bookmark className={cn('w-5 h-5', isSaved && 'fill-current')} />
           </button>
           <button
             onClick={() => setReportOpen(true)}
-            className="w-9 h-9 rounded-xl bg-muted/80 flex items-center justify-center text-foreground transition-colors active:opacity-90"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/60 bg-surface-sunken/85 text-foreground transition-colors active:opacity-90"
             aria-label={t('report.reportConcern', 'Report concern')}
           >
             <Flag className="w-5 h-5" />
@@ -266,7 +285,7 @@ const AnimalProfile = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-5">
+      <PageSection className="py-5">
         <div className="max-w-2xl mx-auto">
           <Link
             to="/"
@@ -275,6 +294,78 @@ const AnimalProfile = () => {
             <ArrowLeft className="w-4 h-4" />
             {t('common.backToAllCases')}
           </Link>
+
+          {donationReturn ? (
+            <div
+              role="status"
+              className={cn(
+                'mb-4 rounded-2xl border p-4 shadow-xs',
+                donationReturn === 'success'
+                  ? 'bg-success/10 border-success/20'
+                  : 'bg-warning/10 border-warning/20',
+              )}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={cn(
+                    'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl',
+                    donationReturn === 'success'
+                      ? 'bg-success/15 text-success'
+                      : 'bg-warning/15 text-warning',
+                  )}
+                >
+                  {donationReturn === 'success' ? (
+                    <CircleCheck className="h-5 w-5" />
+                  ) : (
+                    <TriangleAlert className="h-5 w-5" />
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground">
+                    {donationReturn === 'success'
+                      ? t('donations.return.successTitle', 'Thanks for your support')
+                      : t('donations.return.cancelTitle', 'Checkout cancelled')}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {donationReturn === 'success'
+                      ? t(
+                          'donations.return.successBody',
+                          "We're confirming your payment. Your donation will appear in your history shortly.",
+                        )
+                      : t('donations.return.cancelBody', 'No payment was made. You can try again anytime.')}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {donationReturn === 'success' ? (
+                      <Button variant="outline" size="sm" className="rounded-xl" asChild>
+                        <Link to="/donations">{t('donations.return.viewHistory', 'View my donations')}</Link>
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl"
+                        disabled={!caseData.isDonationAllowed}
+                        onClick={() => setDonateOpen(true)}
+                      >
+                        {t('donations.return.tryAgain', 'Try again')}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="iconSm"
+                  className="rounded-xl"
+                  onClick={() => setDonationReturn(null)}
+                  aria-label={t('actions.cancel', 'Close')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ) : null}
 
           <div className="mb-5">
             <ImageGallery images={caseData.images} alt={displayTitle} />
@@ -331,11 +422,11 @@ const AnimalProfile = () => {
             </div>
           )}
 
-          <h1 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+          <h1 className="font-display mb-4 text-2xl font-bold text-foreground md:text-3xl">
             {displayTitle}
           </h1>
 
-          <div className="bg-card rounded-xl border border-border p-4 mb-5">
+          <div className="mb-5 rounded-2xl border border-border/60 bg-surface-elevated p-4 shadow-xs">
             <ProgressBar
               current={caseData.fundraising.current}
               goal={caseData.fundraising.goal}
@@ -345,10 +436,10 @@ const AnimalProfile = () => {
           </div>
 
           {caseData.canManageCase && (
-            <div className="bg-card rounded-xl border border-border p-4 mb-5 space-y-3">
+            <div className="mb-5 space-y-3 rounded-2xl border border-border/60 bg-surface-elevated p-4 shadow-xs">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-sm font-semibold text-foreground">Case Management</h2>
+                  <h2 className="font-display text-base font-semibold text-foreground">Case Management</h2>
                   <p className="text-xs text-muted-foreground">Post progress evidence and move the lifecycle stage.</p>
                 </div>
                 <div className="flex gap-2">
@@ -374,7 +465,7 @@ const AnimalProfile = () => {
           )}
 
           <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-2">{t('animalProfile.theStory')}</h2>
+            <h2 className="font-display mb-2 text-lg font-semibold text-foreground">{t('animalProfile.theStory')}</h2>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">
               {displayStory.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
@@ -383,40 +474,38 @@ const AnimalProfile = () => {
           </div>
 
           <div className="mb-6">
-            <h2 className="text-base font-semibold text-foreground mb-3">{t('animalProfile.updates')}</h2>
+            <h2 className="font-display mb-3 text-lg font-semibold text-foreground">{t('animalProfile.updates')}</h2>
             <UpdatesTimeline updates={caseData.updates} />
           </div>
         </div>
-      </div>
+      </PageSection>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
-        <div className="mx-auto w-full max-w-md px-4 pb-2">
-          <div className="flex items-center gap-2 rounded-2xl border border-border/70 bg-background/95 px-3 py-2.5 shadow-lg backdrop-blur-xl">
-            <Button
-              variant="secondary"
-              className="h-10 px-4 rounded-xl"
-              onClick={() => setCommentsOpen(true)}
-            >
-              <MessageCircle className="w-4 h-4 mr-1.5" />
-              Chat
-            </Button>
+      <StickyActionBar
+        note={
+          !caseData.isDonationAllowed
+            ? t('donations.gatedNote', 'Donations are currently disabled for this case.')
+            : undefined
+        }
+      >
+        <Button
+          variant="secondary"
+          className="h-10 rounded-xl border border-border/70 bg-surface-sunken/80 px-4 hover:bg-surface-sunken"
+          onClick={() => setCommentsOpen(true)}
+        >
+          <MessageCircle className="w-4 h-4 mr-1.5" />
+          Chat
+        </Button>
 
-            <Button
-              className="flex-1 h-10 rounded-xl font-semibold"
-              onClick={() => setDonateOpen(true)}
-              disabled={!caseData.isDonationAllowed}
-            >
-              <Heart className="w-4 h-4 mr-1.5 fill-current" />
-              {caseData.isDonationAllowed ? t('actions.donateNow') : 'Donations Closed'}
-            </Button>
-          </div>
-          {!caseData.isDonationAllowed && (
-            <p className="mt-1 text-[11px] text-center text-muted-foreground">
-              Donations are currently disabled for this case due to lifecycle or trust gating.
-            </p>
-          )}
-        </div>
-      </div>
+        <Button
+          variant="donate"
+          className="flex-1 h-10 rounded-xl font-semibold"
+          onClick={() => setDonateOpen(true)}
+          disabled={!caseData.isDonationAllowed}
+        >
+          <Heart className="w-4 h-4 mr-1.5 fill-current" />
+          {caseData.isDonationAllowed ? t('actions.donateNow') : t('donations.closed', 'Donations closed')}
+        </Button>
+      </StickyActionBar>
 
       {caseId && (
         <CommentsSheet
@@ -455,33 +544,41 @@ const AnimalProfile = () => {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="update-type">Update type</Label>
-              <select
-                id="update-type"
+              <Select
                 value={updateType}
-                onChange={(e) => setUpdateType(e.target.value as typeof updateType)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                onValueChange={(value) => setUpdateType(value as typeof updateType)}
               >
-                <option value="update">General update</option>
-                <option value="medical">Medical update</option>
-                <option value="milestone">Milestone</option>
-                <option value="success">Success</option>
-              </select>
+                <SelectTrigger id="update-type">
+                  <SelectValue placeholder="Select update type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="update">General update</SelectItem>
+                  <SelectItem value="medical">Medical update</SelectItem>
+                  <SelectItem value="milestone">Milestone</SelectItem>
+                  <SelectItem value="success">Success</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="evidence-type">Evidence type (optional)</Label>
-              <select
-                id="evidence-type"
-                value={evidenceType}
-                onChange={(e) => setEvidenceType(e.target.value as typeof evidenceType)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+              <Select
+                value={evidenceType || "none"}
+                onValueChange={(value) =>
+                  setEvidenceType(value === "none" ? "" : (value as typeof evidenceType))
+                }
               >
-                <option value="">None</option>
-                <option value="bill">Bill</option>
-                <option value="lab_result">Lab result</option>
-                <option value="clinic_photo">Clinic photo</option>
-                <option value="other">Other evidence</option>
-              </select>
+                <SelectTrigger id="evidence-type">
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="bill">Bill</SelectItem>
+                  <SelectItem value="lab_result">Lab result</SelectItem>
+                  <SelectItem value="clinic_photo">Clinic photo</SelectItem>
+                  <SelectItem value="other">Other evidence</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">
@@ -533,16 +630,21 @@ const AnimalProfile = () => {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="next-stage">Next stage</Label>
-              <select
-                id="next-stage"
+              <Select
                 value={nextLifecycleStage}
-                onChange={(e) => setNextLifecycleStage(e.target.value as typeof nextLifecycleStage)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                onValueChange={(value) => setNextLifecycleStage(value as typeof nextLifecycleStage)}
               >
-                {transitionOptions.map((opt) => (
-                  <option key={opt.stage} value={opt.stage}>{opt.label}</option>
-                ))}
-              </select>
+                <SelectTrigger id="next-stage">
+                  <SelectValue placeholder="Select stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  {transitionOptions.map((opt) => (
+                    <SelectItem key={opt.stage} value={opt.stage}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">
@@ -567,8 +669,10 @@ const AnimalProfile = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageShell>
   );
 };
 
 export default AnimalProfile;
+
+

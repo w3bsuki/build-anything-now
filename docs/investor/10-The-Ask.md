@@ -1,4 +1,8 @@
-# The Ask
+# The Ask
+
+> **Owner:** Founders
+> **Status:** review
+> **Last updated:** 2026-02-09
 
 ---
 
@@ -6,7 +10,7 @@
 
 ### We Are Raising: €150,000
 
-**Round:** Seed  
+**Round:** Pre-Seed  
 **Instrument:** SAFE / Convertible Note  
 **Pre-Money Valuation:** €750,000  
 **Post-Money Valuation:** €900,000  
@@ -43,7 +47,7 @@
 
 | Item | Amount | Purpose |
 |------|--------|---------|
-| Senior Developer (6 mo) | €40,000 | Complete MVP, scale platform |
+| Senior Developer (6 mo) | €40,000 | Complete remaining 40%, scale platform |
 | Designer (Contract) | €15,000 | UI/UX polish, mobile optimization |
 | Infrastructure | €10,000 | Hosting, services, APIs |
 | Tools & Software | €5,000 | Dev tools, monitoring |
@@ -58,7 +62,7 @@
 | Launch Campaign | €15,000 | PR, launch event, initial buzz |
 | Digital Ads | €15,000 | Facebook, Instagram, Google |
 | Content Marketing | €10,000 | Blog, SEO, social content |
-| Shelter Outreach | €5,000 | Partner acquisition |
+| Rescuer & Clinic Outreach | €5,000 | Partner acquisition in Bulgaria |
 
 ---
 
@@ -101,24 +105,24 @@ Reserved for unexpected costs and opportunities.
 
 ## Milestones This Funding Achieves
 
-### 6-Month Targets
+### 6-Month Targets (Post-Close)
 
 | Milestone | Target | Proof Point |
 |-----------|--------|-------------|
 | ✅ Product Launch | Live app | Web + iOS + Android |
-| ✅ Market Validation | €50K donations | Product-market fit |
+| ✅ Market Validation | €50K donations processed | Product-market fit |
 | ✅ User Growth | 5,000 users | Acquisition channels work |
-| ✅ Partner Network | 50 shelters | B2B traction |
+| ✅ Partner Network | 50 rescuers + clinics | B2B traction |
 | ✅ Revenue | €3K MRR | Business model validated |
 
-### 12-Month Targets
+### 12-Month Targets (Post-Close)
 
 | Milestone | Target | Proof Point |
 |-----------|--------|-------------|
 | ✅ Scale | €200K donations | Market expansion works |
 | ✅ Geography | 2 countries | Expansion playbook |
 | ✅ Revenue | €15K MRR | Path to profitability |
-| ✅ Series A Ready | Key metrics | Next round fundable |
+| ✅ Series A Ready | Key metrics hit | Next round fundable |
 
 ---
 
@@ -129,25 +133,25 @@ Reserved for unexpected costs and opportunities.
 - First institutional money
 - Largest ownership available
 
-### 2. 🚀 Execution Ready
-- Product 35% built
-- Team in place
-- 6 weeks to MVP
+### 2. 🚀 Execution Proven
+- Product ~60% built — auth, payments, case lifecycle, community all shipped
+- AI-augmented development (OPUS + Codex) accelerating velocity
+- MVP sprint week 7 of 8
 
 ### 3. 📈 Large Market, No Leader
-- $10B+ market
-- Fragmented competition
-- First-mover opportunity
+- €10B+ global animal welfare market
+- Fragmented competition — no trust-first platform exists
+- First-mover opportunity in CEE
 
 ### 4. 💡 Capital Efficient
 - Small raise, big milestones
-- Path to profitability clear
+- Path to profitability clear (4-stream revenue model)
 - Not dependent on endless funding
 
 ### 5. 🤝 Impact Investment
 - Social good + financial returns
 - ESG-aligned
-- Meaningful mission
+- Meaningful mission — every donation tracked to verified outcomes
 
 ---
 
@@ -157,16 +161,20 @@ Reserved for unexpected costs and opportunities.
 Now          Month 3       Month 6       Month 12      Month 18
  │              │             │              │             │
  ▼              ▼             ▼              ▼             ▼
-Close         MVP           €50K          Scale         Series A
+Close         Public        €50K          Scale         Series A
 Round         Launch        Donations      Markets       (if needed)
               
 €150K ────────────────────────────────────────────────────────►
               Runway: 18 months
 ```
 
+> **Note:** MVP already ~60% complete. "Month 3" is public launch, not MVP start.
+
 ---
 
 ## Comparable Investments
+
+> **Caveat:** These are directional comparators only — Pawtreon's trust-first model has no direct equivalent.
 
 | Company | Stage | Raised | Valuation | Outcome |
 |---------|-------|--------|-----------|---------|
@@ -190,8 +198,8 @@ Round         Launch        Donations      Markets       (if needed)
 ### Value-Add Investors Welcome
 
 We especially value investors who can help with:
-- 🇪🇺 European market expansion
-- 🐕 Pet industry connections
+- 🇪🇺 European market expansion (starting from Bulgaria)
+- 🐕 Animal welfare / pet industry connections
 - 💳 Fintech/payments expertise
 - 📱 Consumer app growth
 - 🏢 Corporate/CSR partnerships
@@ -210,7 +218,7 @@ We especially value investors who can help with:
 | **MFN** | Yes |
 | **Info Rights** | Quarterly updates |
 
-*Terms negotiable for strategic investors*
+*Terms negotiable for strategic investors.*
 
 ---
 
@@ -225,16 +233,16 @@ We especially value investors who can help with:
 5. **Close** — Wire funds, sign SAFE
 
 ### Contact
- 
-📧 **Email:** TODO  
-📱 **Phone:** TODO  
-📅 **Calendar:** TODO
+
+📧 **Email:** [FILL: founder contact email]  
+📱 **Phone:** [FILL: founder phone number]  
+📅 **Calendar:** [FILL: Calendly or booking link]
 
 ---
 
 ## Thank You
 
-We're building something meaningful — a platform that helps animals in need while building a sustainable business.
+We're building something meaningful — a platform that helps animals in need while creating a sustainable, trust-first business.
 
 **Join us in making animal welfare more accessible, transparent, and impactful.**
 
@@ -242,4 +250,4 @@ We're building something meaningful — a platform that helps animals in need wh
 
 ---
 
-*Confidential — January 2026*
+*Confidential — February 2026*

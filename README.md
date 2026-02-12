@@ -51,13 +51,15 @@ pnpm build
   - [`DECISIONS.md`](DECISIONS.md)
   - [`AGENTS.md`](AGENTS.md)
   - [`README.md`](README.md)
-- Supporting planning packs (`docs/`):
-  - Product: [`docs/product/master-plan.md`](docs/product/master-plan.md), [`docs/product/roadmap.md`](docs/product/roadmap.md), [`docs/product/case-lifecycle-spec.md`](docs/product/case-lifecycle-spec.md), [`docs/product/profile-capabilities-spec.md`](docs/product/profile-capabilities-spec.md)
-  - Architecture: [`docs/architecture/techstack-baseline.md`](docs/architecture/techstack-baseline.md), [`docs/architecture/data-model-gap-audit.md`](docs/architecture/data-model-gap-audit.md)
-  - Design system: [`docs/design/tailwind-shadcn-remediation-plan.md`](docs/design/tailwind-shadcn-remediation-plan.md)
-  - Partners and ops: [`docs/partners/bulgaria-clinic-seeding-plan.md`](docs/partners/bulgaria-clinic-seeding-plan.md), [`docs/partners/claim-verification-ops.md`](docs/partners/claim-verification-ops.md), [`docs/partners/outreach-pipeline.md`](docs/partners/outreach-pipeline.md)
-  - Mission initiatives: [`docs/mission/pawtreon-initiatives.md`](docs/mission/pawtreon-initiatives.md)
-  - Investor and docs index: [`docs/README.md`](docs/README.md)
+- Supporting spec-driven docs (`docs/`):
+  - Product: [`PRD.md`](PRD.md) (canonical), [`docs/product/roadmap.md`](docs/product/roadmap.md), [`docs/product/master-plan.md`](docs/product/master-plan.md)
+  - Features: [`docs/features/`](docs/features/) — 14 per-feature specs (cases, profiles, donations, clinics, campaigns, community, volunteers, adoption, onboarding, notifications, messaging, search, achievements, admin)
+  - Systems: [`docs/systems/`](docs/systems/) — data model, API reference, auth/security, deployment, testing, analytics
+  - Design: [`docs/design/`](docs/design/) — UI patterns, theming tokens, mobile-native, i18n
+  - Business: [`docs/business/`](docs/business/) — monetization, partner types, growth
+  - Missions: [`docs/missions/`](docs/missions/) — drone program, safehouse, marketplace, pet insurance
+  - Partners: [`docs/partners/`](docs/partners/) — clinic seeding, claim verification, outreach pipeline
+  - Docs index: [`docs/readme.md`](docs/readme.md)
 
 ## Mobile (Capacitor)
 ```bash

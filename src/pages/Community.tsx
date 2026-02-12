@@ -428,11 +428,11 @@ export default function Community() {
           {isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="h-36 animate-pulse rounded-2xl border border-border bg-card" />
+                <div key={index} className="h-36 animate-pulse rounded-2xl border border-border/60 bg-surface-elevated shadow-xs" />
               ))}
             </div>
           ) : threads.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-6 text-center text-sm text-muted-foreground">
               No threads found. Start the first discussion.
             </div>
           ) : (

@@ -82,7 +82,7 @@ export default function ModerationQueue() {
         ) : (
           <div className="space-y-3">
             {reports.map((report) => (
-              <div key={report._id} className="rounded-xl border border-border bg-card p-4 space-y-2">
+              <div key={report._id} className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-4 space-y-2">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-foreground">

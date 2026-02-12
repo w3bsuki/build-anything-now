@@ -1,51 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone } from 'lucide-react';
+import { useMutation, useQuery } from 'convex/react';
+import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Mock data - will be replaced with Convex data
-const mockNotifications = [
-  {
-    id: '1',
-    type: 'donation_received' as const,
-    title: 'Donation Successful',
-    message: 'Your donation of 50 EUR to Luna was received. Thank you for helping!',
-    read: false,
-    createdAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
-  },
-  {
-    id: '2',
-    type: 'case_update' as const,
-    title: 'Case Update: Luna',
-    message: 'Great news! Luna completed her surgery successfully and is now recovering.',
-    read: false,
-    createdAt: Date.now() - 24 * 60 * 60 * 1000, // 1 day ago
-  },
-  {
-    id: '3',
-    type: 'achievement_unlocked' as const,
-    title: 'Achievement Unlocked!',
-    message: 'You earned the "Big Heart" badge for your generous donation!',
-    read: true,
-    createdAt: Date.now() - 3 * 24 * 60 * 60 * 1000, // 3 days ago
-  },
-  {
-    id: '4',
-    type: 'campaign_ended' as const,
-    title: 'Campaign Completed',
-    message: 'The Winter Shelter campaign you supported has reached its goal!',
-    read: true,
-    createdAt: Date.now() - 7 * 24 * 60 * 60 * 1000, // 1 week ago
-  },
-  {
-    id: '5',
-    type: 'system' as const,
-    title: 'Welcome to Pawtreon!',
-    message: 'Thank you for joining our community of animal lovers.',
-    read: true,
-    createdAt: Date.now() - 30 * 24 * 60 * 60 * 1000, // 1 month ago
-  },
-];
+import { api } from '../../convex/_generated/api';
+import type { Id } from '../../convex/_generated/dataModel';
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
@@ -78,28 +37,60 @@ const formatTimeAgo = (timestamp: number, t: (key: string, options?: Record<stri
 
 const Notifications = () => {
   const { t } = useTranslation();
-  // TODO: Replace with useQuery(api.notifications.getMyNotifications)
-  const notifications = mockNotifications;
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const navigate = useNavigate();
 
-  const handleMarkAllRead = () => {
-    // TODO: Implement with useMutation(api.notifications.markAllAsRead)
-    console.log('Mark all read');
+  const notifications = useQuery(api.notifications.getMyNotifications);
+  const markAllAsRead = useMutation(api.notifications.markAllAsRead);
+  const markAsRead = useMutation(api.notifications.markAsRead);
+  const remove = useMutation(api.notifications.remove);
+
+  const unreadCount = (notifications ?? []).filter((n) => !n.read).length;
+
+  const handleMarkAllRead = async () => {
+    await markAllAsRead({});
   };
 
-  const handleMarkRead = (id: string) => {
-    // TODO: Implement with useMutation(api.notifications.markAsRead)
-    console.log('Mark read', id);
+  const handleMarkRead = async (id: Id<'notifications'>) => {
+    await markAsRead({ id });
+  };
+
+  const handleOpen = async (notification: {
+    _id: Id<'notifications'>;
+    type: string;
+    read: boolean;
+    caseId?: Id<'cases'> | undefined;
+  }) => {
+    if (!notification.read) {
+      await handleMarkRead(notification._id);
+    }
+
+    if (notification.type === 'donation_received' || notification.type === 'case_update') {
+      if (notification.caseId) navigate(`/case/${notification.caseId}`);
+      return;
+    }
+
+    if (notification.type === 'achievement_unlocked') {
+      navigate('/achievements');
+      return;
+    }
+
+    if (notification.type === 'campaign_ended') {
+      navigate('/campaigns');
+    }
+  };
+
+  const handleRemove = async (id: Id<'notifications'>) => {
+    await remove({ id });
   };
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
       {/* Header */}
-      <div className="sticky top-0 md:top-14 z-40 bg-card/95 backdrop-blur-md border-b border-border">
+      <div className="sticky top-0 md:top-14 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/account"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-surface-sunken hover:bg-surface-sunken/90 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
@@ -124,17 +115,19 @@ const Notifications = () => {
       {/* Notifications List */}
       <section className="py-4">
         <div className="container mx-auto px-4">
-          {notifications.length > 0 ? (
+          {notifications === undefined ? (
+            <div className="text-sm text-muted-foreground">{t('common.loading', 'Loading…')}</div>
+          ) : notifications.length > 0 ? (
             <div className="space-y-2">
               {notifications.map((notification) => {
                 const { icon: Icon, bg, color } = getNotificationIcon(notification.type);
                 
                 return (
                   <div
-                    key={notification.id}
-                    onClick={() => !notification.read && handleMarkRead(notification.id)}
+                    key={notification._id}
+                    onClick={() => handleOpen(notification)}
                     className={cn(
-                      "bg-card rounded-xl border border-border p-4 flex items-start gap-3 cursor-pointer transition-colors",
+                      "bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-4 flex items-start gap-3 cursor-pointer transition-colors",
                       !notification.read && "bg-primary/5 border-primary/20"
                     )}
                   >
@@ -157,6 +150,17 @@ const Notifications = () => {
                         {notification.message}
                       </p>
                     </div>
+                    <button
+                      type="button"
+                      className="w-9 h-9 -mr-1 flex items-center justify-center rounded-full hover:bg-muted/60 transition-colors shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleRemove(notification._id);
+                      }}
+                      aria-label={t('actions.remove', 'Remove')}
+                    >
+                      <Trash2 className="w-4 h-4 text-muted-foreground" />
+                    </button>
                     {!notification.read && (
                       <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
                     )}

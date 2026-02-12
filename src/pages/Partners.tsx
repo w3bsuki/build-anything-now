@@ -1,794 +1,697 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { PartnerCard } from '@/components/PartnerCard';
 import { FilterPills } from '@/components/FilterPills';
 import { PartnerCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { Button } from '@/components/ui/button';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
+import { StickySegmentRail } from '@/components/layout/StickySegmentRail';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
+import { SectionHeader } from '@/components/layout/SectionHeader';
+import { StatsGrid, type StatsGridItem } from '@/components/common/StatsGrid';
+import { Button } from '@/components/ui/button';
 import {
-  Handshake, 
-  Heart, 
-  ShoppingBag, 
-  Stethoscope, 
-  Bone, 
-  HandHeart,
-  Star,
-  PawPrint,
+  Building2,
   Calendar,
+  Coins,
+  ExternalLink,
+  HandHeart,
+  Handshake,
+  Heart,
   MapPin,
-  Home,
-  Shield,
-  MessageCircle,
+  PawPrint,
+  Phone,
   Share2,
-  Coins
+  Shield,
+  ShoppingBag,
+  Star,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import type { Partner, Volunteer } from '@/types';
+import type { DirectorySegment, Partner, StoreServiceCardViewModel, Volunteer } from '@/types';
 
-// Mock Pet Sitters Data
-const mockPetSitters = [
-  {
-    id: 's1',
-    name: 'Ana Koleva',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
-    bio: 'Experienced pet sitter with 5+ years caring for dogs and cats. Your pets will feel at home!',
-    location: 'Sofia',
-    services: ['Dog Walking', 'Cat Sitting', 'Overnight Stay'],
-    rating: 4.9,
-    reviewCount: 47,
-    hourlyRate: 15,
-    verified: true,
-  },
-  {
-    id: 's2',
-    name: 'Dimitar Petrov',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-    bio: 'Veterinary assistant offering pet sitting on weekends. Special care for senior pets.',
-    location: 'Sofia',
-    services: ['Drop-in Visits', 'Medical Care', 'Cat Sitting'],
-    rating: 4.8,
-    reviewCount: 32,
-    hourlyRate: 20,
-    verified: true,
-  },
-  {
-    id: 's3',
-    name: 'Viktoria Stoyanova',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200',
-    bio: 'Dog lover with a big backyard! Perfect for active dogs who need space to play.',
-    location: 'Plovdiv',
-    services: ['Dog Walking', 'Overnight Stay', 'Daycare'],
-    rating: 4.7,
-    reviewCount: 28,
-    hourlyRate: 12,
-    verified: false,
-  },
-  {
-    id: 's4',
-    name: 'Martin Georgiev',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200',
-    bio: 'Professional dog trainer offering boarding and training combo packages.',
-    location: 'Varna',
-    services: ['Training', 'Overnight Stay', 'Dog Walking'],
-    rating: 5.0,
-    reviewCount: 19,
-    hourlyRate: 25,
-    verified: true,
-  },
-];
+type ServiceFilter = 'all' | 'pet_store' | 'grooming' | 'training' | 'shelter' | 'pet_sitting' | 'pet_hotel' | 'pharmacy' | 'other';
+
+const segmentValues: DirectorySegment[] = ['partners', 'volunteers', 'stores_services'];
+
+const serviceTypeLabels: Record<Exclude<ServiceFilter, 'all'>, string> = {
+  pet_store: 'Pet Stores',
+  grooming: 'Grooming',
+  training: 'Training',
+  shelter: 'Shelters',
+  pet_sitting: 'Pet Sitting',
+  pet_hotel: 'Pet Hotels',
+  pharmacy: 'Pharmacies',
+  other: 'Other',
+};
+
+function getSegmentFromQuery(value: string | null): DirectorySegment {
+  if (value && segmentValues.includes(value as DirectorySegment)) {
+    return value as DirectorySegment;
+  }
+  return 'partners';
+}
 
 const Partners = () => {
   const { t } = useTranslation();
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const [serviceFilter, setServiceFilter] = useState<ServiceFilter>('all');
 
-  // Fetch from Convex
-  const rawPartners = useQuery(api.partners.list, {});
-  const rawVolunteers = useQuery(api.volunteers.list, {});
-  const partnerStats = useQuery(api.partners.getStats, {});
-  
-  const isLoading = rawPartners === undefined || rawVolunteers === undefined;
+  const segment = getSegmentFromQuery(searchParams.get('segment'));
 
-  // Transform Convex data to match frontend types
-  const partners: Partner[] = (rawPartners ?? []).map((p) => ({
-    id: p._id,
-    name: p.name,
-    logo: p.logo,
-    contribution: p.contribution,
-    description: p.description,
-    type: p.type,
-    website: p.website,
-    since: p.since,
-    animalsHelped: p.animalsHelped,
-    totalContributed: p.totalContributed,
-    featured: p.featured,
-  }));
-
-  const volunteers: Volunteer[] = (rawVolunteers ?? []).map((v) => ({
-    id: v._id,
-    name: v.name ?? 'Unknown',
-    avatar: v.avatar ?? '',
-    bio: v.bio,
-    location: v.location,
-    rating: v.rating,
-    memberSince: v.memberSince,
-    isTopVolunteer: v.isTopVolunteer,
-    badges: v.badges,
-    stats: v.stats,
-  }));
-
-  // Combined filter options - all in one row
-  const filterOptions = [
-    { id: 'all', label: t('partners.all') },
-    { id: 'volunteers', label: t('partners.volunteers'), icon: <HandHeart className="w-3.5 h-3.5" /> },
-    { id: 'sitters', label: t('community.petSitters'), icon: <Home className="w-3.5 h-3.5" /> },
-    { id: 'pet-shop', label: t('partners.petShops'), icon: <ShoppingBag className="w-3.5 h-3.5" /> },
-    { id: 'food-brand', label: t('partners.petFood'), icon: <Bone className="w-3.5 h-3.5" /> },
-    { id: 'veterinary', label: t('partners.veterinary'), icon: <Stethoscope className="w-3.5 h-3.5" /> },
-  ];
-
-  // Determine what to show based on filter
-  const showPartners = activeFilter === 'all' || ['pet-shop', 'food-brand', 'veterinary', 'sponsor'].includes(activeFilter);
-  const showVolunteers = activeFilter === 'volunteers';
-  const showSitters = activeFilter === 'sitters';
-
-  // Filter partners
-  const filteredPartners = partners.filter((partner) => {
-    const matchesDomain = activeFilter === 'all' || partner.type === activeFilter;
-    const matchesSearch = !searchQuery || 
-      partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      partner.contribution.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesDomain && matchesSearch;
-  });
-
-  // Filter volunteers
-  const filteredVolunteers = volunteers.filter((volunteer) => {
-    const matchesSearch = !searchQuery || 
-      volunteer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      volunteer.bio.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      volunteer.location.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
-
-  // Filter sitters
-  const filteredSitters = mockPetSitters.filter((sitter) => {
-    const matchesSearch = !searchQuery || 
-      sitter.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sitter.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sitter.services.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesSearch;
-  });
-
-  // Stats
-  const totalAnimalsHelped = volunteers.reduce((sum, v) => sum + v.stats.animalsHelped, 0);
-  const totalHours = volunteers.reduce((sum, v) => sum + v.stats.hoursVolunteered, 0);
-
-  // Get search placeholder based on filter
-  const getSearchPlaceholder = () => {
-    if (showVolunteers) return t('partners.searchVolunteers');
-    if (showSitters) return t('community.searchSitters');
-    return t('partners.searchPlaceholder');
+  const setSegment = (next: DirectorySegment) => {
+    const params = new URLSearchParams(searchParams);
+    if (next === 'partners') {
+      params.delete('segment');
+    } else {
+      params.set('segment', next);
+    }
+    setSearchQuery('');
+    setServiceFilter('all');
+    setSearchParams(params, { replace: true });
   };
 
+  const rawPartners = useQuery(api.partners.list, {});
+  const partnerStats = useQuery(api.partners.getStats, {});
+  const rawVolunteers = useQuery(api.volunteers.list, {});
+  const rawServices = useQuery(api.petServices.list, {
+    excludeClinics: true,
+    type: serviceFilter === 'all' ? undefined : serviceFilter,
+    search: searchQuery.trim() || undefined,
+    limit: 120,
+  });
+
+  const partners: Partner[] = (rawPartners ?? []).map((partner) => ({
+    id: partner._id,
+    name: partner.name,
+    logo: partner.logo,
+    contribution: partner.contribution,
+    description: partner.description,
+    type: partner.type,
+    website: partner.website,
+    since: partner.since,
+    animalsHelped: partner.animalsHelped,
+    totalContributed: partner.totalContributed,
+    featured: partner.featured,
+  }));
+
+  const volunteers: Volunteer[] = (rawVolunteers ?? []).map((volunteer) => ({
+    id: volunteer._id,
+    name: volunteer.name ?? 'Unknown',
+    avatar: volunteer.avatar ?? '',
+    bio: volunteer.bio,
+    location: volunteer.location,
+    rating: volunteer.rating,
+    memberSince: volunteer.memberSince,
+    isTopVolunteer: volunteer.isTopVolunteer,
+    badges: volunteer.badges,
+    stats: volunteer.stats,
+  }));
+
+  const services: StoreServiceCardViewModel[] = (rawServices ?? []).map((service) => ({
+    id: service._id,
+    name: service.name,
+    type: service.type as StoreServiceCardViewModel['type'],
+    city: service.city,
+    address: service.address,
+    phone: service.phone,
+    website: service.website,
+    description: service.description,
+    services: service.services,
+    verified: service.verified,
+    isClaimed: service.isClaimed,
+    ownerId: service.ownerId,
+    rating: service.rating,
+    reviewCount: service.reviewCount,
+    is24h: service.is24h,
+  }));
+
+  const searchLower = searchQuery.trim().toLowerCase();
+
+  const filteredPartners = useMemo(
+    () =>
+      partners.filter((partner) =>
+        searchLower.length === 0
+          ? true
+          : partner.name.toLowerCase().includes(searchLower) ||
+            partner.contribution.toLowerCase().includes(searchLower) ||
+            partner.description.toLowerCase().includes(searchLower),
+      ),
+    [partners, searchLower],
+  );
+
+  const filteredVolunteers = useMemo(
+    () =>
+      volunteers.filter((volunteer) =>
+        searchLower.length === 0
+          ? true
+          : volunteer.name.toLowerCase().includes(searchLower) ||
+            volunteer.location.toLowerCase().includes(searchLower) ||
+            volunteer.bio.toLowerCase().includes(searchLower),
+      ),
+    [volunteers, searchLower],
+  );
+
+  const segmentOptions = [
+    { id: 'partners', label: t('partners.partners', 'Partners'), icon: <Handshake className="w-3.5 h-3.5" /> },
+    { id: 'volunteers', label: t('partners.volunteers', 'Volunteers'), icon: <HandHeart className="w-3.5 h-3.5" /> },
+    { id: 'stores_services', label: t('partners.services', 'Stores & Services'), icon: <ShoppingBag className="w-3.5 h-3.5" /> },
+  ];
+
+  const serviceOptions: { id: ServiceFilter; label: string }[] = [
+    { id: 'all', label: t('partners.all', 'All') },
+    { id: 'pet_store', label: t('partners.petShops', 'Pet Stores') },
+    { id: 'grooming', label: t('partners.grooming', 'Grooming') },
+    { id: 'training', label: t('partners.training', 'Training') },
+    { id: 'shelter', label: t('partners.shelters', 'Shelters') },
+    { id: 'pet_sitting', label: t('partners.petSitting', 'Pet Sitting') },
+    { id: 'pet_hotel', label: t('partners.petHotels', 'Pet Hotels') },
+    { id: 'pharmacy', label: t('partners.pharmacies', 'Pharmacies') },
+    { id: 'other', label: t('partners.other', 'Other') },
+  ];
+
+  const partnerStatsItems: StatsGridItem[] = [
+    {
+      id: 'partners',
+      label: t('partners.partners', 'Partners'),
+      value: String(partnerStats?.totalPartners ?? partners.length),
+      icon: <Handshake className="w-5 h-5" />,
+      tone: 'primary',
+    },
+    {
+      id: 'animals-helped',
+      label: t('partners.animalsHelped', 'Animals Helped'),
+      value: (partnerStats?.totalAnimalsHelped ?? 0).toLocaleString(),
+      icon: <Heart className="w-5 h-5" />,
+      tone: 'destructive',
+    },
+    {
+      id: 'contributed',
+      label: t('partners.eurContributed', 'EUR Contributed'),
+      value: `€${(partnerStats?.totalContributed ?? 0).toLocaleString()}`,
+      icon: <Coins className="w-5 h-5" />,
+      tone: 'warning',
+    },
+  ];
+
+  const volunteerStatsItems: StatsGridItem[] = [
+    {
+      id: 'volunteers',
+      label: t('partners.volunteers', 'Volunteers'),
+      value: String(filteredVolunteers.length),
+      icon: <HandHeart className="w-5 h-5" />,
+      tone: 'primary',
+    },
+    {
+      id: 'animals-helped',
+      label: t('partners.animalsHelped', 'Animals Helped'),
+      value: filteredVolunteers.reduce((acc, volunteer) => acc + volunteer.stats.animalsHelped, 0).toLocaleString(),
+      icon: <Heart className="w-5 h-5" />,
+      tone: 'destructive',
+    },
+    {
+      id: 'hours',
+      label: t('partners.hoursGiven', 'Hours Given'),
+      value: filteredVolunteers.reduce((acc, volunteer) => acc + volunteer.stats.hoursVolunteered, 0).toLocaleString(),
+      icon: <Calendar className="w-5 h-5" />,
+      tone: 'primary',
+    },
+  ];
+
+  const servicesStatsItems: StatsGridItem[] = [
+    {
+      id: 'services-total',
+      label: t('partners.services', 'Stores & Services'),
+      value: String(services.length),
+      icon: <Building2 className="w-5 h-5" />,
+      tone: 'primary',
+    },
+    {
+      id: 'services-verified',
+      label: t('partners.verified', 'Verified'),
+      value: String(services.filter((service) => service.verified).length),
+      icon: <Shield className="w-5 h-5" />,
+      tone: 'success',
+    },
+    {
+      id: 'services-claimed',
+      label: t('partners.claimed', 'Claimed'),
+      value: String(services.filter((service) => service.isClaimed).length),
+      icon: <PawPrint className="w-5 h-5" />,
+      tone: 'accent',
+    },
+  ];
+
+  const searchPlaceholder =
+    segment === 'volunteers'
+      ? t('partners.searchVolunteers', 'Search volunteers...')
+      : segment === 'stores_services'
+        ? t('partners.searchServices', 'Search stores and services...')
+        : t('partners.searchPlaceholder', 'Search partners...');
+
+  const isPartnersLoading = rawPartners === undefined || partnerStats === undefined;
+  const isVolunteersLoading = rawVolunteers === undefined;
+  const isServicesLoading = rawServices === undefined;
+
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
-      {/* Mobile Header with Search */}
+    <PageShell>
       <MobilePageHeader
-        title={t('nav.partners')}
+        title={t('nav.partners', 'Partners')}
         showLogo
-        searchPlaceholder={getSearchPlaceholder()}
+        searchPlaceholder={searchPlaceholder}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
         searchMode="adaptive"
       >
-        <FilterPills
-          options={filterOptions}
-          selected={activeFilter}
-          onSelect={(id) => {
-            setActiveFilter(id);
-            setSearchQuery('');
-          }}
-        />
+        <div className="space-y-2">
+          <FilterPills
+            options={segmentOptions}
+            selected={segment}
+            onSelect={(id) => setSegment(id as DirectorySegment)}
+          />
+          {segment === 'stores_services' ? (
+            <FilterPills
+              options={serviceOptions}
+              selected={serviceFilter}
+              onSelect={(id) => setServiceFilter(id as ServiceFilter)}
+            />
+          ) : null}
+        </div>
       </MobilePageHeader>
 
-      {/* Desktop Search + Filters */}
-      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2">
-        <div className="container mx-auto px-4 space-y-2">
+      <StickySegmentRail contentClassName="space-y-2">
+        <FilterPills
+          options={segmentOptions}
+          selected={segment}
+          onSelect={(id) => setSegment(id as DirectorySegment)}
+        />
+        {segment === 'stores_services' ? (
           <FilterPills
-            options={filterOptions}
-            selected={activeFilter}
-            onSelect={(id) => {
-              setActiveFilter(id);
-              setSearchQuery('');
-            }}
+            options={serviceOptions}
+            selected={serviceFilter}
+            onSelect={(id) => setServiceFilter(id as ServiceFilter)}
           />
-        </div>
-      </div>
+        ) : null}
+      </StickySegmentRail>
 
-      {/* Content */}
-      {showPartners && (
+      {segment === 'partners' ? (
         <>
-          {/* Partners Grid */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              {/* Section Header */}
-              <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {activeFilter === 'all' ? t('partners.partners') : filterOptions.find(f => f.id === activeFilter)?.label}
-                </h2>
-                {!isLoading && (
-                  <span className="text-xs text-muted-foreground">
-                    ({filteredPartners.length})
-                  </span>
-                )}
+          <PageSection>
+            <SectionHeader title={t('partners.partners', 'Partners')} count={isPartnersLoading ? undefined : filteredPartners.length} />
+            {isPartnersLoading ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <PartnerCardSkeleton key={i} />
+                ))}
               </div>
-              
-              {isLoading ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <PartnerCardSkeleton key={i} />
-                  ))}
-                </div>
-              ) : filteredPartners.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredPartners.map((partner) => (
-                    <PartnerCard key={partner.id} partner={partner} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground text-sm">
-                  {t('partners.noPartnersFound')}
-                </div>
-              )}
-            </div>
-          </section>
+            ) : filteredPartners.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredPartners.map((partner) => (
+                  <PartnerCard key={partner.id} partner={partner} />
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                {t('partners.noPartnersFound', 'No partners found.')}
+              </div>
+            )}
+          </PageSection>
 
-          {/* Partner Stats */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-3 divide-x divide-border/50">
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
-                      <Handshake className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {partnerStats?.totalPartners ?? partners.length}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.partners')}
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-destructive/10 mb-2">
-                      <Heart className="w-5 h-5 text-destructive" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {partnerStats?.totalAnimalsHelped?.toLocaleString() ?? '1,200'}+
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.animalsHelped')}
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-warning/10 mb-2">
-                      <Coins className="w-5 h-5 text-warning" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      €{partnerStats?.totalContributed?.toLocaleString() ?? '50,000'}+
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.eurContributed')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <PageSection>
+            <StatsGrid items={partnerStatsItems} />
+          </PageSection>
 
-          {/* Become a Partner */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
-                  <Heart className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">
-                  {t('partners.makeADifference')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                  {t('partners.joinPartners')}
-                </p>
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Handshake className="w-4 h-4 mr-2" />
-                  {t('partners.becomePartner')}
-                </Button>
+          <PageSection>
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated p-6 text-center shadow-xs">
+              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-4 ring-primary/5">
+                <Handshake className="w-7 h-7 text-primary" />
               </div>
+              <h3 className="font-display mb-2 text-lg font-bold text-foreground">{t('partners.makeADifference', 'Make a difference')}</h3>
+              <p className="mx-auto mb-5 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {t('partners.joinPartners', 'Join Pawtreon as a partner and support transparent, trust-first rescue work.')}
+              </p>
+              <Button asChild size="lg">
+                <Link to="/onboarding/claim">{t('partners.becomePartner', 'Become a partner')}</Link>
+              </Button>
             </div>
-          </section>
+          </PageSection>
         </>
-      )}
+      ) : null}
 
-      {showVolunteers && (
+      {segment === 'volunteers' ? (
         <>
-          {/* Volunteers Grid */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              {/* Section Header */}
-              <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {t('partners.volunteers')}
-                </h2>
-                {!isLoading && (
-                  <span className="text-xs text-muted-foreground">
-                    ({filteredVolunteers.length})
-                  </span>
-                )}
+          <PageSection>
+            <SectionHeader title={t('partners.volunteers', 'Volunteers')} count={isVolunteersLoading ? undefined : filteredVolunteers.length} />
+            {isVolunteersLoading ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <VolunteerCardSkeleton key={i} />
+                ))}
               </div>
-              
-              {isLoading ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <VolunteerCardSkeleton key={i} />
-                  ))}
-                </div>
-              ) : filteredVolunteers.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredVolunteers.map((volunteer) => (
-                    <VolunteerCard key={volunteer.id} volunteer={volunteer} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground text-sm">
-                  {t('partners.noVolunteersFound')}
-                </div>
-              )}
-            </div>
-          </section>
+            ) : filteredVolunteers.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredVolunteers.map((volunteer) => (
+                  <VolunteerCard key={volunteer.id} volunteer={volunteer} />
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                {t('partners.noVolunteersFound', 'No volunteers found.')}
+              </div>
+            )}
+          </PageSection>
 
-          {/* Volunteer Stats */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-3 divide-x divide-border/50">
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
-                      <HandHeart className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {volunteers.length}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.volunteers')}
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-destructive/10 mb-2">
-                      <Heart className="w-5 h-5 text-destructive" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {totalAnimalsHelped.toLocaleString()}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.animalsHelped')}
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
-                      <Calendar className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {totalHours.toLocaleString()}+
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('partners.hoursGiven')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <PageSection>
+            <StatsGrid items={volunteerStatsItems} />
+          </PageSection>
 
-          {/* Become a Volunteer */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 ring-4 ring-primary/5 mx-auto mb-4">
-                  <HandHeart className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">
-                  {t('partners.makeADifference')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                  {t('partners.joinVolunteers')}
-                </p>
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <HandHeart className="w-4 h-4 mr-2" />
-                  {t('partners.becomeVolunteer')}
-                </Button>
+          <PageSection>
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated p-6 text-center shadow-xs">
+              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-4 ring-primary/5">
+                <HandHeart className="w-7 h-7 text-primary" />
               </div>
+              <h3 className="font-display mb-2 text-lg font-bold text-foreground">{t('partners.joinVolunteers', 'Join volunteers')}</h3>
+              <p className="mx-auto mb-5 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {t('partners.volunteerCtaBody', 'Help with transport, fostering, and on-the-ground rescue operations.')}
+              </p>
+              <Button asChild size="lg">
+                <Link to="/onboarding">{t('partners.becomeVolunteer', 'Become a volunteer')}</Link>
+              </Button>
             </div>
-          </section>
+          </PageSection>
         </>
-      )}
+      ) : null}
 
-      {showSitters && (
+      {segment === 'stores_services' ? (
         <>
-          {/* Pet Sitters Grid */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              {/* Info Banner */}
-              <div className="bg-surface border border-border/60 rounded-xl p-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Home className="w-5 h-5 text-accent" />
-                  <h3 className="font-semibold text-foreground">{t('community.petSittersTitle')}</h3>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {t('community.petSittersDesc')}
-                </p>
-              </div>
-
-              {/* Section Header */}
-              <div className="flex items-center gap-2 mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {t('community.availableSitters')}
-                </h2>
-                {!isLoading && (
-                  <span className="text-xs text-muted-foreground">
-                    ({filteredSitters.length})
-                  </span>
-                )}
-              </div>
-              
-              {isLoading ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <PetSitterCardSkeleton key={i} />
-                  ))}
-                </div>
-              ) : filteredSitters.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredSitters.map((sitter) => (
-                    <PetSitterCard key={sitter.id} sitter={sitter} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground text-sm">
-                  {t('community.noSittersFound')}
-                </div>
+          <PageSection>
+            <SectionHeader
+              title={t('partners.services', 'Stores & Services')}
+              count={isServicesLoading ? undefined : services.length}
+              description={t(
+                'partners.servicesReferralOnly',
+                'Referral-only directory: discover trusted providers and contact them directly.',
               )}
-            </div>
-          </section>
-
-          {/* Sitter Stats */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="bg-card border border-border/50 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-3 divide-x divide-border/50">
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 mb-2">
-                      <Home className="w-5 h-5 text-primary" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {mockPetSitters.length}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {t('community.petSitters')}
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-success/10 mb-2">
-                      <Shield className="w-5 h-5 text-success" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      {mockPetSitters.filter(s => s.verified).length}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Verified
-                    </p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-warning/10 mb-2">
-                      <Star className="w-5 h-5 text-warning" />
-                    </div>
-                    <p className="text-2xl font-bold text-foreground leading-none">
-                      4.9
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Avg Rating
-                    </p>
-                  </div>
-                </div>
+            />
+            {isServicesLoading ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ServiceCardSkeleton key={i} />
+                ))}
               </div>
-            </div>
-          </section>
-
-          {/* Become a Sitter */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <div className="overflow-hidden bg-surface border border-border/60 rounded-xl p-6 text-center">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-accent/10 ring-4 ring-accent/5 mx-auto mb-4">
-                  <Home className="w-7 h-7 text-accent" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">
-                  {t('community.offerSitting')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto leading-relaxed">
-                  {t('community.offerSittingDesc')}
-                </p>
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Home className="w-4 h-4 mr-2" />
-                  {t('community.becomeSitter')}
-                </Button>
+            ) : services.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {services.map((service) => (
+                  <StoreServiceCard key={service.id} service={service} />
+                ))}
               </div>
+            ) : (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                {t('partners.noServicesFound', 'No services found for this filter.')}
+              </div>
+            )}
+          </PageSection>
+
+          <PageSection>
+            <StatsGrid items={servicesStatsItems} />
+          </PageSection>
+
+          <PageSection>
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated p-6 text-center shadow-xs">
+              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 ring-4 ring-primary/5">
+                <ShoppingBag className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="font-display mb-2 text-lg font-bold text-foreground">{t('partners.listYourService', 'List your service')}</h3>
+              <p className="mx-auto mb-5 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {t(
+                  'partners.servicesCtaBody',
+                  'Own a pet store or service business? Join the directory and support rescue-first outcomes.',
+                )}
+              </p>
+              <Button asChild size="lg">
+                <Link to="/onboarding/claim">{t('partners.claimBusiness', 'Claim your business')}</Link>
+              </Button>
             </div>
-          </section>
+          </PageSection>
         </>
-      )}
-    </div>
+      ) : null}
+    </PageShell>
   );
 };
 
-// Volunteer Card Component
 interface VolunteerCardProps {
   volunteer: Volunteer;
 }
 
 const VolunteerCard = ({ volunteer }: VolunteerCardProps) => (
   <Link to={`/volunteers/${volunteer.id}`} className="block group">
-    <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-sm transition-all duration-300 overflow-hidden h-full">
-      {/* Header */}
+    <div className="h-full overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated shadow-xs transition-all hover:border-primary/30 hover:shadow-sm">
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
           <div className="relative shrink-0">
             <img
               src={volunteer.avatar}
               alt={volunteer.name}
-              className="w-12 h-12 rounded-full object-cover ring-2 ring-border/50"
+              className="h-12 w-12 rounded-full object-cover ring-2 ring-border/50"
             />
-            {volunteer.isTopVolunteer && (
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center ring-2 ring-background">
-                <Star className="w-3 h-3 text-warning-foreground fill-current" />
+            {volunteer.isTopVolunteer ? (
+              <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-warning ring-2 ring-background">
+                <Star className="h-3 w-3 fill-current text-warning-foreground" />
               </div>
-            )}
+            ) : null}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-semibold text-base text-foreground leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+              <h3 className="line-clamp-1 text-base font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
                 {volunteer.name}
               </h3>
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  const url = `${window.location.origin}/volunteers/${volunteer.id}`;
                   if (navigator.share) {
-                    navigator.share({
+                    void navigator.share({
                       title: volunteer.name,
                       text: volunteer.bio,
-                      url: `${window.location.origin}/volunteers/${volunteer.id}`,
+                      url,
                     });
-                  } else {
-                    navigator.clipboard.writeText(`${window.location.origin}/volunteers/${volunteer.id}`);
+                    return;
                   }
+                  void navigator.clipboard.writeText(url);
                 }}
-                className="text-muted-foreground hover:text-primary transition-colors shrink-0 p-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="h-4 w-4" />
               </button>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-              <Star className="w-3.5 h-3.5 text-warning fill-warning" />
+            <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Star className="h-3.5 w-3.5 fill-warning text-warning" />
               <span className="font-medium">{volunteer.rating.toFixed(1)}</span>
               <span className="mx-0.5">·</span>
-              <Calendar className="w-3.5 h-3.5" />
+              <Calendar className="h-3.5 w-3.5" />
               <span>{volunteer.memberSince}</span>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-              <MapPin className="w-3.5 h-3.5" />
+            <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5" />
               <span>{volunteer.location}</span>
             </div>
           </div>
         </div>
 
-        {/* Bio */}
-        <p className="text-xs text-muted-foreground mt-3 leading-relaxed line-clamp-2">
-          {volunteer.bio}
-        </p>
+        <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{volunteer.bio}</p>
       </div>
 
-      {/* Stats Section */}
       <div className="px-4 pb-3">
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 bg-primary/5 rounded-lg px-3 py-2">
-            <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-              <PawPrint className="w-3.5 h-3.5 text-primary" />
+          <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/20">
+              <PawPrint className="h-3.5 w-3.5 text-primary" />
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-foreground leading-none">
-                {volunteer.stats.animalsHelped}
-              </p>
-              <p className="text-xs text-muted-foreground leading-none mt-0.5">
-                Helped
-              </p>
+            <div>
+              <p className="text-sm font-bold leading-none text-foreground">{volunteer.stats.animalsHelped}</p>
+              <p className="mt-0.5 text-xs leading-none text-muted-foreground">Helped</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-destructive/5 rounded-lg px-3 py-2">
-            <div className="w-7 h-7 rounded-md bg-destructive/10 flex items-center justify-center shrink-0">
-              <Heart className="w-3.5 h-3.5 text-destructive" />
+          <div className="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-destructive/20">
+              <Heart className="h-3.5 w-3.5 text-destructive" />
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-foreground leading-none">
-                {volunteer.stats.adoptions}
-              </p>
-              <p className="text-xs text-muted-foreground leading-none mt-0.5">
-                Adoptions
-              </p>
+            <div>
+              <p className="text-sm font-bold leading-none text-foreground">{volunteer.stats.adoptions}</p>
+              <p className="mt-0.5 text-xs leading-none text-muted-foreground">Adoptions</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Badges Footer */}
-      {volunteer.badges.length > 0 && (
-        <div className="px-4 pb-4 pt-2 border-t border-border/50 bg-muted/20">
-          <div className="flex gap-1.5 flex-wrap">
+      {volunteer.badges.length > 0 ? (
+        <div className="border-t border-border/50 bg-surface-sunken/55 px-4 pb-4 pt-2">
+          <div className="flex flex-wrap gap-1.5">
             {volunteer.badges.slice(0, 3).map((badge) => (
-              <span
-                key={badge}
-                className="px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full border border-primary/20"
-              >
+              <span key={badge} className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                 {badge}
               </span>
             ))}
-            {volunteer.badges.length > 3 && (
-              <span className="px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-full border border-border">
+            {volunteer.badges.length > 3 ? (
+              <span className="rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 +{volunteer.badges.length - 3}
               </span>
-            )}
+            ) : null}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   </Link>
 );
 
-// Pet Sitter Card Component
-const PetSitterCard = ({ sitter }: { sitter: typeof mockPetSitters[0] }) => (
-  <div className="bg-card rounded-xl border border-border/50 hover:border-primary/30 hover:shadow-sm transition-all duration-300 overflow-hidden h-full flex flex-col">
-    {/* Header */}
-    <div className="p-4 pb-3">
-      <div className="flex items-start gap-3">
-        <div className="relative shrink-0">
-          <img
-            src={sitter.avatar}
-            alt={sitter.name}
-            className="w-12 h-12 rounded-full object-cover ring-2 ring-border/50"
-          />
-          {sitter.verified && (
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center ring-2 ring-background">
-              <Shield className="w-3 h-3 text-success-foreground" />
-            </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base text-foreground leading-tight line-clamp-1">
-            {sitter.name}
-          </h3>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-            <Star className="w-3.5 h-3.5 text-warning fill-warning" />
-            <span className="font-medium">{sitter.rating.toFixed(1)}</span>
-            <span className="mx-0.5">·</span>
-            <span>{sitter.reviewCount} reviews</span>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>{sitter.location}</span>
-          </div>
-        </div>
-        <div className="text-right shrink-0">
-          <div className="bg-primary/10 rounded-lg px-2.5 py-1.5">
-            <span className="text-base font-bold text-primary leading-none block">
-              €{sitter.hourlyRate}
-            </span>
-            <p className="text-xs text-muted-foreground leading-none mt-0.5">
-              /hour
-            </p>
-          </div>
-        </div>
-      </div>
+const StoreServiceCard = ({ service }: { service: StoreServiceCardViewModel }) => {
+  const toneClass =
+    service.type === 'pet_store'
+      ? 'bg-primary/10 text-primary'
+      : service.type === 'pharmacy'
+        ? 'bg-warning/10 text-warning'
+        : service.type === 'shelter'
+          ? 'bg-destructive/10 text-destructive'
+          : 'bg-accent/15 text-accent-foreground';
 
-      {/* Bio */}
-      <p className="text-xs text-muted-foreground mt-3 leading-relaxed line-clamp-2">
-        {sitter.bio}
-      </p>
-    </div>
+  const typeLabel = serviceTypeLabels[service.type] ?? service.type;
 
-    {/* Services */}
-    <div className="px-4 pb-3 flex-1">
-      <div className="flex flex-wrap gap-1.5">
-        {sitter.services.map((service) => (
-          <span
-            key={service}
-            className="px-2.5 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full border border-primary/20"
-          >
-            {service}
+  return (
+    <article className="flex h-full flex-col rounded-2xl border border-border/60 bg-surface-elevated p-4 shadow-xs">
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="line-clamp-1 font-display text-sm font-semibold text-foreground">{service.name}</h3>
+          <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5" />
+            <span className="line-clamp-1">{service.city}</span>
+          </div>
+        </div>
+        {service.verified ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-semibold text-success">
+            <Shield className="h-3.5 w-3.5" />
+            Verified
           </span>
-        ))}
+        ) : null}
       </div>
-    </div>
 
-    {/* Footer */}
-    <div className="p-4 pt-3 border-t border-border/50 bg-muted/20">
-      <Button className="w-full" size="sm">
-        <MessageCircle className="w-4 h-4 mr-2" />
-        Contact
-      </Button>
-    </div>
-  </div>
-);
+      <div className="mb-3 flex flex-wrap gap-1.5">
+          <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${toneClass}`}>{typeLabel}</span>
+        {service.is24h ? (
+            <span className="rounded-full border border-border/50 bg-surface-sunken px-2.5 py-1 text-xs font-semibold text-foreground">24/7</span>
+        ) : null}
+        {service.rating ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/50 bg-surface-sunken px-2.5 py-1 text-xs font-semibold text-foreground">
+            <Star className="h-3.5 w-3.5 fill-warning text-warning" />
+            {service.rating}
+            {service.reviewCount ? ` (${service.reviewCount})` : ''}
+          </span>
+        ) : null}
+      </div>
 
-// Skeleton Components
+      {service.description ? (
+        <p className="mb-3 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{service.description}</p>
+      ) : null}
+
+      {service.services.length > 0 ? (
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {service.services.slice(0, 3).map((entry) => (
+            <span key={entry} className="rounded-full border border-border/70 bg-surface-sunken/75 px-2 py-0.5 text-[11px] text-muted-foreground">
+              {entry}
+            </span>
+          ))}
+          {service.services.length > 3 ? (
+            <span className="rounded-full border border-border/70 bg-surface-sunken/75 px-2 py-0.5 text-[11px] text-muted-foreground">
+              +{service.services.length - 3}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="mt-auto border-t border-border/50 pt-3">
+        <div className="flex gap-2">
+          {service.website ? (
+            <Button asChild size="sm" className="h-9 flex-1">
+              <a href={service.website} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-1.5 h-4 w-4" />
+                Visit Website
+              </a>
+            </Button>
+          ) : null}
+          {service.phone ? (
+            <Button asChild size="sm" variant={service.website ? 'outline' : 'default'} className="h-9 flex-1">
+              <a href={`tel:${service.phone}`}>
+                <Phone className="mr-1.5 h-4 w-4" />
+                Call
+              </a>
+            </Button>
+          ) : null}
+          {!service.website && !service.phone ? (
+            <span className="w-full rounded-md border border-border/70 bg-surface-sunken px-3 py-2 text-center text-xs text-muted-foreground">
+              Contact details pending
+            </span>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+};
+
 const VolunteerCardSkeleton = () => (
-  <div className="bg-card rounded-xl border border-border/50 overflow-hidden h-full animate-pulse">
+  <div className="h-full animate-pulse overflow-hidden rounded-2xl border border-border/60 bg-surface-elevated">
     <div className="p-4 pb-3">
       <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full bg-muted shrink-0" />
+        <div className="h-12 w-12 rounded-full bg-muted" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 w-32 bg-muted rounded" />
-          <div className="h-3 w-24 bg-muted rounded" />
-          <div className="h-3 w-20 bg-muted rounded" />
+          <div className="h-4 w-32 rounded bg-muted" />
+          <div className="h-3 w-24 rounded bg-muted" />
+          <div className="h-3 w-20 rounded bg-muted" />
         </div>
-        <div className="w-8 h-8 bg-muted rounded" />
+        <div className="h-8 w-8 rounded bg-muted" />
       </div>
       <div className="mt-3 space-y-1.5">
-        <div className="h-3 w-full bg-muted rounded" />
-        <div className="h-3 w-4/5 bg-muted rounded" />
+        <div className="h-3 w-full rounded bg-muted" />
+        <div className="h-3 w-4/5 rounded bg-muted" />
       </div>
     </div>
     <div className="px-4 pb-3">
       <div className="grid grid-cols-2 gap-2">
-        <div className="h-16 bg-muted rounded-lg" />
-        <div className="h-16 bg-muted rounded-lg" />
+        <div className="h-16 rounded-lg bg-muted" />
+        <div className="h-16 rounded-lg bg-muted" />
       </div>
     </div>
-    <div className="px-4 pb-4 pt-2 border-t border-border/50 bg-muted/20">
+    <div className="border-t border-border/50 bg-surface-sunken/55 px-4 pb-4 pt-2">
       <div className="flex gap-1.5">
-        <div className="h-7 w-20 bg-muted rounded-full" />
-        <div className="h-7 w-24 bg-muted rounded-full" />
-        <div className="h-7 w-16 bg-muted rounded-full" />
+        <div className="h-7 w-20 rounded-full bg-muted" />
+        <div className="h-7 w-24 rounded-full bg-muted" />
+        <div className="h-7 w-16 rounded-full bg-muted" />
       </div>
     </div>
   </div>
 );
 
-const PetSitterCardSkeleton = () => (
-  <div className="bg-card rounded-xl border border-border/50 overflow-hidden h-full animate-pulse">
-    <div className="p-4 pb-3">
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full bg-muted shrink-0" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-28 bg-muted rounded" />
-          <div className="h-3 w-24 bg-muted rounded" />
-          <div className="h-3 w-20 bg-muted rounded" />
-        </div>
-        <div className="w-16 h-12 bg-muted rounded-lg" />
+const ServiceCardSkeleton = () => (
+  <div className="h-full animate-pulse rounded-2xl border border-border/60 bg-surface-elevated p-4">
+    <div className="mb-3 flex items-start justify-between gap-2">
+      <div className="space-y-2">
+        <div className="h-4 w-36 rounded bg-muted" />
+        <div className="h-3 w-24 rounded bg-muted" />
       </div>
-      <div className="mt-3 space-y-1.5">
-        <div className="h-3 w-full bg-muted rounded" />
-        <div className="h-3 w-3/4 bg-muted rounded" />
-      </div>
+      <div className="h-6 w-20 rounded-full bg-muted" />
     </div>
-    <div className="px-4 pb-3">
-      <div className="flex gap-1.5">
-        <div className="h-7 w-20 bg-muted rounded-full" />
-        <div className="h-7 w-24 bg-muted rounded-full" />
-        <div className="h-7 w-16 bg-muted rounded-full" />
-      </div>
+    <div className="mb-3 flex gap-1.5">
+      <div className="h-6 w-20 rounded-full bg-muted" />
+      <div className="h-6 w-16 rounded-full bg-muted" />
     </div>
-    <div className="p-4 pt-3 border-t border-border/50 bg-muted/20">
-      <div className="h-8 w-full bg-muted rounded" />
+    <div className="mb-3 space-y-1.5">
+      <div className="h-3 w-full rounded bg-muted" />
+      <div className="h-3 w-4/5 rounded bg-muted" />
+      <div className="h-3 w-3/5 rounded bg-muted" />
+    </div>
+    <div className="mt-3 border-t border-border/50 pt-3">
+      <div className="h-9 rounded bg-muted" />
     </div>
   </div>
 );

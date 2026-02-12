@@ -4,27 +4,46 @@ import path from "node:path";
 const mode = process.argv[2];
 
 const SOURCE_ROOT = "src";
-const INCLUDE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".css"]);
+const DEFAULT_INCLUDE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".css"]);
 const EXCLUDE_PATHS = [/^src\/components\/ui\//];
 
 const scans = {
   palette: {
     description: "palette color classes",
+    includeExtensions: DEFAULT_INCLUDE_EXTENSIONS,
     pattern: /\b(?:bg|text|border|ring|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g,
   },
   arbitrary: {
     description: "forbidden arbitrary color classes",
+    includeExtensions: DEFAULT_INCLUDE_EXTENSIONS,
     pattern: /\b(?:bg|text|border|ring|fill|stroke|from|via|to)-\[[^\]]+\]\b/g,
   },
   gradients: {
     description: "gradient utility classes",
+    includeExtensions: DEFAULT_INCLUDE_EXTENSIONS,
     pattern:
       /\bbg-(?:gradient|linear|radial)-to-(?:t|tr|r|br|b|bl|l|tl)\b|\bbg-gradient-to-(?:t|tr|r|br|b|bl|l|tl)\b|\b(?:from|via|to)-\[[^\]]+\]|\b(?:from|via|to)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white|transparent)(?:\/\d{1,3})?\b/g,
+  },
+  inline: {
+    description: "hardcoded inline color literals",
+    includeExtensions: new Set([".ts", ".tsx", ".js", ".jsx"]),
+    pattern: /(?:hsl|hsla|rgb|rgba)\([^)]+\)|#[0-9a-fA-F]{3,8}\b/g,
+  },
+  status: {
+    description: "direct status class literals",
+    includeExtensions: new Set([".ts", ".tsx", ".js", ".jsx"]),
+    pattern: /\bbadge-(?:critical|urgent|recovering|adopted)\b/g,
+  },
+  motion: {
+    description: "hover/active lift+zoom transforms",
+    includeExtensions: new Set([".ts", ".tsx", ".js", ".jsx"]),
+    pattern:
+      /\b(?:hover|active|group-hover):(?:-)?translate-(?:x|y)-[^\s"'`]+\b|\b(?:hover|active|group-hover):scale-(?:\[[^\]]+\]|\d{2,3})\b/g,
   },
 };
 
 if (!mode || !(mode in scans)) {
-  console.error("Usage: node scripts/style-scan.mjs <palette|arbitrary|gradients>");
+  console.error("Usage: node scripts/style-scan.mjs <palette|arbitrary|gradients|inline|status|motion>");
   process.exit(2);
 }
 
@@ -32,6 +51,7 @@ const root = process.cwd();
 const sourceRootPath = path.join(root, SOURCE_ROOT);
 const results = [];
 const scan = scans[mode];
+const includeExtensions = scan.includeExtensions ?? DEFAULT_INCLUDE_EXTENSIONS;
 
 const normalizePath = (value) => value.split(path.sep).join("/");
 
@@ -46,7 +66,7 @@ function collectFiles(dir, files) {
     if (!entry.isFile()) {
       continue;
     }
-    if (!INCLUDE_EXTENSIONS.has(path.extname(entry.name))) {
+    if (!includeExtensions.has(path.extname(entry.name))) {
       continue;
     }
     const relativePath = normalizePath(path.relative(root, absolutePath));

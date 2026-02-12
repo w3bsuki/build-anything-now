@@ -35,7 +35,7 @@ export function ProfileBadges({ badges }: ProfileBadgesProps) {
 
   if (!badges || badges.length === 0) {
     return (
-      <div className="bg-card rounded-xl border border-border p-8 text-center">
+      <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-8 text-center">
         <Award className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="font-semibold text-foreground mb-2">{t('profile.noBadges')}</h3>
         <p className="text-sm text-muted-foreground">{t('profile.noBadgesDesc')}</p>
@@ -44,7 +44,7 @@ export function ProfileBadges({ badges }: ProfileBadgesProps) {
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border p-6">
+    <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-6">
       <h2 className="font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
         <Award className="w-5 h-5 text-warning" />
         {t('profile.badgesAchievements')}

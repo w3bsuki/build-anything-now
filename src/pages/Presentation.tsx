@@ -1312,7 +1312,7 @@ export default function Presentation() {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full bg-muted hover:bg-muted/80"
+            className="rounded-full bg-surface-sunken hover:bg-surface-sunken/90"
             onClick={() => navigate('/')}
             aria-label="Exit presentation"
           >

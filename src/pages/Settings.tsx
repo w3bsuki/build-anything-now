@@ -1,19 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery } from 'convex/react';
 import { ArrowLeft, Bell, Mail, Globe, DollarSign, Smartphone, Heart, ChevronRight, User, Shield, HelpCircle, FileText, Check } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-
-// Mock data - will be replaced with Convex data
-const mockSettings = {
-  emailNotifications: true,
-  pushNotifications: true,
-  donationReminders: true,
-  marketingEmails: false,
-  currency: 'EUR',
-};
+import { api } from '../../convex/_generated/api';
 
 const supportedLanguages = ['en', 'bg', 'uk', 'ru', 'de'] as const;
 
@@ -25,35 +18,62 @@ const currencies = [
 
 const Settings = () => {
   const { t, i18n } = useTranslation();
-  const [settings, setSettings] = useState(mockSettings);
+  const settings = useQuery(api.settings.getSettings);
+  const updateSettings = useMutation(api.settings.update);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [showCurrencySelector, setShowCurrencySelector] = useState(false);
 
-  const handleToggle = (key: string, value: boolean) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    // TODO: Implement with useMutation(api.settings.update)
-    console.log('Toggle', key, value);
+  useEffect(() => {
+    if (!settings) return;
+    if (settings.language && i18n.language !== settings.language) {
+      void i18n.changeLanguage(settings.language);
+    }
+  }, [settings, i18n]);
+
+  const handleToggle = async (key: 'emailNotifications' | 'pushNotifications' | 'donationReminders' | 'marketingEmails', value: boolean) => {
+    await updateSettings({ [key]: value });
   };
 
-  const handleLanguageChange = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+  const handleLanguageChange = async (langCode: string) => {
+    await i18n.changeLanguage(langCode);
+    await updateSettings({ language: langCode });
     setShowLanguageSelector(false);
   };
 
-  const handleCurrencyChange = (currencyCode: string) => {
-    setSettings(prev => ({ ...prev, currency: currencyCode }));
+  const handleCurrencyChange = async (currencyCode: string) => {
+    await updateSettings({ currency: currencyCode });
     setShowCurrencySelector(false);
-    // TODO: Implement with useMutation(api.settings.update)
   };
+
+  if (settings === undefined) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-8 md:pt-16">
+        <div className="sticky top-0 md:top-14 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70">
+          <div className="flex items-center gap-3 px-4 py-3">
+            <Link
+              to="/account"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-surface-sunken hover:bg-surface-sunken/90 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </Link>
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold text-foreground">{t('settings.title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('common.loading', 'Loading…')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20 md:pb-8 md:pt-16">
       {/* Header */}
-      <div className="sticky top-0 md:top-14 z-40 bg-card/95 backdrop-blur-md border-b border-border">
+      <div className="sticky top-0 md:top-14 z-40 bg-nav-surface/95 backdrop-blur-md border-b border-nav-border/70">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link
             to="/account"
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-surface-sunken hover:bg-surface-sunken/90 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </Link>
@@ -72,7 +92,7 @@ const Settings = () => {
             {t('settings.notifications')}
           </h2>
           
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
             <div className="p-4 flex items-center justify-between border-b border-border">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-muted-foreground" />
@@ -86,7 +106,7 @@ const Settings = () => {
               <Switch
                 id="email-notifications"
                 checked={settings.emailNotifications}
-                onCheckedChange={(checked) => handleToggle('emailNotifications', checked)}
+                onCheckedChange={(checked) => void handleToggle('emailNotifications', checked)}
               />
             </div>
             
@@ -103,7 +123,7 @@ const Settings = () => {
               <Switch
                 id="push-notifications"
                 checked={settings.pushNotifications}
-                onCheckedChange={(checked) => handleToggle('pushNotifications', checked)}
+                onCheckedChange={(checked) => void handleToggle('pushNotifications', checked)}
               />
             </div>
             
@@ -120,7 +140,7 @@ const Settings = () => {
               <Switch
                 id="donation-reminders"
                 checked={settings.donationReminders}
-                onCheckedChange={(checked) => handleToggle('donationReminders', checked)}
+                onCheckedChange={(checked) => void handleToggle('donationReminders', checked)}
               />
             </div>
             
@@ -137,7 +157,7 @@ const Settings = () => {
               <Switch
                 id="marketing-emails"
                 checked={settings.marketingEmails}
-                onCheckedChange={(checked) => handleToggle('marketingEmails', checked)}
+                onCheckedChange={(checked) => void handleToggle('marketingEmails', checked)}
               />
             </div>
           </div>
@@ -152,10 +172,10 @@ const Settings = () => {
             {t('settings.preferences')}
           </h2>
           
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
             <button 
               onClick={() => setShowLanguageSelector(true)}
-              className="w-full p-4 flex items-center justify-between border-b border-border hover:bg-muted/50 transition-colors"
+              className="w-full p-4 flex items-center justify-between border-b border-border hover:bg-surface-sunken/70 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <Globe className="w-5 h-5 text-muted-foreground" />
@@ -171,7 +191,7 @@ const Settings = () => {
             
             <button 
               onClick={() => setShowCurrencySelector(true)}
-              className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors"
+              className="w-full p-4 flex items-center justify-between hover:bg-surface-sunken/70 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <DollarSign className="w-5 h-5 text-muted-foreground" />
@@ -196,10 +216,10 @@ const Settings = () => {
             {t('settings.account')}
           </h2>
           
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
             <Link 
               to="/profile/edit"
-              className="w-full p-4 flex items-center justify-between border-b border-border hover:bg-muted/50 transition-colors"
+              className="w-full p-4 flex items-center justify-between border-b border-border hover:bg-surface-sunken/70 transition-colors"
             >
               <div className="flex items-center gap-3">
                 <User className="w-5 h-5 text-muted-foreground" />
@@ -208,7 +228,7 @@ const Settings = () => {
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </Link>
             
-            <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+            <button className="w-full p-4 flex items-center justify-between hover:bg-surface-sunken/70 transition-colors">
               <div className="flex items-center gap-3">
                 <Shield className="w-5 h-5 text-muted-foreground" />
                 <span className="font-medium text-foreground">{t('settings.privacySecurity')}</span>
@@ -227,21 +247,31 @@ const Settings = () => {
             {t('settings.support')}
           </h2>
           
-          <div className="bg-card rounded-xl border border-border overflow-hidden">
-            <button className="w-full p-4 flex items-center justify-between border-b border-border hover:bg-muted/50 transition-colors">
+          <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs overflow-hidden">
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="w-full p-4 flex items-center justify-between border-b border-border opacity-70 cursor-not-allowed"
+            >
               <div className="flex items-center gap-3">
                 <HelpCircle className="w-5 h-5 text-muted-foreground" />
                 <span className="font-medium text-foreground">{t('settings.helpCenter')}</span>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">{t('common.comingSoon', 'Coming soon')}</span>
             </button>
             
-            <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="w-full p-4 flex items-center justify-between opacity-70 cursor-not-allowed"
+            >
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5 text-muted-foreground" />
                 <span className="font-medium text-foreground">{t('settings.termsPrivacy')}</span>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">{t('common.comingSoon', 'Coming soon')}</span>
             </button>
           </div>
         </div>

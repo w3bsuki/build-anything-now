@@ -5,9 +5,11 @@ import { api } from '../../convex/_generated/api';
 import { CampaignCard } from '@/components/CampaignCard';
 import { FilterPills } from '@/components/FilterPills';
 import { CampaignCardSkeleton } from '@/components/skeletons/CardSkeleton';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { MobilePageHeader } from '@/components/MobilePageHeader';
+import { PageSection } from '@/components/layout/PageSection';
+import { PageShell } from '@/components/layout/PageShell';
+import { SectionHeader } from '@/components/layout/SectionHeader';
+import { StickySegmentRail } from '@/components/layout/StickySegmentRail';
 import { TrendingUp, CheckCircle, Megaphone } from 'lucide-react';
 import type { Campaign } from '@/types';
 
@@ -16,7 +18,6 @@ type CampaignFilter = 'all' | 'trending' | 'completed' | 'initiatives';
 const Campaigns = () => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<CampaignFilter>('all');
-  const [showNearbyOnly, setShowNearbyOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch campaigns from Convex
@@ -50,22 +51,43 @@ const Campaigns = () => {
   const completedCampaigns = campaigns.filter((c) => c.current >= c.goal);
 
   const getFilteredCampaigns = () => {
+    const query = searchQuery.trim().toLowerCase();
+    const withSearch = (list: (Campaign & { campaignType: 'rescue' | 'initiative' })[]) =>
+      query.length === 0
+        ? list
+        : list.filter((campaign) =>
+            campaign.title.toLowerCase().includes(query) ||
+            campaign.description.toLowerCase().includes(query),
+          );
+
     switch (filter) {
       case 'trending':
-        return trendingCampaigns;
+        return withSearch(trendingCampaigns);
       case 'completed':
-        return completedCampaigns;
+        return withSearch(completedCampaigns);
       case 'initiatives':
-        return initiativeCampaigns;
+        return withSearch(initiativeCampaigns);
       default:
-        return campaigns;
+        return withSearch(campaigns);
     }
   };
 
   const filteredCampaigns = getFilteredCampaigns();
+  const filteredTrendingCampaigns = trendingCampaigns.filter((campaign) =>
+    searchQuery.trim().length === 0
+      ? true
+      : campaign.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
+        campaign.description.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+  );
+  const filteredInitiativeCampaigns = initiativeCampaigns.filter((campaign) =>
+    searchQuery.trim().length === 0
+      ? true
+      : campaign.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) ||
+        campaign.description.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+  );
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8 md:pt-16">
+    <PageShell>
       {/* Mobile Header with Search */}
       <MobilePageHeader
         title={t('nav.campaigns')}
@@ -83,24 +105,22 @@ const Campaigns = () => {
       </MobilePageHeader>
 
       {/* Desktop Search + Filters */}
-      <div className="hidden md:block sticky top-14 bg-background/95 backdrop-blur-md z-30 py-2">
-        <div className="container mx-auto px-4 space-y-2">
-          <FilterPills
-            options={filterOptions}
-            selected={filter}
-            onSelect={(id) => setFilter(id as CampaignFilter)}
-          />
-        </div>
-      </div>
+      <StickySegmentRail className="py-3">
+        <FilterPills
+          options={filterOptions}
+          selected={filter}
+          onSelect={(id) => setFilter(id as CampaignFilter)}
+        />
+      </StickySegmentRail>
 
       {/* Mission initiatives - highlighted for roadmap funding track */}
-      {(filter === 'all' || filter === 'initiatives') && (isLoading || initiativeCampaigns.length > 0) && (
-        <section className="py-4">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.initiatives', 'Pawtreon Initiatives')}</h2>
-              {!isLoading && <span className="text-xs text-muted-foreground">({initiativeCampaigns.length})</span>}
-            </div>
+      {(filter === 'all' || filter === 'initiatives') && (isLoading || filteredInitiativeCampaigns.length > 0) && (
+        <PageSection contained={false}>
+          <div className="mx-auto w-full max-w-3xl px-4">
+            <SectionHeader
+              title={t('campaigns.initiatives', 'Pawtreon Initiatives')}
+              count={!isLoading ? filteredInitiativeCampaigns.length : undefined}
+            />
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
@@ -111,7 +131,7 @@ const Campaigns = () => {
                   </div>
                 ))
               ) : (
-                initiativeCampaigns.map((campaign) => (
+                filteredInitiativeCampaigns.map((campaign) => (
                   <div key={campaign.id} className="w-64 flex-shrink-0">
                     <CampaignCard campaign={campaign} />
                   </div>
@@ -119,28 +139,17 @@ const Campaigns = () => {
               )}
             </div>
           </div>
-        </section>
+        </PageSection>
       )}
 
       {/* Featured rescue campaigns - Horizontal Scroll (only when showing all) */}
-      {filter === 'all' && (isLoading || trendingCampaigns.length > 0) && (
-        <section className="py-4">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="text-sm font-semibold text-foreground">{t('campaigns.featuredRescue', 'Featured Rescue Campaigns')}</h2>
-              {!isLoading && <span className="text-xs text-muted-foreground">({trendingCampaigns.length})</span>}
-              <div className="flex items-center gap-2 ml-auto">
-                <Switch
-                  id="nearby-campaigns-filter"
-                  checked={showNearbyOnly}
-                  onCheckedChange={setShowNearbyOnly}
-                  className="scale-90"
-                />
-                <Label htmlFor="nearby-campaigns-filter" className="text-xs font-medium cursor-pointer whitespace-nowrap">
-                  {t('campaigns.nearbyOnly')}
-                </Label>
-              </div>
-            </div>
+      {filter === 'all' && (isLoading || filteredTrendingCampaigns.length > 0) && (
+        <PageSection contained={false}>
+          <div className="mx-auto w-full max-w-3xl px-4">
+            <SectionHeader
+              title={t('campaigns.featuredRescue', 'Featured Rescue Campaigns')}
+              count={!isLoading ? filteredTrendingCampaigns.length : undefined}
+            />
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 px-4 pb-2" style={{ width: 'max-content' }}>
@@ -151,7 +160,7 @@ const Campaigns = () => {
                   </div>
                 ))
               ) : (
-                trendingCampaigns.map((campaign) => (
+                filteredTrendingCampaigns.map((campaign) => (
                   <div key={campaign.id} className="w-64 flex-shrink-0">
                     <CampaignCard campaign={campaign} />
                   </div>
@@ -159,18 +168,23 @@ const Campaigns = () => {
               )}
             </div>
           </div>
-        </section>
+        </PageSection>
       )}
 
       {/* All Campaigns */}
-      <section className="py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-2 mb-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              {filter === 'all' ? t('campaigns.allCampaigns') : filter === 'trending' ? t('campaigns.trending') : t('campaigns.completed')}
-            </h2>
-              {!isLoading && <span className="text-xs text-muted-foreground">({filteredCampaigns.length})</span>}
-            </div>
+      <PageSection>
+          <SectionHeader
+            title={
+              filter === 'all'
+                ? t('campaigns.allCampaigns')
+                : filter === 'trending'
+                  ? t('campaigns.trending')
+                  : filter === 'initiatives'
+                    ? t('campaigns.initiatives', 'Pawtreon Initiatives')
+                    : t('campaigns.completed')
+            }
+            count={!isLoading ? filteredCampaigns.length : undefined}
+          />
           {isLoading ? (
             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -184,13 +198,12 @@ const Campaigns = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated py-12 text-center text-sm text-muted-foreground shadow-xs">
               {t('campaigns.noResults', { filter })}
             </div>
           )}
-        </div>
-      </section>
-    </div>
+      </PageSection>
+    </PageShell>
   );
 };
 

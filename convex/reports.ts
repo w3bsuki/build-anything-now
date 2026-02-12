@@ -187,6 +187,8 @@ export const create = mutation({
     details: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const reporter = await requireUser(ctx);
+
     const caseDoc = await ctx.db.get(args.caseId);
     if (!caseDoc) {
       throw new Error("Case not found");
@@ -197,39 +199,54 @@ export const create = mutation({
       throw new Error("Details are too long (max 2000 characters)");
     }
 
-    const identity = await ctx.auth.getUserIdentity();
-    let reporterId: typeof caseDoc.userId | undefined;
-    let reporterClerkId: string | undefined;
+    const now = Date.now();
+    const day = Math.floor(now / (24 * 60 * 60 * 1000));
+    const quota = 10;
 
-    if (identity) {
-      reporterClerkId = identity.subject;
-      const user = await ctx.db
-        .query("users")
-        .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-        .unique();
-      reporterId = user?._id;
+    const existingLimitRow = await ctx.db
+      .query("reportRateLimits")
+      .withIndex("by_clerk_day", (q) => q.eq("clerkId", reporter.clerkId).eq("day", day))
+      .unique();
+
+    const currentCount = existingLimitRow?.count ?? 0;
+    if (currentCount + 1 > quota) {
+      throw new Error("Daily report limit reached. Please try again tomorrow.");
+    }
+
+    if (existingLimitRow) {
+      await ctx.db.patch(existingLimitRow._id, {
+        count: currentCount + 1,
+        updatedAt: now,
+      });
+    } else {
+      await ctx.db.insert("reportRateLimits", {
+        clerkId: reporter.clerkId,
+        day,
+        count: 1,
+        updatedAt: now,
+      });
     }
 
     const createdId = await ctx.db.insert("reports", {
       caseId: args.caseId,
       reason: args.reason,
       details: details || undefined,
-      reporterId,
-      reporterClerkId,
+      reporterId: reporter._id,
+      reporterClerkId: reporter.clerkId,
       status: "open",
-      createdAt: Date.now(),
+      createdAt: now,
     });
 
-    const actor = await requireUser(ctx).catch(() => null);
     await ctx.db.insert("auditLogs", {
-      actorId: actor?._id,
+      actorId: reporter._id,
       entityType: "report",
       entityId: String(createdId),
       action: "report.created",
       details: `reason=${args.reason}`,
-      createdAt: Date.now(),
+      createdAt: now,
     });
 
     return createdId;
   },
 });
+

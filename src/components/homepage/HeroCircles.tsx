@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { PawPrint } from 'lucide-react';
 import { AddCaseCircle } from './HeroAvatar';
 import { StoryViewer, type StoryGroup } from './StoryViewer';
 import { cn } from '@/lib/utils';
@@ -23,25 +24,26 @@ interface HeroCirclesProps {
 
 function HeroAvatarSkeleton() {
   return (
-    <div className="flex flex-col items-center gap-1 shrink-0 animate-pulse">
-      <div className="size-16 rounded-full bg-muted" />
-      <div className="w-12 h-3 rounded bg-muted" />
+    <div className="flex shrink-0 flex-col items-center gap-1 animate-pulse">
+      <div className="size-14 rounded-full border border-border/55 bg-surface-sunken" />
+      <div className="h-3 w-12 rounded bg-muted" />
     </div>
   );
 }
 
-function StoryCircle({
-  story,
-  onClick,
-}: {
-  story: UrgentStoryCircleItem;
-  onClick: () => void;
-}) {
+function StoryCircle({ story, onClick }: { story: UrgentStoryCircleItem; onClick: () => void }) {
   const displayName = story.title.length > 11 ? `${story.title.slice(0, 10)}…` : story.title;
 
   return (
-    <button onClick={onClick} className="flex flex-col items-center gap-1 shrink-0">
-      <div className="size-16 rounded-full border-2 border-primary/45 bg-surface-elevated p-0.5">
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex shrink-0 flex-col items-center gap-1 rounded-xl',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+      )}
+    >
+      <div className="size-14 rounded-full border-2 border-primary/85 bg-surface p-0.5 ring-1 ring-background/90">
         {story.imageUrl ? (
           <img
             src={story.imageUrl}
@@ -50,12 +52,12 @@ function StoryCircle({
             loading="lazy"
           />
         ) : (
-          <div className="size-full rounded-full bg-muted flex items-center justify-center text-lg">
-            🐾
+          <div className="flex size-full items-center justify-center rounded-full bg-surface-sunken">
+            <PawPrint className="size-5 text-muted-foreground/45" />
           </div>
         )}
       </div>
-      <span className="text-[11px] text-muted-foreground text-center line-clamp-1 w-16">
+      <span className="w-14 line-clamp-1 text-center text-xs font-medium leading-none text-foreground/88">
         {displayName}
       </span>
     </button>
@@ -85,20 +87,14 @@ export function HeroCircles({ stories, isLoading, className }: HeroCirclesProps)
   return (
     <>
       <div className={cn('overflow-x-auto scrollbar-hide', className)}>
-        <div className="flex gap-3 px-4 py-3" style={{ width: 'max-content' }}>
+        <div className="flex w-max gap-3 px-4 py-2.5">
           <AddCaseCircle />
 
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, i) => <HeroAvatarSkeleton key={i} />)
-          ) : stories.length > 0 ? (
-            stories.map((story) => (
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, i) => <HeroAvatarSkeleton key={i} />)
+            : stories.map((story) => (
               <StoryCircle key={story.id} story={story} onClick={() => handleStoryClick(story)} />
-            ))
-          ) : (
-            <div className="flex items-center h-16 text-sm text-muted-foreground px-2">
-              No urgent stories yet
-            </div>
-          )}
+            ))}
         </div>
       </div>
 
