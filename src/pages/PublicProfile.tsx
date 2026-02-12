@@ -65,6 +65,7 @@ const PublicProfile = () => {
     api.cases.listByUserWithImages,
     actualUserId ? { userId: actualUserId } : "skip"
   );
+  const savedCaseItems = (savedCases ?? []).filter((caseItem) => caseItem !== null);
 
   const isLoading = profile === undefined;
 
@@ -410,8 +411,8 @@ const PublicProfile = () => {
           </TabsContent>
 
           <TabsContent value="saved" className="mt-4 space-y-3">
-            {savedCases && savedCases.length > 0 ? (
-              <ProfileCases cases={savedCases} />
+            {savedCaseItems.length > 0 ? (
+              <ProfileCases cases={savedCaseItems} />
             ) : (
               <div className="bg-surface-elevated rounded-2xl border border-border/60 shadow-xs p-8 text-center">
                 <Bookmark className="w-10 h-10 text-muted-foreground mx-auto mb-3" />

@@ -385,3 +385,13 @@ Template:
 - **Decision:** Require an authenticated identity to create a case report and enforce a per-identity daily quota (default: 10 reports/UTC day), stored server-side in Convex.
 - **Rationale:** Prevents spam storms, preserves moderation throughput, and keeps the reporting system credible.
 - **Consequences / follow-ups:** Add a lightweight rate-limit table and enforce it inside `reports.create`. Provide a user-friendly error when the quota is exceeded.
+
+### 2026-02-12 — Duplicate detection v1 uses client perceptual hashes + server similarity checks
+- **Status:** decided
+- **Context:** Exact `sha256` duplicate checks only detect byte-identical uploads and miss lightly transformed image reuse (resize/compression/crop variants), which weakens trust moderation coverage.
+- **Decision:**
+  - Compute perceptual image hashes on case creation client-side (`pHash` + `dHash`) and send them as optional metadata tied to uploaded storage IDs.
+  - Store perceptual hashes in `imageFingerprints` with bucket keys for candidate lookup.
+  - Run server-side Hamming-distance matching at create time (conservative threshold) and treat matches as review signals only (`riskLevel: high` + duplicate report + audit log), not auto-rejection.
+- **Rationale:** Extends duplicate detection to near-duplicates without adding image decode dependencies to Convex runtime, while preserving human-in-the-loop moderation.
+- **Consequences / follow-ups:** Keep thresholds/bucket strategy tunable from production telemetry; revisit false-positive/false-negative rates after moderation volume data.

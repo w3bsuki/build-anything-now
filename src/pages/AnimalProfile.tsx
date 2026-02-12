@@ -13,6 +13,7 @@ import { DonationFlowDrawer } from '@/components/donations/DonationFlowDrawer';
 import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw, X, CircleCheck, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCaseShareUrl } from '@/lib/shareUrls';
+import { trackAnalytics } from '@/lib/analytics';
 import { format } from 'date-fns';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
@@ -75,6 +76,8 @@ const AnimalProfile = () => {
   const [donateOpen, setDonateOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const locale = i18n.language;
+  const caseId = id as Id<'cases'> | undefined;
   const [donationReturn, setDonationReturn] = useState<'success' | 'cancelled' | null>(null);
 
   useEffect(() => {
@@ -87,6 +90,13 @@ const AnimalProfile = () => {
     const next = params.toString();
     navigate({ pathname: location.pathname, search: next ? '?' + next : '' }, { replace: true });
   }, [location.pathname, location.search, navigate]);
+
+  useEffect(() => {
+    if (donationReturn !== 'success' || !caseId) return;
+    trackAnalytics('donation_completed', {
+      caseId: String(caseId),
+    });
+  }, [caseId, donationReturn]);
 
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -103,8 +113,6 @@ const AnimalProfile = () => {
   const [isSubmittingVerification, setIsSubmittingVerification] = useState(false);
   const [isSubmittingEndorsement, setIsSubmittingEndorsement] = useState(false);
 
-  const locale = i18n.language;
-  const caseId = id as Id<'cases'> | undefined;
   const me = useQuery(api.users.me);
   const caseData = useQuery(api.cases.getUiForLocale, caseId ? { id: caseId, locale } : 'skip');
   const communityVerificationSummary = useQuery(
@@ -128,6 +136,15 @@ const AnimalProfile = () => {
       setPendingVerificationStatus(caseData.verificationStatus);
     }
   }, [caseData?.verificationStatus]);
+
+  useEffect(() => {
+    if (!caseData?.id) return;
+    trackAnalytics('case_viewed', {
+      caseId: String(caseData.id),
+      verificationStatus: caseData.verificationStatus ?? 'unverified',
+      lifecycleStage: caseData.lifecycleStage,
+    });
+  }, [caseData?.id, caseData?.lifecycleStage, caseData?.verificationStatus]);
 
   const uploadImages = async (files: File[]): Promise<Id<'_storage'>[]> => {
     const uploadedIds: Id<'_storage'>[] = [];

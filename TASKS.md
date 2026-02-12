@@ -30,6 +30,22 @@
   - [x] Stripe receipt URL stored on completion (webhook) and surfaced in history.
   - AC: Users receive clear post-checkout state and receipt visibility after redirect.
 
+- [x] **RUN 2 FOUNDATIONS: Follow feed + testing + analytics + strict TS (batch 1)**
+  - [x] Added `home.getFollowingFeed` with cursor pagination and wired Home `Following` segment + empty state.
+  - [x] Replaced `/community/followed` preview with live followed-creators thread list.
+  - [x] Donation history surfaces now show `View Receipt` (when URL exists) or `Receipt ID` fallback.
+  - [x] Added Vitest + `convex-test` baseline (13 test files, passing).
+  - [x] Added PostHog bootstrap (`respect_dnt: true`, `persistence: localStorage`) and critical event tracking hooks.
+  - [x] Enabled `strictNullChecks` + `noImplicitAny` in `tsconfig.app.json` and resolved resulting app type errors.
+  - AC: Followed feed and receipt UX are production-wired, critical test baseline exists, analytics bootstrap is active when env vars are set, and app typecheck stays clean under strict batch-1 flags.
+
+- [x] **TRUST: Duplicate detection v1 (perceptual similarity)**
+  - [x] Added optional `perceptualHashes` input on `cases.create` and persisted `pHash`/`dHash` fingerprints.
+  - [x] Added bucketed Hamming-distance matching to flag likely transformed/reused images.
+  - [x] Duplicate reports/audit logs now include perceptual match evidence payload.
+  - [x] Added Convex tests for perceptual match + non-match paths.
+  - AC: Similar images (not only byte-identical uploads) are risk-flagged for moderation review.
+
 - [x] **PARTNER OPS: Clinic claim admin queue**
   - [x] Admin review queue wired (`/admin/clinic-claims`).
   - [x] Approve/reject with rejection reason + audit log.
@@ -98,9 +114,9 @@
 
 ## Backlog (Post Current Sprint)
 
-- [ ] Follow graph + following feed
+- [x] Follow graph + following feed
 - [ ] Recurring support model
 - [ ] Notification delivery channels (push/email) + batching/throttling
-- [ ] Duplicate detection/pHash (v0 sha256 exact-match shipped; similarity pending)
+- [x] Duplicate detection/pHash (sha256 + perceptual similarity shipped)
 - [ ] Verification ladder automation + revocation UI
 

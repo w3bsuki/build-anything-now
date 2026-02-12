@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import { trackAnalytics } from '@/lib/analytics';
 
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
@@ -63,6 +64,10 @@ export function ReportConcernSheet({
         caseId: caseId as Id<'cases'>,
         reason,
         details: details.trim() ? details.trim() : undefined,
+      });
+      trackAnalytics('report_submitted', {
+        caseId,
+        reason,
       });
       toast({
         title: t('report.thanksTitle', 'Thanks for helping'),

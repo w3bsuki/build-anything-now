@@ -428,6 +428,58 @@ export const listThreads = query({
   },
 });
 
+export const listFollowedThreads = query({
+  args: {
+    cursor: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await optionalUser(ctx);
+    const limit = Math.min(Math.max(args.limit ?? 20, 1), 60);
+
+    if (!viewer) {
+      return {
+        threads: [],
+        hasMore: false,
+        nextCursor: null,
+      };
+    }
+
+    const follows = await ctx.db
+      .query("follows")
+      .withIndex("by_follower", (q) => q.eq("followerId", viewer._id))
+      .collect();
+    const followingIds = new Set(follows.map((entry) => String(entry.followingId)));
+
+    if (followingIds.size === 0) {
+      return {
+        threads: [],
+        hasMore: false,
+        nextCursor: null,
+      };
+    }
+
+    const posts = await ctx.db.query("communityPosts").withIndex("by_created").order("desc").take(300);
+    const filtered = posts.filter((post) => {
+      if (post.isDeleted) return false;
+      if (!followingIds.has(String(post.userId))) return false;
+      if (args.cursor && post.createdAt >= args.cursor) return false;
+      return true;
+    });
+
+    const page = filtered.slice(0, limit);
+    const hasMore = filtered.length > limit;
+    const nextCursor = hasMore && page.length > 0 ? page[page.length - 1].createdAt : null;
+    const threads = await Promise.all(page.map((post) => mapThread(ctx, post, viewer._id)));
+
+    return {
+      threads,
+      hasMore,
+      nextCursor,
+    };
+  },
+});
+
 export const getThread = query({
   args: { id: v.id("communityPosts") },
   handler: async (ctx, args) => {

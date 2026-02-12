@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from 'convex/react';
 import { ArrowLeft, Bell, CheckCheck, Heart, Award, AlertCircle, Megaphone, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { trackAnalytics } from '@/lib/analytics';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 
@@ -67,6 +68,12 @@ const Notifications = () => {
     if (!notification.read) {
       await handleMarkRead(notification._id);
     }
+
+    trackAnalytics('notification_opened', {
+      notificationId: String(notification._id),
+      type: notification.type,
+      hasCaseId: Boolean(notification.caseId),
+    });
 
     if (notification.caseId) {
       navigate(`/case/${notification.caseId}`);

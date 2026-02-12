@@ -129,6 +129,8 @@
     "nearYou": "Наблизо",
     "adoption": "Осиновяване",
     "adoptionInCity": "Осиновяване в {{city}}",
+    "followingTab": "Следвани",
+    "followingEmpty": "Последвайте спасители и клиники, за да виждате техните случаи тук",
     "searchResultsFor": "Резултати за \"{{query}}\"",
     "noSearchResults": "Няма случаи за \"{{query}}\"",
     "noMatches": "Няма съвпадащи случаи",
@@ -225,6 +227,8 @@
     "feedTab": "Поток",
     "followed": "Следвани",
     "followedTab": "Следвани",
+    "followedSubtitle": "Последни спасителни и общностни теми от авторите, които следвате.",
+    "followedEmpty": "Последвайте автори, за да виждате техните теми тук.",
     "messages": "Съобщения",
     "messagesTab": "Чат",
     "volunteers": "Доброволци",
@@ -362,6 +366,9 @@
     "detected": "Забелязахме, че сте от {{country}}. Смяна на език?",
     "selectLanguage": "Изберете език",
     "suggested": "Препоръчан"
+  },
+  "analytics": {
+    "cookieConsentPlaceholder": "Преди EU пускане са нужни контроли за съгласие за бисквитки."
   },
   "currencies": {
     "BGN": "Български лев (BGN)",
@@ -658,6 +665,8 @@
   },
     "donations": {
     "openReceipt": "Отвори разписката",
+    "viewReceipt": "Виж разписка",
+    "receiptId": "Номер на разписка",
     "closed": "Даренията са затворени",
     "gatedNote": "Даренията са временно недостъпни за този случай.",
     "return": {

@@ -55,6 +55,7 @@ const IndexV2 = () => {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const { status: locationStatus, location, requestLocation } = useUserLocation();
+  const isFollowingIntent = intent === 'following';
   const hasLocation = locationStatus === 'granted' && Boolean(location);
   const near = intent === 'nearby' && hasLocation
     ? { lat: location!.lat, lng: location!.lng, radiusKm }
@@ -72,18 +73,34 @@ const IndexV2 = () => {
     setIsLoadingMore(false);
   }, [intent, city, radiusKm, locationStatus, location?.lat, location?.lng, debouncedSearch, i18n.language]);
 
-  const initialFeed = useQuery(api.home.getLandingFeed, {
-    locale: i18n.language,
-    intent,
-    city,
-    near,
-    search: debouncedSearch || undefined,
-    limit: PAGE_SIZE,
-  });
-
-  const paginatedFeed = useQuery(
+  const initialLandingFeed = useQuery(
     api.home.getLandingFeed,
-    loadCursor
+    isFollowingIntent
+      ? 'skip'
+      : {
+        locale: i18n.language,
+        intent,
+        city,
+        near,
+        search: debouncedSearch || undefined,
+        limit: PAGE_SIZE,
+      }
+  );
+
+  const initialFollowingFeed = useQuery(
+    api.home.getFollowingFeed,
+    isFollowingIntent
+      ? {
+        locale: i18n.language,
+        search: debouncedSearch || undefined,
+        limit: PAGE_SIZE,
+      }
+      : 'skip'
+  );
+
+  const paginatedLandingFeed = useQuery(
+    api.home.getLandingFeed,
+    loadCursor && !isFollowingIntent
       ? {
         locale: i18n.language,
         intent,
@@ -96,16 +113,28 @@ const IndexV2 = () => {
       : 'skip'
   );
 
-  useEffect(() => {
-    if (!initialFeed) return;
-    setHasLoadedInitialFeed(true);
-    setAllCases((initialFeed.casesPage?.items ?? []) as AnimalCase[]);
-    setHeroCase((initialFeed.heroCase ?? null) as AnimalCase | null);
-    setStories((initialFeed.stories ?? []) as UrgentStoryCircleItem[]);
-    setCityCounts((initialFeed.cityCounts ?? { sofia: 0, varna: 0, plovdiv: 0 }) as Record<CityFilter, number>);
-    setUnreadNotifications(initialFeed.unreadCounts?.notifications ?? 0);
+  const paginatedFollowingFeed = useQuery(
+    api.home.getFollowingFeed,
+    loadCursor && isFollowingIntent
+      ? {
+        locale: i18n.language,
+        search: debouncedSearch || undefined,
+        cursor: loadCursor,
+        limit: PAGE_SIZE,
+      }
+      : 'skip'
+  );
 
-    const featuredInitiativeRaw = initialFeed.featuredInitiative ?? null;
+  useEffect(() => {
+    if (!initialLandingFeed || isFollowingIntent) return;
+    setHasLoadedInitialFeed(true);
+    setAllCases((initialLandingFeed.casesPage?.items ?? []) as AnimalCase[]);
+    setHeroCase((initialLandingFeed.heroCase ?? null) as AnimalCase | null);
+    setStories((initialLandingFeed.stories ?? []) as UrgentStoryCircleItem[]);
+    setCityCounts((initialLandingFeed.cityCounts ?? { sofia: 0, varna: 0, plovdiv: 0 }) as Record<CityFilter, number>);
+    setUnreadNotifications(initialLandingFeed.unreadCounts?.notifications ?? 0);
+
+    const featuredInitiativeRaw = initialLandingFeed.featuredInitiative ?? null;
     const nextFeaturedInitiative: Campaign | null = featuredInitiativeRaw
       ? {
         id: featuredInitiativeRaw.id,
@@ -120,23 +149,42 @@ const IndexV2 = () => {
       : null;
     setFeaturedInitiative(nextFeaturedInitiative);
 
-    setHasMore(Boolean(initialFeed.casesPage?.hasMore));
-    setNextCursor(initialFeed.casesPage?.nextCursor ?? null);
+    setHasMore(Boolean(initialLandingFeed.casesPage?.hasMore));
+    setNextCursor(initialLandingFeed.casesPage?.nextCursor ?? null);
     setIsLoadingMore(false);
     setLoadCursor(null);
-  }, [initialFeed]);
+  }, [initialLandingFeed, isFollowingIntent]);
 
   useEffect(() => {
-    if (!paginatedFeed || !isLoadingMore) return;
+    if (!initialFollowingFeed || !isFollowingIntent) return;
+    setHasLoadedInitialFeed(true);
+    setAllCases((initialFollowingFeed.casesPage?.items ?? []) as AnimalCase[]);
+    setHeroCase(null);
+    setStories([]);
+    setCityCounts({ sofia: 0, varna: 0, plovdiv: 0 });
+    setUnreadNotifications(initialFollowingFeed.unreadCounts?.notifications ?? 0);
+    setFeaturedInitiative(null);
+    setHasMore(Boolean(initialFollowingFeed.casesPage?.hasMore));
+    setNextCursor(initialFollowingFeed.casesPage?.nextCursor ?? null);
+    setIsLoadingMore(false);
+    setLoadCursor(null);
+  }, [initialFollowingFeed, isFollowingIntent]);
+
+  useEffect(() => {
+    if (!isLoadingMore) return;
+
+    const paginatedFeed = isFollowingIntent ? paginatedFollowingFeed : paginatedLandingFeed;
+    if (!paginatedFeed) return;
+
     const incoming = (paginatedFeed.casesPage?.items ?? []) as AnimalCase[];
     setAllCases((prev) => [...prev, ...incoming]);
     setHasMore(Boolean(paginatedFeed.casesPage?.hasMore));
     setNextCursor(paginatedFeed.casesPage?.nextCursor ?? null);
     setLoadCursor(null);
     setIsLoadingMore(false);
-  }, [paginatedFeed, isLoadingMore]);
+  }, [isFollowingIntent, paginatedFollowingFeed, paginatedLandingFeed, isLoadingMore]);
 
-  const feedLoading = !hasLoadedInitialFeed && initialFeed === undefined;
+  const feedLoading = !hasLoadedInitialFeed && (isFollowingIntent ? initialFollowingFeed : initialLandingFeed) === undefined;
 
   const loadMore = useCallback(() => {
     if (!hasMore || !nextCursor || isLoadingMore) return;
@@ -167,7 +215,7 @@ const IndexV2 = () => {
 
   const showDistance = intent === 'nearby' && hasLocation;
   const needsLocation = intent === 'nearby' && !hasLocation;
-  const showStories = feedLoading || stories.length > 0;
+  const showStories = !isFollowingIntent && (feedLoading || stories.length > 0);
   const hasActiveMore = Boolean(city) || (showDistance && radiusKm !== DEFAULT_RADIUS_KM);
   const caseContext = intent === 'adoption' ? 'adoption' : 'feed';
 
@@ -210,6 +258,10 @@ const IndexV2 = () => {
   }, [city, t]);
 
   const sectionTitle = useMemo(() => {
+    if (intent === 'following') {
+      return t('home.followingTab', 'Following');
+    }
+
     if (intent === 'nearby') {
       return t('home.nearYou', 'Near You');
     }
@@ -236,6 +288,7 @@ const IndexV2 = () => {
           intent={intent}
           onIntentChange={handleIntentChange}
           hasActiveMore={hasActiveMore}
+          showMore={!isFollowingIntent}
           onOpenMore={() => setIsMoreOpen(true)}
         />
       </HomeHeaderV2>
@@ -246,6 +299,7 @@ const IndexV2 = () => {
           intent={intent}
           onIntentChange={handleIntentChange}
           hasActiveMore={hasActiveMore}
+          showMore={!isFollowingIntent}
           onOpenMore={() => setIsMoreOpen(true)}
         />
       </StickySegmentRail>
@@ -359,7 +413,9 @@ const IndexV2 = () => {
                 <p className="text-sm text-muted-foreground">
                   {debouncedSearch
                     ? t('home.noSearchResults', 'No cases found for "{{query}}"', { query: debouncedSearch })
-                    : t('home.noMatches', 'No cases match this filter')}
+                    : intent === 'following'
+                      ? t('home.followingEmpty', 'Follow rescuers and clinics to see their cases here')
+                      : t('home.noMatches', 'No cases match this filter')}
                 </p>
               </div>
             ) : null}

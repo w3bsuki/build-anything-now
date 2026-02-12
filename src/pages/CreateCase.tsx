@@ -9,11 +9,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PageSection } from '@/components/layout/PageSection';
 import { PageShell } from '@/components/layout/PageShell';
-import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
+import { trackAnalytics } from '@/lib/analytics';
+import { computePerceptualHashes } from '@/lib/imageHash';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
+
+type CaseImageHashInput = {
+    storageId: Id<"_storage">;
+    pHash: string;
+    dHash: string;
+};
 
 const CreateCase = () => {
     const { t, i18n } = useTranslation();
@@ -146,6 +154,27 @@ const CreateCase = () => {
         return uploadedIds;
     };
 
+    const buildCaseImageHashes = async (
+        files: File[],
+        storageIds: Id<"_storage">[],
+    ): Promise<CaseImageHashInput[] | undefined> => {
+        if (files.length === 0 || files.length !== storageIds.length) {
+            return undefined;
+        }
+
+        try {
+            const hashes = await Promise.all(files.map((file) => computePerceptualHashes(file)));
+            return storageIds.map((storageId, index) => ({
+                storageId,
+                pHash: hashes[index].pHash,
+                dHash: hashes[index].dHash,
+            }));
+        } catch (error) {
+            console.warn('Failed to compute perceptual hashes for case images:', error);
+            return undefined;
+        }
+    };
+
     const handleSubmit = async () => {
         const error = validateStep(steps.length);
         if (error) {
@@ -162,8 +191,10 @@ const CreateCase = () => {
         try {
             // Upload images first
             let imageIds: Id<"_storage">[] = [];
+            let perceptualHashes: CaseImageHashInput[] | undefined;
             if (formData.images.length > 0) {
                 imageIds = await uploadImages(formData.images);
+                perceptualHashes = await buildCaseImageHashes(formData.images, imageIds);
             }
 
             // Parse foundAt to timestamp (or use now)
@@ -177,7 +208,7 @@ const CreateCase = () => {
                 : undefined;
 
             // Create the case
-            const caseId = await createCase({
+            const createCaseArgs: Parameters<typeof createCase>[0] & { perceptualHashes?: CaseImageHashInput[] } = {
                 type: formData.type as "critical" | "urgent" | "recovering" | "adopted",
                 category: formData.category as "surgery" | "shelter" | "food" | "medical" | "rescue",
                 language: i18n.language,
@@ -193,10 +224,23 @@ const CreateCase = () => {
                 broughtToClinicAt: broughtToClinicAtTimestamp,
                 fundraisingGoal: Number(formData.fundraisingGoal),
                 currency: formData.currency,
-            });
+            };
+
+            if (perceptualHashes && perceptualHashes.length > 0) {
+                createCaseArgs.perceptualHashes = perceptualHashes;
+            }
+
+            const caseId = await createCase(createCaseArgs);
 
             setCreatedCaseId(caseId);
             setIsSubmitted(true);
+            trackAnalytics('case_created', {
+                caseId: String(caseId),
+                type: formData.type,
+                category: formData.category,
+                goal: Number(formData.fundraisingGoal),
+                currency: formData.currency,
+            });
 
             toast({
                 title: t('createCase.successTitle', 'Case created!'),

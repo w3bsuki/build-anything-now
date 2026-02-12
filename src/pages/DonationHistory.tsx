@@ -194,6 +194,9 @@ const DonationHistory = () => {
                         : donation.campaignRefId
                           ? `/campaigns/${donation.campaignRefId}`
                           : null;
+                      const hasReceiptUrl = donation.status === 'completed' && Boolean(donation.receiptUrl);
+                      const showReceiptReference =
+                        donation.status === 'completed' && !donation.receiptUrl && Boolean(donation.receiptId);
 
                       const title =
                         donation.caseName ??
@@ -225,11 +228,11 @@ const DonationHistory = () => {
                             </div>
                           </div>
 
-                          {(donation.transactionId || donation.receiptId || donation.receiptUrl) ? (
+                          {(donation.transactionId || showReceiptReference || hasReceiptUrl) ? (
                             <div className="flex flex-col gap-1 text-xs text-muted-foreground pt-2 border-t border-border">
-                              {donation.receiptId ? (
+                              {showReceiptReference ? (
                                 <div>
-                                  <span>{t('donationHistory.receipt', 'Receipt')}:</span>{' '}
+                                  <span>{t('donations.receiptId', 'Receipt ID')}:</span>{' '}
                                   <code className="bg-muted px-1.5 py-0.5 rounded">{donation.receiptId}</code>
                                 </div>
                               ) : null}
@@ -239,7 +242,7 @@ const DonationHistory = () => {
                                   <code className="bg-muted px-1.5 py-0.5 rounded">{donation.transactionId}</code>
                                 </div>
                               ) : null}
-                              {donation.receiptUrl ? (
+                              {hasReceiptUrl ? (
                                 <div>
                                   <button
                                     type="button"
@@ -252,7 +255,7 @@ const DonationHistory = () => {
                                     }}
                                   >
                                     <ExternalLink className="w-3.5 h-3.5" />
-                                    {t('donations.openReceipt', 'Open receipt')}
+                                    {t('donations.viewReceipt', 'View Receipt')}
                                   </button>
                                 </div>
                               ) : null}

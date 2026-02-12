@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
+import { trackAnalytics } from '@/lib/analytics';
 
 interface ShareButtonProps {
   title: string;
@@ -25,6 +26,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
   const { t } = useTranslation();
   const shareUrl = url || window.location.href;
   const shareText = text || title;
+  const nativeShare = (navigator as unknown as { share?: (data?: ShareData) => Promise<void> }).share;
 
   const buttonSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
   const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
@@ -43,9 +45,10 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
   };
 
   const handleNativeShare = async () => {
-    if (navigator.share) {
+    if (nativeShare) {
       try {
-        await navigator.share({
+        trackAnalytics('share_clicked', { channel: 'native', url: shareUrl });
+        await nativeShare({
           title,
           text: shareText,
           url: shareUrl,
@@ -58,6 +61,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(shareUrl);
+    trackAnalytics('share_clicked', { channel: 'copy', url: shareUrl });
     toast({
       title: t('common.copied'),
       description: t('common.linkCopied'),
@@ -66,21 +70,24 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
 
   const shareToTwitter = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    trackAnalytics('share_clicked', { channel: 'twitter', url: shareUrl });
     openExternal(twitterUrl, 'width=550,height=420');
   };
 
   const shareToFacebook = () => {
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    trackAnalytics('share_clicked', { channel: 'facebook', url: shareUrl });
     openExternal(fbUrl, 'width=550,height=420');
   };
 
   const shareToWhatsApp = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+    trackAnalytics('share_clicked', { channel: 'whatsapp', url: shareUrl });
     openExternal(waUrl);
   };
 
   // Use native share on mobile if available
-  if (navigator.share && variant === 'icon') {
+  if (nativeShare && variant === 'icon') {
     return (
       <button
         onClick={handleNativeShare}

@@ -208,7 +208,7 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 - [x] DONATIONS — Stripe hosted checkout + webhook completion + post-checkout return banner + receipt links → [spec](docs/features/donations-spec.md)
 - [~] TRUST: VERIFICATION — Unverified → community → clinic ladder (community endorsements + clinic evidence + admin override; automation pending) → [spec](docs/features/cases-spec.md)
 - [x] TRUST: MODERATION — Report queue, admin review, actions, audit logging → [spec](docs/features/admin-moderation-spec.md)
-- [~] TRUST: DUPLICATE DETECTION — v0 sha256 exact-match flags + report; pHash matching pending → [spec](docs/features/admin-moderation-spec.md)
+- [x] TRUST: DUPLICATE DETECTION — sha256 exact-match + perceptual hash (`pHash`/`dHash`) similarity flags with moderation report + audit log → [spec](docs/features/admin-moderation-spec.md)
 - [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments, structured update types → [spec](docs/features/cases-spec.md)
 - [x] CASE OUTCOMES — Close-out flow, lifecycle transitions (active_treatment → seeking_adoption → closed) → [spec](docs/features/cases-spec.md)
 - [x] SHARING — OG meta tags + SSR share pages (`/share/case/:id`)
@@ -216,7 +216,7 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 
 ### P2 — Growth
 - [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces → [spec](docs/features/campaigns-spec.md)
-- [ ] FOLLOW — Follow rescuers/clinics, "following" feed tab
+- [x] FOLLOW — Follow rescuers/clinics, "following" feed tab
 - [ ] RECURRING — Monthly support for rescuers/clinics → [spec](docs/features/donations-spec.md)
 - [ ] EXTERNAL LINKS — FB/IG link cards, source attribution
 - [ ] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline) → [spec](docs/features/volunteers-spec.md)

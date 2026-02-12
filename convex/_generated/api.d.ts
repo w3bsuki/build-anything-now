@@ -27,6 +27,7 @@ import type * as reports from "../reports.js";
 import type * as settings from "../settings.js";
 import type * as social from "../social.js";
 import type * as storage from "../storage.js";
+import type * as tests_testHelpers from "../tests/testHelpers.js";
 import type * as translate from "../translate.js";
 import type * as users from "../users.js";
 import type * as volunteers from "../volunteers.js";
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   settings: typeof settings;
   social: typeof social;
   storage: typeof storage;
+  "tests/testHelpers": typeof tests_testHelpers;
   translate: typeof translate;
   users: typeof users;
   volunteers: typeof volunteers;

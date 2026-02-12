@@ -188,17 +188,20 @@ async function mapCaseForUi(ctx: QueryCtx, caseDoc: Doc<"cases">, locale: string
   };
 }
 
-async function resolveUnreadCounts(ctx: QueryCtx) {
+async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
-  if (!identity) {
-    return { notifications: 0, community: 0 };
-  }
+  if (!identity) return null;
 
   const user = await ctx.db
     .query("users")
     .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
     .unique();
 
+  return user;
+}
+
+async function resolveUnreadCounts(ctx: QueryCtx) {
+  const user = await getCurrentUser(ctx);
   if (!user) return { notifications: 0, community: 0 };
 
   const [unreadNotifications, recentCommunityPosts] = await Promise.all([
@@ -224,6 +227,80 @@ async function resolveUnreadCounts(ctx: QueryCtx) {
     community: communityUnread,
   };
 }
+
+export const getFollowingFeed = query({
+  args: {
+    locale: v.string(),
+    search: v.optional(v.string()),
+    cursor: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const [user, unreadCounts] = await Promise.all([
+      getCurrentUser(ctx),
+      resolveUnreadCounts(ctx),
+    ]);
+
+    if (!user) {
+      return {
+        casesPage: {
+          items: [],
+          hasMore: false,
+          nextCursor: null,
+        },
+        unreadCounts,
+        followingCount: 0,
+      };
+    }
+
+    const following = await ctx.db
+      .query("follows")
+      .withIndex("by_follower", (q) => q.eq("followerId", user._id))
+      .take(300);
+    const followingIds = new Set(following.map((row) => String(row.followingId)));
+    const limit = Math.min(Math.max(args.limit ?? 12, 1), 30);
+
+    if (followingIds.size === 0) {
+      return {
+        casesPage: {
+          items: [],
+          hasMore: false,
+          nextCursor: null,
+        },
+        unreadCounts,
+        followingCount: 0,
+      };
+    }
+
+    const matchingCases = (await ctx.db.query("cases").order("desc").collect()).filter((caseDoc) => {
+      if (!followingIds.has(String(caseDoc.userId))) return false;
+      if (args.cursor && caseDoc.createdAt >= args.cursor) return false;
+
+      const localized = pickLocalizedFields(caseDoc, args.locale);
+      if (!matchSearch(caseDoc, localized, args.search)) return false;
+
+      return true;
+    });
+
+    const paginated = matchingCases.slice(0, limit);
+    const hasMore = matchingCases.length > limit;
+    const nextCursor = hasMore && paginated.length > 0 ? paginated[paginated.length - 1].createdAt : null;
+
+    const items = await Promise.all(
+      paginated.map((caseDoc) => mapCaseForUi(ctx, caseDoc, args.locale)),
+    );
+
+    return {
+      casesPage: {
+        items,
+        hasMore,
+        nextCursor,
+      },
+      unreadCounts,
+      followingCount: followingIds.size,
+    };
+  },
+});
 
 async function getUrgentStories(ctx: QueryCtx, locale: string, limit: number) {
   const [critical, urgent] = await Promise.all([

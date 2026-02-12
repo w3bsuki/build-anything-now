@@ -222,6 +222,9 @@ const MyDonations = () => {
                   : donation.campaignRefId
                     ? `/campaigns/${donation.campaignRefId}`
                     : null;
+                const hasReceiptUrl = donation.status === 'completed' && Boolean(donation.receiptUrl);
+                const showReceiptReference =
+                  donation.status === 'completed' && !donation.receiptUrl && Boolean(donation.receiptId);
 
                 const title =
                   donation.caseName ??
@@ -271,12 +274,12 @@ const MyDonations = () => {
                               </Badge>
                               <span className="text-[10px] text-muted-foreground">{formatDate(donation.createdAt)}</span>
                             </div>
-                            {donation.receiptId ? (
+                            {showReceiptReference ? (
                               <p className="mt-1 text-[11px] text-muted-foreground">
-                                {t('donationHistory.receipt', 'Receipt')}: <span className="font-mono">{donation.receiptId}</span>
+                                {t('donations.receiptId', 'Receipt ID')}: <span className="font-mono">{donation.receiptId}</span>
                               </p>
                             ) : null}
-                            {donation.receiptUrl ? (
+                            {hasReceiptUrl ? (
                               <button
                                 type="button"
                                 className="mt-1 inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
@@ -288,7 +291,7 @@ const MyDonations = () => {
                                 }}
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                {t('donations.openReceipt', 'Open receipt')}
+                                {t('donations.viewReceipt', 'View Receipt')}
                               </button>
                             ) : null}
                           </div>

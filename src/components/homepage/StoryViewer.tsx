@@ -259,7 +259,7 @@ function StoryViewerContent({
     onClose, 
     storyGroup,
     initialStoryIndex = 0,
-}: Omit<StoryViewerProps, 'isOpen'>) {
+}: { onClose: () => void; storyGroup: StoryGroup; initialStoryIndex?: number }) {
     const [currentIndex, setCurrentIndex] = useState(initialStoryIndex);
     const [progress, setProgress] = useState(0);
     const [isPaused, setIsPaused] = useState(false);

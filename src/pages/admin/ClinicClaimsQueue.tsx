@@ -78,7 +78,8 @@ export default function ClinicClaimsQueue() {
     }
   };
 
-  const oldestCreatedAt = claims && claims.length > 0 ? Math.min(...claims.map((claim) => claim.createdAt)) : null;
+  const claimCount = claims?.length ?? 0;
+  const oldestCreatedAt = claimCount > 0 ? Math.min(...(claims ?? []).map((claim) => claim.createdAt)) : null;
 
   return (
     <PageShell>
@@ -89,7 +90,7 @@ export default function ClinicClaimsQueue() {
           {oldestCreatedAt ? (
             <p className="text-xs text-muted-foreground mt-1">
               {t('admin.clinicClaims.stats', {
-                count: claims.length,
+                count: claimCount,
                 oldest: formatTimeAgo(oldestCreatedAt),
               })}
             </p>

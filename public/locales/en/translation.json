@@ -130,6 +130,8 @@
     "nearYou": "Near You",
     "adoption": "Adoption",
     "adoptionInCity": "Adoption in {{city}}",
+    "followingTab": "Following",
+    "followingEmpty": "Follow rescuers and clinics to see their cases here",
     "searchResultsFor": "Results for \"{{query}}\"",
     "noSearchResults": "No cases found for \"{{query}}\"",
     "noMatches": "No cases match your filters",
@@ -226,6 +228,8 @@
     "feedTab": "Feed",
     "followed": "Followed",
     "followedTab": "Followed",
+    "followedSubtitle": "Latest rescue and community posts from creators you follow.",
+    "followedEmpty": "Follow creators to see their community posts here.",
     "messages": "Messages",
     "messagesTab": "Messages",
     "volunteers": "Volunteers",
@@ -373,6 +377,9 @@
     "detected": "We detected you're in {{country}}. Switch language?",
     "selectLanguage": "Select your language",
     "suggested": "Suggested"
+  },
+  "analytics": {
+    "cookieConsentPlaceholder": "Cookie consent controls are required before EU launch."
   },
   "currencies": {
     "BGN": "Bulgarian Lev (BGN)",
@@ -667,6 +674,8 @@
   },
   "donations": {
     "openReceipt": "Open receipt",
+    "viewReceipt": "View Receipt",
+    "receiptId": "Receipt ID",
     "closed": "Donations closed",
     "gatedNote": "Donations are currently disabled for this case.",
     "return": {

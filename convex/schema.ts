@@ -668,15 +668,21 @@ export default defineSchema({
         .index("by_case", ["caseId"])
         .index("by_user_case", ["userId", "caseId"]),
 
-    // Image fingerprints for duplicate detection (v0: exact sha256 matching)
+    // Image fingerprints for duplicate detection (sha256 exact + perceptual hashes)
     imageFingerprints: defineTable({
         storageId: v.id("_storage"),
         sha256: v.string(),
+        pHash: v.optional(v.string()),
+        dHash: v.optional(v.string()),
+        pHashBucket: v.optional(v.string()),
+        dHashBucket: v.optional(v.string()),
         caseId: v.id("cases"),
         uploaderId: v.id("users"),
         createdAt: v.number(),
     })
         .index("by_sha256", ["sha256"])
+        .index("by_phash_bucket", ["pHashBucket"])
+        .index("by_dhash_bucket", ["dHashBucket"])
         .index("by_case", ["caseId"])
         .index("by_storage", ["storageId"]),
 

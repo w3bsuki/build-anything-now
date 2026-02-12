@@ -2,7 +2,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
-export type HomeIntent = 'urgent' | 'nearby' | 'adoption';
+export type HomeIntent = 'urgent' | 'nearby' | 'adoption' | 'following';
 
 export const BULGARIAN_CITIES = ['sofia', 'varna', 'plovdiv'] as const;
 export type CityFilter = typeof BULGARIAN_CITIES[number];
@@ -13,6 +13,7 @@ interface IntentFilterPillsProps {
   hasActiveMore?: boolean;
   onOpenMore: () => void;
   contained?: boolean;
+  showMore?: boolean;
   className?: string;
 }
 
@@ -48,6 +49,7 @@ export function IntentFilterPills({
   hasActiveMore = false,
   onOpenMore,
   contained = true,
+  showMore = true,
   className,
 }: IntentFilterPillsProps) {
   const { t } = useTranslation();
@@ -55,7 +57,7 @@ export function IntentFilterPills({
   return (
     <div className={cn(contained ? 'rounded-2xl border border-border/65 bg-surface-sunken p-1' : undefined, className)}>
       <div className="flex items-center gap-1.5">
-        <div className="grid flex-1 grid-cols-3 gap-1.5">
+        <div className="grid flex-1 grid-cols-4 gap-1.5">
           <SegmentedButton
             selected={intent === 'urgent'}
             onClick={() => onIntentChange('urgent')}
@@ -71,23 +73,30 @@ export function IntentFilterPills({
             onClick={() => onIntentChange('adoption')}
             label={t('filters.adopt', 'Adopt')}
           />
+          <SegmentedButton
+            selected={intent === 'following'}
+            onClick={() => onIntentChange('following')}
+            label={t('home.followingTab', 'Following')}
+          />
         </div>
 
-        <button
-          type="button"
-          onClick={onOpenMore}
-          aria-label={t('filters.more', 'More filters')}
-          className={cn(
-            'relative inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-colors',
-            'hover:bg-interactive-hover hover:text-foreground active:bg-interactive-active',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          )}
-        >
-          <SlidersHorizontal className="size-5" />
-          {hasActiveMore ? (
-            <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" aria-hidden />
-          ) : null}
-        </button>
+        {showMore ? (
+          <button
+            type="button"
+            onClick={onOpenMore}
+            aria-label={t('filters.more', 'More filters')}
+            className={cn(
+              'relative inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-colors',
+              'hover:bg-interactive-hover hover:text-foreground active:bg-interactive-active',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            )}
+          >
+            <SlidersHorizontal className="size-5" />
+            {hasActiveMore ? (
+              <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-primary" aria-hidden />
+            ) : null}
+          </button>
+        ) : null}
       </div>
     </div>
   );

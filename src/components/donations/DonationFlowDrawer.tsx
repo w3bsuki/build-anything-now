@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'convex/react';
 import { ArrowLeft, CheckCircle2, CreditCard, Loader2, Plus, Share2, X } from 'lucide-react';
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { getCaseShareUrl } from '@/lib/shareUrls';
+import { trackAnalytics } from '@/lib/analytics';
 import { toast } from '@/components/ui/use-toast';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
@@ -84,11 +85,22 @@ export function DonationFlowDrawer({
 
   const createCheckoutSession = useMutation(api.donations.createCheckoutSession);
   const confirmPreviewDonation = useMutation(api.donations.confirmPreviewDonation);
+  const wasOpenRef = useRef(false);
 
   const selectedMethod = useMemo(
     () => DEMO_METHODS.find((m) => m.id === selectedMethodId) ?? DEMO_METHODS[0],
     [selectedMethodId]
   );
+
+  useEffect(() => {
+    if (open && !wasOpenRef.current) {
+      trackAnalytics('donation_started', {
+        caseId,
+        currency,
+      });
+    }
+    wasOpenRef.current = open;
+  }, [caseId, currency, open]);
 
   const handleDrawerOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {

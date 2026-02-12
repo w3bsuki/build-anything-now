@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import type { QueryCtx } from "./_generated/server";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { requireAdmin, requireUser } from "./lib/auth";
 
@@ -32,9 +32,156 @@ const LIFECYCLE_TRANSITIONS: Record<LifecycleStage, LifecycleStage[]> = {
 };
 
 const COMMUNITY_ENDORSEMENT_THRESHOLD = 3;
+const PERCEPTUAL_HASH_DISTANCE_THRESHOLD = 8;
+const PERCEPTUAL_HASH_BUCKET_PREFIX_LENGTH = 12;
+const PERCEPTUAL_BUCKET_QUERY_LIMIT = 40;
+const HEX_NIBBLE_BIT_COUNTS = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4] as const;
+
+type PreparedImageFingerprint = {
+  storageId: Id<"_storage">;
+  sha256: string;
+  pHash?: string;
+  dHash?: string;
+  pHashBucket?: string;
+  dHashBucket?: string;
+};
+
+type PerceptualMatchEvidence = {
+  sourceStorageId: string;
+  matchedStorageId: string;
+  matchedCaseId: string;
+  pHashDistance?: number;
+  dHashDistance?: number;
+};
 
 function normalizeLocale(locale: string): string {
   return locale.trim().toLowerCase().split("-")[0];
+}
+
+function normalizePerceptualHash(rawHash: string | undefined): string | undefined {
+  if (!rawHash) return undefined;
+  const normalized = rawHash.trim().toLowerCase().replace(/^0x/, "");
+  if (!normalized) return undefined;
+  if (!/^[0-9a-f]+$/.test(normalized)) return undefined;
+  return normalized;
+}
+
+function perceptualBucketKey(hash: string): string {
+  const prefix = hash.slice(0, PERCEPTUAL_HASH_BUCKET_PREFIX_LENGTH);
+  return `${hash.length}:${prefix}`;
+}
+
+function hammingDistance(leftHash: string, rightHash: string): number | null {
+  if (leftHash.length !== rightHash.length) return null;
+
+  let distance = 0;
+  for (let index = 0; index < leftHash.length; index += 1) {
+    const leftNibble = parseInt(leftHash.charAt(index), 16);
+    const rightNibble = parseInt(rightHash.charAt(index), 16);
+
+    if (Number.isNaN(leftNibble) || Number.isNaN(rightNibble)) return null;
+    distance += HEX_NIBBLE_BIT_COUNTS[leftNibble ^ rightNibble] ?? 0;
+  }
+
+  return distance;
+}
+
+async function collectPerceptualCandidates(
+  ctx: MutationCtx,
+  caseId: Id<"cases">,
+  fingerprints: PreparedImageFingerprint[],
+): Promise<{ matchedCaseIds: Set<Id<"cases">>; evidence: PerceptualMatchEvidence[] }> {
+  const matchedCaseIds = new Set<Id<"cases">>();
+  const evidence: PerceptualMatchEvidence[] = [];
+
+  for (const fingerprint of fingerprints) {
+    if (!fingerprint.pHash && !fingerprint.dHash) continue;
+
+    const candidateMatches = new Map<
+      string,
+      {
+        caseId: Id<"cases">;
+        storageId: Id<"_storage">;
+        pHashDistance?: number;
+        dHashDistance?: number;
+      }
+    >();
+
+    if (fingerprint.pHash && fingerprint.pHashBucket) {
+      const pHashBucket = fingerprint.pHashBucket;
+      const pHashCandidates = await ctx.db
+        .query("imageFingerprints")
+        .withIndex("by_phash_bucket", (q) => q.eq("pHashBucket", pHashBucket))
+        .take(PERCEPTUAL_BUCKET_QUERY_LIMIT);
+
+      for (const candidate of pHashCandidates) {
+        if (candidate.caseId === caseId) continue;
+        const candidateHash = normalizePerceptualHash(candidate.pHash);
+        if (!candidateHash) continue;
+
+        const distance = hammingDistance(fingerprint.pHash, candidateHash);
+        if (distance === null || distance > PERCEPTUAL_HASH_DISTANCE_THRESHOLD) continue;
+
+        const key = String(candidate._id);
+        const existing = candidateMatches.get(key);
+        if (existing) {
+          existing.pHashDistance =
+            existing.pHashDistance === undefined ? distance : Math.min(existing.pHashDistance, distance);
+          continue;
+        }
+
+        candidateMatches.set(key, {
+          caseId: candidate.caseId,
+          storageId: candidate.storageId,
+          pHashDistance: distance,
+        });
+      }
+    }
+
+    if (fingerprint.dHash && fingerprint.dHashBucket) {
+      const dHashBucket = fingerprint.dHashBucket;
+      const dHashCandidates = await ctx.db
+        .query("imageFingerprints")
+        .withIndex("by_dhash_bucket", (q) => q.eq("dHashBucket", dHashBucket))
+        .take(PERCEPTUAL_BUCKET_QUERY_LIMIT);
+
+      for (const candidate of dHashCandidates) {
+        if (candidate.caseId === caseId) continue;
+        const candidateHash = normalizePerceptualHash(candidate.dHash);
+        if (!candidateHash) continue;
+
+        const distance = hammingDistance(fingerprint.dHash, candidateHash);
+        if (distance === null || distance > PERCEPTUAL_HASH_DISTANCE_THRESHOLD) continue;
+
+        const key = String(candidate._id);
+        const existing = candidateMatches.get(key);
+        if (existing) {
+          existing.dHashDistance =
+            existing.dHashDistance === undefined ? distance : Math.min(existing.dHashDistance, distance);
+          continue;
+        }
+
+        candidateMatches.set(key, {
+          caseId: candidate.caseId,
+          storageId: candidate.storageId,
+          dHashDistance: distance,
+        });
+      }
+    }
+
+    for (const candidate of candidateMatches.values()) {
+      matchedCaseIds.add(candidate.caseId);
+      evidence.push({
+        sourceStorageId: String(fingerprint.storageId),
+        matchedStorageId: String(candidate.storageId),
+        matchedCaseId: String(candidate.caseId),
+        pHashDistance: candidate.pHashDistance,
+        dHashDistance: candidate.dHashDistance,
+      });
+    }
+  }
+
+  return { matchedCaseIds, evidence };
 }
 
 function normalizeLifecycleStage(stage: string | undefined): LifecycleStage {
@@ -547,6 +694,15 @@ export const create = mutation({
     broughtToClinicAt: v.optional(v.number()),
     fundraisingGoal: v.number(),
     currency: v.string(),
+    perceptualHashes: v.optional(
+      v.array(
+        v.object({
+          storageId: v.id("_storage"),
+          pHash: v.optional(v.string()),
+          dHash: v.optional(v.string()),
+        }),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -591,13 +747,45 @@ export const create = mutation({
     });
 
     const uniqueStorageIds = Array.from(new Set(args.images));
-    const fingerprints: Array<{ storageId: Id<"_storage">; sha256: string }> = [];
+    const perceptualHashesByStorage = new Map<
+      string,
+      {
+        pHash?: string;
+        dHash?: string;
+        pHashBucket?: string;
+        dHashBucket?: string;
+      }
+    >();
+
+    for (const perceptualHash of args.perceptualHashes ?? []) {
+      const pHash = normalizePerceptualHash(perceptualHash.pHash);
+      const dHash = normalizePerceptualHash(perceptualHash.dHash);
+      if (!pHash && !dHash) continue;
+
+      perceptualHashesByStorage.set(String(perceptualHash.storageId), {
+        pHash,
+        dHash,
+        pHashBucket: pHash ? perceptualBucketKey(pHash) : undefined,
+        dHashBucket: dHash ? perceptualBucketKey(dHash) : undefined,
+      });
+    }
+
+    const fingerprints: PreparedImageFingerprint[] = [];
 
     for (const storageId of uniqueStorageIds) {
       const metadata = await ctx.db.system.get(storageId);
       const sha256 = (metadata as { sha256?: string } | null)?.sha256;
       if (!sha256) continue;
-      fingerprints.push({ storageId, sha256 });
+
+      const perceptualHashes = perceptualHashesByStorage.get(String(storageId));
+      fingerprints.push({
+        storageId,
+        sha256,
+        pHash: perceptualHashes?.pHash,
+        dHash: perceptualHashes?.dHash,
+        pHashBucket: perceptualHashes?.pHashBucket,
+        dHashBucket: perceptualHashes?.dHashBucket,
+      });
     }
 
     const matchedCaseIds = new Set<Id<"cases">>();
@@ -614,10 +802,19 @@ export const create = mutation({
       }
     }
 
+    const perceptualMatches = await collectPerceptualCandidates(ctx, caseId, fingerprints);
+    for (const matchedCaseId of perceptualMatches.matchedCaseIds) {
+      matchedCaseIds.add(matchedCaseId);
+    }
+
     for (const fingerprint of fingerprints) {
       await ctx.db.insert("imageFingerprints", {
         storageId: fingerprint.storageId,
         sha256: fingerprint.sha256,
+        pHash: fingerprint.pHash,
+        dHash: fingerprint.dHash,
+        pHashBucket: fingerprint.pHashBucket,
+        dHashBucket: fingerprint.dHashBucket,
         caseId,
         uploaderId: user._id,
         createdAt: now,
@@ -625,6 +822,27 @@ export const create = mutation({
     }
 
     if (matchedCaseIds.size > 0) {
+      const perceptualEvidence =
+        fingerprints.some((fingerprint) => !!fingerprint.pHash || !!fingerprint.dHash)
+          ? {
+              threshold: PERCEPTUAL_HASH_DISTANCE_THRESHOLD,
+              comparedHashes: fingerprints
+                .filter((fingerprint) => !!fingerprint.pHash || !!fingerprint.dHash)
+                .map((fingerprint) => ({
+                  storageId: String(fingerprint.storageId),
+                  pHash: fingerprint.pHash ?? null,
+                  dHash: fingerprint.dHash ?? null,
+                })),
+              matches: perceptualMatches.evidence,
+            }
+          : undefined;
+
+      const duplicateEvidence = {
+        matchedCaseIds: Array.from(matchedCaseIds).map(String),
+        sha256: fingerprints.map((f) => f.sha256),
+        perceptual: perceptualEvidence,
+      };
+
       await ctx.db.patch(caseId, {
         riskLevel: "high",
         riskFlags: ["possible_duplicate_images"],
@@ -633,10 +851,7 @@ export const create = mutation({
       await ctx.db.insert("reports", {
         caseId,
         reason: "duplicate_case",
-        details: JSON.stringify({
-          matchedCaseIds: Array.from(matchedCaseIds).map(String),
-          sha256: fingerprints.map((f) => f.sha256),
-        }),
+        details: JSON.stringify(duplicateEvidence),
         status: "open",
         createdAt: now,
       });
@@ -646,10 +861,7 @@ export const create = mutation({
         entityType: "case",
         entityId: String(caseId),
         action: "case.duplicate_flagged",
-        metadataJson: JSON.stringify({
-          matchedCaseIds: Array.from(matchedCaseIds).map(String),
-          sha256: fingerprints.map((f) => f.sha256),
-        }),
+        metadataJson: JSON.stringify(duplicateEvidence),
         createdAt: now,
       });
     }

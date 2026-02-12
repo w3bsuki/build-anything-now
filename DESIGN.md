@@ -302,18 +302,35 @@ Remaining:
 - Revocation UI + endorsement quality controls (rate limits, anti-brigading).
 - Criteria automation (beyond initial threshold rules).
 
-### Feature: Duplicate Detection (v0)
-*Status: Partially shipped*
+### Feature: Duplicate Detection (v1)
+*Status: Shipped*
+
+Scope:
+- Preserve exact `sha256` matching on case creation.
+- Add perceptual similarity matching using client-computed image hashes (`pHash` + `dHash`) with server-side Hamming-distance thresholds.
+- Keep duplicate outcomes human-review-first: raise case risk and open moderation report, never auto-reject.
 
 Implemented:
 - Exact `sha256` matching for uploaded images on case creation.
+- Client-side perceptual hash computation on case-create uploads (`pHash` + `dHash`).
+- Server-side candidate bucketing + Hamming-distance similarity matching on case creation.
 - Flags `riskLevel: high` + opens a report for human review (audit logged).
 
 Data changes:
-- Added `imageFingerprints` table keyed by `sha256`.
+- Extend `imageFingerprints` with optional perceptual hash fields and bucket indexes for candidate lookup.
+- Keep `sha256` as canonical exact-match signal.
 
-Remaining:
-- True pHash similarity matching + scoring pipeline.
+API surface:
+- `cases.create` accepts optional perceptual hashes tied to uploaded storage IDs.
+- Duplicate review payload includes both exact and perceptual evidence when present.
+
+Abuse/trust risks addressed:
+- Reused or lightly transformed rescue photos can be flagged, not only byte-identical files.
+- Avoid hidden enforcement: all similarity flags remain auditable through reports + audit logs.
+
+Mitigations:
+- Threshold-based matching is conservative to reduce false positives.
+- Similarity checks only raise review risk; moderators make the final decision.
 
 ### Feature: Moderation Queue
 *Status: In progress*
