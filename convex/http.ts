@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import { Webhook } from "svix";
 import Stripe from "stripe";
 
@@ -16,6 +17,119 @@ type ClerkWebhookEvent = {
 };
 
 const http = httpRouter();
+
+http.route({
+  pathPrefix: "/share/",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const url = new URL(request.url);
+    const parts = url.pathname.split("/").filter(Boolean);
+
+    if (parts.length !== 3 || parts[0] !== "share" || parts[1] !== "case") {
+      return new Response("Not found", { status: 404 });
+    }
+
+    const caseId = parts[2] as Id<"cases">;
+    const locale = url.searchParams.get("locale") ?? undefined;
+
+    const escapeHtml = (value: string) =>
+      value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    let meta:
+      | { id: Id<"cases">; title: string; description: string; imageUrl: string | null }
+      | null = null;
+
+    try {
+      meta = await ctx.runQuery(api.cases.getCaseShareMeta, {
+        id: caseId,
+        locale,
+      });
+    } catch (_err) {
+      meta = null;
+    }
+
+    if (!meta) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    let appUrl: string | null = null;
+    const rawAppOrigin = process.env.APP_ORIGIN;
+
+    if (rawAppOrigin) {
+      try {
+        const parsed = new URL(rawAppOrigin);
+        if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+          parsed.pathname = "";
+          parsed.search = "";
+          parsed.hash = "";
+          appUrl = `${parsed.origin}/case/${meta.id}`;
+        }
+      } catch (_err) {
+        appUrl = null;
+      }
+    }
+    const shareUrl = url.toString();
+
+    const title = meta.title || "Pawtreon";
+    const description = meta.description || "Rescue case on Pawtreon";
+    const imageUrl = meta.imageUrl ?? null;
+
+    const ogUrl = appUrl ?? shareUrl;
+    const twitterCard = imageUrl ? "summary_large_image" : "summary";
+
+    const html = `<!doctype html>
+<html lang="${escapeHtml(locale ?? "en")}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Pawtreon" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="${escapeHtml(ogUrl)}" />
+    ${imageUrl ? `<meta property="og:image" content="${escapeHtml(imageUrl)}" />` : ""}
+    ${imageUrl ? `<meta property="og:image:alt" content="${escapeHtml(title)}" />` : ""}
+
+    <meta name="twitter:card" content="${twitterCard}" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    ${imageUrl ? `<meta name="twitter:image" content="${escapeHtml(imageUrl)}" />` : ""}
+
+    ${appUrl ? `<link rel="canonical" href="${escapeHtml(appUrl)}" />` : ""}
+    ${appUrl ? `<meta http-equiv="refresh" content="0; url=${escapeHtml(appUrl)}" />` : ""}
+    ${appUrl ? `<script>window.location.replace(${JSON.stringify(appUrl)});</script>` : ""}
+  </head>
+  <body>
+    <main style="font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px; line-height: 1.4;">
+      <h1 style="margin: 0 0 12px;">${escapeHtml(title)}</h1>
+      <p style="margin: 0 0 16px; color: #555;">${escapeHtml(description)}</p>
+      ${
+        appUrl
+          ? `<p style="margin: 0;"><a href="${escapeHtml(appUrl)}">Open in Pawtreon</a></p>`
+          : `<p style="margin: 0;">Missing server configuration: APP_ORIGIN</p>`
+      }
+    </main>
+  </body>
+</html>`;
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=300",
+      },
+    });
+  }),
+});
 
 http.route({
   path: "/stripe-webhook",

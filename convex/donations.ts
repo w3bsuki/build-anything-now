@@ -344,10 +344,12 @@ export const confirmPaymentFromWebhook = internalMutation({
     await ctx.db.patch(donation._id, patch);
 
     const roundedAmount = Number(amount.toFixed(2));
+    let caseTitle: string | null = null;
 
     if (donation.caseId) {
       const caseDoc = await ctx.db.get(donation.caseId);
       if (caseDoc) {
+        caseTitle = caseDoc.title;
         await ctx.db.patch(donation.caseId, {
           fundraising: {
             ...caseDoc.fundraising,
@@ -382,6 +384,32 @@ export const confirmPaymentFromWebhook = internalMutation({
         }
       }
     }
+
+    const donorSettings = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", donation.userId))
+      .unique();
+
+    const donorLang = (donorSettings?.language ?? "en").toLowerCase();
+    const donorIsBg = donorLang.startsWith("bg");
+    const donorTitle = donorIsBg ? "Дарението е потвърдено" : "Donation confirmed";
+    const donorMessage = caseTitle
+      ? (donorIsBg
+          ? `Дарението ви за ${caseTitle} е потвърдено. Разписката е налична в История на даренията.`
+          : `Your donation to ${caseTitle} is confirmed. Your receipt is available in Donation History.`)
+      : (donorIsBg
+          ? "Дарението ви е потвърдено. Разписката е налична в История на даренията."
+          : "Your donation is confirmed. Your receipt is available in Donation History.");
+
+    await ctx.db.insert("notifications", {
+      userId: donation.userId,
+      type: "system",
+      title: donorTitle,
+      message: donorMessage,
+      ...(donation.caseId ? { caseId: donation.caseId } : {}),
+      read: false,
+      createdAt: now,
+    });
 
     await ctx.db.insert("auditLogs", {
       actorId: undefined,
@@ -461,6 +489,7 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
     const amount = args.amountReceivedMinor !== undefined ? args.amountReceivedMinor / 100 : donation.amount;
     const currency = args.currency?.toUpperCase() ?? donation.currency;
     const roundedAmount = Number(amount.toFixed(2));
+    let caseTitle: string | null = null;
 
     const patch: {
       status: "completed";
@@ -506,6 +535,7 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
     if (donation.caseId) {
       const caseDoc = await ctx.db.get(donation.caseId);
       if (caseDoc) {
+        caseTitle = caseDoc.title;
         await ctx.db.patch(donation.caseId, {
           fundraising: {
             ...caseDoc.fundraising,
@@ -540,6 +570,32 @@ export const confirmCheckoutSessionFromWebhook = internalMutation({
         }
       }
     }
+
+    const donorSettings = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", donation.userId))
+      .unique();
+
+    const donorLang = (donorSettings?.language ?? "en").toLowerCase();
+    const donorIsBg = donorLang.startsWith("bg");
+    const donorTitle = donorIsBg ? "Дарението е потвърдено" : "Donation confirmed";
+    const donorMessage = caseTitle
+      ? (donorIsBg
+          ? `Дарението ви за ${caseTitle} е потвърдено. Разписката е налична в История на даренията.`
+          : `Your donation to ${caseTitle} is confirmed. Your receipt is available in Donation History.`)
+      : (donorIsBg
+          ? "Дарението ви е потвърдено. Разписката е налична в История на даренията."
+          : "Your donation is confirmed. Your receipt is available in Donation History.");
+
+    await ctx.db.insert("notifications", {
+      userId: donation.userId,
+      type: "system",
+      title: donorTitle,
+      message: donorMessage,
+      ...(donation.caseId ? { caseId: donation.caseId } : {}),
+      read: false,
+      createdAt: now,
+    });
 
     await ctx.db.insert("auditLogs", {
       actorId: undefined,
@@ -604,6 +660,11 @@ export const confirmPreviewDonation = mutation({
       throw new Error("Preview confirmation is disabled when Stripe is configured");
     }
 
+    const previewEnabled = (process.env.ENABLE_PREVIEW_DONATIONS ?? "").toLowerCase() === "true";
+    if (!previewEnabled) {
+      throw new Error("Preview confirmation is disabled. Set ENABLE_PREVIEW_DONATIONS=true to enable in local dev.");
+    }
+
     const donation = await ctx.db.get(args.donationId);
     if (!donation) throw new Error("Donation not found");
     if (donation.userId !== user._id) throw new Error("Unauthorized donation access");
@@ -619,9 +680,14 @@ export const confirmPreviewDonation = mutation({
       receiptId: donation.receiptId ?? makeReceiptId(),
     });
 
+    let caseTitle: string | null = null;
+    const currency = donation.currency;
+    const roundedAmount = Number(donation.amount.toFixed(2));
+
     if (donation.caseId) {
       const caseDoc = await ctx.db.get(donation.caseId);
       if (caseDoc) {
+        caseTitle = caseDoc.title;
         await ctx.db.patch(donation.caseId, {
           fundraising: {
             ...caseDoc.fundraising,
@@ -629,8 +695,59 @@ export const confirmPreviewDonation = mutation({
           },
           status: caseDoc.fundraising.current + donation.amount >= caseDoc.fundraising.goal ? "funded" : caseDoc.status,
         });
+
+        if (caseDoc.userId !== donation.userId) {
+          const settings = await ctx.db
+            .query("userSettings")
+            .withIndex("by_user", (q) => q.eq("userId", caseDoc.userId))
+            .unique();
+
+          const lang = (settings?.language ?? "en").toLowerCase();
+          const isBg = lang.startsWith("bg");
+
+          const title = isBg ? "Получено дарение" : "Donation received";
+          const message = isBg
+            ? `Получихте дарение от ${roundedAmount} ${currency} за ${caseDoc.title}`
+            : `${roundedAmount} ${currency} received for ${caseDoc.title}`;
+
+          await ctx.db.insert("notifications", {
+            userId: caseDoc.userId,
+            type: "donation_received",
+            title,
+            message,
+            caseId: donation.caseId,
+            read: false,
+            createdAt: now,
+          });
+        }
       }
     }
+
+    const donorSettings = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", donation.userId))
+      .unique();
+
+    const donorLang = (donorSettings?.language ?? "en").toLowerCase();
+    const donorIsBg = donorLang.startsWith("bg");
+    const donorTitle = donorIsBg ? "Дарението е потвърдено" : "Donation confirmed";
+    const donorMessage = caseTitle
+      ? (donorIsBg
+          ? `Дарението ви за ${caseTitle} е потвърдено. Разписката е налична в История на даренията.`
+          : `Your donation to ${caseTitle} is confirmed. Your receipt is available in Donation History.`)
+      : (donorIsBg
+          ? "Дарението ви е потвърдено. Разписката е налична в История на даренията."
+          : "Your donation is confirmed. Your receipt is available in Donation History.");
+
+    await ctx.db.insert("notifications", {
+      userId: donation.userId,
+      type: "system",
+      title: donorTitle,
+      message: donorMessage,
+      ...(donation.caseId ? { caseId: donation.caseId } : {}),
+      read: false,
+      createdAt: now,
+    });
 
     await ctx.db.insert("auditLogs", {
       actorId: user._id,

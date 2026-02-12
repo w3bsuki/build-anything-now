@@ -236,13 +236,17 @@ SSOT styling files and boundaries:
 - Evaluate React Native only if WebView hits limits
 - Keep Convex + Clerk; reuse data layer
 
-## SSR Share Pages (Planned)
+## SSR Share Pages
 
-For social sharing (OpenGraph), add a small SSR layer:
-- Option A: Separate Next.js project for `/share/case/:id`
-- Option B: Serverless OG image generation
+Implemented without a framework migration:
+- Convex HTTP share page: `GET /share/case/:id` returns HTML with `og:*` + `twitter:*` tags.
+- Meta is fetched from `cases.getCaseShareMeta` (localized title/description + first image URL).
+- If `APP_ORIGIN` is set, the share page redirects humans to `${APP_ORIGIN}/case/:id` while crawlers still read the meta tags.
 
-**Do not rewrite the whole app to Next.js.** Vite SPA + Capacitor is the right path for the core product.
+Future:
+- Serverless OG image generation (if needed).
+
+**Do not rewrite the whole app to Next.js.** Vite SPA + Capacitor remains the core product path.
 
 ---
 
@@ -251,20 +255,16 @@ For social sharing (OpenGraph), add a small SSR layer:
 Add sections here when implementing high-risk features (money/auth/schema):
 
 ### Feature: Donations (Stripe)
-*Status: In progress*
+*Status: Shipped*
 
 Implemented:
-- Data model fields for Stripe checkout/payment intent linkage and receipts
-- API/flow for hosted checkout session + webhook completion path
-- Idempotent completion and webhook signature verification path
-
-Remaining:
-- Post-checkout success/cancel return UX messaging on case detail (no lost state after redirect)
-- Receipt/history surfacing polish in account-facing flows (donations list/history is real data, not mock)
-- Populate `receiptUrl` from Stripe charge metadata (when available) for user-facing receipts
+- Hosted checkout session + webhook completion path
+- Webhook signature verification + idempotent completion
+- Receipt URL persistence + donation history surfacing
+- Post-checkout success/cancel return UX messaging
 
 ### Feature: Notifications (In-app)
-*Status: In progress*
+*Status: Shipped (in-app; delivery channels pending)*
 
 Scope:
 - Replace mock notification center UI with Convex-driven data and real-time unread counts.
@@ -274,8 +274,10 @@ Data changes:
 - None (schema already contains `notifications` and `userSettings`).
 
 API surface:
-- Add internal notification creator mutations (not client-callable).
-- Wire donation completion and case update operations to create notifications.
+- Triggers created during core trust flows:
+  - Donation completion → case owner notification + donor confirmation
+  - Case update → donors + followers notification
+  - Clinic claim review → claimant notification
 
 Abuse/trust risks addressed:
 - Remove mock/fake notification content from account surfaces.
@@ -284,6 +286,34 @@ Abuse/trust risks addressed:
 Mitigations:
 - Keep notification payloads generic (no donor email/phone).
 - Defer batching/throttling to a follow-up once baseline delivery is correct.
+
+### Feature: Verification Ladder (Case)
+*Status: Partially shipped*
+
+Implemented:
+- Admin override: set `verificationStatus` with audit log.
+- Community verification: trusted user endorsements promote a case to `community` at threshold.
+- Clinic verification: authorized clinic updates can promote a case to `clinic` when evidence is attached.
+
+Data changes:
+- Added `caseEndorsements` for endorsement records (audit logged).
+
+Remaining:
+- Revocation UI + endorsement quality controls (rate limits, anti-brigading).
+- Criteria automation (beyond initial threshold rules).
+
+### Feature: Duplicate Detection (v0)
+*Status: Partially shipped*
+
+Implemented:
+- Exact `sha256` matching for uploaded images on case creation.
+- Flags `riskLevel: high` + opens a report for human review (audit logged).
+
+Data changes:
+- Added `imageFingerprints` table keyed by `sha256`.
+
+Remaining:
+- True pHash similarity matching + scoring pipeline.
 
 ### Feature: Moderation Queue
 *Status: In progress*

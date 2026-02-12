@@ -1,4 +1,5 @@
 import { Share2, Link, Twitter, Facebook, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ title, text, url, className, variant = 'icon', size = 'default', appearance = 'default' }: ShareButtonProps) {
+  const { t } = useTranslation();
   const shareUrl = url || window.location.href;
   const shareText = text || title;
 
@@ -29,8 +31,16 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
 
   // Appearance-based styles
   const appearanceStyles = appearance === 'overlay'
-    ? 'bg-black/40 backdrop-blur-md text-white hover:bg-black/60 active:bg-black/70 shadow-lg ring-1 ring-white/20'
+    ? 'bg-overlay-dim/45 backdrop-blur-md text-primary-foreground hover:bg-overlay-dim/60 active:bg-overlay-dim/70 shadow-lg ring-1 ring-ring/20'
     : 'bg-muted text-foreground hover:bg-muted/80 active:bg-muted/70';
+
+  const openExternal = (targetUrl: string, features?: string) => {
+    const finalFeatures = features ? `${features},noopener,noreferrer` : 'noopener,noreferrer';
+    const newWindow = window.open(targetUrl, '_blank', finalFeatures);
+    if (newWindow) {
+      newWindow.opener = null;
+    }
+  };
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -49,24 +59,24 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
   const copyLink = async () => {
     await navigator.clipboard.writeText(shareUrl);
     toast({
-      title: 'Link copied!',
-      description: 'The link has been copied to your clipboard.',
+      title: t('common.copied'),
+      description: t('common.linkCopied'),
     });
   };
 
   const shareToTwitter = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
+    openExternal(twitterUrl, 'width=550,height=420');
   };
 
   const shareToFacebook = () => {
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-    window.open(fbUrl, '_blank', 'width=550,height=420');
+    openExternal(fbUrl, 'width=550,height=420');
   };
 
   const shareToWhatsApp = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
-    window.open(waUrl, '_blank');
+    openExternal(waUrl);
   };
 
   // Use native share on mobile if available
@@ -79,7 +89,7 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
           appearanceStyles,
           className
         )}
-        aria-label="Share"
+        aria-label={t('common.share')}
       >
         <Share2 className={iconSize} />
       </button>
@@ -103,26 +113,26 @@ export function ShareButton({ title, text, url, className, variant = 'icon', siz
         ) : (
           <Button variant="outline" size="sm" className={cn("gap-2", className)}>
             <Share2 className="w-4 h-4" />
-            Share
+            {t('common.share')}
           </Button>
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={copyLink}>
           <Link className="w-4 h-4 mr-2" />
-          Copy link
+          {t('share.copyLink')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareToTwitter}>
           <Twitter className="w-4 h-4 mr-2" />
-          Share on Twitter
+          {t('share.shareOnTwitter')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareToFacebook}>
           <Facebook className="w-4 h-4 mr-2" />
-          Share on Facebook
+          {t('share.shareOnFacebook')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareToWhatsApp}>
           <MessageCircle className="w-4 h-4 mr-2" />
-          Share on WhatsApp
+          {t('share.shareOnWhatsApp')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -12,6 +12,7 @@ import { CommentsSheet } from '@/components/homepage/CommentsSheet';
 import { DonationFlowDrawer } from '@/components/donations/DonationFlowDrawer';
 import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw, X, CircleCheck, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getCaseShareUrl } from '@/lib/shareUrls';
 import { format } from 'date-fns';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
@@ -98,19 +99,35 @@ const AnimalProfile = () => {
   const [nextLifecycleStage, setNextLifecycleStage] = useState<'seeking_adoption' | 'closed_success' | 'closed_transferred' | 'closed_other' | ''>('');
   const [transitionNotes, setTransitionNotes] = useState('');
   const [isSubmittingTransition, setIsSubmittingTransition] = useState(false);
+  const [pendingVerificationStatus, setPendingVerificationStatus] = useState<'unverified' | 'community' | 'clinic'>('unverified');
+  const [isSubmittingVerification, setIsSubmittingVerification] = useState(false);
+  const [isSubmittingEndorsement, setIsSubmittingEndorsement] = useState(false);
 
   const locale = i18n.language;
   const caseId = id as Id<'cases'> | undefined;
+  const me = useQuery(api.users.me);
   const caseData = useQuery(api.cases.getUiForLocale, caseId ? { id: caseId, locale } : 'skip');
+  const communityVerificationSummary = useQuery(
+    api.cases.getCommunityVerificationSummary,
+    caseId ? { caseId } : 'skip',
+  );
   const requestTranslations = useMutation(api.translate.requestCaseTranslations);
   const addUpdate = useMutation(api.cases.addUpdate);
   const updateLifecycleStage = useMutation(api.cases.updateLifecycleStage);
+  const setVerificationStatus = useMutation(api.cases.setVerificationStatus);
+  const endorseCase = useMutation(api.cases.endorseCase);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
 
   const transitionOptions = useMemo(() => {
     if (!caseData?.lifecycleStage) return [];
     return transitionOptionsByStage[caseData.lifecycleStage] ?? [];
   }, [caseData?.lifecycleStage]);
+
+  useEffect(() => {
+    if (caseData?.verificationStatus) {
+      setPendingVerificationStatus(caseData.verificationStatus);
+    }
+  }, [caseData?.verificationStatus]);
 
   const uploadImages = async (files: File[]): Promise<Id<'_storage'>[]> => {
     const uploadedIds: Id<'_storage'>[] = [];
@@ -248,6 +265,14 @@ const AnimalProfile = () => {
   const displayDescription = showOriginal ? caseData.originalDescription : caseData.description;
   const displayStory = showOriginal ? caseData.originalStory : caseData.story;
 
+  const shareUrl = caseId ? getCaseShareUrl({ caseId, locale }) : null;
+
+  const canCommunityEndorse = (() => {
+    if (!me) return false;
+    if (me.role === 'admin') return true;
+    return me.verificationLevel === 'community' || me.verificationLevel === 'clinic' || me.verificationLevel === 'partner';
+  })();
+
   const lifecycleLabel = lifecycleLabels[caseData.lifecycleStage] ?? 'Active Treatment';
 
   return (
@@ -281,7 +306,7 @@ const AnimalProfile = () => {
           >
             <Flag className="w-5 h-5" />
           </button>
-          <ShareButton title={displayTitle} text={displayDescription} />
+          <ShareButton title={displayTitle} text={displayDescription} url={shareUrl ?? undefined} />
         </div>
       </div>
 
@@ -389,6 +414,50 @@ const AnimalProfile = () => {
             <VerificationBadge status={caseData.verificationStatus ?? 'unverified'} showExplainer />
           </div>
 
+          {canCommunityEndorse && caseData.verificationStatus === 'unverified' && (
+            <div className="mb-3 flex items-center justify-between gap-3 bg-muted/40 border border-border rounded-lg px-3 py-2">
+              <div className="text-xs text-muted-foreground">
+                {t('verification.communityEndorsements', {
+                  count: communityVerificationSummary?.count ?? 0,
+                  threshold: communityVerificationSummary?.threshold ?? 3,
+                  defaultValue: 'Community endorsements: {{count}}/{{threshold}}',
+                })}
+              </div>
+              <Button
+                variant="outline"
+                className="h-7 px-2.5 text-xs"
+                disabled={
+                  isSubmittingEndorsement ||
+                  communityVerificationSummary?.hasEndorsed ||
+                  (communityVerificationSummary?.count ?? 0) >= (communityVerificationSummary?.threshold ?? 3)
+                }
+                onClick={async () => {
+                  if (!caseId) return;
+                  setIsSubmittingEndorsement(true);
+                  try {
+                    const result = await endorseCase({ caseId });
+                    if (result.promotedToCommunity) {
+                      toast({ title: t('verification.promoted', 'Case community verified') });
+                    } else if (result.alreadyEndorsed) {
+                      toast({ title: t('verification.alreadyEndorsed', 'Already endorsed') });
+                    } else {
+                      toast({ title: t('verification.endorsed', 'Endorsed') });
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    toast({ title: t('verification.endorseFailed', 'Failed to endorse'), variant: 'destructive' });
+                  } finally {
+                    setIsSubmittingEndorsement(false);
+                  }
+                }}
+              >
+                {communityVerificationSummary?.hasEndorsed
+                  ? t('verification.endorsed', 'Endorsed')
+                  : t('verification.endorse', 'Endorse')}
+              </Button>
+            </div>
+          )}
+
           {caseData.isMachineTranslated && caseData.translatedFrom && (
             <div className="mb-3 flex items-center justify-between gap-3 bg-muted/40 border border-border rounded-lg px-3 py-2">
               <div className="text-xs text-muted-foreground">
@@ -455,6 +524,56 @@ const AnimalProfile = () => {
                   )}
                 </div>
               </div>
+
+              {me?.role === 'admin' && (
+                <div className="rounded-xl border border-border/60 bg-surface-sunken/70 p-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                    <div className="flex-1 space-y-1.5">
+                      <Label htmlFor="verification-status">{t('verification.status', 'Verification status')}</Label>
+                      <Select
+                        value={pendingVerificationStatus}
+                        onValueChange={(value) => setPendingVerificationStatus(value as typeof pendingVerificationStatus)}
+                      >
+                        <SelectTrigger id="verification-status" className="h-9">
+                          <SelectValue placeholder={t('verification.selectStatus', 'Select status')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="unverified">{t('verification.unverified', 'Unverified')}</SelectItem>
+                          <SelectItem value="community">{t('verification.community', 'Community verified')}</SelectItem>
+                          <SelectItem value="clinic">{t('verification.clinic', 'Clinic verified')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <Button
+                      className="h-9"
+                      disabled={
+                        isSubmittingVerification ||
+                        pendingVerificationStatus === (caseData.verificationStatus ?? 'unverified')
+                      }
+                      onClick={async () => {
+                        if (!caseId) return;
+                        setIsSubmittingVerification(true);
+                        try {
+                          await setVerificationStatus({
+                            caseId,
+                            verificationStatus: pendingVerificationStatus,
+                          });
+                          toast({ title: t('verification.updated', 'Verification updated') });
+                        } catch (error) {
+                          console.error(error);
+                          toast({ title: t('verification.updateFailed', 'Failed to update verification'), variant: 'destructive' });
+                        } finally {
+                          setIsSubmittingVerification(false);
+                        }
+                      }}
+                    >
+                      {t('common.save', 'Save')}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {caseData.closedAt && (
                 <p className="text-xs text-muted-foreground">
                   Closed on {format(new Date(caseData.closedAt), 'MMM d, yyyy')}

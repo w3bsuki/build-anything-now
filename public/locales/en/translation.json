@@ -25,6 +25,7 @@
     "search": "Search",
     "donate": "Donate",
     "donateNow": "Donate Now",
+    "donateTo": "Donate to {{title}}",
     "contribute": "Contribute",
     "contributeNow": "Contribute Now",
     "share": "Share",
@@ -60,6 +61,12 @@
     "loadingMore": "Loading more...",
     "scrollToLoad": "Scroll to load more",
     "optional": "Optional"
+  },
+  "share": {
+    "copyLink": "Copy link",
+    "shareOnTwitter": "Share on Twitter",
+    "shareOnFacebook": "Share on Facebook",
+    "shareOnWhatsApp": "Share on WhatsApp"
   },
   "filters": {
     "title": "Filters",
@@ -136,6 +143,7 @@
     "helpersHelping": "{{count}} helping",
     "helpersHelping_one": "{{count}} helping",
     "helpersHelping_other": "{{count}} helping",
+    "supportersPending": "Supporter counts after verified activity",
     "nearbyOnly": "Nearby",
     "activeCampaigns": "Active Campaigns",
     "campaignsSubtitle": "Help us reach our goals"
@@ -562,7 +570,7 @@
   "time": {
     "justNow": "Just now",
     "minutesAgo": "{{count}}m ago",
-    "hoursAgo": "h ago",
+    "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago"
   },
   "createCase": {
@@ -993,6 +1001,62 @@
       "submit": "Register Business",
       "successTitle": "Business Registered!",
       "successMessage": "Your business is now listed. We'll verify it soon."
+    }
+  },
+  "admin": {
+    "common": {
+      "adminRequired": "Admin access required.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "rejecting": "Rejecting...",
+      "saving": "Saving..."
+    },
+    "clinicClaims": {
+      "title": "Clinic Claim Queue",
+      "subtitle": "Review pending ownership claims for pre-seeded clinics.",
+      "loading": "Loading clinic claims…",
+      "empty": "No pending claims.",
+      "stats": "Pending: {{count}} · Oldest: {{oldest}}",
+      "claimant": "Claimant",
+      "submitted": "Submitted {{time}}",
+      "email": "Email",
+      "phone": "Phone",
+      "rejectionReason": "Rejection reason",
+      "rejectionReasonPlaceholder": "Provide a clear reason for the rejection…",
+      "confirmRejection": "Confirm rejection",
+      "toasts": {
+        "approved": "Claim approved",
+        "approveFailed": "Failed to approve claim",
+        "rejected": "Claim rejected",
+        "rejectFailed": "Failed to reject claim"
+      }
+    },
+    "moderation": {
+      "title": "Moderation Queue",
+      "subtitle": "Review pending trust reports and apply resolution actions.",
+      "loading": "Loading moderation queue…",
+      "empty": "No pending reports.",
+      "unknownCase": "Unknown case",
+      "reason": "Reason",
+      "status": "Status",
+      "setReviewing": "Set reviewing",
+      "resolve": "Resolve",
+      "resolutionAction": "Resolution action",
+      "notesOptional": "Notes (optional)",
+      "notesPlaceholder": "Add resolution context…",
+      "confirmResolution": "Confirm resolution",
+      "actions": {
+        "hideCase": "Hide case",
+        "warnUser": "Warn user",
+        "dismiss": "Dismiss",
+        "noAction": "No action"
+      },
+      "toasts": {
+        "setReviewing": "Report marked as reviewing",
+        "setReviewingFailed": "Failed to update report",
+        "resolved": "Report resolved",
+        "resolveFailed": "Failed to resolve report"
+      }
     }
   },
   "tour": {

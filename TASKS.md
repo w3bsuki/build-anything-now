@@ -30,9 +30,11 @@
   - [x] Stripe receipt URL stored on completion (webhook) and surfaced in history.
   - AC: Users receive clear post-checkout state and receipt visibility after redirect.
 
-- [ ] **PARTNER OPS: Clinic claim admin queue**
-  - Claim submit/search exists.
-  - Remaining: explicit admin review queue + approval/reject/dispute actions with SLA dashboard.
+- [x] **PARTNER OPS: Clinic claim admin queue**
+  - [x] Admin review queue wired (`/admin/clinic-claims`).
+  - [x] Approve/reject with rejection reason + audit log.
+  - [x] Claimant gets in-app notification on approval/rejection.
+  - Remaining: optional "needs info"/dispute state + richer SLA dashboard.
   - AC: Admin can process clinic claims end-to-end with traceable logs.
 
 - [ ] **STYLING: Tailwind/shadcn remediation batch 1**
@@ -75,14 +77,14 @@
 - [x] Admin moderation page added (`/admin/moderation`).
 - [x] Stripe webhook route and idempotent donation completion path added.
 - [x] Stripe hosted checkout + webhook completion path wired.
-- [ ] Receipt history UI polish (schema fields present, user-facing surfacing still partial).
+- [x] Receipt history UI polish (schema fields present, user-facing surfacing complete).
 
 ---
 
 ### Phase 3 — Bulgaria Directory + Partner Ops
 - [x] Clinic seeding strategy documented and seed data expanded.
 - [x] Existing claim submit flow retained with duplicate pending-claim guard.
-- [ ] Claim review/approval tooling for admins (pending).
+- [x] Claim review/approval tooling for admins (approve/reject + notifications).
 
 ---
 
@@ -98,7 +100,7 @@
 
 - [ ] Follow graph + following feed
 - [ ] Recurring support model
-- [ ] OG/share SSR surfaces
-- [ ] Notification center + delivery channels
-- [ ] Duplicate detection/pHash
+- [ ] Notification delivery channels (push/email) + batching/throttling
+- [ ] Duplicate detection/pHash (v0 sha256 exact-match shipped; similarity pending)
+- [ ] Verification ladder automation + revocation UI
 

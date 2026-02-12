@@ -21,7 +21,11 @@ const getNotificationIcon = (type: string) => {
   }
 };
 
-const formatTimeAgo = (timestamp: number, t: (key: string, options?: Record<string, unknown>) => string) => {
+const formatTimeAgo = (
+  timestamp: number,
+  t: (key: string, options?: Record<string, unknown>) => string,
+  locale: string,
+) => {
   const seconds = Math.floor((Date.now() - timestamp) / 1000);
   
   if (seconds < 60) return t('time.justNow');
@@ -29,14 +33,14 @@ const formatTimeAgo = (timestamp: number, t: (key: string, options?: Record<stri
   if (seconds < 86400) return t('time.hoursAgo', { count: Math.floor(seconds / 3600) });
   if (seconds < 604800) return t('time.daysAgo', { count: Math.floor(seconds / 86400) });
   
-  return new Date(timestamp).toLocaleDateString('en-US', {
+  return new Date(timestamp).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
   });
 };
 
 const Notifications = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const notifications = useQuery(api.notifications.getMyNotifications);
@@ -64,8 +68,8 @@ const Notifications = () => {
       await handleMarkRead(notification._id);
     }
 
-    if (notification.type === 'donation_received' || notification.type === 'case_update') {
-      if (notification.caseId) navigate(`/case/${notification.caseId}`);
+    if (notification.caseId) {
+      navigate(`/case/${notification.caseId}`);
       return;
     }
 
@@ -143,7 +147,7 @@ const Notifications = () => {
                           {notification.title}
                         </p>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {formatTimeAgo(notification.createdAt, t)}
+                          {formatTimeAgo(notification.createdAt, t, i18n.language)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">

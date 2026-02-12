@@ -25,6 +25,7 @@
     "search": "Търсене",
     "donate": "Дари",
     "donateNow": "Дари сега",
+    "donateTo": "Дари за {{title}}",
     "contribute": "Допринеси",
     "contributeNow": "Допринеси сега",
     "share": "Сподели",
@@ -59,6 +60,12 @@
     "loadingMore": "Зареждане още...",
     "scrollToLoad": "Скролни за още",
     "optional": "По избор"
+  },
+  "share": {
+    "copyLink": "Копирай линк",
+    "shareOnTwitter": "Сподели в Twitter",
+    "shareOnFacebook": "Сподели във Facebook",
+    "shareOnWhatsApp": "Сподели в WhatsApp"
   },
   "filters": {
     "title": "Филтри",
@@ -135,6 +142,7 @@
     "helpersHelping": "{{count}} помагат",
     "helpersHelping_one": "{{count}} помага",
     "helpersHelping_other": "{{count}} помагат",
+    "supportersPending": "Брой поддръжници след верифицирана активност",
     "nearbyOnly": "Наблизо",
     "activeCampaigns": "Активни кампании",
     "campaignsSubtitle": "Помогнете ни да постигнем целите си"
@@ -553,7 +561,7 @@
   "time": {
     "justNow": "Току-що",
     "minutesAgo": "{{count}}м преди",
-    "hoursAgo": "ч преди",
+    "hoursAgo": "{{count}}ч преди",
     "daysAgo": "{{count}}д преди"
   },
   "createCase": {
@@ -983,6 +991,62 @@
       "submit": "Регистрирай бизнес",
       "successTitle": "Бизнесът е регистриран!",
       "successMessage": "Вашият бизнес вече е добавен. Ще го верифицираме скоро."
+    }
+  },
+  "admin": {
+    "common": {
+      "adminRequired": "Нужен е администраторски достъп.",
+      "approve": "Одобри",
+      "reject": "Отхвърли",
+      "rejecting": "Отхвърляне...",
+      "saving": "Запазване..."
+    },
+    "clinicClaims": {
+      "title": "Опашка за заявки от клиники",
+      "subtitle": "Преглед на чакащи заявки за собственост върху предварително добавени клиники.",
+      "loading": "Зареждане на заявки…",
+      "empty": "Няма чакащи заявки.",
+      "stats": "Чакащи: {{count}} · Най-стара: {{oldest}}",
+      "claimant": "Заявител",
+      "submitted": "Подадено {{time}}",
+      "email": "Имейл",
+      "phone": "Телефон",
+      "rejectionReason": "Причина за отказ",
+      "rejectionReasonPlaceholder": "Опишете ясна причина за отказа…",
+      "confirmRejection": "Потвърди отказа",
+      "toasts": {
+        "approved": "Заявката е одобрена",
+        "approveFailed": "Неуспешно одобрение на заявката",
+        "rejected": "Заявката е отхвърлена",
+        "rejectFailed": "Неуспешно отхвърляне на заявката"
+      }
+    },
+    "moderation": {
+      "title": "Опашка за модерация",
+      "subtitle": "Преглед на сигнали и прилагане на действия.",
+      "loading": "Зареждане на опашката…",
+      "empty": "Няма чакащи сигнали.",
+      "unknownCase": "Неизвестен случай",
+      "reason": "Причина",
+      "status": "Статус",
+      "setReviewing": "В преглед",
+      "resolve": "Реши",
+      "resolutionAction": "Действие",
+      "notesOptional": "Бележки (по желание)",
+      "notesPlaceholder": "Добавете контекст за решението…",
+      "confirmResolution": "Потвърди решението",
+      "actions": {
+        "hideCase": "Скрий случая",
+        "warnUser": "Предупреди потребителя",
+        "dismiss": "Отхвърли",
+        "noAction": "Без действие"
+      },
+      "toasts": {
+        "setReviewing": "Сигналът е маркиран като в преглед",
+        "setReviewingFailed": "Неуспешна промяна на сигнала",
+        "resolved": "Сигналът е решен",
+        "resolveFailed": "Неуспешно решаване на сигнала"
+      }
     }
   },
   "tour": {

@@ -206,13 +206,13 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 ### P1 — MVP ("Real Money, Real Trust")
 - [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage → [spec](docs/features/cases-spec.md)
 - [x] DONATIONS — Stripe hosted checkout + webhook completion + post-checkout return banner + receipt links → [spec](docs/features/donations-spec.md)
-- [ ] TRUST: VERIFICATION — Unverified → community → clinic ladder (UI exists, promotion flow pending) → [spec](docs/features/cases-spec.md)
+- [~] TRUST: VERIFICATION — Unverified → community → clinic ladder (community endorsements + clinic evidence + admin override; automation pending) → [spec](docs/features/cases-spec.md)
 - [x] TRUST: MODERATION — Report queue, admin review, actions, audit logging → [spec](docs/features/admin-moderation-spec.md)
-- [ ] TRUST: DUPLICATE DETECTION — pHash image matching → [spec](docs/features/admin-moderation-spec.md)
+- [~] TRUST: DUPLICATE DETECTION — v0 sha256 exact-match flags + report; pHash matching pending → [spec](docs/features/admin-moderation-spec.md)
 - [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments, structured update types → [spec](docs/features/cases-spec.md)
 - [x] CASE OUTCOMES — Close-out flow, lifecycle transitions (active_treatment → seeking_adoption → closed) → [spec](docs/features/cases-spec.md)
-- [ ] SHARING — OG meta tags, SSR share pages
-- [ ] NOTIFICATIONS — Case updates, donation receipts → [spec](docs/features/notifications-spec.md)
+- [x] SHARING — OG meta tags + SSR share pages (`/share/case/:id`)
+- [x] NOTIFICATIONS — Case updates, donations (received/confirmed), clinic claim review → [spec](docs/features/notifications-spec.md)
 
 ### P2 — Growth
 - [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces → [spec](docs/features/campaigns-spec.md)
@@ -222,7 +222,7 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 - [ ] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline) → [spec](docs/features/volunteers-spec.md)
 - [ ] VOLUNTEER: DIRECTORY — Approximate location map → [spec](docs/features/volunteers-spec.md)
 - [ ] VOLUNTEER: TRANSPORT — "Who can help nearby" requests → [spec](docs/features/volunteers-spec.md)
-- [~] CLINIC ONBOARDING — Claim submit flow exists with duplicate guard; admin review queue pending → [spec](docs/features/clinics-spec.md)
+- [x] CLINIC ONBOARDING — Claim submit + admin review queue + claimant notification → [spec](docs/features/clinics-spec.md)
 - [ ] ANALYTICS — Cases, donations, verification dashboards → [spec](docs/systems/analytics-spec.md)
 
 ### P3 — AI Acceleration

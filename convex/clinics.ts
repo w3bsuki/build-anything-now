@@ -209,6 +209,38 @@ export const reviewClaim = mutation({
             createdAt: now,
         });
 
+        const claimantSettings = await ctx.db
+            .query("userSettings")
+            .withIndex("by_user", (q) => q.eq("userId", claim.userId))
+            .unique();
+
+        const lang = (claimantSettings?.language ?? "en").toLowerCase();
+        const isBg = lang.startsWith("bg");
+
+        const title =
+            args.action === "approve"
+                ? (isBg ? "Заявката е одобрена" : "Clinic claim approved")
+                : (isBg ? "Заявката е отхвърлена" : "Clinic claim rejected");
+
+        const reasonText = args.action === "reject" ? (args.rejectionReason?.trim() || "Not eligible") : null;
+        const message =
+            args.action === "approve"
+                ? (isBg
+                    ? `Заявката ви за ${clinic.name} е одобрена. Вече можете да управлявате профила на клиниката.`
+                    : `Your claim for ${clinic.name} has been approved. You can now manage the clinic profile.`)
+                : (isBg
+                    ? `Заявката ви за ${clinic.name} е отхвърлена${reasonText ? `: ${reasonText}` : ""}.`
+                    : `Your claim for ${clinic.name} was rejected${reasonText ? `: ${reasonText}` : ""}.`);
+
+        await ctx.db.insert("notifications", {
+            userId: claim.userId,
+            type: "system",
+            title,
+            message,
+            read: false,
+            createdAt: now,
+        });
+
         return { ok: true };
     },
 });

@@ -6,6 +6,7 @@ import { AnimalCase } from '@/types';
 import { StatusBadge } from './StatusBadge';
 import { ShareButton } from './ShareButton';
 import { cn } from '@/lib/utils';
+import { getCaseShareUrl } from '@/lib/shareUrls';
 import { getStatusTone } from '@/lib/statusTone';
 import { Button } from '@/components/ui/button';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
@@ -16,30 +17,36 @@ interface CaseCardProps {
   className?: string;
 }
 
-function formatTimeAgo(dateString: string): string {
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
+function formatTimeAgo(dateString: string, t: TranslateFn, locale: string): string {
   const now = new Date();
   const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
   const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  const seconds = Math.floor(diffMs / 1000);
+  
+  if (seconds < 60) return t('time.justNow');
+  if (seconds < 3600) return t('time.minutesAgo', { count: Math.floor(seconds / 60) });
+  if (seconds < 86400) return t('time.hoursAgo', { count: Math.floor(seconds / 3600) });
+  if (seconds < 604800) return t('time.daysAgo', { count: Math.floor(seconds / 86400) });
 
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-  return `${Math.floor(diffDays / 30)}mo ago`;
+  return new Date(dateString).toLocaleDateString(locale, {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 export function CaseCard({ caseData, className }: CaseCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   
   const percentage = Math.min((caseData.fundraising.current / caseData.fundraising.goal) * 100, 100);
   const statusTone = getStatusTone(caseData.status);
   const isCritical = caseData.status === 'critical';
-  const timeAgo = formatTimeAgo(caseData.createdAt);
+  const timeAgo = formatTimeAgo(caseData.createdAt, t, i18n.language);
+  const shareUrl = getCaseShareUrl({ caseId: caseData.id, locale: i18n.language }) ?? `${window.location.origin}/case/${caseData.id}`;
   
   return (
     <article
@@ -53,7 +60,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
         <ShareButton
           title={caseData.title}
           text={caseData.description}
-          url={`${window.location.origin}/case/${caseData.id}`}
+          url={shareUrl}
           size="sm"
           appearance="overlay"
         />
@@ -108,7 +115,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           <div className="absolute bottom-0 inset-x-0 p-3">
             <div className="flex items-end justify-between gap-2 mb-2">
               <div className="flex flex-col">
-                <span className="text-white/70 text-[10px] font-medium uppercase tracking-wide">Raised</span>
+                <span className="text-white/70 text-[10px] font-medium uppercase tracking-wide">{t('fundraising.raised')}</span>
                 <span className="text-white text-lg font-bold leading-none">
                   {caseData.fundraising.current.toLocaleString()} <span className="text-sm font-medium opacity-80">{caseData.fundraising.currency}</span>
                 </span>
@@ -130,8 +137,8 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
             </div>
             
             <div className="flex items-center justify-between mt-1.5 text-[10px] text-white/60">
-              <span>Goal: {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
-              <span>{t('home.supportersPending', 'Supporter counts after verified activity')}</span>
+              <span>{t('home.goalOf')} {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
+              <span>{t('home.supportersPending')}</span>
             </div>
           </div>
         </div>
@@ -163,7 +170,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
             statusTone.cta
           )}
         >
-          <Link to={`/case/${caseData.id}`} aria-label={`Donate to ${caseData.title}`}>
+          <Link to={`/case/${caseData.id}`} aria-label={t('actions.donateTo', { title: caseData.title })}>
             <Heart className="w-4 h-4 mr-1.5 fill-current" />
             {(isCritical || caseData.status === 'urgent') ? t('actions.donateNow') || 'Donate Now' : t('actions.donate')}
           </Link>

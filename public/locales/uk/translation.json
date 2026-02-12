@@ -443,7 +443,7 @@
   "time": {
     "justNow": "Щойно",
     "minutesAgo": "{{count}}хв тому",
-    "hoursAgo": "год тому",
+    "hoursAgo": "{{count}}год тому",
     "daysAgo": "{{count}}дн тому"
   },
   "createCase": {

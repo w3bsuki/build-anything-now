@@ -157,6 +157,7 @@ Single flat config file (`eslint.config.js`):
 |----------|------------|---------|
 | `VITE_CONVEX_URL` | Frontend (Vite) | `https://xxx.convex.cloud` |
 | `VITE_CLERK_PUBLISHABLE_KEY` | Frontend (Vite) | `pk_live_xxx` or `pk_test_xxx` |
+| `APP_ORIGIN` | Convex backend (HTTP share pages) | `https://pawtreon.app` |
 | `STRIPE_SECRET_KEY` | Convex backend (action) | `sk_live_xxx` or `sk_test_xxx` |
 | `STRIPE_WEBHOOK_SECRET` | Convex backend (HTTP) | `whsec_xxx` |
 | `CLERK_WEBHOOK_SECRET` | Convex backend (HTTP) | `whsec_xxx` (Svix) |

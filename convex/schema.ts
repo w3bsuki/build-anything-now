@@ -659,6 +659,27 @@ export default defineSchema({
         .index("by_reporter", ["reporterId"])
         .index("by_reviewed_by", ["reviewedBy"]),
 
+    // Case endorsements - trusted community corroboration for verification ladder
+    caseEndorsements: defineTable({
+        caseId: v.id("cases"),
+        userId: v.id("users"),
+        createdAt: v.number(),
+    })
+        .index("by_case", ["caseId"])
+        .index("by_user_case", ["userId", "caseId"]),
+
+    // Image fingerprints for duplicate detection (v0: exact sha256 matching)
+    imageFingerprints: defineTable({
+        storageId: v.id("_storage"),
+        sha256: v.string(),
+        caseId: v.id("cases"),
+        uploaderId: v.id("users"),
+        createdAt: v.number(),
+    })
+        .index("by_sha256", ["sha256"])
+        .index("by_case", ["caseId"])
+        .index("by_storage", ["storageId"]),
+
     // High-risk action audit trail (moderation, verification, lifecycle, money)
     auditLogs: defineTable({
         actorId: v.optional(v.id("users")),

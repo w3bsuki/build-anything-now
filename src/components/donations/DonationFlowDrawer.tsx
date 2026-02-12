@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { getCaseShareUrl } from '@/lib/shareUrls';
 import { toast } from '@/components/ui/use-toast';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
@@ -64,7 +65,7 @@ export function DonationFlowDrawer({
   caseCoverImage?: string | null;
   currency: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const presets = useMemo(() => [10, 25, 50, 100], []);
 
@@ -134,7 +135,7 @@ export function DonationFlowDrawer({
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/case/${caseId}`;
+    const shareUrl = getCaseShareUrl({ caseId, locale: i18n.language }) ?? `${window.location.origin}/case/${caseId}`;
 
     if (navigator.share) {
       try {

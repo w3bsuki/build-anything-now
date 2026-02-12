@@ -443,7 +443,7 @@
   "time": {
     "justNow": "Gerade eben",
     "minutesAgo": "vor {{count}}Min",
-    "hoursAgo": "Std her",
+    "hoursAgo": "vor {{count}}Std",
     "daysAgo": "vor {{count}}T"
   },
   "createCase": {
