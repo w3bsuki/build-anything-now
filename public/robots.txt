@@ -1,8 +1,10 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /share/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /share/
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +14,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /share/
+
+Sitemap: https://pawtreon.app/sitemap.xml

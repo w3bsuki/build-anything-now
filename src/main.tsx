@@ -12,7 +12,7 @@ import "@fontsource/nunito/800.css";
 import "@fontsource/rubik/600.css";
 import "@fontsource/rubik/700.css";
 import "./index.css";
-import { initAnalytics } from "./lib/analytics";
+import { CookieConsentProvider } from "./components/analytics/CookieConsentProvider";
 
 // Environment variables
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
@@ -28,16 +28,15 @@ if (!convexUrl) {
     throw new Error("Missing VITE_CONVEX_URL");
 }
 
-// TODO: Gate analytics initialization behind explicit cookie consent before EU launch.
-initAnalytics({ key: posthogKey, host: posthogHost });
-
 const convex = new ConvexReactClient(convexUrl);
 
 function AppWithProviders() {
     return (
         <ClerkProvider publishableKey={clerkPubKey}>
             <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-                <App />
+                <CookieConsentProvider analyticsConfig={{ key: posthogKey, host: posthogHost }}>
+                    <App />
+                </CookieConsentProvider>
             </ConvexProviderWithClerk>
         </ClerkProvider>
     );

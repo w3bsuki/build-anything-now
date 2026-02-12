@@ -16,7 +16,8 @@ import {
   PawPrint,
   ArrowLeft,
   Pencil,
-  Share2
+  Share2,
+  Calendar
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -36,9 +37,13 @@ const Account = () => {
   const unreadNotifications = useQuery(api.notifications.getUnreadCount) ?? 0;
   const achievements = useQuery(api.achievements.getMyAchievements);
   const featuredInitiativesRaw = useQuery(api.campaigns.getFeaturedInitiatives, { limit: 2 });
+  const subscriptions = useQuery(api.subscriptions.list);
 
   const achievementCount = achievements?.length ?? 0;
   const donationStats = stats ?? { totalDonations: 0, totalAmount: 0, animalsHelped: 0 };
+  const activeSubscriptionsCount = (subscriptions ?? []).filter(
+    (subscription) => subscription.status !== 'canceled',
+  ).length;
   const featuredInitiatives: Campaign[] = (featuredInitiativesRaw ?? []).map((c) => ({
     id: c._id,
     title: c.title,
@@ -53,6 +58,7 @@ const Account = () => {
   // Main menu items
   const menuItems = [
     { icon: Heart, labelKey: 'profile.myDonations', badge: donationStats.totalDonations > 0 ? donationStats.totalDonations.toString() : undefined, path: '/donations' },
+    { icon: Calendar, labelKey: 'profile.subscriptions', badge: activeSubscriptionsCount > 0 ? activeSubscriptionsCount.toString() : undefined, path: '/subscriptions' },
     { icon: Award, labelKey: 'profile.achievements', badge: achievementCount > 0 ? achievementCount.toString() : undefined, path: '/achievements' },
     { icon: CreditCard, labelKey: 'profile.paymentMethods', path: '/payment' },
     { icon: Bell, labelKey: 'profile.notifications', badge: unreadNotifications > 0 ? unreadNotifications.toString() : undefined, path: '/notifications' },

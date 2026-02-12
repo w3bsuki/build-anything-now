@@ -115,18 +115,18 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
           <div className="absolute bottom-0 inset-x-0 p-3">
             <div className="flex items-end justify-between gap-2 mb-2">
               <div className="flex flex-col">
-                <span className="text-white/70 text-[10px] font-medium uppercase tracking-wide">{t('fundraising.raised')}</span>
-                <span className="text-white text-lg font-bold leading-none">
+                <span className="text-primary-foreground/75 text-[10px] font-medium uppercase tracking-wide">{t('fundraising.raised')}</span>
+                <span className="text-primary-foreground text-lg font-bold leading-none">
                   {caseData.fundraising.current.toLocaleString()} <span className="text-sm font-medium opacity-80">{caseData.fundraising.currency}</span>
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-white text-2xl font-black">{Math.round(percentage)}%</span>
+                <span className="text-primary-foreground text-2xl font-black">{Math.round(percentage)}%</span>
               </div>
             </div>
             
             {/* Progress bar - status colored */}
-            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+            <div className="h-1.5 bg-primary-foreground/25 rounded-full overflow-hidden backdrop-blur-sm">
               <div 
                 className={cn(
                   "h-full rounded-full transition-all duration-500",
@@ -136,7 +136,7 @@ export function CaseCard({ caseData, className }: CaseCardProps) {
               />
             </div>
             
-            <div className="flex items-center justify-between mt-1.5 text-[10px] text-white/60">
+            <div className="flex items-center justify-between mt-1.5 text-[10px] text-primary-foreground/65">
               <span>{t('home.goalOf')} {caseData.fundraising.goal.toLocaleString()} {caseData.fundraising.currency}</span>
               <span>{t('home.supportersPending')}</span>
             </div>

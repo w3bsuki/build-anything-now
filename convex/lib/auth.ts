@@ -1,15 +1,7 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 
-/**
- * Require authentication and return the current user.
- * Throws if not authenticated or user not found in database.
- * 
- * Use this in any mutation/query that should only work for logged-in users.
- */
-export async function requireUser(
-  ctx: QueryCtx | MutationCtx
-): Promise<Doc<"users">> {
+async function getUserFromIdentity(ctx: QueryCtx | MutationCtx): Promise<Doc<"users">> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Not authenticated");
@@ -25,6 +17,25 @@ export async function requireUser(
   }
 
   return user;
+}
+
+export async function getAuthUserId(
+  ctx: QueryCtx | MutationCtx
+): Promise<Id<"users">> {
+  const user = await getUserFromIdentity(ctx);
+  return user._id;
+}
+
+/**
+ * Require authentication and return the current user.
+ * Throws if not authenticated or user not found in database.
+ * 
+ * Use this in any mutation/query that should only work for logged-in users.
+ */
+export async function requireUser(
+  ctx: QueryCtx | MutationCtx
+): Promise<Doc<"users">> {
+  return getUserFromIdentity(ctx);
 }
 
 /**

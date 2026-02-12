@@ -1,8 +1,14 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import { requireUser, optionalUser } from "./lib/auth";
+import { getAuthUserId, requireUser, optionalUser } from "./lib/auth";
 import type { Doc, Id } from "./_generated/dataModel";
+import {
+  createExternalSourceForTarget,
+  getLatestExternalSourceForTarget,
+  mapExternalSourceForUi,
+  normalizeOptionalExternalSourceInput,
+} from "./lib/externalSources";
 
 const CATEGORY_VALUES = [
   "urgent_help",
@@ -193,7 +199,8 @@ async function getCommentViewerReacted(
 async function mapThread(
   ctx: QueryLikeCtx,
   post: ThreadDoc,
-  viewerId: Id<"users"> | null
+  viewerId: Id<"users"> | null,
+  includeExternalSource: boolean = false
 ) {
   const author = await ctx.db.get(post.userId);
   const cityTag = sanitizeCityTag(post.cityTag);
@@ -203,6 +210,9 @@ async function mapThread(
   const lastActivityAt = post.lastActivityAt ?? post.createdAt;
 
   const viewerReacted = await getThreadViewerReacted(ctx, post._id, viewerId);
+  const externalSource = includeExternalSource
+    ? mapExternalSourceForUi(await getLatestExternalSourceForTarget(ctx, "community_post", String(post._id)))
+    : null;
 
   return {
     id: post._id,
@@ -223,6 +233,7 @@ async function mapThread(
     lastActivityAt,
     timeAgo: normalizeTimeAgo(lastActivityAt),
     viewerReacted,
+    externalSource,
     author: {
       id: author?._id ?? null,
       name: author?.displayName || author?.name || "Unknown",
@@ -413,7 +424,7 @@ export const listThreads = query({
     });
 
     const limited = filtered.slice(0, limit);
-    const threads = await Promise.all(limited.map((post) => mapThread(ctx, post, viewer?._id ?? null)));
+    const threads = await Promise.all(limited.map((post) => mapThread(ctx, post, viewer?._id ?? null, false)));
 
     return {
       threads,
@@ -470,7 +481,7 @@ export const listFollowedThreads = query({
     const page = filtered.slice(0, limit);
     const hasMore = filtered.length > limit;
     const nextCursor = hasMore && page.length > 0 ? page[page.length - 1].createdAt : null;
-    const threads = await Promise.all(page.map((post) => mapThread(ctx, post, viewer._id)));
+    const threads = await Promise.all(page.map((post) => mapThread(ctx, post, viewer._id, false)));
 
     return {
       threads,
@@ -486,7 +497,7 @@ export const getThread = query({
     const viewer = await optionalUser(ctx);
     const post = await ctx.db.get(args.id);
     if (!post || post.isDeleted) return null;
-    return mapThread(ctx, post, viewer?._id ?? null);
+    return mapThread(ctx, post, viewer?._id ?? null, true);
   },
 });
 
@@ -506,15 +517,22 @@ export const createThread = mutation({
     cityTag: v.optional(v.string()),
     caseId: v.optional(v.string()),
     image: v.optional(v.string()),
+    externalSourceUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
+    const userId = await getAuthUserId(ctx);
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const content = normalizeContent(args.content);
-    await assertThreadRateLimit(ctx, user._id);
+    await assertThreadRateLimit(ctx, userId);
     const title = normalizeTitle(args.title, content);
     const board = args.board;
     const category = normalizeCategoryByBoard(board, args.category);
     const cityTag = sanitizeCityTag(args.cityTag) ?? normalizeUserCity(user) ?? undefined;
+    const externalSource = normalizeOptionalExternalSourceInput(args.externalSourceUrl);
     let caseId: Id<"cases"> | undefined;
     if (args.caseId) {
       const candidate = args.caseId as Id<"cases">;
@@ -527,7 +545,7 @@ export const createThread = mutation({
     const now = Date.now();
 
     const id = await ctx.db.insert("communityPosts", {
-      userId: user._id,
+      userId,
       title,
       content,
       image: args.image,
@@ -546,8 +564,17 @@ export const createThread = mutation({
       createdAt: now,
     });
 
+    if (externalSource) {
+      await createExternalSourceForTarget(ctx, {
+        targetType: "community_post",
+        targetId: String(id),
+        source: externalSource,
+        createdAt: now,
+      });
+    }
+
     await ctx.db.insert("auditLogs", {
-      actorId: user._id,
+      actorId: userId,
       entityType: "community_post",
       entityId: String(id),
       action: "community.thread.created",
@@ -926,7 +953,7 @@ export const list = query({
       .sort((a, b) => (b.lastActivityAt ?? b.createdAt) - (a.lastActivityAt ?? a.createdAt))
       .slice(0, limit);
 
-    const mapped = await Promise.all(communityPosts.map((post) => mapThread(ctx, post, viewer?._id ?? null)));
+    const mapped = await Promise.all(communityPosts.map((post) => mapThread(ctx, post, viewer?._id ?? null, false)));
     return mapped.map(toLegacyPost);
   },
 });
@@ -937,7 +964,7 @@ export const get = query({
     const viewer = await optionalUser(ctx);
     const post = await ctx.db.get(args.id);
     if (!post || post.isDeleted) return null;
-    const thread = await mapThread(ctx, post, viewer?._id ?? null);
+    const thread = await mapThread(ctx, post, viewer?._id ?? null, false);
     return toLegacyPost(thread);
   },
 });
@@ -947,16 +974,23 @@ export const create = mutation({
     content: v.string(),
     image: v.optional(v.string()),
     caseId: v.optional(v.id("cases")),
+    externalSourceUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
+    const userId = await getAuthUserId(ctx);
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const content = normalizeContent(args.content);
+    const externalSource = normalizeOptionalExternalSourceInput(args.externalSourceUrl);
     const now = Date.now();
     const board: ForumBoard = args.caseId ? "rescue" : "community";
     const category = args.caseId ? "case_update" : "general";
 
     const id = await ctx.db.insert("communityPosts", {
-      userId: user._id,
+      userId,
       title: normalizeTitle(undefined, content),
       content,
       image: args.image,
@@ -974,6 +1008,15 @@ export const create = mutation({
       commentsCount: 0,
       createdAt: now,
     });
+
+    if (externalSource) {
+      await createExternalSourceForTarget(ctx, {
+        targetType: "community_post",
+        targetId: String(id),
+        source: externalSource,
+        createdAt: now,
+      });
+    }
 
     return id;
   },

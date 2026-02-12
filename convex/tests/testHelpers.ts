@@ -2,11 +2,40 @@
 
 "use node";
 
+import { readdirSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { convexTest } from "convex-test";
 import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
 
-const modules = import.meta.glob("../**/*.ts");
+const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
+const CONVEX_DIR = join(TESTS_DIR, "..");
+
+function collectConvexModules(
+  currentDir: string,
+  acc: Record<string, () => Promise<unknown>>
+): Record<string, () => Promise<unknown>> {
+  for (const entry of readdirSync(currentDir, { withFileTypes: true })) {
+    const fullPath = join(currentDir, entry.name);
+    if (entry.isDirectory()) {
+      collectConvexModules(fullPath, acc);
+      continue;
+    }
+
+    const isModuleFile = (entry.name.endsWith(".ts") || entry.name.endsWith(".js")) && !entry.name.endsWith(".d.ts");
+    if (!isModuleFile) continue;
+
+    const relativePath = relative(TESTS_DIR, fullPath).replace(/\\/g, "/");
+    const key = relativePath.startsWith("..") ? relativePath : `./${relativePath}`;
+    const specifier = pathToFileURL(fullPath).href;
+    acc[key] = () => import(specifier);
+  }
+
+  return acc;
+}
+
+const modules = collectConvexModules(CONVEX_DIR, {});
 
 export type TestClient = ReturnType<typeof createTestClient>;
 
@@ -41,9 +70,10 @@ export async function seedUser(
     role?: UserRole;
     verificationLevel?: VerificationStatus | "partner";
     linkedPetServiceId?: Id<"petServices">;
+    createdAt?: number;
   },
 ) {
-  const now = Date.now();
+  const now = args?.createdAt ?? Date.now();
   const clerkId = args?.clerkId ?? `clerk_${Math.random().toString(36).slice(2, 10)}`;
 
   const userId = await t.run(async (ctx) => {

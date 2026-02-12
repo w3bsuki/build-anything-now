@@ -192,38 +192,40 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 > Mark `[x]` only when the feature is real (no dead CTAs, no broken routes).
 
 ### P0 — Foundation (Done)
-- [x] AUTH — Clerk authentication → [spec](docs/features/onboarding-spec.md)
-- [x] HOME FEED — Instagram-like case discovery → [spec](docs/features/search-discovery-spec.md)
-- [x] CASE PAGE — Story, updates timeline, trust indicators, donate CTA → [spec](docs/features/cases-spec.md)
-- [x] CASE CARDS — Verification badges, report menu → [spec](docs/features/cases-spec.md)
-- [x] CREATE CASE UI — Photos, location, goal, story (UI only) → [spec](docs/features/cases-spec.md)
-- [x] LIST WITH AI — Preview flow (photo → draft → review) → [spec](docs/features/cases-spec.md)
-- [x] DONATION MODAL — Amount → method → confirm → success (preview) → [spec](docs/features/donations-spec.md)
-- [x] COMMUNITY — Rules/safety section, report entry points → [spec](docs/features/community-spec.md)
-- [x] PROFILES — Basic profile page, role display → [spec](docs/features/profiles-spec.md)
-- [x] I18N — Multi-language support, fallbacks → [spec](docs/design/i18n-spec.md)
+- [x] AUTH — Clerk authentication → [spec](docs/product-specs/features/onboarding-spec.md)
+- [x] HOME FEED — Instagram-like case discovery → [spec](docs/product-specs/features/search-discovery-spec.md)
+- [x] CASE PAGE — Story, updates timeline, trust indicators, donate CTA → [spec](docs/product-specs/features/cases-spec.md)
+- [x] CASE CARDS — Verification badges, report menu → [spec](docs/product-specs/features/cases-spec.md)
+- [x] CREATE CASE UI — Photos, location, goal, story (UI only) → [spec](docs/product-specs/features/cases-spec.md)
+- [x] LIST WITH AI — Preview flow (photo → draft → review) → [spec](docs/product-specs/features/cases-spec.md)
+- [x] DONATION MODAL — Amount → method → confirm → success (preview) → [spec](docs/product-specs/features/donations-spec.md)
+- [x] COMMUNITY — Rules/safety section, report entry points → [spec](docs/product-specs/features/community-spec.md)
+- [x] PROFILES — Basic profile page, role display → [spec](docs/product-specs/features/profiles-spec.md)
+- [x] I18N — Multi-language support, fallbacks → [spec](docs/design-docs/ui/i18n-spec.md)
 
 ### P1 — MVP ("Real Money, Real Trust")
-- [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage → [spec](docs/features/cases-spec.md)
-- [x] DONATIONS — Stripe hosted checkout + webhook completion + post-checkout return banner + receipt links → [spec](docs/features/donations-spec.md)
-- [~] TRUST: VERIFICATION — Unverified → community → clinic ladder (community endorsements + clinic evidence + admin override; automation pending) → [spec](docs/features/cases-spec.md)
-- [x] TRUST: MODERATION — Report queue, admin review, actions, audit logging → [spec](docs/features/admin-moderation-spec.md)
-- [x] TRUST: DUPLICATE DETECTION — sha256 exact-match + perceptual hash (`pHash`/`dHash`) similarity flags with moderation report + audit log → [spec](docs/features/admin-moderation-spec.md)
-- [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments, structured update types → [spec](docs/features/cases-spec.md)
-- [x] CASE OUTCOMES — Close-out flow, lifecycle transitions (active_treatment → seeking_adoption → closed) → [spec](docs/features/cases-spec.md)
+- [x] CREATE CASE PUBLISH — Wire to Convex, photos to storage → [spec](docs/product-specs/features/cases-spec.md)
+- [x] DONATIONS — Stripe hosted checkout + webhook completion + post-checkout return banner + receipt links → [spec](docs/product-specs/features/donations-spec.md)
+- [x] TRUST: VERIFICATION — Unverified → community → clinic ladder (admin revocation with required reason + endorsement rate limits + anti-brigading detection + refined auto-promotion criteria) → [spec](docs/product-specs/features/cases-spec.md)
+- [x] TRUST: MODERATION — Report queue, admin review, actions, audit logging → [spec](docs/product-specs/features/admin-moderation-spec.md)
+- [x] TRUST: DUPLICATE DETECTION — sha256 exact-match + perceptual hash (`pHash`/`dHash`) similarity flags with moderation report + audit log → [spec](docs/product-specs/features/admin-moderation-spec.md)
+- [x] CASE UPDATES — Rescuer + clinic updates, evidence attachments, structured update types → [spec](docs/product-specs/features/cases-spec.md)
+- [x] CASE OUTCOMES — Close-out flow, lifecycle transitions (active_treatment → seeking_adoption → closed) → [spec](docs/product-specs/features/cases-spec.md)
 - [x] SHARING — OG meta tags + SSR share pages (`/share/case/:id`)
-- [x] NOTIFICATIONS — Case updates, donations (received/confirmed), clinic claim review → [spec](docs/features/notifications-spec.md)
+- [x] NOTIFICATIONS — Case updates, donations (received/confirmed), clinic claim review (in-app real-time) → [spec](docs/product-specs/features/notifications-spec.md)
 
 ### P2 — Growth
-- [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces → [spec](docs/features/campaigns-spec.md)
+- [x] MISSION INITIATIVES — Dedicated initiative campaign classification + surfaces → [spec](docs/product-specs/features/campaigns-spec.md)
 - [x] FOLLOW — Follow rescuers/clinics, "following" feed tab
-- [ ] RECURRING — Monthly support for rescuers/clinics → [spec](docs/features/donations-spec.md)
-- [ ] EXTERNAL LINKS — FB/IG link cards, source attribution
-- [ ] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline) → [spec](docs/features/volunteers-spec.md)
-- [ ] VOLUNTEER: DIRECTORY — Approximate location map → [spec](docs/features/volunteers-spec.md)
-- [ ] VOLUNTEER: TRANSPORT — "Who can help nearby" requests → [spec](docs/features/volunteers-spec.md)
-- [x] CLINIC ONBOARDING — Claim submit + admin review queue + claimant notification → [spec](docs/features/clinics-spec.md)
-- [ ] ANALYTICS — Cases, donations, verification dashboards → [spec](docs/systems/analytics-spec.md)
+- [x] RECURRING — Monthly support for rescuers/clinics (Stripe subscription checkout + webhook lifecycle sync + account management UI) → [spec](docs/product-specs/features/donations-spec.md)
+- [x] EXTERNAL LINKS — FB/IG link cards, source attribution → [spec](docs/product-specs/features/social-spec.md)
+- [x] VOLUNTEER: AVAILABILITY — Opt-in status (available/busy/offline) in settings → [spec](docs/product-specs/features/volunteers-spec.md)
+- [x] VOLUNTEER: DIRECTORY — City/capability/availability volunteer directory (`/volunteers`) → [spec](docs/product-specs/features/volunteers-spec.md)
+- [x] VOLUNTEER: TRANSPORT — "Who can help nearby" requests with city-level volunteer notifications → [spec](docs/product-specs/features/volunteers-spec.md)
+- [x] CLINIC ONBOARDING — Claim submit + admin review queue + claimant notification → [spec](docs/product-specs/features/clinics-spec.md)
+- [x] ANALYTICS — Admin dashboards for cases, donations, verification, and moderation (`/admin/analytics`) → [spec](docs/design-docs/systems/analytics-spec.md)
+- [x] NOTIFICATION CHANNELS — Push token registration, email delivery wiring, and hourly case-update batching/throttling → [spec](docs/product-specs/features/notifications-spec.md)
+- [x] PRODUCTION HARDENING — Cookie consent banner, GDPR export endpoint, route error boundary baseline, robots/sitemap updates
 
 ### P3 — AI Acceleration
 - [ ] AI CASE CREATION — Server-side extraction, confidence hints
@@ -231,9 +233,9 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 - [ ] NEED HELP NOW — Non-diagnostic triage, emergency escalation
 
 ### Future (Not Now)
-- [ ] DRONE SCOUTING — Livestream operations (moonshot, mission initiative) → [spec](docs/missions/drone-program-spec.md)
+- [ ] DRONE SCOUTING — Livestream operations (moonshot, mission initiative) → [spec](docs/product-specs/missions/drone-program-spec.md)
 - [ ] SHELTER CRM — Full management suite
-- [ ] MESSAGING — In-app chat system → [spec](docs/features/messaging-spec.md)
+- [ ] MESSAGING — In-app chat system → [spec](docs/product-specs/features/messaging-spec.md)
 
 > **Legend:** `[x]` = shipped, `[~]` = partially done, `[ ]` = not started
 
@@ -248,8 +250,8 @@ Duplicate detection, pattern scoring, suspicious text/image signals → flags fo
 | Trust/safety + UX rules | Non-negotiable constraints | `RULES.md` |
 | Decision log | Why we decided what | `DECISIONS.md` |
 | Workflow contract | Agent roles + process | `AGENTS.md` |
-| Product roadmap | Phased delivery timeline | `docs/product/roadmap.md` |
-| Product thesis | North star + scope | `docs/product/master-plan.md` |
-| Feature specs | Per-feature specs | `docs/features/` |
+| Product roadmap | Phased delivery timeline | `docs/product-specs/strategy/future-goals.md` |
+| Product thesis | North star + scope | `docs/product-specs/strategy/master-plan.md` |
+| Feature specs | Per-feature specs | `docs/product-specs/features/` |
 
 

@@ -49,6 +49,7 @@ export const getMyDonations = query({
 
         return {
           ...donation,
+          donationKind: donation.donationKind ?? "one_time",
           caseName,
           caseImage,
         };
@@ -131,6 +132,7 @@ export const create = mutation({
       userId: user._id,
       caseId: args.caseId,
       campaignId: args.campaignId,
+      donationKind: "one_time",
       amount: args.amount,
       currency: args.currency,
       status: "pending",
@@ -185,6 +187,7 @@ export const createCheckoutSession = mutation({
       caseId: args.caseId,
       campaignId: args.campaignRefId ? String(args.campaignRefId) : undefined,
       campaignRefId: args.campaignRefId,
+      donationKind: "one_time",
       amount: args.amount,
       currency: args.currency,
       status: "pending",

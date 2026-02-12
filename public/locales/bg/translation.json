@@ -47,6 +47,7 @@
     "helpNowWithName": "Помогни на {{name}} сега",
     "supportCase": "Подкрепи случая",
     "supportCaseWithName": "Подкрепи {{name}}",
+    "supportMonthly": "Подкрепяй месечно",
     "adopt": "Осинови",
     "adoptWithName": "Осинови {{name}}"
   },
@@ -87,6 +88,27 @@
   "report": {
     "reportConcern": "Докладвай проблем",
     "signInToReport": "Влез, за да докладваш"
+  },
+  "verification": {
+    "communityEndorsements": "Квалифицирани потвърждения: {{count}}/{{threshold}}",
+    "promoted": "Случаят е community верифициран",
+    "alreadyEndorsed": "Вече потвърдено",
+    "endorsed": "Потвърдено",
+    "endorse": "Потвърди",
+    "endorseFailed": "Неуспешно потвърждение",
+    "status": "Статус на верификация",
+    "selectStatus": "Избери статус",
+    "unverified": "Неверифициран",
+    "community": "Community верифициран",
+    "clinic": "Клинично верифициран",
+    "updated": "Верификацията е обновена",
+    "revoked": "Верификацията е понижена",
+    "updateFailed": "Неуспешно обновяване на верификацията",
+    "revocationReasonLabel": "Бележка за промяна на верификацията",
+    "revocationReasonPlaceholder": "Добавете контекст за промяната. Задължително при понижаване/ревокация.",
+    "revocationReasonRequired": "Изисква се причина при понижаване на верификацията.",
+    "revocationReasonOptional": "Причината е по избор при повишаване или промяна без понижаване.",
+    "revocationReasonMissing": "Моля, добавете причина за тази ревокация."
   },
   "contentTranslation": {
     "translatePrompt": "Този случай е публикуван на друг език.",
@@ -212,6 +234,7 @@
     "joinVolunteers": "Присъединете се към нашия невероятен екип от доброволци и помогнете за спасяването на животински животи",
     "becomePartner": "Стани партньор",
     "becomeVolunteer": "Стани доброволец",
+    "openVolunteerDirectory": "Отвори директорията",
     "helped": "Помогнати",
     "adoptions": "Осиновявания",
     "since": "От",
@@ -285,6 +308,21 @@
     "startThread": "Създай тема",
     "openActivity": "Отвори активност"
   },
+  "externalSources": {
+    "fieldLabel": "Линк към източник (по избор)",
+    "fieldPlaceholder": "Поставете Facebook, Instagram или друг публичен линк",
+    "fieldHelp": "Показваме линка само като атрибуция на източника. Не се извлича частно съдържание.",
+    "sourceAttribution": "Атрибуция на източник",
+    "openLinkAria": "Отвори линк към източник: {{title}} ({{domain}})",
+    "platform": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "x": "X",
+      "youtube": "YouTube",
+      "tiktok": "TikTok",
+      "other": "Външен източник"
+    }
+  },
   "profile": {
     "title": "Профил",
     "guestUser": "Гост потребител",
@@ -295,6 +333,7 @@
     "myDonations": "Моите дарения",
     "donationHistory": "История на даренията",
     "achievements": "Постижения",
+    "subscriptions": "Месечна подкрепа",
     "paymentMethods": "Методи на плащане",
     "notifications": "Известия",
     "settings": "Настройки",
@@ -349,7 +388,16 @@
     "currency": "Валута",
     "account": "Акаунт",
     "editProfile": "Редактирай профила",
+    "manageSubscriptions": "Управлявай месечната подкрепа",
+    "manageSubscriptionsDesc": "Прегледай активните повтарящи се дарения и прекрати по всяко време",
     "privacySecurity": "Поверителност и сигурност",
+    "downloadData": "Изтегли моите данни",
+    "downloadDataDesc": "Получи GDPR експорт на данните от акаунта ти в Pawtreon",
+    "downloadDataAction": "Изтегли",
+    "downloadingData": "Подготвяне…",
+    "dataExportReady": "Експортът е готов",
+    "dataExportReadyDesc": "JSON файлът е изтеглен.",
+    "dataExportFailed": "В момента не успяхме да експортираме данните ти.",
     "support": "Поддръжка",
     "helpCenter": "Помощен център",
     "termsPrivacy": "Условия и поверителност",
@@ -368,7 +416,20 @@
     "suggested": "Препоръчан"
   },
   "analytics": {
-    "cookieConsentPlaceholder": "Преди EU пускане са нужни контроли за съгласие за бисквитки."
+    "cookieConsentPlaceholder": "Преди EU пускане са нужни контроли за съгласие за бисквитки.",
+    "cookieConsent": {
+      "title": "Съгласие за бисквитки",
+      "description": "Разреши аналитични бисквитки, за да подобряваме rescue и donation потоците. Можеш да продължиш и без аналитика.",
+      "accept": "Разреши аналитични бисквитки",
+      "decline": "Откажи"
+    }
+  },
+  "errors": {
+    "routeCrash": {
+      "title": "Нещо се обърка",
+      "description": "Страницата не можа да се зареди. Обнови и опитай отново.",
+      "retry": "Презареди"
+    }
   },
   "currencies": {
     "BGN": "Български лев (BGN)",
@@ -529,6 +590,67 @@
     "sendDirectMessage": "Изпрати директно съобщение",
     "sendMessage": "Изпрати съобщение"
   },
+  "volunteers": {
+    "availability": {
+      "available": "Наличен",
+      "busy": "Зает",
+      "offline": "Офлайн"
+    },
+    "availabilityFilters": {
+      "default": "Видими сега",
+      "available": "Налични",
+      "busy": "Заети",
+      "offline": "Офлайн",
+      "all": "Всички"
+    },
+    "capabilities": {
+      "transport": "Транспорт",
+      "fostering": "Приемна грижа",
+      "rescue": "Спасяване",
+      "events": "Събития",
+      "social_media": "Социални мрежи",
+      "medical": "Медицинска помощ",
+      "general": "Обща помощ"
+    },
+    "settings": {
+      "title": "Координация на доброволци",
+      "availabilityTitle": "Статус на наличност",
+      "availabilityHint": "По подразбиране сте офлайн. Градът ви се вижда само когато се включите.",
+      "capabilitiesTitle": "Умения",
+      "capabilitiesHint": "Изберете всички начини, по които можете да помогнете.",
+      "openDirectory": "Отвори директорията с доброволци",
+      "defaultBio": "Доброволец, готов да помогне на случаи наблизо.",
+      "saveFailed": "Не успяхме да запазим настройките. Опитайте отново."
+    }
+  },
+  "volunteersDirectory": {
+    "title": "Директория с доброволци",
+    "description": "Показва се само ниво град. Точен домашен адрес не се показва.",
+    "filters": "Филтри",
+    "filtersHint": "Филтрирайте по град, умения и наличност.",
+    "cityLabel": "Град",
+    "cityPlaceholder": "напр. София",
+    "capabilityLabel": "Умения",
+    "allCapabilities": "Всички",
+    "availabilityLabel": "Наличност",
+    "cityUnknown": "Неизвестен град",
+    "noCapabilities": "Уменията са в процес на попълване",
+    "emptyTitle": "Няма намерени доброволци",
+    "emptyBody": "Променете филтрите или поканете доброволци да се включат."
+  },
+  "transportRequests": {
+    "title": "Кой може да помогне наблизо",
+    "subtitle": "Намерете налични доброволци за транспорт в {{city}}.",
+    "requestCta": "Изпрати заявка за транспорт",
+    "sending": "Изпращане...",
+    "requestSentTitle": "Заявката е изпратена",
+    "requestSentBody": "Известени са {{count}} доброволци.",
+    "noMatchesTitle": "Няма налични съвпадения",
+    "noMatchesBody": "В момента няма налични доброволци за транспорт в този град.",
+    "noMatchesInline": "В момента няма налични доброволци за транспорт в този град.",
+    "requestFailedTitle": "Не успяхме да изпратим заявката",
+    "requestFailedBody": "Моля, опитайте отново след няколко минути."
+  },
   "common": {
     "loading": "Зареждане...",
     "error": "Грешка",
@@ -667,6 +789,10 @@
     "openReceipt": "Отвори разписката",
     "viewReceipt": "Виж разписка",
     "receiptId": "Номер на разписка",
+    "kind": {
+      "one_time": "Еднократно",
+      "recurring": "Повтарящо се"
+    },
     "closed": "Даренията са затворени",
     "gatedNote": "Даренията са временно недостъпни за този случай.",
     "return": {
@@ -677,7 +803,40 @@
       "viewHistory": "Виж моите дарения",
       "tryAgain": "Опитай отново"
     }
-  },  "cities": {
+  },
+  "subscriptions": {
+    "title": "Месечна подкрепа",
+    "subtitle": "Управлявайте повтарящите се дарения на едно място.",
+    "activeListTitle": "Вашите абонаменти",
+    "activeListDescription": "Можете да прекратите по всяко време. Таксуването се обработва сигурно от Stripe.",
+    "emptyTitle": "Все още няма месечна подкрепа",
+    "emptyBody": "Отворете случай или профил и натиснете „Подкрепяй месечно“, за да започнете редовна помощ.",
+    "billingLabel": "Таксува се месечно",
+    "chooseAmount": "Изберете месечна сума",
+    "customAmount": "Персонална месечна сума",
+    "secureCheckoutHint": "Ще бъдете пренасочени към защитения Stripe checkout.",
+    "startMonthlySupport": "Стартирай месечна подкрепа",
+    "redirecting": "Пренасочване…",
+    "checkoutFailed": "Неуспешно стартиране на месечна подкрепа. Моля, опитайте отново.",
+    "previewActiveTitle": "Месечната подкрепа е стартирана",
+    "previewActiveBody": "Режим preview: повтарящото таксуване е симулирано локално.",
+    "monthly": "на месец",
+    "yearly": "на година",
+    "startedOn": "Стартирано",
+    "caseFallback": "Спасителен случай",
+    "profileFallback": "Профил на спасител",
+    "cancel": "Прекрати",
+    "canceling": "Прекратяване…",
+    "canceledLabel": "Прекратен",
+    "status": {
+      "pending": "Изчакващ",
+      "active": "Активен",
+      "past_due": "Просрочен",
+      "canceled": "Прекратен",
+      "unpaid": "Неплатен"
+    }
+  },
+  "cities": {
     "sofia": "София",
     "plovdiv": "Пловдив",
     "varna": "Варна",
@@ -1055,6 +1214,68 @@
         "setReviewingFailed": "Неуспешна промяна на сигнала",
         "resolved": "Сигналът е решен",
         "resolveFailed": "Неуспешно решаване на сигнала"
+      }
+    },
+    "analytics": {
+      "title": "Аналитично табло",
+      "subtitle": "Оперативни метрики за случаи, дарения, верификация и модерация.",
+      "loading": "Зареждане на аналитиката…",
+      "periodDays": "{{count}}д",
+      "sections": {
+        "cases": "Анализ на случаи",
+        "donations": "Анализ на дарения",
+        "verification": "Анализ на верификация",
+        "moderation": "Анализ на модерация"
+      },
+      "cases": {
+        "description": "Трендове за създадени, финансирани и затворени случаи с разбивка по град.",
+        "created": "Създадени",
+        "funded": "Финансирани",
+        "closed": "Затворени",
+        "avgTimeToFunded": "Средно време до финансиране",
+        "byCity": "По град",
+        "cityRow": "създадени {{created}} · финансирани {{funded}} · затворени {{closed}}"
+      },
+      "donations": {
+        "description": "Общо събрани средства, средна сума, кохорти и разбивка на повтарящи се дарения.",
+        "totalRaised": "Общо събрани",
+        "averageDonation": "Средно дарение",
+        "recurring": "Повтарящи се",
+        "oneTime": "Еднократни",
+        "cohorts": "Кохорти дарители",
+        "cohortOneTime": "Еднократни дарители",
+        "cohortRepeat": "Повтарящи дарители",
+        "cohortPower": "Активни дарители (5+)",
+        "cohortRecurring": "Абонати с повтарящи дарения",
+        "cohortNew": "Нови дарители за периода",
+        "cohortReturning": "Върнали се дарители за периода"
+      },
+      "verification": {
+        "description": "Разпределение по статус на верификация и време за повишение.",
+        "verifiedRate": "Дял верифицирани",
+        "avgCommunity": "Средно до community",
+        "avgClinic": "Средно до clinic",
+        "transitions": "Преходи",
+        "byStatus": "Случаи по статус",
+        "unverified": "Неверифицирани",
+        "community": "Community",
+        "clinic": "Clinic"
+      },
+      "moderation": {
+        "description": "Натоварване на сигналите, скорост на решаване и водещи причини.",
+        "open": "Отворени",
+        "reviewing": "В преглед",
+        "closed": "Затворени",
+        "avgResolution": "Средно време за решаване",
+        "topReasons": "Най-чести причини",
+        "noReasons": "Все още няма сигнали.",
+        "reasons": {
+          "suspected_scam": "Подозрение за измама",
+          "duplicate_case": "Дублиран случай",
+          "incorrect_information": "Невярна информация",
+          "animal_welfare": "Хуманно отношение към животните",
+          "other": "Друго"
+        }
       }
     }
   },

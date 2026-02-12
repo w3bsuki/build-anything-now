@@ -154,7 +154,7 @@ Template:
 - **Rationale:** Reduce action overload, improve rescue clarity, and preserve social engagement without mixing intents in one feed.
 - **Consequences / follow-ups:**
   - Home now relies on a server-driven landing query contract (`home.getLandingFeed`).
-  - Design behavior is codified in `docs/design/ui-patterns-spec.md`.
+  - Design behavior is codified in `docs/design-docs/ui/ui-patterns-spec.md`.
 
 ### 2026-02-06 — Tailwind v4 + shadcn trust-surface alignment scope
 - **Status:** decided
@@ -266,7 +266,7 @@ Template:
 ### 2026-02-09 — docs-v2/ promoted to docs/ (documentation migration complete)
 - **Status:** decided
 - **Context:** Two parallel docs folders existed: `docs/` (original, 28 markdown files, 2,711 lines, 23 audit PNGs) and `docs-v2/` (spec-driven rewrite, 49 markdown files, 11,016 lines, 0 PNGs). Audit confirmed docs-v2 is superior on every axis: structure, depth, consistency, AI comprehension, and implementation readiness.
-- **Decision:** Delete `docs/`, rename `docs-v2/` to `docs/`. Migrate `docs/AGENTS.md` governance rules and `docs/partners/` (3 operational docs) into the new `docs/` before deletion. Update all references in root docs (AGENTS.md, README.md, TASKS.md, DESIGN.md) and internal cross-references.
+- **Decision:** Delete `docs/`, rename `docs-v2/` to `docs/`. Migrate `docs/AGENTS.md` governance rules and `docs/references/partner-ideation/` (3 operational docs) into the new `docs/` before deletion. Update all references in root docs (AGENTS.md, README.md, TASKS.md, DESIGN.md) and internal cross-references.
 - **Rationale:**
   - docs-v2 has 14 complete feature specs vs 2 partial ones in docs.
   - docs-v2 has 6 system specs (data model, API, auth, deployment, testing, analytics) vs 2 gap-audits in docs.
@@ -288,7 +288,7 @@ Template:
 - **Rationale:** Researched Kiro (EARS notation, steering), OpenSpec (artifact-guided), GitHub Spec Kit (constitution→implement). Adopted best practices: EARS scoped to money/trust only (3 specs), script-generated INDEX.md (not hand-maintained), acceptance criteria as standard section 9, design system merged into ui-patterns-spec.md (not separate file).
 - **Consequences / follow-ups:**
   - 18 feature specs (from 14), all with 10-section structure including Acceptance Criteria
-  - `scripts/gen-feature-index.mjs` auto-generates `docs/features/INDEX.md`
+  - `scripts/gen-feature-index.mjs` auto-generates `docs/generated/feature-index.md`
   - `scripts/check-doc-links.mjs` validates all cross-references (zero broken links)
   - EARS requirements on 3 high-risk specs: donations (12 rules), admin-moderation (10 rules), onboarding (9 rules)
   - PRD feature checklist items link to their specs; specs link back to PRD items via `> **PRD Ref:**`
@@ -325,10 +325,10 @@ Template:
 
 ### 2026-02-09 — Feature implementation status locked to PRD; docs index and checks automated
 - **Status:** decided
-- **Context:** `docs/features/INDEX.md` could drift from actual shipped work because it previously relied on hardcoded mappings and spec document status. This created incorrect answers for daily questions like "how many features are built?".
+- **Context:** `docs/generated/feature-index.md` could drift from actual shipped work because it previously relied on hardcoded mappings and spec document status. This created incorrect answers for daily questions like "how many features are built?".
 - **Decision:**
   - `PRD.md` checklist is the canonical implementation status source.
-  - `docs/features/INDEX.md` is generated from spec headers plus PRD checklist links (`node scripts/gen-feature-index.mjs`).
+  - `docs/generated/feature-index.md` is generated from spec headers plus PRD checklist links (`node scripts/gen-feature-index.mjs`).
   - Added docs quality gate commands:
     - `pnpm docs:index`
     - `pnpm docs:validate`
@@ -369,7 +369,7 @@ Template:
   - Keep trust/safety and accessibility requirements enforced through `RULES.md` and quality gates.
 - **Rationale:** Product and visual direction need fast iteration; rigid wording should not block valid changes.
 - **Consequences / follow-ups:**
-- `docs/product/roadmap.md` and `TASKS.md` now use non-lock phrasing.
+- `docs/product-specs/strategy/future-goals.md` and `TASKS.md` now use non-lock phrasing.
 - Existing historical decision entries remain for audit trail but are interpreted as superseded where this entry applies.
 
 ### 2026-02-12 — Remove client IP-based language detection banner
@@ -395,3 +395,100 @@ Template:
   - Run server-side Hamming-distance matching at create time (conservative threshold) and treat matches as review signals only (`riskLevel: high` + duplicate report + audit log), not auto-rejection.
 - **Rationale:** Extends duplicate detection to near-duplicates without adding image decode dependencies to Convex runtime, while preserving human-in-the-loop moderation.
 - **Consequences / follow-ups:** Keep thresholds/bucket strategy tunable from production telemetry; revisit false-positive/false-negative rates after moderation volume data.
+
+### 2026-02-12 — Recurring donations architecture uses Stripe Checkout subscriptions + webhook-driven ledger entries
+- **Status:** decided
+- **Context:** P2 recurring support required monthly donations for case/profile targets while preserving existing trust-first donation accounting and webhook idempotence.
+- **Decision:**
+  - Added a dedicated `subscriptions` table (`userId`, `targetType`, `targetId`, Stripe IDs, status, amount, interval, timestamps).
+  - Kept one-time and recurring money in a single `donations` ledger using `donationKind` (`one_time` | `recurring`) plus `subscriptionId`.
+  - Used Stripe hosted Checkout in `mode=subscription` and extended webhook handling to `invoice.paid`, `customer.subscription.updated`, and `customer.subscription.deleted`.
+  - Materialized recurring charges through webhook flow and re-used existing donation confirmation side effects (case fundraising updates, receipts, notifications, audit logs).
+- **Rationale:** Meets EARS payment safety constraints (hosted checkout, signature verification, idempotent webhook behavior) while minimizing schema/API churn and keeping donation history/analytics consistent.
+- **Consequences / follow-ups:**
+  - UI now exposes monthly support CTAs on case/profile pages and `/subscriptions` management in account/settings.
+  - Donation history surfaces now distinguish one-time vs recurring entries.
+  - Future enhancement: integrate Stripe Customer Portal for billing-method updates and annual plan selection UX.
+
+### 2026-02-12 — External source cards use URL-normalized metadata (no content scraping)
+- **Status:** decided
+- **Context:** P2 growth scope required Facebook/Instagram/social source attribution on cases and community posts, but trust/safety constraints disallow scraping private content.
+- **Decision:**
+  - Added `externalSources` table (`targetType`, `targetId`, `url`, `platform`, `title`, `thumbnailUrl`, `createdAt`).
+  - Case and community create flows now accept an optional source URL and persist normalized metadata.
+  - Source URLs are normalized to HTTPS, stripped of query/hash tracking params, and mapped to platform/domain for safe link cards.
+  - Case detail and community thread detail render source attribution cards using stored metadata only.
+- **Rationale:** Preserves attribution and donor trust while minimizing privacy/scraping risk and keeping backend logic deterministic.
+- **Consequences / follow-ups:**
+  - Public UI surfaces now distinguish first-party case/post content from external references.
+  - Future enhancement: optional human-edited title/thumbnail override with moderation controls.
+
+### 2026-02-12 — Volunteer coordination v1 keeps split model and uses notification fanout for transport requests
+- **Status:** decided
+- **Context:** Volunteer data is currently split between `users` (availability/capabilities/city) and `volunteers` (bio/stats/badges/rating). Batch 3 required availability controls, a filtered directory, and city-level transport requests from case detail.
+- **Decision:**
+  - Keep the existing split schema for this release; implement a unified read model in `volunteers` queries that enriches volunteer cards with `city`, `availability`, and `capabilities` from `users`.
+  - Ship `/volunteers` as the dedicated directory surface with city/capability/availability filters; default behavior excludes `offline` volunteers.
+  - Implement transport requests as `createTransportRequest` mutation + city/capability matching + in-app notification fanout (`notifications.type = "system"`), with owner-only request authorization and cooldown protection.
+  - Do not add a persistent `transportRequests` table in this batch.
+- **Rationale:** Delivers required user value quickly while minimizing schema migration risk and preserving privacy constraints (city-level only, no public PII).
+- **Consequences / follow-ups:**
+  - Future iteration can add persistent request history/acceptance workflow if product needs dispatcher-style transport coordination.
+  - Volunteer schema unification remains optional future work if split-model maintenance cost increases.
+
+### 2026-02-12 — Admin analytics dashboards use query-time aggregates from existing ledgers/audit logs
+- **Status:** decided
+- **Context:** Batch 4 required `/admin/analytics` metrics for cases, donations, verification, and moderation without delaying release with new snapshot pipelines.
+- **Decision:**
+  - Add admin-only Convex aggregate queries in `convex/adminAnalytics.ts` (`getCaseAnalytics`, `getDonationAnalytics`, `getVerificationAnalytics`, `getModerationAnalytics`) guarded by `requireAdmin(ctx)`.
+  - Derive case `time-to-funded` from cumulative completed donations (first timestamp where donation sum reaches goal), since no persisted `fundedAt` exists on `cases`.
+  - Derive verification timing metrics from `auditLogs` transition actions (`case.verification_set` / `case.verification_upgraded`) instead of introducing new schema fields.
+  - Keep analytics computation query-time for this phase (no `analyticsSnapshots` table yet).
+- **Rationale:** Ships required operational visibility quickly, keeps auth/privacy constraints explicit, avoids schema migration risk, and reuses already trusted money/moderation ledgers.
+- **Consequences / follow-ups:**
+  - Admin dashboard now ships at `/admin/analytics` with 30/90/180-day windows and aggregate-only outputs (no PII).
+  - If query latency or cardinality grows, next step is scheduled snapshot materialization with documented retention and reconciliation rules.
+
+### 2026-02-12 — Verification automation adds revocation reasons, endorsement limits, and anti-brigading signals
+- **Status:** decided
+- **Context:** Verification ladder baseline shipped, but remaining trust gaps allowed low-friction coordinated endorsements and downgrade actions without mandatory rationale.
+- **Decision:**
+  - Keep verification statuses unchanged (`unverified | community | clinic`) and harden existing flows.
+  - Require explicit admin reason notes for verification downgrades/revocations; emit dedicated `case.verification_revoked` audit action.
+  - Add per-user/day endorsement rate limiting via `endorsementRateLimits`.
+  - Add anti-brigading detection on endorsement bursts (recent volume + new-account ratio), with automatic case risk flagging, moderation report signal, and audit event.
+  - Refine community auto-promotion to require qualified endorsements (trusted + minimum account age) and block promotion when high-risk brigading signals are present.
+- **Rationale:** Preserves current product semantics while raising manipulation cost and improving moderation visibility without introducing a new verification status or major UI IA changes.
+- **Consequences / follow-ups:**
+  - Admin case management now enforces downgrade rationale in UI + backend.
+  - Community endorsement progress reflects qualified endorsements in case detail UI.
+  - Thresholds are heuristics and should be tuned from moderation false-positive/false-negative telemetry.
+
+### 2026-02-12 — Notification channels v1 use push token registry + provider-backed email with hourly case-update throttling
+- **Status:** decided
+- **Context:** In-app notifications were shipped, but delivery channels (push/email) and anti-spam controls were still backlog items.
+- **Decision:**
+  - Added `pushTokens` schema table and authenticated token upsert/delete mutations.
+  - Added `notificationEmailBatches` schema table keyed by `(userId, caseId, windowStartedAt)` to enforce max one outbound email per case update per hour.
+  - Added internal notification fanout flow for case updates (`notifications.createCaseUpdateBatch`) and channel sender action (`notifications.sendChannelNotification`).
+  - Email delivery uses Resend HTTP API when `RESEND_API_KEY` + `NOTIFICATION_FROM_EMAIL` are configured; push delivery uses FCM legacy send when `FCM_SERVER_KEY` is configured.
+- **Rationale:** Delivers channel infrastructure now without breaking in-app real-time behavior, and adds deterministic anti-spam throttling on the highest-volume update path.
+- **Consequences / follow-ups:**
+  - Case update fanout now schedules centralized channel delivery instead of direct inline inserts.
+  - Provider credentials are optional; when absent, channel sends no-op while in-app notifications still persist.
+  - Future follow-up: migrate remaining notification producers (donations/clinics/volunteers) to the same internal channel path for full consistency.
+
+### 2026-02-12 — Production hardening baseline gates analytics by consent and adds user self-serve data export
+- **Status:** decided
+- **Context:** EU launch hardening required cookie consent for analytics, GDPR export readiness, stronger route failure handling, and SEO hygiene updates.
+- **Decision:**
+  - Added cookie consent provider/banner that gates PostHog initialization until explicit acceptance.
+  - Added GDPR export APIs (`gdpr.createDataExport` mutation + `/gdpr/export` HTTP endpoint) with auth and audit logging.
+  - Added route-level error boundary wrapper in SPA router.
+  - Added sitemap/robots baseline updates (`public/sitemap.xml`, updated `public/robots.txt`, dynamic `/sitemap.xml` in Convex HTTP).
+  - Expanded style-gate scanner scope to trust-critical flows (`case/create/donation/community`) and cleaned residual token drift in settings overlays.
+- **Rationale:** Aligns platform behavior with trust/privacy requirements while minimizing rollout risk through additive, reversible changes.
+- **Consequences / follow-ups:**
+  - Settings now exposes “Download my data” user action.
+  - Analytics remains disabled by default until consent is stored.
+  - Visual QA matrix and mobile build verification remain operational follow-ups outside automated CI.

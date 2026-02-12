@@ -10,15 +10,18 @@
 
 import type * as achievements from "../achievements.js";
 import type * as activity from "../activity.js";
+import type * as adminAnalytics from "../adminAnalytics.js";
 import type * as campaigns from "../campaigns.js";
 import type * as cases from "../cases.js";
 import type * as clinics from "../clinics.js";
 import type * as community from "../community.js";
 import type * as devSeed from "../devSeed.js";
 import type * as donations from "../donations.js";
+import type * as gdpr from "../gdpr.js";
 import type * as home from "../home.js";
 import type * as http from "../http.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_externalSources from "../lib/externalSources.js";
 import type * as notifications from "../notifications.js";
 import type * as partners from "../partners.js";
 import type * as paymentMethods from "../paymentMethods.js";
@@ -27,6 +30,7 @@ import type * as reports from "../reports.js";
 import type * as settings from "../settings.js";
 import type * as social from "../social.js";
 import type * as storage from "../storage.js";
+import type * as subscriptions from "../subscriptions.js";
 import type * as tests_testHelpers from "../tests/testHelpers.js";
 import type * as translate from "../translate.js";
 import type * as users from "../users.js";
@@ -41,15 +45,18 @@ import type {
 declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   activity: typeof activity;
+  adminAnalytics: typeof adminAnalytics;
   campaigns: typeof campaigns;
   cases: typeof cases;
   clinics: typeof clinics;
   community: typeof community;
   devSeed: typeof devSeed;
   donations: typeof donations;
+  gdpr: typeof gdpr;
   home: typeof home;
   http: typeof http;
   "lib/auth": typeof lib_auth;
+  "lib/externalSources": typeof lib_externalSources;
   notifications: typeof notifications;
   partners: typeof partners;
   paymentMethods: typeof paymentMethods;
@@ -58,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   settings: typeof settings;
   social: typeof social;
   storage: typeof storage;
+  subscriptions: typeof subscriptions;
   "tests/testHelpers": typeof tests_testHelpers;
   translate: typeof translate;
   users: typeof users;

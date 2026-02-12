@@ -44,6 +44,9 @@ const VolunteerProfile = () => {
     avatar: rawVolunteer.avatar ?? '',
     bio: rawVolunteer.bio,
     location: rawVolunteer.location,
+    city: rawVolunteer.city ?? rawVolunteer.location,
+    availability: rawVolunteer.availability ?? 'offline',
+    capabilities: rawVolunteer.capabilities ?? [],
     rating: rawVolunteer.rating,
     memberSince: rawVolunteer.memberSince,
     isTopVolunteer: rawVolunteer.isTopVolunteer,
@@ -146,6 +149,26 @@ const VolunteerProfile = () => {
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
               {volunteer.bio}
             </p>
+
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs">
+              <span className="inline-flex items-center rounded-full border border-border/70 bg-surface-sunken px-2.5 py-1 text-muted-foreground">
+                <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                {volunteer.city}
+              </span>
+              <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-primary">
+                {t(`volunteers.availability.${volunteer.availability}`)}
+              </span>
+            </div>
+
+            {volunteer.capabilities.length > 0 && (
+              <div className="mb-6 flex flex-wrap justify-center gap-2">
+                {volunteer.capabilities.map((entry) => (
+                  <span key={entry} className="inline-flex rounded-full border border-border/70 bg-surface-sunken px-2.5 py-1 text-xs font-medium text-foreground/90">
+                    {t(`volunteers.capabilities.${entry}`)}
+                  </span>
+                ))}
+              </div>
+            )}
 
             <div className="flex items-center justify-center gap-3">
               <Button size="sm" className="gap-2">
@@ -278,7 +301,7 @@ const VolunteerProfile = () => {
                 <MapPin className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
                   <div className="font-medium text-sm text-foreground">{t('partnerProfile.location')}</div>
-                  <div className="text-sm text-muted-foreground">Sofia, Bulgaria</div>
+                  <div className="text-sm text-muted-foreground">{volunteer.city}</div>
                 </div>
               </div>
             </div>

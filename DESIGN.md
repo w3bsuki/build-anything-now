@@ -177,8 +177,8 @@ convex/
 ## Styling System
 
 Canonical UI patterns spec:
-- `docs/design/ui-patterns-spec.md` (case-first IA, interaction density rules, token/theming gates)
-- `docs/design/theming-tokens-spec.md` (design tokens, color palette, forbidden patterns)
+- `docs/design-docs/ui/ui-patterns-spec.md` (case-first IA, interaction density rules, token/theming gates)
+- `docs/design-docs/ui/theming-tokens-spec.md` (design tokens, color palette, forbidden patterns)
 
 SSOT styling files and boundaries:
 - `src/index.css` is the single Tailwind v4 + token entrypoint (no `globals.css`).

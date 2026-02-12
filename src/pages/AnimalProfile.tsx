@@ -10,13 +10,15 @@ import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/ShareButton';
 import { CommentsSheet } from '@/components/homepage/CommentsSheet';
 import { DonationFlowDrawer } from '@/components/donations/DonationFlowDrawer';
-import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw, X, CircleCheck, TriangleAlert } from 'lucide-react';
+import { MonthlySupportDrawer } from '@/components/donations/MonthlySupportDrawer';
+import { ArrowLeft, MapPin, Heart, Calendar, Bookmark, MessageCircle, Flag, PlusCircle, RefreshCw, X, CircleCheck, TriangleAlert, HandHeart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getCaseShareUrl } from '@/lib/shareUrls';
 import { trackAnalytics } from '@/lib/analytics';
 import { format } from 'date-fns';
 import { VerificationBadge } from '@/components/trust/VerificationBadge';
 import { ReportConcernSheet } from '@/components/trust/ReportConcernSheet';
+import { ExternalLinkCard } from '@/components/common/ExternalLinkCard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -67,6 +69,12 @@ const transitionOptionsByStage: Record<string, Array<{ stage: 'seeking_adoption'
   closed_other: [],
 };
 
+function verificationStatusRank(status: 'unverified' | 'community' | 'clinic') {
+  if (status === 'clinic') return 2;
+  if (status === 'community') return 1;
+  return 0;
+}
+
 const AnimalProfile = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
@@ -74,6 +82,7 @@ const AnimalProfile = () => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
+  const [monthlySupportOpen, setMonthlySupportOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const locale = i18n.language;
@@ -110,11 +119,14 @@ const AnimalProfile = () => {
   const [transitionNotes, setTransitionNotes] = useState('');
   const [isSubmittingTransition, setIsSubmittingTransition] = useState(false);
   const [pendingVerificationStatus, setPendingVerificationStatus] = useState<'unverified' | 'community' | 'clinic'>('unverified');
+  const [verificationNotes, setVerificationNotes] = useState('');
   const [isSubmittingVerification, setIsSubmittingVerification] = useState(false);
   const [isSubmittingEndorsement, setIsSubmittingEndorsement] = useState(false);
+  const [isRequestingTransport, setIsRequestingTransport] = useState(false);
 
   const me = useQuery(api.users.me);
   const caseData = useQuery(api.cases.getUiForLocale, caseId ? { id: caseId, locale } : 'skip');
+  const transportMatches = useQuery(api.volunteers.listTransportMatches, caseId ? { caseId, limit: 6 } : 'skip');
   const communityVerificationSummary = useQuery(
     api.cases.getCommunityVerificationSummary,
     caseId ? { caseId } : 'skip',
@@ -125,6 +137,7 @@ const AnimalProfile = () => {
   const setVerificationStatus = useMutation(api.cases.setVerificationStatus);
   const endorseCase = useMutation(api.cases.endorseCase);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const createTransportRequest = useMutation(api.volunteers.createTransportRequest);
 
   const transitionOptions = useMemo(() => {
     if (!caseData?.lifecycleStage) return [];
@@ -134,6 +147,7 @@ const AnimalProfile = () => {
   useEffect(() => {
     if (caseData?.verificationStatus) {
       setPendingVerificationStatus(caseData.verificationStatus);
+      setVerificationNotes('');
     }
   }, [caseData?.verificationStatus]);
 
@@ -289,6 +303,9 @@ const AnimalProfile = () => {
     if (me.role === 'admin') return true;
     return me.verificationLevel === 'community' || me.verificationLevel === 'clinic' || me.verificationLevel === 'partner';
   })();
+  const currentVerificationStatus = caseData.verificationStatus ?? 'unverified';
+  const isDowngradePending =
+    verificationStatusRank(pendingVerificationStatus) < verificationStatusRank(currentVerificationStatus);
 
   const lifecycleLabel = lifecycleLabels[caseData.lifecycleStage] ?? 'Active Treatment';
 
@@ -435,9 +452,9 @@ const AnimalProfile = () => {
             <div className="mb-3 flex items-center justify-between gap-3 bg-muted/40 border border-border rounded-lg px-3 py-2">
               <div className="text-xs text-muted-foreground">
                 {t('verification.communityEndorsements', {
-                  count: communityVerificationSummary?.count ?? 0,
+                  count: communityVerificationSummary?.qualifiedCount ?? communityVerificationSummary?.count ?? 0,
                   threshold: communityVerificationSummary?.threshold ?? 3,
-                  defaultValue: 'Community endorsements: {{count}}/{{threshold}}',
+                  defaultValue: 'Qualified endorsements: {{count}}/{{threshold}}',
                 })}
               </div>
               <Button
@@ -446,7 +463,8 @@ const AnimalProfile = () => {
                 disabled={
                   isSubmittingEndorsement ||
                   communityVerificationSummary?.hasEndorsed ||
-                  (communityVerificationSummary?.count ?? 0) >= (communityVerificationSummary?.threshold ?? 3)
+                  (communityVerificationSummary?.qualifiedCount ?? communityVerificationSummary?.count ?? 0) >=
+                    (communityVerificationSummary?.threshold ?? 3)
                 }
                 onClick={async () => {
                   if (!caseId) return;
@@ -508,6 +526,15 @@ const AnimalProfile = () => {
             </div>
           )}
 
+          {caseData.externalSource ? (
+            <div className="mb-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('externalSources.sourceAttribution', 'Source attribution')}
+              </p>
+              <ExternalLinkCard source={caseData.externalSource} />
+            </div>
+          ) : null}
+
           <h1 className="font-display mb-4 text-2xl font-bold text-foreground md:text-3xl">
             {displayTitle}
           </h1>
@@ -544,7 +571,7 @@ const AnimalProfile = () => {
 
               {me?.role === 'admin' && (
                 <div className="rounded-xl border border-border/60 bg-surface-sunken/70 p-3">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                  <div className="flex flex-col gap-3">
                     <div className="flex-1 space-y-1.5">
                       <Label htmlFor="verification-status">{t('verification.status', 'Verification status')}</Label>
                       <Select
@@ -562,21 +589,66 @@ const AnimalProfile = () => {
                       </Select>
                     </div>
 
+                    <div className="space-y-1.5">
+                      <Label htmlFor="verification-notes">
+                        {t('verification.revocationReasonLabel', 'Verification change note')}
+                      </Label>
+                      <Textarea
+                        id="verification-notes"
+                        value={verificationNotes}
+                        onChange={(event) => setVerificationNotes(event.target.value)}
+                        className="min-h-20 text-base"
+                        placeholder={t(
+                          'verification.revocationReasonPlaceholder',
+                          'Add context for this change. Required for downgrade/revocation.',
+                        )}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {isDowngradePending
+                          ? t(
+                              'verification.revocationReasonRequired',
+                              'A reason is required when downgrading verification.',
+                            )
+                          : t(
+                              'verification.revocationReasonOptional',
+                              'Reason is optional for upgrades or lateral updates.',
+                            )}
+                      </p>
+                    </div>
+
                     <Button
-                      className="h-9"
+                      className="h-11 self-start"
                       disabled={
                         isSubmittingVerification ||
-                        pendingVerificationStatus === (caseData.verificationStatus ?? 'unverified')
+                        pendingVerificationStatus === currentVerificationStatus ||
+                        (isDowngradePending && verificationNotes.trim().length === 0)
                       }
                       onClick={async () => {
                         if (!caseId) return;
+                        const notes = verificationNotes.trim();
+                        if (isDowngradePending && !notes) {
+                          toast({
+                            title: t(
+                              'verification.revocationReasonMissing',
+                              'Please provide a reason for this revocation.',
+                            ),
+                            variant: 'destructive',
+                          });
+                          return;
+                        }
                         setIsSubmittingVerification(true);
                         try {
                           await setVerificationStatus({
                             caseId,
                             verificationStatus: pendingVerificationStatus,
+                            notes: notes || undefined,
                           });
-                          toast({ title: t('verification.updated', 'Verification updated') });
+                          toast({
+                            title: isDowngradePending
+                              ? t('verification.revoked', 'Verification downgraded')
+                              : t('verification.updated', 'Verification updated'),
+                          });
+                          setVerificationNotes('');
                         } catch (error) {
                           console.error(error);
                           toast({ title: t('verification.updateFailed', 'Failed to update verification'), variant: 'destructive' });
@@ -597,6 +669,82 @@ const AnimalProfile = () => {
                   {caseData.closedReason ? ` (${caseData.closedReason})` : ''}
                 </p>
               )}
+            </div>
+          )}
+
+          {caseData.canManageCase && (
+            <div className="mb-6 rounded-2xl border border-border/60 bg-surface-elevated p-4 shadow-xs">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-base font-semibold text-foreground">
+                    {t('transportRequests.title', 'Who can help nearby')}
+                  </h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('transportRequests.subtitle', 'Match available transport volunteers in {{city}}.', { city: caseData.location.city })}
+                  </p>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-xl"
+                  disabled={isRequestingTransport}
+                  onClick={async () => {
+                    if (!caseId) return;
+                    setIsRequestingTransport(true);
+                    try {
+                      const result = await createTransportRequest({ caseId });
+                      if (result.notifiedCount > 0) {
+                        toast({
+                          title: t('transportRequests.requestSentTitle', 'Transport request sent'),
+                          description: t('transportRequests.requestSentBody', '{{count}} volunteers were notified.', {
+                            count: result.notifiedCount,
+                          }),
+                        });
+                      } else {
+                        toast({
+                          title: t('transportRequests.noMatchesTitle', 'No available matches'),
+                          description: t('transportRequests.noMatchesBody', 'No transport volunteers are currently available in this city.'),
+                        });
+                      }
+                    } catch (error) {
+                      console.error(error);
+                      toast({
+                        title: t('transportRequests.requestFailedTitle', 'Could not send request'),
+                        description: t('transportRequests.requestFailedBody', 'Please try again in a few minutes.'),
+                        variant: 'destructive',
+                      });
+                    } finally {
+                      setIsRequestingTransport(false);
+                    }
+                  }}
+                >
+                  <HandHeart className="mr-1.5 h-4 w-4" />
+                  {isRequestingTransport
+                    ? t('transportRequests.sending', 'Sending...')
+                    : t('transportRequests.requestCta', 'Request transport help')}
+                </Button>
+              </div>
+
+              <div className="mt-3 space-y-2">
+                {transportMatches === undefined ? (
+                  <p className="text-xs text-muted-foreground">{t('common.loading', 'Loading...')}</p>
+                ) : transportMatches.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    {t('transportRequests.noMatchesInline', 'No currently available transport volunteers in this city.')}
+                  </p>
+                ) : (
+                  transportMatches.map((volunteer) => (
+                    <Link
+                      key={volunteer._id}
+                      to={`/volunteers/${volunteer._id}`}
+                      className="flex min-h-11 items-center justify-between rounded-xl border border-border/60 bg-surface-sunken/60 px-3 py-2 text-sm transition-colors hover:bg-surface-sunken"
+                    >
+                      <span className="font-medium text-foreground">{volunteer.name}</span>
+                      <span className="text-xs text-muted-foreground">{volunteer.city ?? caseData.location.city}</span>
+                    </Link>
+                  ))
+                )}
+              </div>
             </div>
           )}
 
@@ -625,7 +773,7 @@ const AnimalProfile = () => {
       >
         <Button
           variant="secondary"
-          className="h-10 rounded-xl border border-border/70 bg-surface-sunken/80 px-4 hover:bg-surface-sunken"
+          className="h-11 rounded-xl border border-border/70 bg-surface-sunken/80 px-4 hover:bg-surface-sunken"
           onClick={() => setCommentsOpen(true)}
         >
           <MessageCircle className="w-4 h-4 mr-1.5" />
@@ -633,8 +781,18 @@ const AnimalProfile = () => {
         </Button>
 
         <Button
+          variant="outline"
+          className="h-11 rounded-xl px-4"
+          onClick={() => setMonthlySupportOpen(true)}
+          disabled={!caseData.isDonationAllowed}
+        >
+          <Calendar className="w-4 h-4 mr-1.5" />
+          {t('actions.supportMonthly', 'Support Monthly')}
+        </Button>
+
+        <Button
           variant="donate"
-          className="flex-1 h-10 rounded-xl font-semibold"
+          className="flex-1 h-11 rounded-xl font-semibold"
           onClick={() => setDonateOpen(true)}
           disabled={!caseData.isDonationAllowed}
         >
@@ -658,6 +816,15 @@ const AnimalProfile = () => {
         caseId={caseData.id}
         caseTitle={displayTitle}
         caseCoverImage={caseData.images?.[0]}
+        currency={caseData.fundraising.currency}
+      />
+
+      <MonthlySupportDrawer
+        open={monthlySupportOpen}
+        onOpenChange={setMonthlySupportOpen}
+        targetType="case"
+        targetId={caseData.id}
+        targetTitle={displayTitle}
         currency={caseData.fundraising.currency}
       />
 

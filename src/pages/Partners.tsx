@@ -343,7 +343,15 @@ const Partners = () => {
       {segment === 'volunteers' ? (
         <>
           <PageSection>
-            <SectionHeader title={t('partners.volunteers', 'Volunteers')} count={isVolunteersLoading ? undefined : filteredVolunteers.length} />
+            <SectionHeader
+              title={t('partners.volunteers', 'Volunteers')}
+              count={isVolunteersLoading ? undefined : filteredVolunteers.length}
+              action={
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/volunteers">{t('partners.openVolunteerDirectory', 'Open directory')}</Link>
+                </Button>
+              }
+            />
             {isVolunteersLoading ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (

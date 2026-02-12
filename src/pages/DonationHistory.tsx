@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { api } from '../../convex/_generated/api';
 
 type DonationStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+type DonationKind = 'one_time' | 'recurring';
 
 type DonationRow = {
   _id: string;
@@ -18,6 +19,7 @@ type DonationRow = {
   amount: number;
   currency: string;
   status: DonationStatus;
+  donationKind?: DonationKind;
   receiptId?: string | null;
   receiptUrl?: string | null;
   transactionId?: string | null;
@@ -83,6 +85,13 @@ function statusChipClass(status: DonationStatus) {
     default:
       return 'bg-muted text-muted-foreground';
   }
+}
+
+function donationKindLabel(kind: DonationKind | undefined, t: TFunction<'translation'>) {
+  if (kind === 'recurring') {
+    return t('donations.kind.recurring', 'Recurring');
+  }
+  return t('donations.kind.one_time', 'One-time');
 }
 
 function groupByMonth(donations: DonationRow[]) {
@@ -226,6 +235,12 @@ const DonationHistory = () => {
                                 {statusLabel(donation.status, t)}
                               </span>
                             </div>
+                          </div>
+
+                          <div className="mb-2">
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border/50">
+                              {donationKindLabel(donation.donationKind, t)}
+                            </span>
                           </div>
 
                           {(donation.transactionId || showReceiptReference || hasReceiptUrl) ? (

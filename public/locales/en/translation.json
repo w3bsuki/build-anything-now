@@ -47,6 +47,7 @@
     "helpNowWithName": "Help {{name}} now",
     "supportCase": "Support case",
     "supportCaseWithName": "Support {{name}}",
+    "supportMonthly": "Support Monthly",
     "adopt": "Adopt",
     "adoptWithName": "Adopt {{name}}"
   },
@@ -88,6 +89,27 @@
   "report": {
     "reportConcern": "Report concern",
     "signInToReport": "Sign in to report"
+  },
+  "verification": {
+    "communityEndorsements": "Qualified endorsements: {{count}}/{{threshold}}",
+    "promoted": "Case community verified",
+    "alreadyEndorsed": "Already endorsed",
+    "endorsed": "Endorsed",
+    "endorse": "Endorse",
+    "endorseFailed": "Failed to endorse",
+    "status": "Verification status",
+    "selectStatus": "Select status",
+    "unverified": "Unverified",
+    "community": "Community verified",
+    "clinic": "Clinic verified",
+    "updated": "Verification updated",
+    "revoked": "Verification downgraded",
+    "updateFailed": "Failed to update verification",
+    "revocationReasonLabel": "Verification change note",
+    "revocationReasonPlaceholder": "Add context for this change. Required for downgrade/revocation.",
+    "revocationReasonRequired": "A reason is required when downgrading verification.",
+    "revocationReasonOptional": "Reason is optional for upgrades or lateral updates.",
+    "revocationReasonMissing": "Please provide a reason for this revocation."
   },
   "contentTranslation": {
     "translatePrompt": "This case was posted in another language.",
@@ -213,6 +235,7 @@
     "joinVolunteers": "Join our amazing team of volunteers and help save animal lives",
     "becomePartner": "Become a Partner",
     "becomeVolunteer": "Become a Volunteer",
+    "openVolunteerDirectory": "Open directory",
     "helped": "Helped",
     "adoptions": "Adoptions",
     "since": "Since",
@@ -296,6 +319,21 @@
     "offerSittingDesc": "Love animals? Earn money by caring for pets in your neighborhood.",
     "becomeSitter": "Become a Sitter"
   },
+  "externalSources": {
+    "fieldLabel": "Source link (optional)",
+    "fieldPlaceholder": "Paste a Facebook, Instagram, or other public source URL",
+    "fieldHelp": "We show this as source attribution only. Private content is never scraped.",
+    "sourceAttribution": "Source attribution",
+    "openLinkAria": "Open source link: {{title}} ({{domain}})",
+    "platform": {
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "x": "X",
+      "youtube": "YouTube",
+      "tiktok": "TikTok",
+      "other": "External source"
+    }
+  },
   "profile": {
     "title": "Profile",
     "guestUser": "Guest User",
@@ -306,6 +344,7 @@
     "myDonations": "My Donations",
     "donationHistory": "Donation History",
     "achievements": "Achievements",
+    "subscriptions": "Monthly Support",
     "paymentMethods": "Payment Methods",
     "notifications": "Notifications",
     "settings": "Settings",
@@ -360,7 +399,16 @@
     "currency": "Currency",
     "account": "Account",
     "editProfile": "Edit Profile",
+    "manageSubscriptions": "Manage monthly support",
+    "manageSubscriptionsDesc": "Review active recurring donations and cancel anytime",
     "privacySecurity": "Privacy & Security",
+    "downloadData": "Download my data",
+    "downloadDataDesc": "Get a GDPR export of your Pawtreon account data",
+    "downloadDataAction": "Download",
+    "downloadingData": "Preparing…",
+    "dataExportReady": "Data export is ready",
+    "dataExportReadyDesc": "Your JSON export has been downloaded.",
+    "dataExportFailed": "Unable to export your data right now.",
     "support": "Support",
     "helpCenter": "Help Center",
     "termsPrivacy": "Terms & Privacy",
@@ -379,7 +427,20 @@
     "suggested": "Suggested"
   },
   "analytics": {
-    "cookieConsentPlaceholder": "Cookie consent controls are required before EU launch."
+    "cookieConsentPlaceholder": "Cookie consent controls are required before EU launch.",
+    "cookieConsent": {
+      "title": "Cookie consent",
+      "description": "Allow analytics cookies so we can improve rescue and donation flows. You can continue without analytics.",
+      "accept": "Accept analytics cookies",
+      "decline": "Decline"
+    }
+  },
+  "errors": {
+    "routeCrash": {
+      "title": "Something went wrong",
+      "description": "This page failed to load. Refresh to try again.",
+      "retry": "Reload page"
+    }
   },
   "currencies": {
     "BGN": "Bulgarian Lev (BGN)",
@@ -539,6 +600,67 @@
     "sendDirectMessage": "Send a direct message",
     "sendMessage": "Send Message"
   },
+  "volunteers": {
+    "availability": {
+      "available": "Available",
+      "busy": "Busy",
+      "offline": "Offline"
+    },
+    "availabilityFilters": {
+      "default": "Visible now",
+      "available": "Available",
+      "busy": "Busy",
+      "offline": "Offline",
+      "all": "All"
+    },
+    "capabilities": {
+      "transport": "Transport",
+      "fostering": "Fostering",
+      "rescue": "Rescue",
+      "events": "Events",
+      "social_media": "Social media",
+      "medical": "Medical",
+      "general": "General"
+    },
+    "settings": {
+      "title": "Volunteer coordination",
+      "availabilityTitle": "Availability status",
+      "availabilityHint": "Default is offline. Your city is visible only when you opt in.",
+      "capabilitiesTitle": "Capabilities",
+      "capabilitiesHint": "Select all ways you can help nearby cases.",
+      "openDirectory": "Open volunteer directory",
+      "defaultBio": "Volunteer ready to help nearby cases.",
+      "saveFailed": "Could not save volunteer settings. Please try again."
+    }
+  },
+  "volunteersDirectory": {
+    "title": "Volunteer directory",
+    "description": "City-level only. No precise home location is shown.",
+    "filters": "Filters",
+    "filtersHint": "Match by city, capability, and availability.",
+    "cityLabel": "City",
+    "cityPlaceholder": "e.g. Sofia",
+    "capabilityLabel": "Capability",
+    "allCapabilities": "All",
+    "availabilityLabel": "Availability",
+    "cityUnknown": "City unknown",
+    "noCapabilities": "Capabilities pending",
+    "emptyTitle": "No volunteers found",
+    "emptyBody": "Try changing filters or invite volunteers to opt in."
+  },
+  "transportRequests": {
+    "title": "Who can help nearby",
+    "subtitle": "Match available transport volunteers in {{city}}.",
+    "requestCta": "Request transport help",
+    "sending": "Sending...",
+    "requestSentTitle": "Transport request sent",
+    "requestSentBody": "{{count}} volunteers were notified.",
+    "noMatchesTitle": "No available matches",
+    "noMatchesBody": "No transport volunteers are currently available in this city.",
+    "noMatchesInline": "No currently available transport volunteers in this city.",
+    "requestFailedTitle": "Could not send request",
+    "requestFailedBody": "Please try again in a few minutes."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -676,6 +798,10 @@
     "openReceipt": "Open receipt",
     "viewReceipt": "View Receipt",
     "receiptId": "Receipt ID",
+    "kind": {
+      "one_time": "One-time",
+      "recurring": "Recurring"
+    },
     "closed": "Donations closed",
     "gatedNote": "Donations are currently disabled for this case.",
     "return": {
@@ -685,6 +811,38 @@
       "cancelBody": "No payment was made. You can try again anytime.",
       "viewHistory": "View my donations",
       "tryAgain": "Try again"
+    }
+  },
+  "subscriptions": {
+    "title": "Monthly Support",
+    "subtitle": "Manage recurring donations in one place.",
+    "activeListTitle": "Your subscriptions",
+    "activeListDescription": "Cancel anytime. Billing is handled securely by Stripe.",
+    "emptyTitle": "No monthly support yet",
+    "emptyBody": "Open a case or profile and tap Support Monthly to start helping regularly.",
+    "billingLabel": "Billed monthly",
+    "chooseAmount": "Choose monthly amount",
+    "customAmount": "Custom monthly amount",
+    "secureCheckoutHint": "You will be redirected to secure Stripe checkout.",
+    "startMonthlySupport": "Start monthly support",
+    "redirecting": "Redirecting…",
+    "checkoutFailed": "Unable to start monthly support. Please try again.",
+    "previewActiveTitle": "Monthly support started",
+    "previewActiveBody": "Preview mode: recurring billing is simulated locally.",
+    "monthly": "per month",
+    "yearly": "per year",
+    "startedOn": "Started",
+    "caseFallback": "Rescue case",
+    "profileFallback": "Rescuer profile",
+    "cancel": "Cancel",
+    "canceling": "Canceling…",
+    "canceledLabel": "Canceled",
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "past_due": "Past due",
+      "canceled": "Canceled",
+      "unpaid": "Unpaid"
     }
   },
   "cities": {
@@ -1065,6 +1223,68 @@
         "setReviewingFailed": "Failed to update report",
         "resolved": "Report resolved",
         "resolveFailed": "Failed to resolve report"
+      }
+    },
+    "analytics": {
+      "title": "Analytics dashboard",
+      "subtitle": "Operational metrics for cases, donations, verification, and moderation.",
+      "loading": "Loading analytics…",
+      "periodDays": "{{count}}d",
+      "sections": {
+        "cases": "Case analytics",
+        "donations": "Donation analytics",
+        "verification": "Verification analytics",
+        "moderation": "Moderation analytics"
+      },
+      "cases": {
+        "description": "Created, funded, and closed trends plus city breakdown.",
+        "created": "Created",
+        "funded": "Funded",
+        "closed": "Closed",
+        "avgTimeToFunded": "Avg time to funded",
+        "byCity": "By city",
+        "cityRow": "created {{created}} · funded {{funded}} · closed {{closed}}"
+      },
+      "donations": {
+        "description": "Raised totals, averages, cohorts, and recurring split.",
+        "totalRaised": "Total raised",
+        "averageDonation": "Average donation",
+        "recurring": "Recurring",
+        "oneTime": "One-time",
+        "cohorts": "Donor cohorts",
+        "cohortOneTime": "One-time donors",
+        "cohortRepeat": "Repeat donors",
+        "cohortPower": "Power donors (5+)",
+        "cohortRecurring": "Recurring supporters",
+        "cohortNew": "New donors in period",
+        "cohortReturning": "Returning donors in period"
+      },
+      "verification": {
+        "description": "Verification status distribution and promotion timing.",
+        "verifiedRate": "Verified rate",
+        "avgCommunity": "Avg to community",
+        "avgClinic": "Avg to clinic",
+        "transitions": "Transitions",
+        "byStatus": "Cases by status",
+        "unverified": "Unverified",
+        "community": "Community",
+        "clinic": "Clinic"
+      },
+      "moderation": {
+        "description": "Report throughput, resolution speed, and top reasons.",
+        "open": "Open",
+        "reviewing": "Reviewing",
+        "closed": "Closed",
+        "avgResolution": "Avg resolution",
+        "topReasons": "Top report reasons",
+        "noReasons": "No reports yet.",
+        "reasons": {
+          "suspected_scam": "Suspected scam",
+          "duplicate_case": "Duplicate case",
+          "incorrect_information": "Incorrect information",
+          "animal_welfare": "Animal welfare",
+          "other": "Other"
+        }
       }
     }
   },

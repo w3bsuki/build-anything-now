@@ -1,8 +1,15 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { mutation, query } from "./_generated/server";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
-import { requireAdmin, requireUser } from "./lib/auth";
+import { getAuthUserId, requireAdmin, requireUser } from "./lib/auth";
+import {
+  createExternalSourceForTarget,
+  getLatestExternalSourceForTarget,
+  mapExternalSourceForUi,
+  normalizeOptionalExternalSourceInput,
+} from "./lib/externalSources";
 
 const UPDATE_TYPE_VALUES = ["medical", "milestone", "update", "success"] as const;
 const LIFECYCLE_STAGE_VALUES = [
@@ -32,6 +39,13 @@ const LIFECYCLE_TRANSITIONS: Record<LifecycleStage, LifecycleStage[]> = {
 };
 
 const COMMUNITY_ENDORSEMENT_THRESHOLD = 3;
+const ENDORSEMENT_DAILY_LIMIT = 10;
+const ENDORSEMENT_PROMOTION_MIN_ACCOUNT_AGE_MS = 24 * 60 * 60 * 1000;
+const ENDORSEMENT_BRIGADE_WINDOW_MS = 60 * 60 * 1000;
+const ENDORSEMENT_BRIGADE_MIN_COUNT = 6;
+const ENDORSEMENT_BRIGADE_NEW_ACCOUNT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const ENDORSEMENT_BRIGADE_NEW_ACCOUNT_RATIO_THRESHOLD = 0.6;
+const ENDORSEMENT_BRIGADE_RISK_FLAG = "endorsement_brigading_suspected";
 const PERCEPTUAL_HASH_DISTANCE_THRESHOLD = 8;
 const PERCEPTUAL_HASH_BUCKET_PREFIX_LENGTH = 12;
 const PERCEPTUAL_BUCKET_QUERY_LIMIT = 40;
@@ -56,6 +70,75 @@ type PerceptualMatchEvidence = {
 
 function normalizeLocale(locale: string): string {
   return locale.trim().toLowerCase().split("-")[0];
+}
+
+function dayBucket(timestamp: number): number {
+  return Math.floor(timestamp / (24 * 60 * 60 * 1000));
+}
+
+function isTrustedEndorser(user: Doc<"users">): boolean {
+  const verificationLevel = user.verificationLevel ?? "unverified";
+  return (
+    user.role === "admin" ||
+    verificationLevel === "community" ||
+    verificationLevel === "clinic" ||
+    verificationLevel === "partner"
+  );
+}
+
+function isQualifiedEndorserForPromotion(user: Doc<"users">, now: number): boolean {
+  if (!isTrustedEndorser(user)) return false;
+  return now - user.createdAt >= ENDORSEMENT_PROMOTION_MIN_ACCOUNT_AGE_MS;
+}
+
+function verificationStatusRank(status: "unverified" | "community" | "clinic"): number {
+  if (status === "clinic") return 2;
+  if (status === "community") return 1;
+  return 0;
+}
+
+function isVerificationDowngrade(
+  from: "unverified" | "community" | "clinic",
+  to: "unverified" | "community" | "clinic",
+): boolean {
+  return verificationStatusRank(to) < verificationStatusRank(from);
+}
+
+function appendUniqueFlag(flags: string[] | undefined, flag: string): string[] {
+  const current = new Set(flags ?? []);
+  current.add(flag);
+  return Array.from(current);
+}
+
+async function loadEndorsersById(
+  ctx: QueryCtx | MutationCtx,
+  endorsements: Doc<"caseEndorsements">[],
+): Promise<Map<string, Doc<"users">>> {
+  const uniqueUserIds = Array.from(new Set(endorsements.map((endorsement) => endorsement.userId)));
+  const userDocs = await Promise.all(uniqueUserIds.map((userId) => ctx.db.get(userId)));
+
+  const byId = new Map<string, Doc<"users">>();
+  for (const userDoc of userDocs) {
+    if (!userDoc) continue;
+    byId.set(String(userDoc._id), userDoc);
+  }
+  return byId;
+}
+
+function countQualifiedEndorsements(
+  endorsements: Doc<"caseEndorsements">[],
+  endorsersById: Map<string, Doc<"users">>,
+  now: number,
+): number {
+  let count = 0;
+  for (const endorsement of endorsements) {
+    const endorser = endorsersById.get(String(endorsement.userId));
+    if (!endorser) continue;
+    if (isQualifiedEndorserForPromotion(endorser, now)) {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 function normalizePerceptualHash(rawHash: string | undefined): string | undefined {
@@ -314,7 +397,13 @@ async function getViewer(ctx: QueryCtx): Promise<ViewerUser | null> {
   return { _id: user._id, role: user.role };
 }
 
-async function mapCaseForUi(ctx: QueryCtx, caseDoc: Doc<"cases">, locale: string, viewer: ViewerUser | null) {
+async function mapCaseForUi(
+  ctx: QueryCtx,
+  caseDoc: Doc<"cases">,
+  locale: string,
+  viewer: ViewerUser | null,
+  includeExternalSource: boolean = false
+) {
   const localized = pickLocalizedFields(caseDoc, locale);
   const imageUrls = (await Promise.all(caseDoc.images.map((id) => ctx.storage.getUrl(id))))
     .filter((u): u is string => Boolean(u));
@@ -324,6 +413,9 @@ async function mapCaseForUi(ctx: QueryCtx, caseDoc: Doc<"cases">, locale: string
   const lifecycleStage = normalizeLifecycleStage(caseDoc.lifecycleStage);
   const updates = await mapUpdatesForUi(ctx, caseDoc);
   const canManage = await canManageCase(ctx, viewer, caseDoc);
+  const externalSource = includeExternalSource
+    ? mapExternalSourceForUi(await getLatestExternalSourceForTarget(ctx, "case", String(caseDoc._id)))
+    : null;
 
   const payload = {
     id: caseDoc._id,
@@ -357,6 +449,7 @@ async function mapCaseForUi(ctx: QueryCtx, caseDoc: Doc<"cases">, locale: string
     originalTitle: caseDoc.title,
     originalDescription: caseDoc.description,
     originalStory: caseDoc.story ?? "",
+    externalSource,
   };
   return payload;
 }
@@ -447,7 +540,7 @@ export const listUiForLocale = query({
       cases = cases.filter((c) => c.status === args.status);
     }
 
-    return Promise.all(cases.map((c) => mapCaseForUi(ctx, c, locale, null)));
+    return Promise.all(cases.map((c) => mapCaseForUi(ctx, c, locale, null, false)));
   },
 });
 
@@ -459,7 +552,7 @@ export const getUiForLocale = query({
     if (!caseDoc) return null;
 
     const viewer = await getViewer(ctx);
-    return mapCaseForUi(ctx, caseDoc, args.locale, viewer);
+    return mapCaseForUi(ctx, caseDoc, args.locale, viewer, true);
   },
 });
 
@@ -496,10 +589,13 @@ export const getCommunityVerificationSummary = query({
     caseId: v.id("cases"),
   },
   handler: async (ctx, args) => {
+    const now = Date.now();
     const [viewer, endorsements] = await Promise.all([
       getViewer(ctx),
       ctx.db.query("caseEndorsements").withIndex("by_case", (q) => q.eq("caseId", args.caseId)).collect(),
     ]);
+    const endorsersById = await loadEndorsersById(ctx, endorsements);
+    const qualifiedCount = countQualifiedEndorsements(endorsements, endorsersById, now);
 
     const hasEndorsed = viewer
       ? !!(await ctx.db
@@ -510,6 +606,7 @@ export const getCommunityVerificationSummary = query({
 
     return {
       count: endorsements.length,
+      qualifiedCount,
       threshold: COMMUNITY_ENDORSEMENT_THRESHOLD,
       hasEndorsed,
     };
@@ -532,6 +629,11 @@ export const setVerificationStatus = mutation({
     if (prevStatus === nextStatus) {
       return { ok: true, status: nextStatus };
     }
+    const notes = args.notes?.trim();
+    const isDowngrade = isVerificationDowngrade(prevStatus, nextStatus);
+    if (isDowngrade && !notes) {
+      throw new Error("Revocation reason is required");
+    }
 
     const now = Date.now();
     await ctx.db.patch(args.caseId, {
@@ -542,13 +644,19 @@ export const setVerificationStatus = mutation({
       actorId: admin._id,
       entityType: "case",
       entityId: String(args.caseId),
-      action: "case.verification_set",
+      action: isDowngrade ? "case.verification_revoked" : "case.verification_set",
       details: `${prevStatus} -> ${nextStatus}`,
-      metadataJson: JSON.stringify({ notes: args.notes?.trim() || null }),
+      metadataJson: JSON.stringify({
+        notes: notes || null,
+        from: prevStatus,
+        to: nextStatus,
+        source: "admin_override",
+        revocation: isDowngrade,
+      }),
       createdAt: now,
     });
 
-    return { ok: true, status: nextStatus };
+    return { ok: true, status: nextStatus, revoked: isDowngrade };
   },
 });
 
@@ -558,12 +666,7 @@ export const endorseCase = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireUser(ctx);
-
-    const verificationLevel = user.verificationLevel ?? "unverified";
-    const isTrusted =
-      user.role === "admin" || verificationLevel === "community" || verificationLevel === "clinic" || verificationLevel === "partner";
-
-    if (!isTrusted) {
+    if (!isTrustedEndorser(user)) {
       throw new Error("Trusted user endorsement required");
     }
 
@@ -579,31 +682,143 @@ export const endorseCase = mutation({
       const endorsedCount = (
         await ctx.db.query("caseEndorsements").withIndex("by_case", (q) => q.eq("caseId", args.caseId)).collect()
       ).length;
-      return { ok: true, alreadyEndorsed: true, endorsedCount, promotedToCommunity: false };
+      return { ok: true, alreadyEndorsed: true, endorsedCount, qualifiedEndorsedCount: 0, promotedToCommunity: false };
     }
 
     const now = Date.now();
+    const day = dayBucket(now);
+    const rateLimit = await ctx.db
+      .query("endorsementRateLimits")
+      .withIndex("by_clerk_day", (q) => q.eq("clerkId", user.clerkId).eq("day", day))
+      .unique();
+
+    if ((rateLimit?.count ?? 0) >= ENDORSEMENT_DAILY_LIMIT) {
+      throw new Error("Daily endorsement limit reached. Please try again tomorrow.");
+    }
+
     await ctx.db.insert("caseEndorsements", {
       caseId: args.caseId,
       userId: user._id,
       createdAt: now,
     });
 
+    if (rateLimit) {
+      await ctx.db.patch(rateLimit._id, {
+        count: rateLimit.count + 1,
+        updatedAt: now,
+      });
+    } else {
+      await ctx.db.insert("endorsementRateLimits", {
+        clerkId: user.clerkId,
+        day,
+        count: 1,
+        updatedAt: now,
+      });
+    }
+
     await ctx.db.insert("auditLogs", {
       actorId: user._id,
       entityType: "case",
       entityId: String(args.caseId),
       action: "case.endorsed",
+      metadataJson: JSON.stringify({
+        source: "community_endorsement",
+      }),
       createdAt: now,
     });
 
-    const endorsedCount = (
-      await ctx.db.query("caseEndorsements").withIndex("by_case", (q) => q.eq("caseId", args.caseId)).collect()
-    ).length;
+    const endorsements = await ctx.db
+      .query("caseEndorsements")
+      .withIndex("by_case", (q) => q.eq("caseId", args.caseId))
+      .collect();
+    const endorsedCount = endorsements.length;
+    const endorsersById = await loadEndorsersById(ctx, endorsements);
+    const qualifiedEndorsedCount = countQualifiedEndorsements(endorsements, endorsersById, now);
+
+    const recentWindowStart = now - ENDORSEMENT_BRIGADE_WINDOW_MS;
+    const recentEndorsements = await ctx.db
+      .query("caseEndorsements")
+      .withIndex("by_case_created", (q) => q.eq("caseId", args.caseId).gte("createdAt", recentWindowStart))
+      .collect();
+
+    let brigadeDetected = false;
+    const recentCount = recentEndorsements.length;
+    let recentNewAccountCount = 0;
+    let recentNewAccountRatio = 0;
+
+    if (recentCount >= ENDORSEMENT_BRIGADE_MIN_COUNT) {
+      for (const endorsement of recentEndorsements) {
+        const endorser = endorsersById.get(String(endorsement.userId));
+        if (!endorser) continue;
+        if (now - endorser.createdAt < ENDORSEMENT_BRIGADE_NEW_ACCOUNT_MAX_AGE_MS) {
+          recentNewAccountCount += 1;
+        }
+      }
+      recentNewAccountRatio = recentCount > 0 ? recentNewAccountCount / recentCount : 0;
+      brigadeDetected = recentNewAccountRatio >= ENDORSEMENT_BRIGADE_NEW_ACCOUNT_RATIO_THRESHOLD;
+    }
+
+    if (brigadeDetected) {
+      const currentRiskFlags = caseDoc.riskFlags ?? [];
+      const nextRiskFlags = appendUniqueFlag(currentRiskFlags, ENDORSEMENT_BRIGADE_RISK_FLAG);
+
+      const shouldPatchRisk =
+        (caseDoc.riskLevel ?? "low") !== "high" || nextRiskFlags.length !== currentRiskFlags.length;
+      if (shouldPatchRisk) {
+        await ctx.db.patch(args.caseId, {
+          riskLevel: "high",
+          riskFlags: nextRiskFlags,
+        });
+      }
+
+      const brigadeEvidence = {
+        signal: "endorsement_brigade",
+        windowMs: ENDORSEMENT_BRIGADE_WINDOW_MS,
+        minCount: ENDORSEMENT_BRIGADE_MIN_COUNT,
+        newAccountMaxAgeMs: ENDORSEMENT_BRIGADE_NEW_ACCOUNT_MAX_AGE_MS,
+        ratioThreshold: ENDORSEMENT_BRIGADE_NEW_ACCOUNT_RATIO_THRESHOLD,
+        recentCount,
+        recentNewAccountCount,
+        recentNewAccountRatio: Number(recentNewAccountRatio.toFixed(4)),
+      };
+
+      const existingOpenBrigadeReport = (
+        await ctx.db.query("reports").withIndex("by_case", (q) => q.eq("caseId", args.caseId)).collect()
+      ).some(
+        (report) =>
+          report.reason === "suspected_scam" &&
+          (report.status === "open" || report.status === "reviewing") &&
+          report.details?.includes("endorsement_brigade"),
+      );
+
+      if (!existingOpenBrigadeReport) {
+        await ctx.db.insert("reports", {
+          caseId: args.caseId,
+          reason: "suspected_scam",
+          details: JSON.stringify(brigadeEvidence),
+          status: "open",
+          createdAt: now,
+        });
+      }
+
+      await ctx.db.insert("auditLogs", {
+        actorId: user._id,
+        entityType: "case",
+        entityId: String(args.caseId),
+        action: "case.endorsement_brigade_flagged",
+        metadataJson: JSON.stringify(brigadeEvidence),
+        createdAt: now,
+      });
+    }
 
     let promotedToCommunity = false;
     const prevStatus = caseDoc.verificationStatus ?? "unverified";
-    if (prevStatus === "unverified" && endorsedCount >= COMMUNITY_ENDORSEMENT_THRESHOLD) {
+    const promotionBlockedByRisk = (caseDoc.riskLevel ?? "low") === "high" || brigadeDetected;
+    if (
+      prevStatus === "unverified" &&
+      qualifiedEndorsedCount >= COMMUNITY_ENDORSEMENT_THRESHOLD &&
+      !promotionBlockedByRisk
+    ) {
       await ctx.db.patch(args.caseId, {
         verificationStatus: "community",
       });
@@ -619,6 +834,7 @@ export const endorseCase = mutation({
           to: "community",
           source: "community_endorsements",
           endorsements: endorsedCount,
+          qualifiedEndorsements: qualifiedEndorsedCount,
           threshold: COMMUNITY_ENDORSEMENT_THRESHOLD,
         }),
         createdAt: now,
@@ -627,7 +843,14 @@ export const endorseCase = mutation({
       promotedToCommunity = true;
     }
 
-    return { ok: true, alreadyEndorsed: false, endorsedCount, promotedToCommunity };
+    return {
+      ok: true,
+      alreadyEndorsed: false,
+      endorsedCount,
+      qualifiedEndorsedCount,
+      brigadeDetected,
+      promotedToCommunity,
+    };
   },
 });
 
@@ -694,6 +917,7 @@ export const create = mutation({
     broughtToClinicAt: v.optional(v.number()),
     fundraisingGoal: v.number(),
     currency: v.string(),
+    externalSourceUrl: v.optional(v.string()),
     perceptualHashes: v.optional(
       v.array(
         v.object({
@@ -705,22 +929,17 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
-      .unique();
-
+    const userId = await getAuthUserId(ctx);
+    const user = await ctx.db.get(userId);
     if (!user) throw new Error("User not found");
 
     const sourceLocale = args.language ? normalizeLocale(args.language) : "";
     const language = sourceLocale || undefined;
     const now = Date.now();
+    const externalSource = normalizeOptionalExternalSourceInput(args.externalSourceUrl);
 
     const caseId = await ctx.db.insert("cases", {
-      userId: user._id,
+      userId,
       type: args.type,
       category: args.category,
       language,
@@ -745,6 +964,15 @@ export const create = mutation({
       updates: [],
       createdAt: now,
     });
+
+    if (externalSource) {
+      await createExternalSourceForTarget(ctx, {
+        targetType: "case",
+        targetId: String(caseId),
+        source: externalSource,
+        createdAt: now,
+      });
+    }
 
     const uniqueStorageIds = Array.from(new Set(args.images));
     const perceptualHashesByStorage = new Map<
@@ -1002,14 +1230,12 @@ export const addUpdate = mutation({
     const isBg = caseLocale.startsWith("bg");
     const title = isBg ? "Обновление по случая" : "Case update";
     const message = isBg ? `Ново обновление за ${caseData.title}` : `New update on ${caseData.title}`;
-    for (const recipientId of finalRecipients) {
-      await ctx.db.insert("notifications", {
-        userId: recipientId,
-        type: "case_update",
+    if (finalRecipients.length > 0) {
+      await ctx.scheduler.runAfter(0, internal.notifications.createCaseUpdateBatch, {
+        recipientIds: finalRecipients,
+        caseId: args.caseId,
         title,
         message,
-        caseId: args.caseId,
-        read: false,
         createdAt: now,
       });
     }

@@ -3,7 +3,7 @@
 /**
  * gen-feature-index.mjs
  *
- * Auto-generates docs/features/INDEX.md by scanning feature spec headers and
+ * Auto-generates docs/generated/feature-index.md by scanning feature spec headers and
  * deriving implementation progress from PRD.md checklist items.
  *
  * Usage: node scripts/gen-feature-index.mjs
@@ -13,12 +13,23 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const ROOT = join(import.meta.dirname, "..");
-const FEATURES_DIR = join(ROOT, "docs", "features");
-const INDEX_PATH = join(FEATURES_DIR, "INDEX.md");
+const FEATURES_DIR = join(ROOT, "docs", "product-specs", "features");
+const INDEX_PATH = join(ROOT, "docs", "generated", "feature-index.md");
 const PRD_PATH = join(ROOT, "PRD.md");
 
 const CHECKLIST_REGEX = /^- \[(x|~| )\]\s+(.+)$/;
-const SPEC_LINK_REGEX = /\[spec\]\((docs\/features\/[^)]+)\)/gi;
+const SPEC_LINK_REGEX = /\[spec\]\((docs\/product-specs\/features\/[^)]+)\)/gi;
+
+function normalizeIsoDate(raw) {
+  const value = String(raw ?? "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+}
+
+function maxIsoDate(values) {
+  const dates = values.map(normalizeIsoDate).filter(Boolean);
+  if (dates.length === 0) return null;
+  return dates.reduce((max, current) => (current > max ? current : max), dates[0]);
+}
 
 function normalizeStatus(raw) {
   const value = raw.trim().toLowerCase();
@@ -37,7 +48,7 @@ function extractHeader(content) {
   let lastUpdated = "unknown";
   let prdRef = "—";
 
-  for (const line of lines.slice(0, 20)) {
+  for (const line of lines.slice(0, 24)) {
     const statusMatch = line.match(/\*\*Status:\*\*\s*(.+)/i);
     if (statusMatch) status = normalizeStatus(statusMatch[1]);
 
@@ -52,6 +63,11 @@ function extractHeader(content) {
   }
 
   return { title, status, owner, lastUpdated, prdRef };
+}
+
+function extractPrdLastUpdated(content) {
+  const match = content.match(/^> \*\*Last updated:\*\*\s*(.+)\s*$/im);
+  return match ? normalizeIsoDate(match[1]) : null;
 }
 
 function parsePrdChecklist(content) {
@@ -116,25 +132,32 @@ function formatPrdState(entries) {
 }
 
 function main() {
+  const checkMode = process.argv.includes("--check");
+
   const specFiles = readdirSync(FEATURES_DIR)
     .filter((file) => file.endsWith("-spec.md"))
     .sort();
 
   const prdContent = readFileSync(PRD_PATH, "utf-8");
+  const prdLastUpdated = extractPrdLastUpdated(prdContent);
   const { bySpec, summary } = parsePrdChecklist(prdContent);
 
+  const specHeaderDates = [];
   const rows = specFiles.map((file) => {
     const content = readFileSync(join(FEATURES_DIR, file), "utf-8");
     const { title, status, owner, lastUpdated, prdRef } = extractHeader(content);
+    specHeaderDates.push(lastUpdated);
     const prdState = formatPrdState(bySpec.get(file));
-    return `| [${title}](${file}) | ${status} | ${prdRef} | ${prdState} | ${owner} | ${lastUpdated} |`;
+    return `| [${title}](../product-specs/features/${file}) | ${status} | ${prdRef} | ${prdState} | ${owner} | ${lastUpdated} |`;
   });
+
+  const lastUpdated = maxIsoDate([prdLastUpdated, ...specHeaderDates]) ?? "unknown";
 
   const output = `# Feature Specs Index
 
 > **Owner:** Product + OPUS  
 > **Status:** final  
-> **Last updated:** ${new Date().toISOString().split("T")[0]}  
+> **Last updated:** ${lastUpdated}  
 > **Auto-generated:** \`node scripts/gen-feature-index.mjs\`
 
 ## Implementation Snapshot (from PRD.md)
@@ -157,6 +180,26 @@ ${rows.join("\n")}
 - \`PRD State\` is derived from \`PRD.md\` checklist links and is the canonical implementation signal.
 - \`Spec Status\` reflects document maturity (\`draft/review/final\`), not shipped state.
 `;
+
+  if (checkMode) {
+    let existing = "";
+    try {
+      existing = readFileSync(INDEX_PATH, "utf-8");
+    } catch {
+      console.error("docs/generated/feature-index.md is missing.");
+      console.error("Run: pnpm -s docs:index");
+      process.exit(1);
+    }
+
+    if (existing !== output) {
+      console.error("docs/generated/feature-index.md is out of date.");
+      console.error("Run: pnpm -s docs:index");
+      process.exit(1);
+    }
+
+    console.log(`docs/generated/feature-index.md is up to date (${specFiles.length} specs).`);
+    return;
+  }
 
   writeFileSync(INDEX_PATH, output, "utf-8");
   console.log(`Generated ${INDEX_PATH} with ${specFiles.length} specs.`);

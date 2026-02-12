@@ -19,6 +19,16 @@ export type CaseUpdateEvidenceType = 'bill' | 'lab_result' | 'clinic_photo' | 'o
 
 export type CaseUpdateAuthorRole = 'owner' | 'clinic' | 'moderator';
 
+export type ExternalSourcePlatform = 'facebook' | 'instagram' | 'x' | 'youtube' | 'tiktok' | 'other';
+
+export interface ExternalSourcePreview {
+  url: string;
+  platform: ExternalSourcePlatform;
+  title: string;
+  thumbnailUrl: string | null;
+  domain: string;
+}
+
 export interface AnimalCase {
   id: string;
   title: string;
@@ -51,6 +61,7 @@ export interface AnimalCase {
   ownerId?: string;
   canManageCase?: boolean;
   clinicId?: string | null;
+  externalSource?: ExternalSourcePreview | null;
   author?: {
     id: string;
     name: string;
@@ -221,6 +232,7 @@ export interface ForumThread {
   lastActivityAt: number;
   timeAgo: string;
   viewerReacted: boolean;
+  externalSource?: ExternalSourcePreview | null;
   author: ForumAuthor;
 }
 

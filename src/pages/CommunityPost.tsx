@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Lock, Unlock } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -11,6 +12,7 @@ import { CommentComposer } from "@/components/community/comment-composer";
 import { CommentThread } from "@/components/community/comment-thread";
 import { ThreadDetailHeader } from "@/components/community/thread-detail-header";
 import { REPORT_REASON_OPTIONS } from "@/components/community/forum-config";
+import { ExternalLinkCard } from "@/components/common/ExternalLinkCard";
 import { useForumBackendMode } from "@/hooks/useForumBackendMode";
 import type { ForumComment, ForumReportPayload, ForumThread } from "@/types";
 
@@ -31,6 +33,7 @@ type LegacyCommunityPost = {
 };
 
 export default function CommunityPost() {
+  const { t } = useTranslation();
   const { postId } = useParams();
   const { toast } = useToast();
   const backendMode = useForumBackendMode();
@@ -329,6 +332,15 @@ export default function CommunityPost() {
               >
                 Open case
               </Link>
+            </div>
+          ) : null}
+
+          {thread.externalSource ? (
+            <div className="rounded-2xl border border-border/60 bg-surface-elevated shadow-xs p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("externalSources.sourceAttribution", "Source attribution")}
+              </p>
+              <ExternalLinkCard source={thread.externalSource} className="mt-2" />
             </div>
           ) : null}
 

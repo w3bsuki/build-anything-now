@@ -25,6 +25,7 @@ const IGNORE_DIRS = new Set([
   "convex/_generated",
   "dist",
   ".vercel",
+  "docs/archive",
 ]);
 
 /** Recursively collect all .md files */

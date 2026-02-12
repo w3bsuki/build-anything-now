@@ -27,6 +27,7 @@ type ThreadDraft = {
   body: string;
   cityTag: string;
   caseId: string;
+  externalSourceUrl: string;
 };
 
 type LegacyCommunityPost = {
@@ -52,6 +53,7 @@ const DEFAULT_DRAFT: ThreadDraft = {
   body: "",
   cityTag: "",
   caseId: "",
+  externalSourceUrl: "",
 };
 
 const AVATAR_PREVIEW_NAMES = [
@@ -266,10 +268,12 @@ export default function Community() {
           content: draft.body.trim(),
           cityTag: draft.cityTag.trim() || undefined,
           caseId: draft.caseId.trim() || undefined,
+          externalSourceUrl: draft.externalSourceUrl.trim() || undefined,
         });
       } else {
         threadId = await createLegacyThread({
           content: buildLegacyThreadContent(draft),
+          externalSourceUrl: draft.externalSourceUrl.trim() || undefined,
         });
       }
 
@@ -539,6 +543,23 @@ export default function Community() {
                 />
               </div>
             </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="thread-external-source">
+                {t("externalSources.fieldLabel", "Source link (optional)")}
+              </Label>
+              <Input
+                id="thread-external-source"
+                type="url"
+                value={draft.externalSourceUrl}
+                onChange={(event) => setDraft((previous) => ({ ...previous, externalSourceUrl: event.target.value }))}
+                placeholder={t(
+                  "externalSources.fieldPlaceholder",
+                  "Paste a Facebook, Instagram, or other public source URL"
+                )}
+                className="text-base"
+              />
+            </div>
           </div>
 
           <SheetFooter className="mt-4">
@@ -712,10 +733,12 @@ function buildLegacyThreadContent(draft: ThreadDraft) {
   const body = draft.body.trim();
   const city = draft.cityTag.trim();
   const caseRef = draft.caseId.trim();
+  const externalSource = draft.externalSourceUrl.trim();
 
   const suffix = [
     city ? `City: ${city}` : null,
     caseRef ? `Case: ${caseRef}` : null,
+    externalSource ? `Source: ${externalSource}` : null,
     `Board: ${draft.board}`,
     `Category: ${draft.category}`,
   ]

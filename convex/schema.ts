@@ -77,6 +77,8 @@ export default defineSchema({
         caseId: v.optional(v.id("cases")),
         campaignId: v.optional(v.string()), // For campaign donations
         campaignRefId: v.optional(v.id("campaigns")),
+        donationKind: v.optional(v.union(v.literal("one_time"), v.literal("recurring"))),
+        subscriptionId: v.optional(v.id("subscriptions")),
         amount: v.number(),
         currency: v.string(),
         status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed"), v.literal("refunded")),
@@ -84,6 +86,8 @@ export default defineSchema({
         paymentProvider: v.optional(v.union(v.literal("stripe"), v.literal("manual"))),
         stripeCheckoutSessionId: v.optional(v.string()),
         stripePaymentIntentId: v.optional(v.string()),
+        stripeSubscriptionId: v.optional(v.string()),
+        stripeInvoiceId: v.optional(v.string()),
         stripeChargeId: v.optional(v.string()),
         idempotencyKey: v.optional(v.string()),
         receiptId: v.optional(v.string()),
@@ -98,10 +102,40 @@ export default defineSchema({
         .index("by_user", ["userId"])
         .index("by_case", ["caseId"])
         .index("by_campaign_ref", ["campaignRefId"])
+        .index("by_subscription", ["subscriptionId"])
         .index("by_stripe_checkout_session", ["stripeCheckoutSessionId"])
         .index("by_stripe_payment_intent", ["stripePaymentIntentId"])
+        .index("by_stripe_invoice", ["stripeInvoiceId"])
         .index("by_idempotency_key", ["idempotencyKey"])
-        .index("by_status", ["status"]),
+        .index("by_status", ["status"])
+        .index("by_kind", ["donationKind"]),
+
+    // Recurring subscriptions for monthly support
+    subscriptions: defineTable({
+        userId: v.id("users"),
+        targetType: v.union(v.literal("case"), v.literal("user")),
+        targetId: v.string(),
+        stripeSubscriptionId: v.optional(v.string()),
+        stripeCheckoutSessionId: v.optional(v.string()),
+        status: v.union(
+            v.literal("pending"),
+            v.literal("active"),
+            v.literal("past_due"),
+            v.literal("canceled"),
+            v.literal("unpaid"),
+        ),
+        amount: v.number(),
+        currency: v.string(),
+        interval: v.union(v.literal("month"), v.literal("year")),
+        createdAt: v.number(),
+        updatedAt: v.optional(v.number()),
+        canceledAt: v.optional(v.number()),
+    })
+        .index("by_user", ["userId"])
+        .index("by_user_status", ["userId", "status"])
+        .index("by_target", ["targetType", "targetId"])
+        .index("by_checkout_session", ["stripeCheckoutSessionId"])
+        .index("by_stripe_subscription", ["stripeSubscriptionId"]),
 
     // User achievements/badges
     achievements: defineTable({
@@ -186,6 +220,34 @@ export default defineSchema({
     })
         .index("by_user", ["userId"]),
 
+    // Push notification device tokens (Capacitor native clients)
+    pushTokens: defineTable({
+        userId: v.id("users"),
+        token: v.string(),
+        platform: v.union(
+            v.literal("ios"),
+            v.literal("android"),
+            v.literal("web"),
+            v.literal("unknown"),
+        ),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_user", ["userId"])
+        .index("by_token", ["token"])
+        .index("by_user_token", ["userId", "token"]),
+
+    // Email throttle windows for case updates (max 1 outbound email per hour per user+case)
+    notificationEmailBatches: defineTable({
+        userId: v.id("users"),
+        caseId: v.id("cases"),
+        windowStartedAt: v.number(),
+        notificationCount: v.number(),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_user_case_window", ["userId", "caseId", "windowStartedAt"]),
+
     // Rate limiting for machine translation requests (on-demand UGC translation)
     translationRateLimits: defineTable({
         clerkId: v.string(),
@@ -196,6 +258,14 @@ export default defineSchema({
         .index("by_clerk_day", ["clerkId", "day"]),
     // Rate limiting for abuse-prone case reports (trust & safety)
     reportRateLimits: defineTable({
+        clerkId: v.string(),
+        day: v.number(),
+        count: v.number(),
+        updatedAt: v.number(),
+    })
+        .index("by_clerk_day", ["clerkId", "day"]),
+    // Rate limiting for verification endorsements (anti-brigading baseline)
+    endorsementRateLimits: defineTable({
         clerkId: v.string(),
         day: v.number(),
         count: v.number(),
@@ -605,6 +675,26 @@ export default defineSchema({
         .index("by_reporter", ["reporterId"])
         .index("by_reviewed_by", ["reviewedBy"]),
 
+    // External social/source links attached to cases and community posts
+    externalSources: defineTable({
+        targetType: v.union(v.literal("case"), v.literal("community_post")),
+        targetId: v.string(),
+        url: v.string(),
+        platform: v.union(
+            v.literal("facebook"),
+            v.literal("instagram"),
+            v.literal("x"),
+            v.literal("youtube"),
+            v.literal("tiktok"),
+            v.literal("other"),
+        ),
+        title: v.string(),
+        thumbnailUrl: v.optional(v.string()),
+        createdAt: v.number(),
+    })
+        .index("by_target_created", ["targetType", "targetId", "createdAt"])
+        .index("by_target_url", ["targetType", "targetId", "url"]),
+
     // Likes table - tracks user likes on cases
     likes: defineTable({
         userId: v.id("users"),
@@ -666,6 +756,7 @@ export default defineSchema({
         createdAt: v.number(),
     })
         .index("by_case", ["caseId"])
+        .index("by_case_created", ["caseId", "createdAt"])
         .index("by_user_case", ["userId", "caseId"]),
 
     // Image fingerprints for duplicate detection (sha256 exact + perceptual hashes)

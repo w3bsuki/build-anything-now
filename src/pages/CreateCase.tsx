@@ -61,6 +61,7 @@ const CreateCase = () => {
         title: '',
         description: '',
         story: '',
+        externalSourceUrl: '',
         city: '',
         neighborhood: '',
         clinicId: '',
@@ -215,6 +216,7 @@ const CreateCase = () => {
                 title: formData.title,
                 description: formData.description,
                 story: formData.story || undefined,
+                externalSourceUrl: formData.externalSourceUrl.trim() || undefined,
                 images: imageIds,
                 location: {
                     city: formData.city,
@@ -471,6 +473,28 @@ const CreateCase = () => {
                                     value={formData.story}
                                     onChange={(e) => updateForm('story', e.target.value)}
                                 />
+                            </div>
+                            <div>
+                                <Label htmlFor="external-source-url">
+                                    {t('externalSources.fieldLabel', 'Source link (optional)')}
+                                </Label>
+                                <Input
+                                    id="external-source-url"
+                                    type="url"
+                                    placeholder={t(
+                                        'externalSources.fieldPlaceholder',
+                                        'Paste a Facebook, Instagram, or other public source URL'
+                                    )}
+                                    value={formData.externalSourceUrl}
+                                    onChange={(e) => updateForm('externalSourceUrl', e.target.value)}
+                                    className="text-base"
+                                />
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                    {t(
+                                        'externalSources.fieldHelp',
+                                        'We show this as source attribution only. Private content is never scraped.'
+                                    )}
+                                </p>
                             </div>
                         </div>
                     )}

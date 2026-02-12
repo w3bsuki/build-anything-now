@@ -22,6 +22,7 @@ import { api } from '../../convex/_generated/api';
 type DonationFilter = 'all' | 'completed' | 'pending';
 
 type DonationStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+type DonationKind = 'one_time' | 'recurring';
 
 type DonationRow = {
   _id: string;
@@ -32,6 +33,7 @@ type DonationRow = {
   amount: number;
   currency: string;
   status: DonationStatus;
+  donationKind?: DonationKind;
   receiptId?: string | null;
   receiptUrl?: string | null;
   createdAt: number;
@@ -96,6 +98,13 @@ function statusDotClass(status: DonationStatus) {
     default:
       return 'bg-warning';
   }
+}
+
+function donationKindLabel(kind: DonationKind | undefined, t: TFunction<'translation'>) {
+  if (kind === 'recurring') {
+    return t('donations.kind.recurring', 'Recurring');
+  }
+  return t('donations.kind.one_time', 'One-time');
 }
 
 const MyDonations = () => {
@@ -233,6 +242,7 @@ const MyDonations = () => {
                     : t('myDonations.donation', 'Donation'));
 
                 const status = statusLabel(donation.status, t);
+                const kind = donationKindLabel(donation.donationKind, t);
 
                 const card = (
                   <div className="p-3">
@@ -271,6 +281,12 @@ const MyDonations = () => {
                                 )}
                               >
                                 {status}
+                              </Badge>
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] px-1.5 py-0.5 h-5 font-medium border border-border/60 bg-muted text-muted-foreground"
+                              >
+                                {kind}
                               </Badge>
                               <span className="text-[10px] text-muted-foreground">{formatDate(donation.createdAt)}</span>
                             </div>

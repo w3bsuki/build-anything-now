@@ -147,7 +147,7 @@ export const completeOnboarding = mutation({
         // Add volunteer-specific data
         if (finalUserType === "volunteer" && args.volunteerCapabilities) {
             updateData.volunteerCapabilities = args.volunteerCapabilities;
-            updateData.volunteerAvailability = "available";
+            updateData.volunteerAvailability = "offline";
             if (args.volunteerCity) {
                 updateData.volunteerCity = args.volunteerCity;
                 updateData.city = args.volunteerCity;

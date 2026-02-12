@@ -52,14 +52,11 @@ pnpm build
   - [`AGENTS.md`](AGENTS.md)
   - [`README.md`](README.md)
 - Supporting spec-driven docs (`docs/`):
-  - Product: [`PRD.md`](PRD.md) (canonical), [`docs/product/roadmap.md`](docs/product/roadmap.md), [`docs/product/master-plan.md`](docs/product/master-plan.md)
-  - Features: [`docs/features/`](docs/features/) — 14 per-feature specs (cases, profiles, donations, clinics, campaigns, community, volunteers, adoption, onboarding, notifications, messaging, search, achievements, admin)
-  - Systems: [`docs/systems/`](docs/systems/) — data model, API reference, auth/security, deployment, testing, analytics
-  - Design: [`docs/design/`](docs/design/) — UI patterns, theming tokens, mobile-native, i18n
-  - Business: [`docs/business/`](docs/business/) — monetization, partner types, growth
-  - Missions: [`docs/missions/`](docs/missions/) — drone program, safehouse, marketplace, pet insurance
-  - Partners: [`docs/partners/`](docs/partners/) — clinic seeding, claim verification, outreach pipeline
-  - Docs index: [`docs/readme.md`](docs/readme.md)
+  - Hub + contract: [`docs/readme.md`](docs/readme.md), [`docs/AGENTS.md`](docs/AGENTS.md)
+  - Product specs: [`docs/product-specs/`](docs/product-specs/) (strategy + features + missions)
+  - Design docs: [`docs/design-docs/`](docs/design-docs/) (systems + UI)
+  - Generated artifacts: [`docs/generated/feature-index.md`](docs/generated/feature-index.md), [`docs/generated/taskset.md`](docs/generated/taskset.md), [`docs/generated/quality-score.md`](docs/generated/quality-score.md)
+  - References (non-SSOT ideation): [`docs/references/`](docs/references/)
 
 ## Mobile (Capacitor)
 ```bash
@@ -72,4 +69,4 @@ npx cap open ios
 ## Investor / Partner decks
 - Investor deck (in-app): `/presentation`
 - Partner deck (in-app): `/partner`
-- Investor hub: [`docs/investor/README.md`](docs/investor/README.md)
+- Investor hub: [`docs/references/investor-ideation/README.md`](docs/references/investor-ideation/README.md)

@@ -6,6 +6,12 @@
 
 ---
 
+## How to Use This File
+
+- `TASKS.md` is for work that is **>30 minutes**, **user-facing**, **risky**, or **multi-file**.
+- Tiny drive-by fixes can skip `TASKS.md`, but must still pass CI.
+- If a task is **>2 hours** or **high-risk** (money/auth/PII/schema/trust/safety/webhooks), create an ExecPlan in `docs/exec-plans/active/` and link it from the task item.
+
 ## In Progress
 
 - [x] **COMMUNITY: Dedicated mobile forum shell (stage 1)**
@@ -22,7 +28,7 @@
   - [x] Large inline search removed from first fold; search now opens via header action.
   - [x] Home feed wired to server-driven contract (`home.getLandingFeed`) with hero + unified list.
   - [x] Header unread badges switched to real Convex counts (`home.getUnreadCounts`).
-  - [ ] Expand style gate scope from landing surfaces to full trust-critical flows (`case/create/donation/community`) after cleanup batch 2.
+  - [x] Expand style gate scope from landing surfaces to full trust-critical flows (`case/create/donation/community`) after cleanup batch 2.
   - AC: No duplicated urgency modules in home first fold and no hardcoded unread badge counts.
 
 - [x] **DONATIONS: Post-checkout return UX + receipts polish**
@@ -61,7 +67,7 @@
   - [x] Added SSOT layout primitives (`PageShell`, `PageSection`, `SectionHeader`, `StickySegmentRail`, `StickyActionBar`, `StatsGrid`).
   - [x] Migrated trust-critical pages to shared wrappers (`/`, `/case/:id`, `/create-case`, `/campaigns`, `/clinics`).
   - [x] Refactored `/partners` into data-driven segments with stores/services inside partners IA.
-  - Remaining: run full visual QA matrix and complete residual token drift cleanup on non-critical routes.
+  - Remaining: run full visual QA matrix on trust + non-critical surfaces.
   - AC: core trust flows use semantic token classes consistently, no mock trust content in partners/services, and style gates catch regressions.
 
 ---
@@ -71,13 +77,13 @@
 ### Phase 0 — Governance / Docs Baseline
 - [x] Canonical docs topology aligned (7 root docs + supporting `docs/` specs)
 - [x] Supporting docs packs created:
-  - `docs/product/*`
-  - `docs/features/*`
-  - `docs/systems/*`
-  - `docs/design/*`
-  - `docs/business/*`
-  - `docs/missions/*`
-  - `docs/partners/*`
+  - `docs/product-specs/strategy/*`
+  - `docs/product-specs/features/*`
+  - `docs/design-docs/systems/*`
+  - `docs/design-docs/ui/*`
+  - `docs/references/business-ideation/*`
+  - `docs/product-specs/missions/*`
+  - `docs/references/partner-ideation/*`
 - [x] Decision log updated with defaults and superseded process notes.
 
 ### Phase 1 — Case Lifecycle (Core)
@@ -94,6 +100,7 @@
 - [x] Stripe webhook route and idempotent donation completion path added.
 - [x] Stripe hosted checkout + webhook completion path wired.
 - [x] Receipt history UI polish (schema fields present, user-facing surfacing complete).
+- [x] Recurring donations v1 shipped (Stripe subscription checkout, webhook lifecycle sync, monthly support management UI).
 
 ---
 
@@ -115,8 +122,11 @@
 ## Backlog (Post Current Sprint)
 
 - [x] Follow graph + following feed
-- [ ] Recurring support model
-- [ ] Notification delivery channels (push/email) + batching/throttling
+- [x] Recurring support model
+- [x] External link cards + source attribution (case + community)
+- [x] Volunteer coordination v1 (availability settings, volunteer directory, case transport request notifications)
+- [x] Analytics dashboards v1 (`/admin/analytics`: cases, donations, verification, moderation)
+- [x] Notification delivery channels (push token registration + email delivery wiring + hourly case-update batching/throttling)
 - [x] Duplicate detection/pHash (sha256 + perceptual similarity shipped)
-- [ ] Verification ladder automation + revocation UI
+- [x] Verification ladder automation + revocation UI
 

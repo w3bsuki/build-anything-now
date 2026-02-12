@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileBadges } from '@/components/profile/ProfileBadges';
 import { ProfileCases } from '@/components/profile/ProfileCases';
 import { FollowButton } from '@/components/profile/FollowButton';
+import { MonthlySupportDrawer } from '@/components/donations/MonthlySupportDrawer';
 import { useState } from 'react';
 import { ProfileEditDrawer } from '@/components/profile/ProfileEditDrawer';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,7 @@ const PublicProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+  const [monthlySupportOpen, setMonthlySupportOpen] = useState(false);
 
   // Handle "me" alias
   const currentUser = useQuery(api.users.me);
@@ -268,6 +270,15 @@ const PublicProfile = () => {
                 ) : (
                   <>
                     <FollowButton userId={actualUserId!} isFollowing={!!isFollowing} />
+                    <Button
+                      size="sm"
+                      variant="donate"
+                      className="h-11 rounded-xl gap-2 font-semibold"
+                      onClick={() => setMonthlySupportOpen(true)}
+                    >
+                      <Heart className="w-4 h-4" />
+                      <span>{t('actions.supportMonthly', 'Support Monthly')}</span>
+                    </Button>
                     <Button size="sm" variant="outline" className="h-9 rounded-xl gap-2" asChild>
                       <Link to={`/messages/${actualUserId}`}>
                         <MessageCircle className="w-4 h-4" />
@@ -433,11 +444,30 @@ const PublicProfile = () => {
         />
       )}
 
+      {!profile.isOwnProfile && actualUserId && (
+        <MonthlySupportDrawer
+          open={monthlySupportOpen}
+          onOpenChange={setMonthlySupportOpen}
+          targetType="user"
+          targetId={actualUserId}
+          targetTitle={profile.displayName}
+          currency="EUR"
+        />
+      )}
+
       {/* Contextual Bottom Action Bar - Only when viewing other user's profile on mobile */}
       {!profile.isOwnProfile && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border p-3 pb-safe md:hidden">
           <div className="flex items-center gap-2 max-w-lg mx-auto">
             <FollowButton userId={actualUserId!} isFollowing={!!isFollowing} className="flex-1 h-11" />
+            <Button
+              variant="donate"
+              className="flex-1 h-11 rounded-xl gap-2 font-semibold"
+              onClick={() => setMonthlySupportOpen(true)}
+            >
+              <Heart className="w-4 h-4" />
+              {t('actions.supportMonthly', 'Support Monthly')}
+            </Button>
             <Button 
               variant="outline" 
               className="flex-1 h-11 rounded-xl gap-2 font-semibold" 
@@ -447,14 +477,6 @@ const PublicProfile = () => {
                 <MessageCircle className="w-5 h-5" />
                 {t('profile.message')}
               </Link>
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-11 w-11 rounded-xl shrink-0" 
-              onClick={handleShare}
-            >
-              <Share2 className="w-5 h-5" />
             </Button>
           </div>
         </div>

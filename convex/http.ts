@@ -18,6 +18,84 @@ type ClerkWebhookEvent = {
 
 const http = httpRouter();
 
+function normalizeAppOrigin(args: { requestUrl: string; configuredOrigin?: string }): string {
+  const configured = args.configuredOrigin?.trim();
+  if (configured) {
+    try {
+      const parsed = new URL(configured);
+      if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+        parsed.pathname = "";
+        parsed.search = "";
+        parsed.hash = "";
+        return parsed.origin;
+      }
+    } catch (_err) {
+      // fallback to request URL
+    }
+  }
+
+  const requestOrigin = new URL(args.requestUrl);
+  return requestOrigin.origin;
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+http.route({
+  path: "/sitemap.xml",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const appOrigin = normalizeAppOrigin({
+      requestUrl: request.url,
+      configuredOrigin: process.env.APP_ORIGIN,
+    });
+
+    const staticPaths = ["/", "/campaigns", "/clinics", "/partners", "/community", "/volunteers"];
+    let caseIds: string[] = [];
+
+    try {
+      const allCases = await ctx.runQuery(api.cases.list, {});
+      caseIds = allCases.slice(0, 4000).map((caseDoc) => String(caseDoc._id));
+    } catch (err) {
+      console.warn("Could not build case URLs for sitemap:", err);
+      caseIds = [];
+    }
+
+    const urls = [
+      ...staticPaths.map((path) => `${appOrigin}${path}`),
+      ...caseIds.map((id) => `${appOrigin}/case/${id}`),
+      ...caseIds.map((id) => `${appOrigin}/share/case/${id}`),
+    ];
+
+    const lastmod = new Date().toISOString();
+    const body = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    (url) => `  <url>
+    <loc>${escapeXml(url)}</loc>
+    <lastmod>${lastmod}</lastmod>
+  </url>`,
+  )
+  .join("\n")}
+</urlset>`;
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=1800",
+      },
+    });
+  }),
+});
+
 http.route({
   pathPrefix: "/share/",
   method: "GET",
@@ -132,6 +210,45 @@ http.route({
 });
 
 http.route({
+  path: "/gdpr/export",
+  method: "POST",
+  handler: httpAction(async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response("Not authenticated", { status: 401 });
+    }
+
+    const userId = await ctx.runQuery(internal.gdpr.getUserIdByClerkId, {
+      clerkId: identity.subject,
+    });
+    if (!userId) {
+      return new Response("User not found", { status: 404 });
+    }
+
+    const payload = await ctx.runQuery(internal.gdpr.getUserDataExport, {
+      userId,
+    });
+    if (!payload) {
+      return new Response("User data unavailable", { status: 404 });
+    }
+
+    await ctx.runMutation(internal.gdpr.logDataExportRequest, {
+      userId,
+    });
+
+    const requestedAt = new Date().toISOString().slice(0, 10);
+    return new Response(JSON.stringify(payload, null, 2), {
+      status: 200,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+        "content-disposition": `attachment; filename="pawtreon-data-export-${requestedAt}.json"`,
+        "cache-control": "no-store",
+      },
+    });
+  }),
+});
+
+http.route({
   path: "/stripe-webhook",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
@@ -197,36 +314,136 @@ http.route({
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : undefined;
+      if (session.mode === "subscription") {
+        const stripeSubscriptionId =
+          typeof session.subscription === "string" ? session.subscription : undefined;
+        let stripeStatus: string | undefined;
 
-      let chargeId: string | undefined;
-      let receiptUrl: string | undefined;
-
-      if (paymentIntentId) {
-        try {
-          const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
-            expand: ["latest_charge"],
-          });
-
-          const latestCharge = paymentIntent.latest_charge;
-          if (typeof latestCharge === "string") {
-            chargeId = latestCharge;
-          } else if (latestCharge && typeof latestCharge !== "string") {
-            chargeId = latestCharge.id;
-            receiptUrl = latestCharge.receipt_url ?? undefined;
+        if (stripeSubscriptionId) {
+          try {
+            const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+            stripeStatus = stripeSubscription.status;
+          } catch (err) {
+            console.warn("Could not retrieve Subscription after checkout completion:", err);
           }
-        } catch (err) {
-          console.warn("Could not retrieve PaymentIntent for receipt:", err);
+        }
+
+        await ctx.runMutation(internal.subscriptions.confirmCheckoutSessionFromWebhook, {
+          sessionId: session.id,
+          stripeSubscriptionId,
+          stripeStatus,
+          clientReferenceId: session.client_reference_id ?? undefined,
+          eventId: event.id,
+        });
+      } else {
+        const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : undefined;
+
+        let chargeId: string | undefined;
+        let receiptUrl: string | undefined;
+
+        if (paymentIntentId) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+              expand: ["latest_charge"],
+            });
+
+            const latestCharge = paymentIntent.latest_charge;
+            if (typeof latestCharge === "string") {
+              chargeId = latestCharge;
+            } else if (latestCharge && typeof latestCharge !== "string") {
+              chargeId = latestCharge.id;
+              receiptUrl = latestCharge.receipt_url ?? undefined;
+            }
+          } catch (err) {
+            console.warn("Could not retrieve PaymentIntent for receipt:", err);
+          }
+        }
+
+        await ctx.runMutation(internal.donations.confirmCheckoutSessionFromWebhook, {
+          sessionId: session.id,
+          paymentIntentId,
+          chargeId,
+          receiptUrl,
+          amountReceivedMinor: session.amount_total ?? undefined,
+          currency: session.currency ?? undefined,
+          eventId: event.id,
+        });
+      }
+    }
+
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object as Stripe.Invoice;
+      const stripeSubscriptionId =
+        typeof invoice.subscription === "string" ? invoice.subscription : undefined;
+      const paymentIntentId =
+        typeof invoice.payment_intent === "string" ? invoice.payment_intent : undefined;
+
+      if (stripeSubscriptionId) {
+        let chargeId: string | undefined;
+        let receiptUrl: string | undefined;
+
+        if (paymentIntentId) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+              expand: ["latest_charge"],
+            });
+
+            const latestCharge = paymentIntent.latest_charge;
+            if (typeof latestCharge === "string") {
+              chargeId = latestCharge;
+              try {
+                const charge = await stripe.charges.retrieve(latestCharge);
+                receiptUrl = charge.receipt_url ?? undefined;
+              } catch (err) {
+                console.warn("Could not retrieve Charge for recurring receipt:", err);
+              }
+            } else if (latestCharge && typeof latestCharge !== "string") {
+              chargeId = latestCharge.id;
+              receiptUrl = latestCharge.receipt_url ?? undefined;
+            }
+          } catch (err) {
+            console.warn("Could not retrieve PaymentIntent for recurring invoice:", err);
+          }
+        }
+
+        await ctx.runMutation(internal.subscriptions.ensureRecurringDonationFromInvoice, {
+          stripeSubscriptionId,
+          stripeInvoiceId: invoice.id,
+          paymentIntentId,
+          amountPaidMinor: invoice.amount_paid,
+          currency: invoice.currency ?? undefined,
+          eventId: event.id,
+        });
+
+        if (paymentIntentId) {
+          await ctx.runMutation(internal.donations.confirmPaymentFromWebhook, {
+            paymentIntentId,
+            chargeId,
+            receiptUrl,
+            amountReceivedMinor: invoice.amount_paid,
+            currency: invoice.currency ?? undefined,
+            eventId: event.id,
+          });
         }
       }
+    }
 
-      await ctx.runMutation(internal.donations.confirmCheckoutSessionFromWebhook, {
-        sessionId: session.id,
-        paymentIntentId,
-        chargeId,
-        receiptUrl,
-        amountReceivedMinor: session.amount_total ?? undefined,
-        currency: session.currency ?? undefined,
+    if (event.type === "customer.subscription.updated") {
+      const stripeSubscription = event.data.object as Stripe.Subscription;
+      await ctx.runMutation(internal.subscriptions.syncStatusFromWebhook, {
+        stripeSubscriptionId: stripeSubscription.id,
+        stripeStatus: stripeSubscription.status,
+        canceledAtMs: stripeSubscription.canceled_at ? stripeSubscription.canceled_at * 1000 : undefined,
+        eventId: event.id,
+      });
+    }
+
+    if (event.type === "customer.subscription.deleted") {
+      const stripeSubscription = event.data.object as Stripe.Subscription;
+      await ctx.runMutation(internal.subscriptions.syncStatusFromWebhook, {
+        stripeSubscriptionId: stripeSubscription.id,
+        stripeStatus: "canceled",
+        canceledAtMs: stripeSubscription.canceled_at ? stripeSubscription.canceled_at * 1000 : Date.now(),
         eventId: event.id,
       });
     }
